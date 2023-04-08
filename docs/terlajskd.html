@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>11 样本量计算 | 常见医学统计方法R语言实战</title>
+  <meta name="description" content="医学统计R语言实战" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="11 样本量计算 | 常见医学统计方法R语言实战" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="医学统计R语言实战" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="11 样本量计算 | 常见医学统计方法R语言实战" />
+  
+  <meta name="twitter:description" content="医学统计R语言实战" />
+  
+
+<meta name="author" content="阿越就是我" />
+
+
+<meta name="date" content="2023-04-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="ytlrwijj.html"/>
+<link rel="next" href="ytsgs.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>前言</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#本书缘起"><i class="fa fa-check"></i>本书缘起</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#作者简介"><i class="fa fa-check"></i>作者简介</a></li>
+</ul></li>
+<li class="part"><span><b>I 基础统计分析</b></span></li>
+<li class="chapter" data-level="1" data-path="sdjfl.html"><a href="sdjfl.html"><i class="fa fa-check"></i><b>1</b> t检验</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="sdjfl.html"><a href="sdjfl.html#单样本t检验"><i class="fa fa-check"></i><b>1.1</b> 单样本t检验</a></li>
+<li class="chapter" data-level="1.2" data-path="sdjfl.html"><a href="sdjfl.html#配对样本t检验"><i class="fa fa-check"></i><b>1.2</b> 配对样本t检验</a></li>
+<li class="chapter" data-level="1.3" data-path="sdjfl.html"><a href="sdjfl.html#两样本t检验"><i class="fa fa-check"></i><b>1.3</b> 两样本t检验</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="xnclg.html"><a href="xnclg.html"><i class="fa fa-check"></i><b>2</b> 多样本均数比较的方差分析</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="xnclg.html"><a href="xnclg.html#完全随机设计资料的方差分析"><i class="fa fa-check"></i><b>2.1</b> 完全随机设计资料的方差分析</a></li>
+<li class="chapter" data-level="2.2" data-path="xnclg.html"><a href="xnclg.html#随机区组设计资料的方差分析"><i class="fa fa-check"></i><b>2.2</b> 随机区组设计资料的方差分析</a></li>
+<li class="chapter" data-level="2.3" data-path="xnclg.html"><a href="xnclg.html#拉丁方设计方差分析"><i class="fa fa-check"></i><b>2.3</b> 拉丁方设计方差分析</a></li>
+<li class="chapter" data-level="2.4" data-path="xnclg.html"><a href="xnclg.html#两阶段交叉设计资料方差分析"><i class="fa fa-check"></i><b>2.4</b> 两阶段交叉设计资料方差分析</a></li>
+<li class="chapter" data-level="2.5" data-path="xnclg.html"><a href="xnclg.html#多个样本均数间的多重比较"><i class="fa fa-check"></i><b>2.5</b> 多个样本均数间的多重比较</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="xnclg.html"><a href="xnclg.html#lsd-t检验"><i class="fa fa-check"></i><b>2.5.1</b> LSD-t检验</a></li>
+<li class="chapter" data-level="2.5.2" data-path="xnclg.html"><a href="xnclg.html#tukeyhsd"><i class="fa fa-check"></i><b>2.5.2</b> TukeyHSD</a></li>
+<li class="chapter" data-level="2.5.3" data-path="xnclg.html"><a href="xnclg.html#dunnett-t检验"><i class="fa fa-check"></i><b>2.5.3</b> Dunnett-t检验</a></li>
+<li class="chapter" data-level="2.5.4" data-path="xnclg.html"><a href="xnclg.html#snk-q检验"><i class="fa fa-check"></i><b>2.5.4</b> SNK-q检验</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="xnclg.html"><a href="xnclg.html#多样本方差比较的bartlett检验和levene检验"><i class="fa fa-check"></i><b>2.6</b> 多样本方差比较的Bartlett检验和Levene检验</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="xnclg.html"><a href="xnclg.html#多样本方差比较的bartlett检验"><i class="fa fa-check"></i><b>2.6.1</b> 多样本方差比较的Bartlett检验</a></li>
+<li class="chapter" data-level="2.6.2" data-path="xnclg.html"><a href="xnclg.html#多样本方差比较的levene检验"><i class="fa fa-check"></i><b>2.6.2</b> 多样本方差比较的Levene检验</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="njlkga.html"><a href="njlkga.html"><i class="fa fa-check"></i><b>3</b> 多因素方差分析</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="njlkga.html"><a href="njlkga.html#x-2-两因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.1</b> 2 x 2 两因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.2" data-path="njlkga.html"><a href="njlkga.html#i-x-j-两因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.2</b> I x J 两因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.3" data-path="njlkga.html"><a href="njlkga.html#i-x-j-x-k-三因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.3</b> I x J x K 三因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.4" data-path="njlkga.html"><a href="njlkga.html#正交设计资料的方差分析"><i class="fa fa-check"></i><b>3.4</b> 正交设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.5" data-path="njlkga.html"><a href="njlkga.html#嵌套设计资料的方差分析"><i class="fa fa-check"></i><b>3.5</b> 嵌套设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.6" data-path="njlkga.html"><a href="njlkga.html#裂区设计资料的方差分析"><i class="fa fa-check"></i><b>3.6</b> 裂区设计资料的方差分析</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="iegljgk.html"><a href="iegljgk.html"><i class="fa fa-check"></i><b>4</b> 重复测量方差分析</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="iegljgk.html"><a href="iegljgk.html#重复测量数据两因素两水平的方差分析"><i class="fa fa-check"></i><b>4.1</b> 重复测量数据两因素两水平的方差分析</a></li>
+<li class="chapter" data-level="4.2" data-path="iegljgk.html"><a href="iegljgk.html#重复测量数据两因素多水平的分析"><i class="fa fa-check"></i><b>4.2</b> 重复测量数据两因素多水平的分析</a></li>
+<li class="chapter" data-level="4.3" data-path="iegljgk.html"><a href="iegljgk.html#重复测量数据的多重比较"><i class="fa fa-check"></i><b>4.3</b> 重复测量数据的多重比较</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="iegljgk.html"><a href="iegljgk.html#组间差别多重比较"><i class="fa fa-check"></i><b>4.3.1</b> 组间差别多重比较</a></li>
+<li class="chapter" data-level="4.3.2" data-path="iegljgk.html"><a href="iegljgk.html#时间趋势比较"><i class="fa fa-check"></i><b>4.3.2</b> 时间趋势比较</a></li>
+<li class="chapter" data-level="4.3.3" data-path="iegljgk.html"><a href="iegljgk.html#时间点比较"><i class="fa fa-check"></i><b>4.3.3</b> 时间点比较</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html"><i class="fa fa-check"></i><b>5</b> 协方差分析</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html#完全随机设计资料的协方差分析"><i class="fa fa-check"></i><b>5.1</b> 完全随机设计资料的协方差分析</a></li>
+<li class="chapter" data-level="5.2" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html#使用rstatix进行优雅的协方差分析"><i class="fa fa-check"></i><b>5.2</b> 使用rstatix进行优雅的协方差分析</a></li>
+<li class="chapter" data-level="5.3" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html#随机区组设计资料的协方差分析"><i class="fa fa-check"></i><b>5.3</b> 随机区组设计资料的协方差分析</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="aspljsffjd.html"><a href="aspljsffjd.html"><i class="fa fa-check"></i><b>6</b> 卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="aspljsffjd.html"><a href="aspljsffjd.html#不同类型卡方检验的选择"><i class="fa fa-check"></i><b>6.1</b> 不同类型卡方检验的选择</a></li>
+<li class="chapter" data-level="6.2" data-path="aspljsffjd.html"><a href="aspljsffjd.html#四格表资料的卡方检验"><i class="fa fa-check"></i><b>6.2</b> 四格表资料的卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="aspljsffjd.html"><a href="aspljsffjd.html#方法1"><i class="fa fa-check"></i><b>6.2.1</b> 方法1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="aspljsffjd.html"><a href="aspljsffjd.html#方法2"><i class="fa fa-check"></i><b>6.2.2</b> 方法2</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="aspljsffjd.html"><a href="aspljsffjd.html#配对四格表资料的卡方检验"><i class="fa fa-check"></i><b>6.3</b> 配对四格表资料的卡方检验</a></li>
+<li class="chapter" data-level="6.4" data-path="aspljsffjd.html"><a href="aspljsffjd.html#四格表资料的-fisher-确切概率法"><i class="fa fa-check"></i><b>6.4</b> 四格表资料的 Fisher 确切概率法</a></li>
+<li class="chapter" data-level="6.5" data-path="aspljsffjd.html"><a href="aspljsffjd.html#行-x-列表资料的卡方检验"><i class="fa fa-check"></i><b>6.5</b> 行 x 列表资料的卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.5.1" data-path="aspljsffjd.html"><a href="aspljsffjd.html#多个样本率的比较"><i class="fa fa-check"></i><b>6.5.1</b> 多个样本率的比较</a></li>
+<li class="chapter" data-level="6.5.2" data-path="aspljsffjd.html"><a href="aspljsffjd.html#样本构成比的比较"><i class="fa fa-check"></i><b>6.5.2</b> 样本构成比的比较</a></li>
+<li class="chapter" data-level="6.5.3" data-path="aspljsffjd.html"><a href="aspljsffjd.html#双向无序分类资料的关联性检验"><i class="fa fa-check"></i><b>6.5.3</b> 双向无序分类资料的关联性检验</a></li>
+<li class="chapter" data-level="6.5.4" data-path="aspljsffjd.html"><a href="aspljsffjd.html#双向有序分组资料的线性趋势检验"><i class="fa fa-check"></i><b>6.5.4</b> 双向有序分组资料的线性趋势检验</a></li>
+</ul></li>
+<li class="chapter" data-level="6.6" data-path="aspljsffjd.html"><a href="aspljsffjd.html#多个样本率间的多重比较"><i class="fa fa-check"></i><b>6.6</b> 多个样本率间的多重比较</a></li>
+<li class="chapter" data-level="6.7" data-path="aspljsffjd.html"><a href="aspljsffjd.html#cochran-mantel-haenszel-卡方统计量检验"><i class="fa fa-check"></i><b>6.7</b> Cochran-Mantel-Haenszel 卡方统计量检验</a></li>
+<li class="chapter" data-level="6.8" data-path="aspljsffjd.html"><a href="aspljsffjd.html#频数分布拟合优度卡方检验"><i class="fa fa-check"></i><b>6.8</b> 频数分布拟合优度卡方检验</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="lidukj.html"><a href="lidukj.html"><i class="fa fa-check"></i><b>7</b> 秩和检验</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="lidukj.html"><a href="lidukj.html#配对样本比较的wilcoxon符号秩检验"><i class="fa fa-check"></i><b>7.1</b> 配对样本比较的Wilcoxon符号秩检验</a></li>
+<li class="chapter" data-level="7.2" data-path="lidukj.html"><a href="lidukj.html#两独立样本比较的wilcoxon符号秩检验"><i class="fa fa-check"></i><b>7.2</b> 两独立样本比较的Wilcoxon符号秩检验</a></li>
+<li class="chapter" data-level="7.3" data-path="lidukj.html"><a href="lidukj.html#完全随机设计多个样本比较的-kruskal-wallis-h-检验"><i class="fa fa-check"></i><b>7.3</b> 完全随机设计多个样本比较的 Kruskal-Wallis H 检验</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="lidukj.html"><a href="lidukj.html#多样本比较的kruskal-wallis-h检验"><i class="fa fa-check"></i><b>7.3.1</b> 多样本比较的kruskal-wallis H检验</a></li>
+<li class="chapter" data-level="7.3.2" data-path="lidukj.html"><a href="lidukj.html#kruskal-wallis-h检验后的多重比较"><i class="fa fa-check"></i><b>7.3.2</b> kruskal-Wallis H检验后的多重比较</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="lidukj.html"><a href="lidukj.html#随记区组设计多个样本比较的-friedman-m-检验"><i class="fa fa-check"></i><b>7.4</b> 随记区组设计多个样本比较的 Friedman M 检验</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="lidukj.html"><a href="lidukj.html#多个相关样本比较的friedman-m检验"><i class="fa fa-check"></i><b>7.4.1</b> 多个相关样本比较的Friedman M检验</a></li>
+<li class="chapter" data-level="7.4.2" data-path="lidukj.html"><a href="lidukj.html#多个相关样本两两比较的q检验"><i class="fa fa-check"></i><b>7.4.2</b> 多个相关样本两两比较的q检验</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="yruugkjh.html"><a href="yruugkjh.html"><i class="fa fa-check"></i><b>8</b> 球对称检验</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="yruugkjh.html"><a href="yruugkjh.html#球对称检验"><i class="fa fa-check"></i><b>8.1</b> 球对称检验</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="yruugkjh.html"><a href="yruugkjh.html#使用课本表12-3的数据"><i class="fa fa-check"></i><b>8.1.1</b> 使用课本<strong>表12-3</strong>的数据</a></li>
+<li class="chapter" data-level="8.1.2" data-path="yruugkjh.html"><a href="yruugkjh.html#使用课本例12-3的数据"><i class="fa fa-check"></i><b>8.1.2</b> 使用课本<strong>例12-3</strong>的数据</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="rugnjkdfgl.html"><a href="rugnjkdfgl.html"><i class="fa fa-check"></i><b>9</b> R语言Cochran Armitage检验</a></li>
+<li class="chapter" data-level="10" data-path="ytlrwijj.html"><a href="ytlrwijj.html"><i class="fa fa-check"></i><b>10</b> R语言方差分析注意事项</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="ytlrwijj.html"><a href="ytlrwijj.html#均衡设计和非均衡设计"><i class="fa fa-check"></i><b>10.1</b> 均衡设计和非均衡设计</a></li>
+<li class="chapter" data-level="10.2" data-path="ytlrwijj.html"><a href="ytlrwijj.html#方差分析的3种类型"><i class="fa fa-check"></i><b>10.2</b> 方差分析的3种类型</a></li>
+<li class="chapter" data-level="10.3" data-path="ytlrwijj.html"><a href="ytlrwijj.html#示例"><i class="fa fa-check"></i><b>10.3</b> 示例</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="ytlrwijj.html"><a href="ytlrwijj.html#one-way-anova"><i class="fa fa-check"></i><b>10.3.1</b> one-way anova</a></li>
+<li class="chapter" data-level="10.3.2" data-path="ytlrwijj.html"><a href="ytlrwijj.html#two-way-anova"><i class="fa fa-check"></i><b>10.3.2</b> two-way anova</a></li>
+<li class="chapter" data-level="10.3.3" data-path="ytlrwijj.html"><a href="ytlrwijj.html#协方差分析"><i class="fa fa-check"></i><b>10.3.3</b> 协方差分析</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="terlajskd.html"><a href="terlajskd.html"><i class="fa fa-check"></i><b>11</b> 样本量计算</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="terlajskd.html"><a href="terlajskd.html#t检验的样本量计算"><i class="fa fa-check"></i><b>11.1</b> t检验的样本量计算</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="terlajskd.html"><a href="terlajskd.html#单样本t检验样本均数和已知总体均数比较"><i class="fa fa-check"></i><b>11.1.1</b> 单样本t检验（样本均数和已知总体均数比较）</a></li>
+<li class="chapter" data-level="11.1.2" data-path="terlajskd.html"><a href="terlajskd.html#两样本t检验两样本均数比较"><i class="fa fa-check"></i><b>11.1.2</b> 两样本t检验（两样本均数比较）</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="terlajskd.html"><a href="terlajskd.html#多样本均数比较"><i class="fa fa-check"></i><b>11.2</b> 多样本均数比较</a></li>
+<li class="chapter" data-level="11.3" data-path="terlajskd.html"><a href="terlajskd.html#样本率和已知总体率的比较"><i class="fa fa-check"></i><b>11.3</b> 样本率和已知总体率的比较</a></li>
+<li class="chapter" data-level="11.4" data-path="terlajskd.html"><a href="terlajskd.html#两独立样本率的比较"><i class="fa fa-check"></i><b>11.4</b> 两独立样本率的比较</a></li>
+<li class="chapter" data-level="11.5" data-path="terlajskd.html"><a href="terlajskd.html#多样本率的比较"><i class="fa fa-check"></i><b>11.5</b> 多样本率的比较</a></li>
+<li class="chapter" data-level="11.6" data-path="terlajskd.html"><a href="terlajskd.html#直线相关分析"><i class="fa fa-check"></i><b>11.6</b> 直线相关分析</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="ytsgs.html"><a href="ytsgs.html"><i class="fa fa-check"></i><b>12</b> 随机分组</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="ytsgs.html"><a href="ytsgs.html#简单随机"><i class="fa fa-check"></i><b>12.1</b> 简单随机</a></li>
+<li class="chapter" data-level="12.2" data-path="ytsgs.html"><a href="ytsgs.html#区组随机"><i class="fa fa-check"></i><b>12.2</b> 区组随机</a></li>
+<li class="chapter" data-level="12.3" data-path="ytsgs.html"><a href="ytsgs.html#分层随机"><i class="fa fa-check"></i><b>12.3</b> 分层随机</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html"><i class="fa fa-check"></i><b>13</b> R语言tidy风格医学统计学</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#主要函数"><i class="fa fa-check"></i><b>13.1</b> 主要函数</a>
+<ul>
+<li class="chapter" data-level="13.1.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#描述性统计"><i class="fa fa-check"></i><b>13.1.1</b> 描述性统计</a></li>
+<li class="chapter" data-level="13.1.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#比较均值"><i class="fa fa-check"></i><b>13.1.2</b> 比较均值</a></li>
+<li class="chapter" data-level="13.1.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#增强r中的anova"><i class="fa fa-check"></i><b>13.1.3</b> 增强R中的ANOVA</a></li>
+<li class="chapter" data-level="13.1.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#事后检验post-hoc"><i class="fa fa-check"></i><b>13.1.4</b> 事后检验（post-hoc）</a></li>
+<li class="chapter" data-level="13.1.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#比较比例"><i class="fa fa-check"></i><b>13.1.5</b> 比较比例</a></li>
+<li class="chapter" data-level="13.1.6" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#比较方差"><i class="fa fa-check"></i><b>13.1.6</b> 比较方差</a></li>
+<li class="chapter" data-level="13.1.7" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#计算效应量"><i class="fa fa-check"></i><b>13.1.7</b> 计算效应量</a></li>
+<li class="chapter" data-level="13.1.8" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#相关性分析"><i class="fa fa-check"></i><b>13.1.8</b> 相关性分析</a></li>
+<li class="chapter" data-level="13.1.9" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#添加p值和显著性标记"><i class="fa fa-check"></i><b>13.1.9</b> 添加P值和显著性标记</a></li>
+<li class="chapter" data-level="13.1.10" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#提取统计信息"><i class="fa fa-check"></i><b>13.1.10</b> 提取统计信息</a></li>
+<li class="chapter" data-level="13.1.11" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#数据处理辅助函数"><i class="fa fa-check"></i><b>13.1.11</b> 数据处理辅助函数</a></li>
+<li class="chapter" data-level="13.1.12" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#其他"><i class="fa fa-check"></i><b>13.1.12</b> 其他</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#安装和加载"><i class="fa fa-check"></i><b>13.2</b> 安装和加载</a></li>
+<li class="chapter" data-level="13.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#描述性统计-1"><i class="fa fa-check"></i><b>13.3</b> 描述性统计</a></li>
+<li class="chapter" data-level="13.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#t检验"><i class="fa fa-check"></i><b>13.4</b> t检验</a>
+<ul>
+<li class="chapter" data-level="13.4.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#单样本t检验-1"><i class="fa fa-check"></i><b>13.4.1</b> 单样本t检验</a></li>
+<li class="chapter" data-level="13.4.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#配对t检验"><i class="fa fa-check"></i><b>13.4.2</b> 配对t检验</a></li>
+<li class="chapter" data-level="13.4.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#两样本t检验-1"><i class="fa fa-check"></i><b>13.4.3</b> 两样本t检验</a></li>
+<li class="chapter" data-level="13.4.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#分组后进行比较"><i class="fa fa-check"></i><b>13.4.4</b> 分组后进行比较</a></li>
+<li class="chapter" data-level="13.4.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#多组间的两两比较"><i class="fa fa-check"></i><b>13.4.5</b> 多组间的两两比较</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#方差分析"><i class="fa fa-check"></i><b>13.5</b> 方差分析</a>
+<ul>
+<li class="chapter" data-level="13.5.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#完全随机设计方差分析"><i class="fa fa-check"></i><b>13.5.1</b> 完全随机设计方差分析</a></li>
+<li class="chapter" data-level="13.5.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#随机区组设计资料的方差分析-1"><i class="fa fa-check"></i><b>13.5.2</b> 随机区组设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#拉丁方设计方差分析-1"><i class="fa fa-check"></i><b>13.5.3</b> 拉丁方设计方差分析</a></li>
+<li class="chapter" data-level="13.5.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#两阶段交叉设计资料方差分析-1"><i class="fa fa-check"></i><b>13.5.4</b> 两阶段交叉设计资料方差分析</a></li>
+<li class="chapter" data-level="13.5.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#析因设计资料的方差分析"><i class="fa fa-check"></i><b>13.5.5</b> 析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.6" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#正交设计资料的方差分析-1"><i class="fa fa-check"></i><b>13.5.6</b> 正交设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.7" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#重复测量数据两因素两水平的方差分析-1"><i class="fa fa-check"></i><b>13.5.7</b> 重复测量数据两因素两水平的方差分析</a></li>
+<li class="chapter" data-level="13.5.8" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#重复测量数据两因素多水平的分析-1"><i class="fa fa-check"></i><b>13.5.8</b> 重复测量数据两因素多水平的分析</a></li>
+</ul></li>
+<li class="chapter" data-level="13.6" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#相关分析"><i class="fa fa-check"></i><b>13.6</b> 相关分析</a>
+<ul>
+<li class="chapter" data-level="13.6.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#两个变量"><i class="fa fa-check"></i><b>13.6.1</b> 两个变量</a></li>
+<li class="chapter" data-level="13.6.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#一个变量和其他所有变量"><i class="fa fa-check"></i><b>13.6.2</b> 一个变量和其他所有变量</a></li>
+<li class="chapter" data-level="13.6.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#所有变量间两两相关性"><i class="fa fa-check"></i><b>13.6.3</b> 所有变量间两两相关性</a></li>
+<li class="chapter" data-level="13.6.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#相关矩阵"><i class="fa fa-check"></i><b>13.6.4</b> 相关矩阵</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="tjslrkjga.html"><a href="tjslrkjga.html"><i class="fa fa-check"></i><b>14</b> R语言多个变量同时进行t检验</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="tjslrkjga.html"><a href="tjslrkjga.html#简介"><i class="fa fa-check"></i><b>14.1</b> 简介</a></li>
+<li class="chapter" data-level="14.2" data-path="tjslrkjga.html"><a href="tjslrkjga.html#实战"><i class="fa fa-check"></i><b>14.2</b> 实战</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="oirjglsj.html"><a href="oirjglsj.html"><i class="fa fa-check"></i><b>15</b> 双变量回归与相关</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="oirjglsj.html"><a href="oirjglsj.html#两样本相关"><i class="fa fa-check"></i><b>15.1</b> 两样本相关</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html"><i class="fa fa-check"></i><b>16</b> 偏相关和典型相关</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html#偏相关partial-correlation"><i class="fa fa-check"></i><b>16.1</b> 偏相关（partial correlation）</a>
+<ul>
+<li class="chapter" data-level="16.1.1" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html#偏相关散点图"><i class="fa fa-check"></i><b>16.1.1</b> 偏相关散点图</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html#典型相关canonical-correlation"><i class="fa fa-check"></i><b>16.2</b> 典型相关（Canonical Correlation）</a></li>
+</ul></li>
+<li class="part"><span><b>II 高级统计分析</b></span></li>
+<li class="chapter" data-level="17" data-path="raljflksdj.html"><a href="raljflksdj.html"><i class="fa fa-check"></i><b>17</b> 多元线性回归</a>
+<ul>
+<li class="chapter" data-level="17.1" data-path="raljflksdj.html"><a href="raljflksdj.html#多元线性回归"><i class="fa fa-check"></i><b>17.1</b> 多元线性回归</a></li>
+<li class="chapter" data-level="17.2" data-path="raljflksdj.html"><a href="raljflksdj.html#回归诊断"><i class="fa fa-check"></i><b>17.2</b> 回归诊断</a>
+<ul>
+<li class="chapter" data-level="17.2.1" data-path="raljflksdj.html"><a href="raljflksdj.html#可以通过看图来判断"><i class="fa fa-check"></i><b>17.2.1</b> 可以通过看图来判断</a></li>
+<li class="chapter" data-level="17.2.2" data-path="raljflksdj.html"><a href="raljflksdj.html#也可以通过统计方法验证"><i class="fa fa-check"></i><b>17.2.2</b> 也可以通过统计方法验证</a></li>
+<li class="chapter" data-level="17.2.3" data-path="raljflksdj.html"><a href="raljflksdj.html#多重共线性的检验"><i class="fa fa-check"></i><b>17.2.3</b> 多重共线性的检验</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="raljflksdj.html"><a href="raljflksdj.html#逐步选择法"><i class="fa fa-check"></i><b>17.3</b> 逐步选择法</a></li>
+<li class="chapter" data-level="17.4" data-path="raljflksdj.html"><a href="raljflksdj.html#全局择优法"><i class="fa fa-check"></i><b>17.4</b> 全局择优法</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="rlkdfjj.html"><a href="rlkdfjj.html"><i class="fa fa-check"></i><b>18</b> Logistic回归</a>
+<ul>
+<li class="chapter" data-level="18.1" data-path="rlkdfjj.html"><a href="rlkdfjj.html#二项logistic回归"><i class="fa fa-check"></i><b>18.1</b> 二项logistic回归</a></li>
+<li class="chapter" data-level="18.2" data-path="rlkdfjj.html"><a href="rlkdfjj.html#多项逻辑回归"><i class="fa fa-check"></i><b>18.2</b> 多项逻辑回归</a></li>
+<li class="chapter" data-level="18.3" data-path="rlkdfjj.html"><a href="rlkdfjj.html#有序逻辑回归"><i class="fa fa-check"></i><b>18.3</b> 有序逻辑回归</a></li>
+<li class="chapter" data-level="18.4" data-path="rlkdfjj.html"><a href="rlkdfjj.html#条件逻辑回归"><i class="fa fa-check"></i><b>18.4</b> 条件逻辑回归</a></li>
+<li class="chapter" data-level="18.5" data-path="rlkdfjj.html"><a href="rlkdfjj.html#参考资料"><i class="fa fa-check"></i><b>18.5</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="tuishgh.html"><a href="tuishgh.html"><i class="fa fa-check"></i><b>19</b> 分类变量进行回归分析时的编码方案</a>
+<ul>
+<li class="chapter" data-level="19.1" data-path="tuishgh.html"><a href="tuishgh.html#演示数据"><i class="fa fa-check"></i><b>19.1</b> 演示数据</a></li>
+<li class="chapter" data-level="19.2" data-path="tuishgh.html"><a href="tuishgh.html#dummy-coding"><i class="fa fa-check"></i><b>19.2</b> Dummy Coding</a></li>
+<li class="chapter" data-level="19.3" data-path="tuishgh.html"><a href="tuishgh.html#simple-coding"><i class="fa fa-check"></i><b>19.3</b> simple coding</a></li>
+<li class="chapter" data-level="19.4" data-path="tuishgh.html"><a href="tuishgh.html#deviation-coding"><i class="fa fa-check"></i><b>19.4</b> Deviation coding</a></li>
+<li class="chapter" data-level="19.5" data-path="tuishgh.html"><a href="tuishgh.html#orthogonal-polynomial-coding"><i class="fa fa-check"></i><b>19.5</b> Orthogonal Polynomial Coding</a></li>
+<li class="chapter" data-level="19.6" data-path="tuishgh.html"><a href="tuishgh.html#helmert-coding"><i class="fa fa-check"></i><b>19.6</b> Helmert Coding</a></li>
+<li class="chapter" data-level="19.7" data-path="tuishgh.html"><a href="tuishgh.html#reverse-helmert-coding"><i class="fa fa-check"></i><b>19.7</b> Reverse Helmert Coding</a></li>
+<li class="chapter" data-level="19.8" data-path="tuishgh.html"><a href="tuishgh.html#forward-difference-coding"><i class="fa fa-check"></i><b>19.8</b> Forward Difference Coding</a></li>
+<li class="chapter" data-level="19.9" data-path="tuishgh.html"><a href="tuishgh.html#backward-difference-coding"><i class="fa fa-check"></i><b>19.9</b> Backward Difference Coding</a></li>
+<li class="chapter" data-level="19.10" data-path="tuishgh.html"><a href="tuishgh.html#参考资料-1"><i class="fa fa-check"></i><b>19.10</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="erutgjdflk.html"><a href="erutgjdflk.html"><i class="fa fa-check"></i><b>20</b> R语言判别分析</a>
+<ul>
+<li class="chapter" data-level="20.1" data-path="erutgjdflk.html"><a href="erutgjdflk.html#fisher判别分析"><i class="fa fa-check"></i><b>20.1</b> Fisher判别分析</a></li>
+<li class="chapter" data-level="20.2" data-path="erutgjdflk.html"><a href="erutgjdflk.html#bayes判别分析"><i class="fa fa-check"></i><b>20.2</b> Bayes判别分析</a></li>
+</ul></li>
+<li class="chapter" data-level="21" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html"><i class="fa fa-check"></i><b>21</b> R语言聚类分析</a>
+<ul>
+<li class="chapter" data-level="21.1" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#系统聚类层次聚类hierarchical-clustering"><i class="fa fa-check"></i><b>21.1</b> 系统聚类（层次聚类,Hierarchical clustering）</a></li>
+<li class="chapter" data-level="21.2" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#聚类分析可视化"><i class="fa fa-check"></i><b>21.2</b> 聚类分析可视化</a></li>
+<li class="chapter" data-level="21.3" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#快速聚类划分聚类partitioning-clustering"><i class="fa fa-check"></i><b>21.3</b> 快速聚类（划分聚类,partitioning clustering）</a>
+<ul>
+<li class="chapter" data-level="21.3.1" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#k-means聚类"><i class="fa fa-check"></i><b>21.3.1</b> K-means聚类</a></li>
+<li class="chapter" data-level="21.3.2" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#围绕中心点的划分pam"><i class="fa fa-check"></i><b>21.3.2</b> 围绕中心点的划分PAM</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="ejtlj.html"><a href="ejtlj.html"><i class="fa fa-check"></i><b>22</b> R语言主成分分析</a>
+<ul>
+<li class="chapter" data-level="22.1" data-path="ejtlj.html"><a href="ejtlj.html#加载数据"><i class="fa fa-check"></i><b>22.1</b> 加载数据</a></li>
+<li class="chapter" data-level="22.2" data-path="ejtlj.html"><a href="ejtlj.html#相关性检验"><i class="fa fa-check"></i><b>22.2</b> 相关性检验</a></li>
+<li class="chapter" data-level="22.3" data-path="ejtlj.html"><a href="ejtlj.html#kmo和bartlett球形检验"><i class="fa fa-check"></i><b>22.3</b> KMO和Bartlett球形检验</a></li>
+<li class="chapter" data-level="22.4" data-path="ejtlj.html"><a href="ejtlj.html#r自带的pca"><i class="fa fa-check"></i><b>22.4</b> R自带的PCA</a></li>
+<li class="chapter" data-level="22.5" data-path="ejtlj.html"><a href="ejtlj.html#结果可视化"><i class="fa fa-check"></i><b>22.5</b> 结果可视化</a></li>
+<li class="chapter" data-level="22.6" data-path="ejtlj.html"><a href="ejtlj.html#主成分分析可视化超详细"><i class="fa fa-check"></i><b>22.6</b> 主成分分析可视化(超详细)</a>
+<ul>
+<li class="chapter" data-level="22.6.1" data-path="ejtlj.html"><a href="ejtlj.html#进行pca分析"><i class="fa fa-check"></i><b>22.6.1</b> 进行PCA分析</a></li>
+<li class="chapter" data-level="22.6.2" data-path="ejtlj.html"><a href="ejtlj.html#特征值可视化"><i class="fa fa-check"></i><b>22.6.2</b> 特征值可视化</a></li>
+<li class="chapter" data-level="22.6.3" data-path="ejtlj.html"><a href="ejtlj.html#提取变量结果"><i class="fa fa-check"></i><b>22.6.3</b> 提取变量结果</a></li>
+<li class="chapter" data-level="22.6.4" data-path="ejtlj.html"><a href="ejtlj.html#变量结果可视化"><i class="fa fa-check"></i><b>22.6.4</b> 变量结果可视化</a></li>
+<li class="chapter" data-level="22.6.5" data-path="ejtlj.html"><a href="ejtlj.html#dimension-description"><i class="fa fa-check"></i><b>22.6.5</b> Dimension description</a></li>
+<li class="chapter" data-level="22.6.6" data-path="ejtlj.html"><a href="ejtlj.html#提取样本结果"><i class="fa fa-check"></i><b>22.6.6</b> 提取样本结果</a></li>
+<li class="chapter" data-level="22.6.7" data-path="ejtlj.html"><a href="ejtlj.html#样本结果可视化"><i class="fa fa-check"></i><b>22.6.7</b> 样本结果可视化</a></li>
+<li class="chapter" data-level="22.6.8" data-path="ejtlj.html"><a href="ejtlj.html#biplot"><i class="fa fa-check"></i><b>22.6.8</b> biplot</a></li>
+</ul></li>
+<li class="chapter" data-level="22.7" data-path="ejtlj.html"><a href="ejtlj.html#主成分分析可视化3d版"><i class="fa fa-check"></i><b>22.7</b> 主成分分析可视化3d版</a>
+<ul>
+<li class="chapter" data-level="22.7.1" data-path="ejtlj.html"><a href="ejtlj.html#提取数据"><i class="fa fa-check"></i><b>22.7.1</b> 提取数据</a></li>
+<li class="chapter" data-level="22.7.2" data-path="ejtlj.html"><a href="ejtlj.html#d版"><i class="fa fa-check"></i><b>22.7.2</b> 3d版</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="iurgsdh.html"><a href="iurgsdh.html"><i class="fa fa-check"></i><b>23</b> R语言因子分析</a>
+<ul>
+<li class="chapter" data-level="23.1" data-path="iurgsdh.html"><a href="iurgsdh.html#演示数据-1"><i class="fa fa-check"></i><b>23.1</b> 演示数据</a></li>
+<li class="chapter" data-level="23.2" data-path="iurgsdh.html"><a href="iurgsdh.html#判断需要提取的因子个数"><i class="fa fa-check"></i><b>23.2</b> 判断需要提取的因子个数</a></li>
+<li class="chapter" data-level="23.3" data-path="iurgsdh.html"><a href="iurgsdh.html#进行因子分析"><i class="fa fa-check"></i><b>23.3</b> 进行因子分析</a></li>
+<li class="chapter" data-level="23.4" data-path="iurgsdh.html"><a href="iurgsdh.html#因子旋转"><i class="fa fa-check"></i><b>23.4</b> 因子旋转</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="ljhgjsj.html"><a href="ljhgjsj.html"><i class="fa fa-check"></i><b>24</b> 二分类资料ROC曲线绘制</a>
+<ul>
+<li class="chapter" data-level="24.1" data-path="ljhgjsj.html"><a href="ljhgjsj.html#方法1-1"><i class="fa fa-check"></i><b>24.1</b> 方法1</a></li>
+<li class="chapter" data-level="24.2" data-path="ljhgjsj.html"><a href="ljhgjsj.html#方法2-1"><i class="fa fa-check"></i><b>24.2</b> 方法2</a></li>
+<li class="chapter" data-level="24.3" data-path="ljhgjsj.html"><a href="ljhgjsj.html#方法3"><i class="fa fa-check"></i><b>24.3</b> 方法3</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="xlkjgj.html"><a href="xlkjgj.html"><i class="fa fa-check"></i><b>25</b> 生存资料ROC曲线绘制</a>
+<ul>
+<li class="chapter" data-level="25.1" data-path="xlkjgj.html"><a href="xlkjgj.html#加载r包和数据"><i class="fa fa-check"></i><b>25.1</b> 加载R包和数据</a></li>
+<li class="chapter" data-level="25.2" data-path="xlkjgj.html"><a href="xlkjgj.html#多个时间点roc"><i class="fa fa-check"></i><b>25.2</b> 多个时间点ROC</a></li>
+<li class="chapter" data-level="25.3" data-path="xlkjgj.html"><a href="xlkjgj.html#多指标roc"><i class="fa fa-check"></i><b>25.3</b> 多指标ROC</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="lsjdglj.html"><a href="lsjdglj.html"><i class="fa fa-check"></i><b>26</b> 生存资料ROC曲线的最佳截点和平滑曲线</a>
+<ul>
+<li class="chapter" data-level="26.1" data-path="lsjdglj.html"><a href="lsjdglj.html#平滑曲线"><i class="fa fa-check"></i><b>26.1</b> 平滑曲线</a>
+<ul>
+<li class="chapter" data-level="26.1.1" data-path="lsjdglj.html"><a href="lsjdglj.html#加载r包和数据-1"><i class="fa fa-check"></i><b>26.1.1</b> 加载R包和数据</a></li>
+<li class="chapter" data-level="26.1.2" data-path="lsjdglj.html"><a href="lsjdglj.html#多个时间点roc-1"><i class="fa fa-check"></i><b>26.1.2</b> 多个时间点ROC</a></li>
+<li class="chapter" data-level="26.1.3" data-path="lsjdglj.html"><a href="lsjdglj.html#画平滑曲线"><i class="fa fa-check"></i><b>26.1.3</b> 画平滑曲线</a></li>
+</ul></li>
+<li class="chapter" data-level="26.2" data-path="lsjdglj.html"><a href="lsjdglj.html#找最佳截点"><i class="fa fa-check"></i><b>26.2</b> 找最佳截点</a></li>
+</ul></li>
+<li class="chapter" data-level="27" data-path="oljgja.html"><a href="oljgja.html"><i class="fa fa-check"></i><b>27</b> ROC曲线的显著性检验</a>
+<ul>
+<li class="chapter" data-level="27.1" data-path="oljgja.html"><a href="oljgja.html#二分类资料的roc比较"><i class="fa fa-check"></i><b>27.1</b> 二分类资料的ROC比较</a></li>
+<li class="chapter" data-level="27.2" data-path="oljgja.html"><a href="oljgja.html#生存资料roc的比较"><i class="fa fa-check"></i><b>27.2</b> 生存资料ROC的比较</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="uxijsjg.html"><a href="uxijsjg.html"><i class="fa fa-check"></i><b>28</b> ROC阴性结果还是阳性结果</a>
+<ul>
+<li class="chapter" data-level="28.1" data-path="uxijsjg.html"><a href="uxijsjg.html#探索roc曲线"><i class="fa fa-check"></i><b>28.1</b> 探索ROC曲线</a></li>
+<li class="chapter" data-level="28.2" data-path="uxijsjg.html"><a href="uxijsjg.html#反过来可以吗"><i class="fa fa-check"></i><b>28.2</b> 反过来可以吗？</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="yrlhksdg.html"><a href="yrlhksdg.html"><i class="fa fa-check"></i><b>29</b> ROC曲线ggplot2绘制</a>
+<ul>
+<li class="chapter" data-level="29.1" data-path="yrlhksdg.html"><a href="yrlhksdg.html#准备数据"><i class="fa fa-check"></i><b>29.1</b> 准备数据</a></li>
+<li class="chapter" data-level="29.2" data-path="yrlhksdg.html"><a href="yrlhksdg.html#计算"><i class="fa fa-check"></i><b>29.2</b> 计算</a></li>
+<li class="chapter" data-level="29.3" data-path="yrlhksdg.html"><a href="yrlhksdg.html#画图"><i class="fa fa-check"></i><b>29.3</b> 画图</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="sjgjaklj.html"><a href="sjgjaklj.html"><i class="fa fa-check"></i><b>30</b> R语言计算AUC(ROC)注意事项</a>
+<ul>
+<li class="chapter" data-level="30.1" data-path="sjgjaklj.html"><a href="sjgjaklj.html#准备数据-1"><i class="fa fa-check"></i><b>30.1</b> 准备数据</a></li>
+<li class="chapter" data-level="30.2" data-path="sjgjaklj.html"><a href="sjgjaklj.html#rocr"><i class="fa fa-check"></i><b>30.2</b> ROCR</a></li>
+<li class="chapter" data-level="30.3" data-path="sjgjaklj.html"><a href="sjgjaklj.html#proc"><i class="fa fa-check"></i><b>30.3</b> pROC</a></li>
+<li class="chapter" data-level="30.4" data-path="sjgjaklj.html"><a href="sjgjaklj.html#yardstick"><i class="fa fa-check"></i><b>30.4</b> yardstick</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="oljgji.html"><a href="oljgji.html"><i class="fa fa-check"></i><b>31</b> 多指标联合诊断的ROC曲线</a>
+<ul>
+<li class="chapter" data-level="31.1" data-path="oljgji.html"><a href="oljgji.html#准备数据-2"><i class="fa fa-check"></i><b>31.1</b> 准备数据</a></li>
+<li class="chapter" data-level="31.2" data-path="oljgji.html"><a href="oljgji.html#多指标联合诊断的roc"><i class="fa fa-check"></i><b>31.2</b> 多指标联合诊断的ROC</a></li>
+<li class="chapter" data-level="31.3" data-path="oljgji.html"><a href="oljgji.html#测试集怎么办"><i class="fa fa-check"></i><b>31.3</b> 测试集怎么办？</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="djgkas.html"><a href="djgkas.html"><i class="fa fa-check"></i><b>32</b> R语言生存分析</a>
+<ul>
+<li class="chapter" data-level="32.1" data-path="djgkas.html"><a href="djgkas.html#生存过程的描述"><i class="fa fa-check"></i><b>32.1</b> 生存过程的描述</a></li>
+<li class="chapter" data-level="32.2" data-path="djgkas.html"><a href="djgkas.html#生存过程的比较"><i class="fa fa-check"></i><b>32.2</b> 生存过程的比较</a></li>
+<li class="chapter" data-level="32.3" data-path="djgkas.html"><a href="djgkas.html#cox回归"><i class="fa fa-check"></i><b>32.3</b> Cox回归</a></li>
+<li class="chapter" data-level="32.4" data-path="djgkas.html"><a href="djgkas.html#时间依存协变量的cox回归和时间依存系数cox回归"><i class="fa fa-check"></i><b>32.4</b> 时间依存协变量的Cox回归和时间依存系数Cox回归</a>
+<ul>
+<li class="chapter" data-level="32.4.1" data-path="djgkas.html"><a href="djgkas.html#对时间分层"><i class="fa fa-check"></i><b>32.4.1</b> 对时间分层</a></li>
+<li class="chapter" data-level="32.4.2" data-path="djgkas.html"><a href="djgkas.html#连续性时依系数变换"><i class="fa fa-check"></i><b>32.4.2</b> 连续性时依系数变换</a></li>
+</ul></li>
+<li class="chapter" data-level="32.5" data-path="djgkas.html"><a href="djgkas.html#参考资料-2"><i class="fa fa-check"></i><b>32.5</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html"><i class="fa fa-check"></i><b>33</b> R语言超详细的生存曲线可视化</a>
+<ul>
+<li class="chapter" data-level="33.1" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#演示数据-2"><i class="fa fa-check"></i><b>33.1</b> 演示数据</a></li>
+<li class="chapter" data-level="33.2" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#基本的生存曲线"><i class="fa fa-check"></i><b>33.2</b> 基本的生存曲线</a></li>
+<li class="chapter" data-level="33.3" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#增加-risk-table"><i class="fa fa-check"></i><b>33.3</b> 增加 risk table</a></li>
+<li class="chapter" data-level="33.4" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#增加删失时间表ncensor-plot"><i class="fa fa-check"></i><b>33.4</b> 增加删失时间表ncensor plot</a></li>
+<li class="chapter" data-level="33.5" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#超级无敌精细化自定设置"><i class="fa fa-check"></i><b>33.5</b> 超级无敌精细化自定设置</a></li>
+<li class="chapter" data-level="33.6" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#多个组的生存曲线"><i class="fa fa-check"></i><b>33.6</b> 多个组的生存曲线</a></li>
+<li class="chapter" data-level="33.7" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#多个分类变量分面绘制"><i class="fa fa-check"></i><b>33.7</b> 多个分类变量分面绘制</a></li>
+<li class="chapter" data-level="33.8" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#同时绘制多个生存函数"><i class="fa fa-check"></i><b>33.8</b> 同时绘制多个生存函数</a></li>
+<li class="chapter" data-level="33.9" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#根据某一个变量分组绘制"><i class="fa fa-check"></i><b>33.9</b> 根据某一个变量分组绘制</a></li>
+<li class="chapter" data-level="33.10" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#在原有生存曲线的基础上增加"><i class="fa fa-check"></i><b>33.10</b> 在原有生存曲线的基础上增加</a></li>
+<li class="chapter" data-level="33.11" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#多个生存函数画在一起"><i class="fa fa-check"></i><b>33.11</b> 多个生存函数画在一起</a></li>
+<li class="chapter" data-level="33.12" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#参考资料-3"><i class="fa fa-check"></i><b>33.12</b> 参考资料</a></li>
+</ul></li>
+<li class="part"><span><b>III 文献中常用的统计方法</b></span></li>
+<li class="chapter" data-level="34" data-path="lxjjgjja.html"><a href="lxjjgjja.html"><i class="fa fa-check"></i><b>34</b> Fine-Gray检验、竞争风险模型列线图绘制</a>
+<ul>
+<li class="chapter" data-level="34.1" data-path="lxjjgjja.html"><a href="lxjjgjja.html#加载数据和r包"><i class="fa fa-check"></i><b>34.1</b> 加载数据和R包</a></li>
+<li class="chapter" data-level="34.2" data-path="lxjjgjja.html"><a href="lxjjgjja.html#fine-gray检验单因素分析"><i class="fa fa-check"></i><b>34.2</b> Fine-Gray检验（单因素分析）</a>
+<ul>
+<li class="chapter" data-level="34.2.1" data-path="lxjjgjja.html"><a href="lxjjgjja.html#图形展示结果"><i class="fa fa-check"></i><b>34.2.1</b> 图形展示结果</a></li>
+<li class="chapter" data-level="34.2.2" data-path="lxjjgjja.html"><a href="lxjjgjja.html#ggplot2"><i class="fa fa-check"></i><b>34.2.2</b> ggplot2</a></li>
+</ul></li>
+<li class="chapter" data-level="34.3" data-path="lxjjgjja.html"><a href="lxjjgjja.html#竞争风险模型多因素分析"><i class="fa fa-check"></i><b>34.3</b> 竞争风险模型（多因素分析）</a></li>
+<li class="chapter" data-level="34.4" data-path="lxjjgjja.html"><a href="lxjjgjja.html#列线图"><i class="fa fa-check"></i><b>34.4</b> 列线图</a></li>
+</ul></li>
+<li class="chapter" data-level="35" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html"><i class="fa fa-check"></i><b>35</b> R语言倾向性评分：匹配</a>
+<ul>
+<li class="chapter" data-level="35.1" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#准备数据-3"><i class="fa fa-check"></i><b>35.1</b> 准备数据</a></li>
+<li class="chapter" data-level="35.2" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#matchit包进行psm"><i class="fa fa-check"></i><b>35.2</b> matchIt包进行PSM</a>
+<ul>
+<li class="chapter" data-level="35.2.1" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#使用随机森林计算ps"><i class="fa fa-check"></i><b>35.2.1</b> 使用随机森林计算PS</a></li>
+</ul></li>
+<li class="chapter" data-level="35.3" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#主要匹配方法选择"><i class="fa fa-check"></i><b>35.3</b> 主要匹配方法选择</a></li>
+<li class="chapter" data-level="35.4" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#匹配后数据的平衡性检验"><i class="fa fa-check"></i><b>35.4</b> 匹配后数据的平衡性检验</a>
+<ul>
+<li class="chapter" data-level="35.4.1" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#cobalt包"><i class="fa fa-check"></i><b>35.4.1</b> cobalt包</a></li>
+<li class="chapter" data-level="35.4.2" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#统计检验衡量均衡性"><i class="fa fa-check"></i><b>35.4.2</b> 统计检验衡量均衡性</a></li>
+</ul></li>
+<li class="chapter" data-level="35.5" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#结果可视化-1"><i class="fa fa-check"></i><b>35.5</b> 结果可视化</a></li>
+<li class="chapter" data-level="35.6" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#不平衡怎么办"><i class="fa fa-check"></i><b>35.6</b> 不平衡怎么办？</a></li>
+<li class="chapter" data-level="35.7" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#其他问题"><i class="fa fa-check"></i><b>35.7</b> 其他问题</a></li>
+<li class="chapter" data-level="35.8" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#参考资料-4"><i class="fa fa-check"></i><b>35.8</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="36" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html"><i class="fa fa-check"></i><b>36</b> R语言倾向性评分：回归和分层</a>
+<ul>
+<li class="chapter" data-level="36.1" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#演示数据-3"><i class="fa fa-check"></i><b>36.1</b> 演示数据</a></li>
+<li class="chapter" data-level="36.2" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#原始数据的概况"><i class="fa fa-check"></i><b>36.2</b> 原始数据的概况</a></li>
+<li class="chapter" data-level="36.3" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#计算倾向性评分"><i class="fa fa-check"></i><b>36.3</b> 计算倾向性评分</a></li>
+<li class="chapter" data-level="36.4" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#倾向性评分回归"><i class="fa fa-check"></i><b>36.4</b> 倾向性评分回归</a></li>
+<li class="chapter" data-level="36.5" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#倾向性评分分层"><i class="fa fa-check"></i><b>36.5</b> 倾向性评分分层</a></li>
+<li class="chapter" data-level="36.6" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#分层后的数据"><i class="fa fa-check"></i><b>36.6</b> 分层后的数据</a></li>
+<li class="chapter" data-level="36.7" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#总结"><i class="fa fa-check"></i><b>36.7</b> 总结</a></li>
+<li class="chapter" data-level="36.8" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#参考资料-5"><i class="fa fa-check"></i><b>36.8</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="37" data-path="yplksjhfk.html"><a href="yplksjhfk.html"><i class="fa fa-check"></i><b>37</b> R语言倾向性评分：加权</a>
+<ul>
+<li class="chapter" data-level="37.1" data-path="yplksjhfk.html"><a href="yplksjhfk.html#演示数据-4"><i class="fa fa-check"></i><b>37.1</b> 演示数据</a></li>
+<li class="chapter" data-level="37.2" data-path="yplksjhfk.html"><a href="yplksjhfk.html#iptw"><i class="fa fa-check"></i><b>37.2</b> IPTW</a></li>
+<li class="chapter" data-level="37.3" data-path="yplksjhfk.html"><a href="yplksjhfk.html#重叠加权"><i class="fa fa-check"></i><b>37.3</b> 重叠加权</a></li>
+<li class="chapter" data-level="37.4" data-path="yplksjhfk.html"><a href="yplksjhfk.html#参考资料-6"><i class="fa fa-check"></i><b>37.4</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="38" data-path="qdkjfgj.html"><a href="qdkjfgj.html"><i class="fa fa-check"></i><b>38</b> p for trend/ p for interaction/ per 1 sd 的R语言实现</a>
+<ul>
+<li class="chapter" data-level="38.1" data-path="qdkjfgj.html"><a href="qdkjfgj.html#p-for-trend"><i class="fa fa-check"></i><b>38.1</b> P for trend</a></li>
+<li class="chapter" data-level="38.2" data-path="qdkjfgj.html"><a href="qdkjfgj.html#p-for-interaction"><i class="fa fa-check"></i><b>38.2</b> p for interaction</a>
+<ul>
+<li class="chapter" data-level="38.2.1" data-path="qdkjfgj.html"><a href="qdkjfgj.html#方法1-2"><i class="fa fa-check"></i><b>38.2.1</b> 方法1</a></li>
+<li class="chapter" data-level="38.2.2" data-path="qdkjfgj.html"><a href="qdkjfgj.html#方法2-2"><i class="fa fa-check"></i><b>38.2.2</b> 方法2</a></li>
+</ul></li>
+<li class="chapter" data-level="38.3" data-path="qdkjfgj.html"><a href="qdkjfgj.html#per-1-sd"><i class="fa fa-check"></i><b>38.3</b> per 1 sd</a></li>
+</ul></li>
+<li class="chapter" data-level="39" data-path="jddsfsdf.html"><a href="jddsfsdf.html"><i class="fa fa-check"></i><b>39</b> R语言多项式拟合及样条回归</a>
+<ul>
+<li class="chapter" data-level="39.1" data-path="jddsfsdf.html"><a href="jddsfsdf.html#多项式拟合"><i class="fa fa-check"></i><b>39.1</b> 多项式拟合</a></li>
+<li class="chapter" data-level="39.2" data-path="jddsfsdf.html"><a href="jddsfsdf.html#样条回归"><i class="fa fa-check"></i><b>39.2</b> 样条回归</a>
+<ul>
+<li class="chapter" data-level="39.2.1" data-path="jddsfsdf.html"><a href="jddsfsdf.html#线性的立方样条"><i class="fa fa-check"></i><b>39.2.1</b> 线性的立方样条</a></li>
+<li class="chapter" data-level="39.2.2" data-path="jddsfsdf.html"><a href="jddsfsdf.html#逻辑回归的立方样条"><i class="fa fa-check"></i><b>39.2.2</b> 逻辑回归的立方样条</a></li>
+<li class="chapter" data-level="39.2.3" data-path="jddsfsdf.html"><a href="jddsfsdf.html#cox回归的立方样条"><i class="fa fa-check"></i><b>39.2.3</b> cox回归的立方样条</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV 附录</b></span></li>
+<li class="chapter" data-level="40" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html"><i class="fa fa-check"></i><b>40</b> R语言和R包安装</a>
+<ul>
+<li class="chapter" data-level="40.1" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html#r语言rtoolsrstudio的安装"><i class="fa fa-check"></i><b>40.1</b> R语言、Rtools、Rstudio的安装</a></li>
+<li class="chapter" data-level="40.2" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html#r包安装"><i class="fa fa-check"></i><b>40.2</b> R包安装</a></li>
+<li class="chapter" data-level="40.3" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html#pass软件链接"><i class="fa fa-check"></i><b>40.3</b> PASS软件链接</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">常见医学统计方法R语言实战</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="terlajskd" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">11</span> 样本量计算<a href="terlajskd.html#terlajskd" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>样本量计算也是医学统计学中的一块重要内容，但是在课本中并没有详细介绍，今天我们说一下常见的研究设计的样本量计算。</p>
+<p>通常样本量计算大家可能知道PASS软件，这是一个专门用来计算样本量的软件，但是也是付费的，并且没有mac版，而R语言免费，谁都可以用，不过！计算样本量我还是推荐使用PASS，因为简单好用！除了PASS外，大家还可以用gpower计算样本量哦~</p>
+<p>在R语言中，样本量计算这一问题被称为<strong>功效分析</strong>。</p>
+<p>在功效分析中，我们通常关注4个值：</p>
+<ul>
+<li>样本量</li>
+<li>显著性水平，也称为α值，一类错误的概率</li>
+<li>功效（power），1 - 二类错误的概率，也就是1-β</li>
+<li>效应值（effect size）</li>
+</ul>
+<p>计算样本量就是解方程的过程，知道其中3个就可以算出最后一个，不同研究设计用的公式是不一样的，说白了样本量计算就是套公式而已！不怕复杂的直接用计算器也能算出来。</p>
+<p>而各种软件包括R语言不过是帮我们简化了过程，但是R语言并没有帮助我们简化效应值的计算…这个效应值计算很烦，这也是我更推荐PASS的重要原因，点点点就出来了，谁不喜欢呢？</p>
+<p>在R语言中一般使用<code>pwr</code>包进行功效分析，没安装的小伙伴自行安装一下即可。</p>
+<div id="t检验的样本量计算" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> t检验的样本量计算<a href="terlajskd.html#t检验的样本量计算" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>对于t检验，可以使用<code>pwr.t.test(n= , d= , sig.level= , power= , type= , alternative= )</code>计算样本量，其中：
+- n：样本量
+- d：效应值，即标准化的均值之差，d = (μ1 - μ2) / σ，也就是（组1均值 - 组2均值）/ 标准差
+- sig.level：显著性水平，默认值0.05
+- power：功效
+- type：检验类型：两样本t检验（two.sample），单样本t检验（one.sample），配对t检验（paired），默认两样本t检验
+- alternative：双侧检验还是单侧检验，双侧（two.sided），单侧（less或者greater），默认双侧检验</p>
+<div id="单样本t检验样本均数和已知总体均数比较" class="section level3 hasAnchor" number="11.1.1">
+<h3><span class="header-section-number">11.1.1</span> 单样本t检验（样本均数和已知总体均数比较）<a href="terlajskd.html#单样本t检验样本均数和已知总体均数比较" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>使用课本例36-3的例子。</p>
+<p>用某药治疗矽肺患者，估计可增加尿矽排出量，其标准差为25mg/L，若要求以α=0.05，β=0.1的概率，能辨别出尿矽排出量平均增加10mg/L，问需要多少矽肺患者做实验？</p>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="terlajskd.html#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pwr)</span>
+<span id="cb162-2"><a href="terlajskd.html#cb162-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;pwr&#39; was built under R version 4.2.3</span></span>
+<span id="cb162-3"><a href="terlajskd.html#cb162-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb162-4"><a href="terlajskd.html#cb162-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pwr.t.test</span>(<span class="at">d =</span> <span class="dv">10</span><span class="sc">/</span><span class="dv">25</span>, </span>
+<span id="cb162-5"><a href="terlajskd.html#cb162-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb162-6"><a href="terlajskd.html#cb162-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span>,</span>
+<span id="cb162-7"><a href="terlajskd.html#cb162-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">type =</span> <span class="st">&quot;one.sample&quot;</span>,</span>
+<span id="cb162-8"><a href="terlajskd.html#cb162-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">alternative =</span> <span class="st">&quot;greater&quot;</span></span>
+<span id="cb162-9"><a href="terlajskd.html#cb162-9" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb162-10"><a href="terlajskd.html#cb162-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb162-11"><a href="terlajskd.html#cb162-11" aria-hidden="true" tabindex="-1"></a><span class="do">##      One-sample t test power calculation </span></span>
+<span id="cb162-12"><a href="terlajskd.html#cb162-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb162-13"><a href="terlajskd.html#cb162-13" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 54.90553</span></span>
+<span id="cb162-14"><a href="terlajskd.html#cb162-14" aria-hidden="true" tabindex="-1"></a><span class="do">##               d = 0.4</span></span>
+<span id="cb162-15"><a href="terlajskd.html#cb162-15" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb162-16"><a href="terlajskd.html#cb162-16" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb162-17"><a href="terlajskd.html#cb162-17" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = greater</span></span></code></pre></div>
+<p>n = 54.90553，结果和课本一模一样！是不是非常简单？</p>
+<p>单样本t检验也可以使用R自带的函数进行计算：</p>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="terlajskd.html#cb163-1" aria-hidden="true" tabindex="-1"></a><span class="fu">power.t.test</span>(<span class="at">delta =</span> <span class="dv">10</span>,</span>
+<span id="cb163-2"><a href="terlajskd.html#cb163-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">sd =</span> <span class="dv">25</span>,</span>
+<span id="cb163-3"><a href="terlajskd.html#cb163-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb163-4"><a href="terlajskd.html#cb163-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span>,</span>
+<span id="cb163-5"><a href="terlajskd.html#cb163-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">type =</span> <span class="st">&quot;one.sample&quot;</span>,</span>
+<span id="cb163-6"><a href="terlajskd.html#cb163-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">alternative =</span> <span class="st">&quot;one.sided&quot;</span></span>
+<span id="cb163-7"><a href="terlajskd.html#cb163-7" aria-hidden="true" tabindex="-1"></a>             )</span>
+<span id="cb163-8"><a href="terlajskd.html#cb163-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb163-9"><a href="terlajskd.html#cb163-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      One-sample t test power calculation </span></span>
+<span id="cb163-10"><a href="terlajskd.html#cb163-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb163-11"><a href="terlajskd.html#cb163-11" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 54.90553</span></span>
+<span id="cb163-12"><a href="terlajskd.html#cb163-12" aria-hidden="true" tabindex="-1"></a><span class="do">##           delta = 10</span></span>
+<span id="cb163-13"><a href="terlajskd.html#cb163-13" aria-hidden="true" tabindex="-1"></a><span class="do">##              sd = 25</span></span>
+<span id="cb163-14"><a href="terlajskd.html#cb163-14" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb163-15"><a href="terlajskd.html#cb163-15" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb163-16"><a href="terlajskd.html#cb163-16" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = one.sided</span></span></code></pre></div>
+<p>结果都是一样的~</p>
+</div>
+<div id="两样本t检验两样本均数比较" class="section level3 hasAnchor" number="11.1.2">
+<h3><span class="header-section-number">11.1.2</span> 两样本t检验（两样本均数比较）<a href="terlajskd.html#两样本t检验两样本均数比较" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>使用课本例36-4的例子</p>
+<p>在做两种处理动物冠状静脉窦的血流量实验时，比较A处理动物和B处理动物的平均血流量增加，设两处理的标准差相等。若要求以α=0.05，β=0.1的概率，达到能辨别出两者增加的差别是其标准差的60%，需要多少实验动物？</p>
+<p>感觉和小学做应用题差不多… <strong>两者增加的差别是其标准差的60%，也就是 (μ1 - μ2) / σ = 0.6</strong>。</p>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="terlajskd.html#cb164-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pwr)</span>
+<span id="cb164-2"><a href="terlajskd.html#cb164-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb164-3"><a href="terlajskd.html#cb164-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pwr.t.test</span>(<span class="at">d =</span> <span class="fl">0.6</span>,</span>
+<span id="cb164-4"><a href="terlajskd.html#cb164-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb164-5"><a href="terlajskd.html#cb164-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">power =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fl">0.1</span>,</span>
+<span id="cb164-6"><a href="terlajskd.html#cb164-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">type =</span> <span class="st">&quot;two.sample&quot;</span>,</span>
+<span id="cb164-7"><a href="terlajskd.html#cb164-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span></span>
+<span id="cb164-8"><a href="terlajskd.html#cb164-8" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb164-9"><a href="terlajskd.html#cb164-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb164-10"><a href="terlajskd.html#cb164-10" aria-hidden="true" tabindex="-1"></a><span class="do">##      Two-sample t test power calculation </span></span>
+<span id="cb164-11"><a href="terlajskd.html#cb164-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb164-12"><a href="terlajskd.html#cb164-12" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 59.35155</span></span>
+<span id="cb164-13"><a href="terlajskd.html#cb164-13" aria-hidden="true" tabindex="-1"></a><span class="do">##               d = 0.6</span></span>
+<span id="cb164-14"><a href="terlajskd.html#cb164-14" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb164-15"><a href="terlajskd.html#cb164-15" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb164-16"><a href="terlajskd.html#cb164-16" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = two.sided</span></span>
+<span id="cb164-17"><a href="terlajskd.html#cb164-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb164-18"><a href="terlajskd.html#cb164-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span><span class="al">NOTE</span><span class="do">: n is number in *each* group</span></span></code></pre></div>
+<p>n = 59.35155，和课本结果一模一样，每组需要大约60例！</p>
+<p>两样本t检验也可以使用R自带的函数<code>power.t.test()</code>进行计算，但是例题中的这种情况刚好没有给出具体的两组间差值和标准差，所以就不能用了。</p>
+</div>
+</div>
+<div id="多样本均数比较" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> 多样本均数比较<a href="terlajskd.html#多样本均数比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例36-5的例子。</p>
+<p>拟用4种方法治疗贫血患者，估计治疗后血红蛋白增加的均数分别为18,13,16,10，标准差分别为10,9,9,8，设α=0.05，β=0.1，若要得出有差别的结论，每组需要多少例？</p>
+<p>这是一个完全随机设计多样本比较的方差分析的例子，相信大家都能看出来！</p>
+<p>但是，<em>在R里面计算种类型的样本量非常困难，原因在于效应量effect size很难计算出来</em>，最终结果也和课本上面的公式计算出来的样本量不一样，所以我推荐用PASS软件，点点点即可！</p>
+<p>这种情况使用函数<code>pwr.anova.test(k= , n= , f= , sig.level= , power= )</code>计算，其中
+f是效应量effect size，计算方法如下：</p>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="terlajskd.html#cb165-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(<span class="st">&quot;figs/Snipaste_2023-04-05_13-45-36.png&quot;</span>)</span></code></pre></div>
+<p><img src="figs/Snipaste_2023-04-05_13-45-36.png" width="90%" /></p>
+<p>k是组数，其余的和t检验的相同。</p>
+<p>首先我们要计算f值，但是根据这个公式，很明显是计算不出来的！</p>
+<p>如果使用R自带函数<code>power.anova.test(groups = NULL, n = NULL, between.var = NULL, within.var = NULL,sig.level = 0.05, power = NULL)</code>函数计算，因为无法计算<code>within.var</code>，所以也是行不通的。</p>
+<p>还是乖乖用PASS吧…</p>
+<p>如果有大佬知道怎么计算，欢迎留言告知~</p>
+</div>
+<div id="样本率和已知总体率的比较" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> 样本率和已知总体率的比较<a href="terlajskd.html#样本率和已知总体率的比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例36-6的例子。</p>
+<p>已知常规方法治疗某种病的有效率是80%，现试验一种新的额治疗方法，预计有效率是90%，设α=0.05，β=0.1，问需要多少病例才能发现两种方法的有效率有10%的差别？</p>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="terlajskd.html#cb166-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 首先计算h值（effect size），pwr包自带了函数，根据两个率可计算，</span></span>
+<span id="cb166-2"><a href="terlajskd.html#cb166-2" aria-hidden="true" tabindex="-1"></a><span class="co"># h的计算使用的是这个公式：2*asin(sqrt(0.9))-2*asin(sqrt(0.8))</span></span>
+<span id="cb166-3"><a href="terlajskd.html#cb166-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ES.h</span>(<span class="fl">0.9</span>,<span class="fl">0.8</span>)</span>
+<span id="cb166-4"><a href="terlajskd.html#cb166-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.2837941</span></span>
+<span id="cb166-5"><a href="terlajskd.html#cb166-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb166-6"><a href="terlajskd.html#cb166-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 然后进行样本量计算</span></span>
+<span id="cb166-7"><a href="terlajskd.html#cb166-7" aria-hidden="true" tabindex="-1"></a><span class="fu">pwr.p.test</span>(<span class="at">h =</span> <span class="fu">ES.h</span>(<span class="fl">0.9</span>,<span class="fl">0.8</span>),</span>
+<span id="cb166-8"><a href="terlajskd.html#cb166-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb166-9"><a href="terlajskd.html#cb166-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span>,</span>
+<span id="cb166-10"><a href="terlajskd.html#cb166-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">alternative =</span> <span class="st">&quot;greater&quot;</span></span>
+<span id="cb166-11"><a href="terlajskd.html#cb166-11" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb166-12"><a href="terlajskd.html#cb166-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb166-13"><a href="terlajskd.html#cb166-13" aria-hidden="true" tabindex="-1"></a><span class="do">##      proportion power calculation for binomial distribution (arcsine transformation) </span></span>
+<span id="cb166-14"><a href="terlajskd.html#cb166-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb166-15"><a href="terlajskd.html#cb166-15" aria-hidden="true" tabindex="-1"></a><span class="do">##               h = 0.2837941</span></span>
+<span id="cb166-16"><a href="terlajskd.html#cb166-16" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 106.3315</span></span>
+<span id="cb166-17"><a href="terlajskd.html#cb166-17" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb166-18"><a href="terlajskd.html#cb166-18" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb166-19"><a href="terlajskd.html#cb166-19" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = greater</span></span></code></pre></div>
+<p>得到的结果和课本差别有点大，课本是137.1，而我们的结果是106，主要是由于计算方法不同，建议对于此类设计的样本量计算，还是直接套课本公式或者使用PASS软件。</p>
+</div>
+<div id="两独立样本率的比较" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> 两独立样本率的比较<a href="terlajskd.html#两独立样本率的比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例36-7的例子。</p>
+<p>初步观察甲乙两药对某病的疗效，甲药有效率为60%。乙药有效率为85%，现拟进一步做治疗实验，设α=0.05,1-β=0.9，问每组需要多少病例？</p>
+<p>下面演示使用<code>pwr</code>包计算：</p>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="terlajskd.html#cb167-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 首先计算h值，pwr包自带了函数，根据两个率可计算</span></span>
+<span id="cb167-2"><a href="terlajskd.html#cb167-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ES.h</span>(<span class="fl">0.85</span>,<span class="fl">0.60</span>)</span>
+<span id="cb167-3"><a href="terlajskd.html#cb167-3" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.5740396</span></span>
+<span id="cb167-4"><a href="terlajskd.html#cb167-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb167-5"><a href="terlajskd.html#cb167-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 然后进行样本量计算</span></span>
+<span id="cb167-6"><a href="terlajskd.html#cb167-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pwr.2p.test</span>(<span class="at">h =</span> <span class="fu">ES.h</span>(<span class="fl">0.85</span>,<span class="fl">0.60</span>),</span>
+<span id="cb167-7"><a href="terlajskd.html#cb167-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb167-8"><a href="terlajskd.html#cb167-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span>,</span>
+<span id="cb167-9"><a href="terlajskd.html#cb167-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span></span>
+<span id="cb167-10"><a href="terlajskd.html#cb167-10" aria-hidden="true" tabindex="-1"></a>           )</span>
+<span id="cb167-11"><a href="terlajskd.html#cb167-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb167-12"><a href="terlajskd.html#cb167-12" aria-hidden="true" tabindex="-1"></a><span class="do">##      Difference of proportion power calculation for binomial distribution (arcsine transformation) </span></span>
+<span id="cb167-13"><a href="terlajskd.html#cb167-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb167-14"><a href="terlajskd.html#cb167-14" aria-hidden="true" tabindex="-1"></a><span class="do">##               h = 0.5740396</span></span>
+<span id="cb167-15"><a href="terlajskd.html#cb167-15" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 63.77382</span></span>
+<span id="cb167-16"><a href="terlajskd.html#cb167-16" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb167-17"><a href="terlajskd.html#cb167-17" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb167-18"><a href="terlajskd.html#cb167-18" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = two.sided</span></span>
+<span id="cb167-19"><a href="terlajskd.html#cb167-19" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb167-20"><a href="terlajskd.html#cb167-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span><span class="al">NOTE</span><span class="do">: same sample sizes</span></span></code></pre></div>
+<p>n = 63.77382，和课本是一模一样的结果！</p>
+<p>这种情况下用R自带的``也是很好用的：</p>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="terlajskd.html#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="fu">power.prop.test</span>(<span class="at">p1 =</span> <span class="fl">0.85</span>,</span>
+<span id="cb168-2"><a href="terlajskd.html#cb168-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">p2 =</span> <span class="fl">0.6</span>,</span>
+<span id="cb168-3"><a href="terlajskd.html#cb168-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb168-4"><a href="terlajskd.html#cb168-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span>,</span>
+<span id="cb168-5"><a href="terlajskd.html#cb168-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span></span>
+<span id="cb168-6"><a href="terlajskd.html#cb168-6" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb168-7"><a href="terlajskd.html#cb168-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb168-8"><a href="terlajskd.html#cb168-8" aria-hidden="true" tabindex="-1"></a><span class="do">##      Two-sample comparison of proportions power calculation </span></span>
+<span id="cb168-9"><a href="terlajskd.html#cb168-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb168-10"><a href="terlajskd.html#cb168-10" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 64.93465</span></span>
+<span id="cb168-11"><a href="terlajskd.html#cb168-11" aria-hidden="true" tabindex="-1"></a><span class="do">##              p1 = 0.85</span></span>
+<span id="cb168-12"><a href="terlajskd.html#cb168-12" aria-hidden="true" tabindex="-1"></a><span class="do">##              p2 = 0.6</span></span>
+<span id="cb168-13"><a href="terlajskd.html#cb168-13" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb168-14"><a href="terlajskd.html#cb168-14" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb168-15"><a href="terlajskd.html#cb168-15" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = two.sided</span></span>
+<span id="cb168-16"><a href="terlajskd.html#cb168-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb168-17"><a href="terlajskd.html#cb168-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span><span class="al">NOTE</span><span class="do">: n is number in *each* group</span></span></code></pre></div>
+<p>算出来结果是64.93465，和课本差别不大~</p>
+</div>
+<div id="多样本率的比较" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> 多样本率的比较<a href="terlajskd.html#多样本率的比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例36-8的例子。</p>
+<p>拟观察3种方法治疗消化性溃疡的效果，初步估计甲法有效率为40%，乙法50%，丙法65%，设α=0.05，β=0.1，试估计样本量？</p>
+<p>很明显属于<em>行x列表资料的卡方检验</em>！所以我们使用<code>pwr.chisq.test()</code>函数进行计算样本量。</p>
+<p>首先我们要计算<code>effect size</code>：</p>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="terlajskd.html#cb169-1" aria-hidden="true" tabindex="-1"></a><span class="co">#               甲法 乙法 丙法</span></span>
+<span id="cb169-2"><a href="terlajskd.html#cb169-2" aria-hidden="true" tabindex="-1"></a>prob <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.65</span>), <span class="co"># 有效率</span></span>
+<span id="cb169-3"><a href="terlajskd.html#cb169-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="fl">0.35</span>)) <span class="co"># 无效率</span></span>
+<span id="cb169-4"><a href="terlajskd.html#cb169-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb169-5"><a href="terlajskd.html#cb169-5" aria-hidden="true" tabindex="-1"></a><span class="co"># pwr包自带的这个函数专门用于此种情况的effect size计算</span></span>
+<span id="cb169-6"><a href="terlajskd.html#cb169-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ES.w2</span>(prob<span class="sc">/</span><span class="dv">3</span>) <span class="co"># 有几组就除以几，这里需要理解列联表资料的一些指标计算</span></span>
+<span id="cb169-7"><a href="terlajskd.html#cb169-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.2055947</span></span></code></pre></div>
+<p>这样我们就得到effect size了，然后就可以计算样本量了。</p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="terlajskd.html#cb170-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pwr.chisq.test</span>(<span class="at">w =</span> <span class="fu">ES.w2</span>(prob<span class="sc">/</span><span class="dv">3</span>), <span class="co"># effect size</span></span>
+<span id="cb170-2"><a href="terlajskd.html#cb170-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">df =</span> <span class="dv">2</span>, <span class="co">#（3-1）*（2-1）= 2</span></span>
+<span id="cb170-3"><a href="terlajskd.html#cb170-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb170-4"><a href="terlajskd.html#cb170-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span></span>
+<span id="cb170-5"><a href="terlajskd.html#cb170-5" aria-hidden="true" tabindex="-1"></a>               )</span>
+<span id="cb170-6"><a href="terlajskd.html#cb170-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb170-7"><a href="terlajskd.html#cb170-7" aria-hidden="true" tabindex="-1"></a><span class="do">##      Chi squared power calculation </span></span>
+<span id="cb170-8"><a href="terlajskd.html#cb170-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb170-9"><a href="terlajskd.html#cb170-9" aria-hidden="true" tabindex="-1"></a><span class="do">##               w = 0.2055947</span></span>
+<span id="cb170-10"><a href="terlajskd.html#cb170-10" aria-hidden="true" tabindex="-1"></a><span class="do">##               N = 299.3655</span></span>
+<span id="cb170-11"><a href="terlajskd.html#cb170-11" aria-hidden="true" tabindex="-1"></a><span class="do">##              df = 2</span></span>
+<span id="cb170-12"><a href="terlajskd.html#cb170-12" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb170-13"><a href="terlajskd.html#cb170-13" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb170-14"><a href="terlajskd.html#cb170-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb170-15"><a href="terlajskd.html#cb170-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span><span class="al">NOTE</span><span class="do">: N is the number of observations</span></span></code></pre></div>
+<p>最终得到的结果是一共需要299例，课本是297例，基本一样~</p>
+</div>
+<div id="直线相关分析" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> 直线相关分析<a href="terlajskd.html#直线相关分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例36-9的例子。</p>
+<p>根据以往经验，血硒与发硒含量间直线相关系数为0.8，若想在α=0.05，β=0.1的水平上得到相关系数有统计学意义的结论，应调查多少人？</p>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="terlajskd.html#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pwr.r.test</span>(<span class="at">r=</span><span class="fl">0.8</span>,</span>
+<span id="cb171-2"><a href="terlajskd.html#cb171-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">sig.level =</span> <span class="fl">0.05</span>,</span>
+<span id="cb171-3"><a href="terlajskd.html#cb171-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">power =</span> <span class="dv">1</span><span class="fl">-0.1</span>,</span>
+<span id="cb171-4"><a href="terlajskd.html#cb171-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span>)</span>
+<span id="cb171-5"><a href="terlajskd.html#cb171-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb171-6"><a href="terlajskd.html#cb171-6" aria-hidden="true" tabindex="-1"></a><span class="do">##      approximate correlation power calculation (arctangh transformation) </span></span>
+<span id="cb171-7"><a href="terlajskd.html#cb171-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb171-8"><a href="terlajskd.html#cb171-8" aria-hidden="true" tabindex="-1"></a><span class="do">##               n = 11.16238</span></span>
+<span id="cb171-9"><a href="terlajskd.html#cb171-9" aria-hidden="true" tabindex="-1"></a><span class="do">##               r = 0.8</span></span>
+<span id="cb171-10"><a href="terlajskd.html#cb171-10" aria-hidden="true" tabindex="-1"></a><span class="do">##       sig.level = 0.05</span></span>
+<span id="cb171-11"><a href="terlajskd.html#cb171-11" aria-hidden="true" tabindex="-1"></a><span class="do">##           power = 0.9</span></span>
+<span id="cb171-12"><a href="terlajskd.html#cb171-12" aria-hidden="true" tabindex="-1"></a><span class="do">##     alternative = two.sided</span></span></code></pre></div>
+<p>n = 11.16238，结果和课本一样~</p>
+<p>OK，以上就是使用R语言计算样本量的例子。可以看到大部分都是可以很简单的计算出来，但是在方便快捷性上还是差PASS软件太远了，对于此类样本量计算的问题，可能PASS是更好的选择。</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="ytlrwijj.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ytsgs.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

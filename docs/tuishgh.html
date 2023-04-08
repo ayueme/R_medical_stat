@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>19 分类变量进行回归分析时的编码方案 | 常见医学统计方法R语言实战</title>
+  <meta name="description" content="医学统计R语言实战" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="19 分类变量进行回归分析时的编码方案 | 常见医学统计方法R语言实战" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="医学统计R语言实战" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="19 分类变量进行回归分析时的编码方案 | 常见医学统计方法R语言实战" />
+  
+  <meta name="twitter:description" content="医学统计R语言实战" />
+  
+
+<meta name="author" content="阿越就是我" />
+
+
+<meta name="date" content="2023-04-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="rlkdfjj.html"/>
+<link rel="next" href="erutgjdflk.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>前言</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#本书缘起"><i class="fa fa-check"></i>本书缘起</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#作者简介"><i class="fa fa-check"></i>作者简介</a></li>
+</ul></li>
+<li class="part"><span><b>I 基础统计分析</b></span></li>
+<li class="chapter" data-level="1" data-path="sdjfl.html"><a href="sdjfl.html"><i class="fa fa-check"></i><b>1</b> t检验</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="sdjfl.html"><a href="sdjfl.html#单样本t检验"><i class="fa fa-check"></i><b>1.1</b> 单样本t检验</a></li>
+<li class="chapter" data-level="1.2" data-path="sdjfl.html"><a href="sdjfl.html#配对样本t检验"><i class="fa fa-check"></i><b>1.2</b> 配对样本t检验</a></li>
+<li class="chapter" data-level="1.3" data-path="sdjfl.html"><a href="sdjfl.html#两样本t检验"><i class="fa fa-check"></i><b>1.3</b> 两样本t检验</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="xnclg.html"><a href="xnclg.html"><i class="fa fa-check"></i><b>2</b> 多样本均数比较的方差分析</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="xnclg.html"><a href="xnclg.html#完全随机设计资料的方差分析"><i class="fa fa-check"></i><b>2.1</b> 完全随机设计资料的方差分析</a></li>
+<li class="chapter" data-level="2.2" data-path="xnclg.html"><a href="xnclg.html#随机区组设计资料的方差分析"><i class="fa fa-check"></i><b>2.2</b> 随机区组设计资料的方差分析</a></li>
+<li class="chapter" data-level="2.3" data-path="xnclg.html"><a href="xnclg.html#拉丁方设计方差分析"><i class="fa fa-check"></i><b>2.3</b> 拉丁方设计方差分析</a></li>
+<li class="chapter" data-level="2.4" data-path="xnclg.html"><a href="xnclg.html#两阶段交叉设计资料方差分析"><i class="fa fa-check"></i><b>2.4</b> 两阶段交叉设计资料方差分析</a></li>
+<li class="chapter" data-level="2.5" data-path="xnclg.html"><a href="xnclg.html#多个样本均数间的多重比较"><i class="fa fa-check"></i><b>2.5</b> 多个样本均数间的多重比较</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="xnclg.html"><a href="xnclg.html#lsd-t检验"><i class="fa fa-check"></i><b>2.5.1</b> LSD-t检验</a></li>
+<li class="chapter" data-level="2.5.2" data-path="xnclg.html"><a href="xnclg.html#tukeyhsd"><i class="fa fa-check"></i><b>2.5.2</b> TukeyHSD</a></li>
+<li class="chapter" data-level="2.5.3" data-path="xnclg.html"><a href="xnclg.html#dunnett-t检验"><i class="fa fa-check"></i><b>2.5.3</b> Dunnett-t检验</a></li>
+<li class="chapter" data-level="2.5.4" data-path="xnclg.html"><a href="xnclg.html#snk-q检验"><i class="fa fa-check"></i><b>2.5.4</b> SNK-q检验</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="xnclg.html"><a href="xnclg.html#多样本方差比较的bartlett检验和levene检验"><i class="fa fa-check"></i><b>2.6</b> 多样本方差比较的Bartlett检验和Levene检验</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="xnclg.html"><a href="xnclg.html#多样本方差比较的bartlett检验"><i class="fa fa-check"></i><b>2.6.1</b> 多样本方差比较的Bartlett检验</a></li>
+<li class="chapter" data-level="2.6.2" data-path="xnclg.html"><a href="xnclg.html#多样本方差比较的levene检验"><i class="fa fa-check"></i><b>2.6.2</b> 多样本方差比较的Levene检验</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="njlkga.html"><a href="njlkga.html"><i class="fa fa-check"></i><b>3</b> 多因素方差分析</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="njlkga.html"><a href="njlkga.html#x-2-两因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.1</b> 2 x 2 两因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.2" data-path="njlkga.html"><a href="njlkga.html#i-x-j-两因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.2</b> I x J 两因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.3" data-path="njlkga.html"><a href="njlkga.html#i-x-j-x-k-三因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.3</b> I x J x K 三因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.4" data-path="njlkga.html"><a href="njlkga.html#正交设计资料的方差分析"><i class="fa fa-check"></i><b>3.4</b> 正交设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.5" data-path="njlkga.html"><a href="njlkga.html#嵌套设计资料的方差分析"><i class="fa fa-check"></i><b>3.5</b> 嵌套设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.6" data-path="njlkga.html"><a href="njlkga.html#裂区设计资料的方差分析"><i class="fa fa-check"></i><b>3.6</b> 裂区设计资料的方差分析</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="iegljgk.html"><a href="iegljgk.html"><i class="fa fa-check"></i><b>4</b> 重复测量方差分析</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="iegljgk.html"><a href="iegljgk.html#重复测量数据两因素两水平的方差分析"><i class="fa fa-check"></i><b>4.1</b> 重复测量数据两因素两水平的方差分析</a></li>
+<li class="chapter" data-level="4.2" data-path="iegljgk.html"><a href="iegljgk.html#重复测量数据两因素多水平的分析"><i class="fa fa-check"></i><b>4.2</b> 重复测量数据两因素多水平的分析</a></li>
+<li class="chapter" data-level="4.3" data-path="iegljgk.html"><a href="iegljgk.html#重复测量数据的多重比较"><i class="fa fa-check"></i><b>4.3</b> 重复测量数据的多重比较</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="iegljgk.html"><a href="iegljgk.html#组间差别多重比较"><i class="fa fa-check"></i><b>4.3.1</b> 组间差别多重比较</a></li>
+<li class="chapter" data-level="4.3.2" data-path="iegljgk.html"><a href="iegljgk.html#时间趋势比较"><i class="fa fa-check"></i><b>4.3.2</b> 时间趋势比较</a></li>
+<li class="chapter" data-level="4.3.3" data-path="iegljgk.html"><a href="iegljgk.html#时间点比较"><i class="fa fa-check"></i><b>4.3.3</b> 时间点比较</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html"><i class="fa fa-check"></i><b>5</b> 协方差分析</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html#完全随机设计资料的协方差分析"><i class="fa fa-check"></i><b>5.1</b> 完全随机设计资料的协方差分析</a></li>
+<li class="chapter" data-level="5.2" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html#使用rstatix进行优雅的协方差分析"><i class="fa fa-check"></i><b>5.2</b> 使用rstatix进行优雅的协方差分析</a></li>
+<li class="chapter" data-level="5.3" data-path="lasijdlfjd.html"><a href="lasijdlfjd.html#随机区组设计资料的协方差分析"><i class="fa fa-check"></i><b>5.3</b> 随机区组设计资料的协方差分析</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="aspljsffjd.html"><a href="aspljsffjd.html"><i class="fa fa-check"></i><b>6</b> 卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="aspljsffjd.html"><a href="aspljsffjd.html#不同类型卡方检验的选择"><i class="fa fa-check"></i><b>6.1</b> 不同类型卡方检验的选择</a></li>
+<li class="chapter" data-level="6.2" data-path="aspljsffjd.html"><a href="aspljsffjd.html#四格表资料的卡方检验"><i class="fa fa-check"></i><b>6.2</b> 四格表资料的卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="aspljsffjd.html"><a href="aspljsffjd.html#方法1"><i class="fa fa-check"></i><b>6.2.1</b> 方法1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="aspljsffjd.html"><a href="aspljsffjd.html#方法2"><i class="fa fa-check"></i><b>6.2.2</b> 方法2</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="aspljsffjd.html"><a href="aspljsffjd.html#配对四格表资料的卡方检验"><i class="fa fa-check"></i><b>6.3</b> 配对四格表资料的卡方检验</a></li>
+<li class="chapter" data-level="6.4" data-path="aspljsffjd.html"><a href="aspljsffjd.html#四格表资料的-fisher-确切概率法"><i class="fa fa-check"></i><b>6.4</b> 四格表资料的 Fisher 确切概率法</a></li>
+<li class="chapter" data-level="6.5" data-path="aspljsffjd.html"><a href="aspljsffjd.html#行-x-列表资料的卡方检验"><i class="fa fa-check"></i><b>6.5</b> 行 x 列表资料的卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.5.1" data-path="aspljsffjd.html"><a href="aspljsffjd.html#多个样本率的比较"><i class="fa fa-check"></i><b>6.5.1</b> 多个样本率的比较</a></li>
+<li class="chapter" data-level="6.5.2" data-path="aspljsffjd.html"><a href="aspljsffjd.html#样本构成比的比较"><i class="fa fa-check"></i><b>6.5.2</b> 样本构成比的比较</a></li>
+<li class="chapter" data-level="6.5.3" data-path="aspljsffjd.html"><a href="aspljsffjd.html#双向无序分类资料的关联性检验"><i class="fa fa-check"></i><b>6.5.3</b> 双向无序分类资料的关联性检验</a></li>
+<li class="chapter" data-level="6.5.4" data-path="aspljsffjd.html"><a href="aspljsffjd.html#双向有序分组资料的线性趋势检验"><i class="fa fa-check"></i><b>6.5.4</b> 双向有序分组资料的线性趋势检验</a></li>
+</ul></li>
+<li class="chapter" data-level="6.6" data-path="aspljsffjd.html"><a href="aspljsffjd.html#多个样本率间的多重比较"><i class="fa fa-check"></i><b>6.6</b> 多个样本率间的多重比较</a></li>
+<li class="chapter" data-level="6.7" data-path="aspljsffjd.html"><a href="aspljsffjd.html#cochran-mantel-haenszel-卡方统计量检验"><i class="fa fa-check"></i><b>6.7</b> Cochran-Mantel-Haenszel 卡方统计量检验</a></li>
+<li class="chapter" data-level="6.8" data-path="aspljsffjd.html"><a href="aspljsffjd.html#频数分布拟合优度卡方检验"><i class="fa fa-check"></i><b>6.8</b> 频数分布拟合优度卡方检验</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="lidukj.html"><a href="lidukj.html"><i class="fa fa-check"></i><b>7</b> 秩和检验</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="lidukj.html"><a href="lidukj.html#配对样本比较的wilcoxon符号秩检验"><i class="fa fa-check"></i><b>7.1</b> 配对样本比较的Wilcoxon符号秩检验</a></li>
+<li class="chapter" data-level="7.2" data-path="lidukj.html"><a href="lidukj.html#两独立样本比较的wilcoxon符号秩检验"><i class="fa fa-check"></i><b>7.2</b> 两独立样本比较的Wilcoxon符号秩检验</a></li>
+<li class="chapter" data-level="7.3" data-path="lidukj.html"><a href="lidukj.html#完全随机设计多个样本比较的-kruskal-wallis-h-检验"><i class="fa fa-check"></i><b>7.3</b> 完全随机设计多个样本比较的 Kruskal-Wallis H 检验</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="lidukj.html"><a href="lidukj.html#多样本比较的kruskal-wallis-h检验"><i class="fa fa-check"></i><b>7.3.1</b> 多样本比较的kruskal-wallis H检验</a></li>
+<li class="chapter" data-level="7.3.2" data-path="lidukj.html"><a href="lidukj.html#kruskal-wallis-h检验后的多重比较"><i class="fa fa-check"></i><b>7.3.2</b> kruskal-Wallis H检验后的多重比较</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="lidukj.html"><a href="lidukj.html#随记区组设计多个样本比较的-friedman-m-检验"><i class="fa fa-check"></i><b>7.4</b> 随记区组设计多个样本比较的 Friedman M 检验</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="lidukj.html"><a href="lidukj.html#多个相关样本比较的friedman-m检验"><i class="fa fa-check"></i><b>7.4.1</b> 多个相关样本比较的Friedman M检验</a></li>
+<li class="chapter" data-level="7.4.2" data-path="lidukj.html"><a href="lidukj.html#多个相关样本两两比较的q检验"><i class="fa fa-check"></i><b>7.4.2</b> 多个相关样本两两比较的q检验</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="yruugkjh.html"><a href="yruugkjh.html"><i class="fa fa-check"></i><b>8</b> 球对称检验</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="yruugkjh.html"><a href="yruugkjh.html#球对称检验"><i class="fa fa-check"></i><b>8.1</b> 球对称检验</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="yruugkjh.html"><a href="yruugkjh.html#使用课本表12-3的数据"><i class="fa fa-check"></i><b>8.1.1</b> 使用课本<strong>表12-3</strong>的数据</a></li>
+<li class="chapter" data-level="8.1.2" data-path="yruugkjh.html"><a href="yruugkjh.html#使用课本例12-3的数据"><i class="fa fa-check"></i><b>8.1.2</b> 使用课本<strong>例12-3</strong>的数据</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="rugnjkdfgl.html"><a href="rugnjkdfgl.html"><i class="fa fa-check"></i><b>9</b> R语言Cochran Armitage检验</a></li>
+<li class="chapter" data-level="10" data-path="ytlrwijj.html"><a href="ytlrwijj.html"><i class="fa fa-check"></i><b>10</b> R语言方差分析注意事项</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="ytlrwijj.html"><a href="ytlrwijj.html#均衡设计和非均衡设计"><i class="fa fa-check"></i><b>10.1</b> 均衡设计和非均衡设计</a></li>
+<li class="chapter" data-level="10.2" data-path="ytlrwijj.html"><a href="ytlrwijj.html#方差分析的3种类型"><i class="fa fa-check"></i><b>10.2</b> 方差分析的3种类型</a></li>
+<li class="chapter" data-level="10.3" data-path="ytlrwijj.html"><a href="ytlrwijj.html#示例"><i class="fa fa-check"></i><b>10.3</b> 示例</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="ytlrwijj.html"><a href="ytlrwijj.html#one-way-anova"><i class="fa fa-check"></i><b>10.3.1</b> one-way anova</a></li>
+<li class="chapter" data-level="10.3.2" data-path="ytlrwijj.html"><a href="ytlrwijj.html#two-way-anova"><i class="fa fa-check"></i><b>10.3.2</b> two-way anova</a></li>
+<li class="chapter" data-level="10.3.3" data-path="ytlrwijj.html"><a href="ytlrwijj.html#协方差分析"><i class="fa fa-check"></i><b>10.3.3</b> 协方差分析</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="terlajskd.html"><a href="terlajskd.html"><i class="fa fa-check"></i><b>11</b> 样本量计算</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="terlajskd.html"><a href="terlajskd.html#t检验的样本量计算"><i class="fa fa-check"></i><b>11.1</b> t检验的样本量计算</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="terlajskd.html"><a href="terlajskd.html#单样本t检验样本均数和已知总体均数比较"><i class="fa fa-check"></i><b>11.1.1</b> 单样本t检验（样本均数和已知总体均数比较）</a></li>
+<li class="chapter" data-level="11.1.2" data-path="terlajskd.html"><a href="terlajskd.html#两样本t检验两样本均数比较"><i class="fa fa-check"></i><b>11.1.2</b> 两样本t检验（两样本均数比较）</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="terlajskd.html"><a href="terlajskd.html#多样本均数比较"><i class="fa fa-check"></i><b>11.2</b> 多样本均数比较</a></li>
+<li class="chapter" data-level="11.3" data-path="terlajskd.html"><a href="terlajskd.html#样本率和已知总体率的比较"><i class="fa fa-check"></i><b>11.3</b> 样本率和已知总体率的比较</a></li>
+<li class="chapter" data-level="11.4" data-path="terlajskd.html"><a href="terlajskd.html#两独立样本率的比较"><i class="fa fa-check"></i><b>11.4</b> 两独立样本率的比较</a></li>
+<li class="chapter" data-level="11.5" data-path="terlajskd.html"><a href="terlajskd.html#多样本率的比较"><i class="fa fa-check"></i><b>11.5</b> 多样本率的比较</a></li>
+<li class="chapter" data-level="11.6" data-path="terlajskd.html"><a href="terlajskd.html#直线相关分析"><i class="fa fa-check"></i><b>11.6</b> 直线相关分析</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="ytsgs.html"><a href="ytsgs.html"><i class="fa fa-check"></i><b>12</b> 随机分组</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="ytsgs.html"><a href="ytsgs.html#简单随机"><i class="fa fa-check"></i><b>12.1</b> 简单随机</a></li>
+<li class="chapter" data-level="12.2" data-path="ytsgs.html"><a href="ytsgs.html#区组随机"><i class="fa fa-check"></i><b>12.2</b> 区组随机</a></li>
+<li class="chapter" data-level="12.3" data-path="ytsgs.html"><a href="ytsgs.html#分层随机"><i class="fa fa-check"></i><b>12.3</b> 分层随机</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html"><i class="fa fa-check"></i><b>13</b> R语言tidy风格医学统计学</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#主要函数"><i class="fa fa-check"></i><b>13.1</b> 主要函数</a>
+<ul>
+<li class="chapter" data-level="13.1.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#描述性统计"><i class="fa fa-check"></i><b>13.1.1</b> 描述性统计</a></li>
+<li class="chapter" data-level="13.1.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#比较均值"><i class="fa fa-check"></i><b>13.1.2</b> 比较均值</a></li>
+<li class="chapter" data-level="13.1.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#增强r中的anova"><i class="fa fa-check"></i><b>13.1.3</b> 增强R中的ANOVA</a></li>
+<li class="chapter" data-level="13.1.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#事后检验post-hoc"><i class="fa fa-check"></i><b>13.1.4</b> 事后检验（post-hoc）</a></li>
+<li class="chapter" data-level="13.1.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#比较比例"><i class="fa fa-check"></i><b>13.1.5</b> 比较比例</a></li>
+<li class="chapter" data-level="13.1.6" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#比较方差"><i class="fa fa-check"></i><b>13.1.6</b> 比较方差</a></li>
+<li class="chapter" data-level="13.1.7" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#计算效应量"><i class="fa fa-check"></i><b>13.1.7</b> 计算效应量</a></li>
+<li class="chapter" data-level="13.1.8" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#相关性分析"><i class="fa fa-check"></i><b>13.1.8</b> 相关性分析</a></li>
+<li class="chapter" data-level="13.1.9" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#添加p值和显著性标记"><i class="fa fa-check"></i><b>13.1.9</b> 添加P值和显著性标记</a></li>
+<li class="chapter" data-level="13.1.10" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#提取统计信息"><i class="fa fa-check"></i><b>13.1.10</b> 提取统计信息</a></li>
+<li class="chapter" data-level="13.1.11" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#数据处理辅助函数"><i class="fa fa-check"></i><b>13.1.11</b> 数据处理辅助函数</a></li>
+<li class="chapter" data-level="13.1.12" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#其他"><i class="fa fa-check"></i><b>13.1.12</b> 其他</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#安装和加载"><i class="fa fa-check"></i><b>13.2</b> 安装和加载</a></li>
+<li class="chapter" data-level="13.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#描述性统计-1"><i class="fa fa-check"></i><b>13.3</b> 描述性统计</a></li>
+<li class="chapter" data-level="13.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#t检验"><i class="fa fa-check"></i><b>13.4</b> t检验</a>
+<ul>
+<li class="chapter" data-level="13.4.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#单样本t检验-1"><i class="fa fa-check"></i><b>13.4.1</b> 单样本t检验</a></li>
+<li class="chapter" data-level="13.4.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#配对t检验"><i class="fa fa-check"></i><b>13.4.2</b> 配对t检验</a></li>
+<li class="chapter" data-level="13.4.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#两样本t检验-1"><i class="fa fa-check"></i><b>13.4.3</b> 两样本t检验</a></li>
+<li class="chapter" data-level="13.4.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#分组后进行比较"><i class="fa fa-check"></i><b>13.4.4</b> 分组后进行比较</a></li>
+<li class="chapter" data-level="13.4.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#多组间的两两比较"><i class="fa fa-check"></i><b>13.4.5</b> 多组间的两两比较</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#方差分析"><i class="fa fa-check"></i><b>13.5</b> 方差分析</a>
+<ul>
+<li class="chapter" data-level="13.5.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#完全随机设计方差分析"><i class="fa fa-check"></i><b>13.5.1</b> 完全随机设计方差分析</a></li>
+<li class="chapter" data-level="13.5.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#随机区组设计资料的方差分析-1"><i class="fa fa-check"></i><b>13.5.2</b> 随机区组设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#拉丁方设计方差分析-1"><i class="fa fa-check"></i><b>13.5.3</b> 拉丁方设计方差分析</a></li>
+<li class="chapter" data-level="13.5.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#两阶段交叉设计资料方差分析-1"><i class="fa fa-check"></i><b>13.5.4</b> 两阶段交叉设计资料方差分析</a></li>
+<li class="chapter" data-level="13.5.5" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#析因设计资料的方差分析"><i class="fa fa-check"></i><b>13.5.5</b> 析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.6" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#正交设计资料的方差分析-1"><i class="fa fa-check"></i><b>13.5.6</b> 正交设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.7" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#重复测量数据两因素两水平的方差分析-1"><i class="fa fa-check"></i><b>13.5.7</b> 重复测量数据两因素两水平的方差分析</a></li>
+<li class="chapter" data-level="13.5.8" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#重复测量数据两因素多水平的分析-1"><i class="fa fa-check"></i><b>13.5.8</b> 重复测量数据两因素多水平的分析</a></li>
+</ul></li>
+<li class="chapter" data-level="13.6" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#相关分析"><i class="fa fa-check"></i><b>13.6</b> 相关分析</a>
+<ul>
+<li class="chapter" data-level="13.6.1" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#两个变量"><i class="fa fa-check"></i><b>13.6.1</b> 两个变量</a></li>
+<li class="chapter" data-level="13.6.2" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#一个变量和其他所有变量"><i class="fa fa-check"></i><b>13.6.2</b> 一个变量和其他所有变量</a></li>
+<li class="chapter" data-level="13.6.3" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#所有变量间两两相关性"><i class="fa fa-check"></i><b>13.6.3</b> 所有变量间两两相关性</a></li>
+<li class="chapter" data-level="13.6.4" data-path="yaiehfkjasd.html"><a href="yaiehfkjasd.html#相关矩阵"><i class="fa fa-check"></i><b>13.6.4</b> 相关矩阵</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="tjslrkjga.html"><a href="tjslrkjga.html"><i class="fa fa-check"></i><b>14</b> R语言多个变量同时进行t检验</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="tjslrkjga.html"><a href="tjslrkjga.html#简介"><i class="fa fa-check"></i><b>14.1</b> 简介</a></li>
+<li class="chapter" data-level="14.2" data-path="tjslrkjga.html"><a href="tjslrkjga.html#实战"><i class="fa fa-check"></i><b>14.2</b> 实战</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="oirjglsj.html"><a href="oirjglsj.html"><i class="fa fa-check"></i><b>15</b> 双变量回归与相关</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="oirjglsj.html"><a href="oirjglsj.html#两样本相关"><i class="fa fa-check"></i><b>15.1</b> 两样本相关</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html"><i class="fa fa-check"></i><b>16</b> 偏相关和典型相关</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html#偏相关partial-correlation"><i class="fa fa-check"></i><b>16.1</b> 偏相关（partial correlation）</a>
+<ul>
+<li class="chapter" data-level="16.1.1" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html#偏相关散点图"><i class="fa fa-check"></i><b>16.1.1</b> 偏相关散点图</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="jhgkjahdj.html"><a href="jhgkjahdj.html#典型相关canonical-correlation"><i class="fa fa-check"></i><b>16.2</b> 典型相关（Canonical Correlation）</a></li>
+</ul></li>
+<li class="part"><span><b>II 高级统计分析</b></span></li>
+<li class="chapter" data-level="17" data-path="raljflksdj.html"><a href="raljflksdj.html"><i class="fa fa-check"></i><b>17</b> 多元线性回归</a>
+<ul>
+<li class="chapter" data-level="17.1" data-path="raljflksdj.html"><a href="raljflksdj.html#多元线性回归"><i class="fa fa-check"></i><b>17.1</b> 多元线性回归</a></li>
+<li class="chapter" data-level="17.2" data-path="raljflksdj.html"><a href="raljflksdj.html#回归诊断"><i class="fa fa-check"></i><b>17.2</b> 回归诊断</a>
+<ul>
+<li class="chapter" data-level="17.2.1" data-path="raljflksdj.html"><a href="raljflksdj.html#可以通过看图来判断"><i class="fa fa-check"></i><b>17.2.1</b> 可以通过看图来判断</a></li>
+<li class="chapter" data-level="17.2.2" data-path="raljflksdj.html"><a href="raljflksdj.html#也可以通过统计方法验证"><i class="fa fa-check"></i><b>17.2.2</b> 也可以通过统计方法验证</a></li>
+<li class="chapter" data-level="17.2.3" data-path="raljflksdj.html"><a href="raljflksdj.html#多重共线性的检验"><i class="fa fa-check"></i><b>17.2.3</b> 多重共线性的检验</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="raljflksdj.html"><a href="raljflksdj.html#逐步选择法"><i class="fa fa-check"></i><b>17.3</b> 逐步选择法</a></li>
+<li class="chapter" data-level="17.4" data-path="raljflksdj.html"><a href="raljflksdj.html#全局择优法"><i class="fa fa-check"></i><b>17.4</b> 全局择优法</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="rlkdfjj.html"><a href="rlkdfjj.html"><i class="fa fa-check"></i><b>18</b> Logistic回归</a>
+<ul>
+<li class="chapter" data-level="18.1" data-path="rlkdfjj.html"><a href="rlkdfjj.html#二项logistic回归"><i class="fa fa-check"></i><b>18.1</b> 二项logistic回归</a></li>
+<li class="chapter" data-level="18.2" data-path="rlkdfjj.html"><a href="rlkdfjj.html#多项逻辑回归"><i class="fa fa-check"></i><b>18.2</b> 多项逻辑回归</a></li>
+<li class="chapter" data-level="18.3" data-path="rlkdfjj.html"><a href="rlkdfjj.html#有序逻辑回归"><i class="fa fa-check"></i><b>18.3</b> 有序逻辑回归</a></li>
+<li class="chapter" data-level="18.4" data-path="rlkdfjj.html"><a href="rlkdfjj.html#条件逻辑回归"><i class="fa fa-check"></i><b>18.4</b> 条件逻辑回归</a></li>
+<li class="chapter" data-level="18.5" data-path="rlkdfjj.html"><a href="rlkdfjj.html#参考资料"><i class="fa fa-check"></i><b>18.5</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="tuishgh.html"><a href="tuishgh.html"><i class="fa fa-check"></i><b>19</b> 分类变量进行回归分析时的编码方案</a>
+<ul>
+<li class="chapter" data-level="19.1" data-path="tuishgh.html"><a href="tuishgh.html#演示数据"><i class="fa fa-check"></i><b>19.1</b> 演示数据</a></li>
+<li class="chapter" data-level="19.2" data-path="tuishgh.html"><a href="tuishgh.html#dummy-coding"><i class="fa fa-check"></i><b>19.2</b> Dummy Coding</a></li>
+<li class="chapter" data-level="19.3" data-path="tuishgh.html"><a href="tuishgh.html#simple-coding"><i class="fa fa-check"></i><b>19.3</b> simple coding</a></li>
+<li class="chapter" data-level="19.4" data-path="tuishgh.html"><a href="tuishgh.html#deviation-coding"><i class="fa fa-check"></i><b>19.4</b> Deviation coding</a></li>
+<li class="chapter" data-level="19.5" data-path="tuishgh.html"><a href="tuishgh.html#orthogonal-polynomial-coding"><i class="fa fa-check"></i><b>19.5</b> Orthogonal Polynomial Coding</a></li>
+<li class="chapter" data-level="19.6" data-path="tuishgh.html"><a href="tuishgh.html#helmert-coding"><i class="fa fa-check"></i><b>19.6</b> Helmert Coding</a></li>
+<li class="chapter" data-level="19.7" data-path="tuishgh.html"><a href="tuishgh.html#reverse-helmert-coding"><i class="fa fa-check"></i><b>19.7</b> Reverse Helmert Coding</a></li>
+<li class="chapter" data-level="19.8" data-path="tuishgh.html"><a href="tuishgh.html#forward-difference-coding"><i class="fa fa-check"></i><b>19.8</b> Forward Difference Coding</a></li>
+<li class="chapter" data-level="19.9" data-path="tuishgh.html"><a href="tuishgh.html#backward-difference-coding"><i class="fa fa-check"></i><b>19.9</b> Backward Difference Coding</a></li>
+<li class="chapter" data-level="19.10" data-path="tuishgh.html"><a href="tuishgh.html#参考资料-1"><i class="fa fa-check"></i><b>19.10</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="erutgjdflk.html"><a href="erutgjdflk.html"><i class="fa fa-check"></i><b>20</b> R语言判别分析</a>
+<ul>
+<li class="chapter" data-level="20.1" data-path="erutgjdflk.html"><a href="erutgjdflk.html#fisher判别分析"><i class="fa fa-check"></i><b>20.1</b> Fisher判别分析</a></li>
+<li class="chapter" data-level="20.2" data-path="erutgjdflk.html"><a href="erutgjdflk.html#bayes判别分析"><i class="fa fa-check"></i><b>20.2</b> Bayes判别分析</a></li>
+</ul></li>
+<li class="chapter" data-level="21" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html"><i class="fa fa-check"></i><b>21</b> R语言聚类分析</a>
+<ul>
+<li class="chapter" data-level="21.1" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#系统聚类层次聚类hierarchical-clustering"><i class="fa fa-check"></i><b>21.1</b> 系统聚类（层次聚类,Hierarchical clustering）</a></li>
+<li class="chapter" data-level="21.2" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#聚类分析可视化"><i class="fa fa-check"></i><b>21.2</b> 聚类分析可视化</a></li>
+<li class="chapter" data-level="21.3" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#快速聚类划分聚类partitioning-clustering"><i class="fa fa-check"></i><b>21.3</b> 快速聚类（划分聚类,partitioning clustering）</a>
+<ul>
+<li class="chapter" data-level="21.3.1" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#k-means聚类"><i class="fa fa-check"></i><b>21.3.1</b> K-means聚类</a></li>
+<li class="chapter" data-level="21.3.2" data-path="lksdjgljdsl.html"><a href="lksdjgljdsl.html#围绕中心点的划分pam"><i class="fa fa-check"></i><b>21.3.2</b> 围绕中心点的划分PAM</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="ejtlj.html"><a href="ejtlj.html"><i class="fa fa-check"></i><b>22</b> R语言主成分分析</a>
+<ul>
+<li class="chapter" data-level="22.1" data-path="ejtlj.html"><a href="ejtlj.html#加载数据"><i class="fa fa-check"></i><b>22.1</b> 加载数据</a></li>
+<li class="chapter" data-level="22.2" data-path="ejtlj.html"><a href="ejtlj.html#相关性检验"><i class="fa fa-check"></i><b>22.2</b> 相关性检验</a></li>
+<li class="chapter" data-level="22.3" data-path="ejtlj.html"><a href="ejtlj.html#kmo和bartlett球形检验"><i class="fa fa-check"></i><b>22.3</b> KMO和Bartlett球形检验</a></li>
+<li class="chapter" data-level="22.4" data-path="ejtlj.html"><a href="ejtlj.html#r自带的pca"><i class="fa fa-check"></i><b>22.4</b> R自带的PCA</a></li>
+<li class="chapter" data-level="22.5" data-path="ejtlj.html"><a href="ejtlj.html#结果可视化"><i class="fa fa-check"></i><b>22.5</b> 结果可视化</a></li>
+<li class="chapter" data-level="22.6" data-path="ejtlj.html"><a href="ejtlj.html#主成分分析可视化超详细"><i class="fa fa-check"></i><b>22.6</b> 主成分分析可视化(超详细)</a>
+<ul>
+<li class="chapter" data-level="22.6.1" data-path="ejtlj.html"><a href="ejtlj.html#进行pca分析"><i class="fa fa-check"></i><b>22.6.1</b> 进行PCA分析</a></li>
+<li class="chapter" data-level="22.6.2" data-path="ejtlj.html"><a href="ejtlj.html#特征值可视化"><i class="fa fa-check"></i><b>22.6.2</b> 特征值可视化</a></li>
+<li class="chapter" data-level="22.6.3" data-path="ejtlj.html"><a href="ejtlj.html#提取变量结果"><i class="fa fa-check"></i><b>22.6.3</b> 提取变量结果</a></li>
+<li class="chapter" data-level="22.6.4" data-path="ejtlj.html"><a href="ejtlj.html#变量结果可视化"><i class="fa fa-check"></i><b>22.6.4</b> 变量结果可视化</a></li>
+<li class="chapter" data-level="22.6.5" data-path="ejtlj.html"><a href="ejtlj.html#dimension-description"><i class="fa fa-check"></i><b>22.6.5</b> Dimension description</a></li>
+<li class="chapter" data-level="22.6.6" data-path="ejtlj.html"><a href="ejtlj.html#提取样本结果"><i class="fa fa-check"></i><b>22.6.6</b> 提取样本结果</a></li>
+<li class="chapter" data-level="22.6.7" data-path="ejtlj.html"><a href="ejtlj.html#样本结果可视化"><i class="fa fa-check"></i><b>22.6.7</b> 样本结果可视化</a></li>
+<li class="chapter" data-level="22.6.8" data-path="ejtlj.html"><a href="ejtlj.html#biplot"><i class="fa fa-check"></i><b>22.6.8</b> biplot</a></li>
+</ul></li>
+<li class="chapter" data-level="22.7" data-path="ejtlj.html"><a href="ejtlj.html#主成分分析可视化3d版"><i class="fa fa-check"></i><b>22.7</b> 主成分分析可视化3d版</a>
+<ul>
+<li class="chapter" data-level="22.7.1" data-path="ejtlj.html"><a href="ejtlj.html#提取数据"><i class="fa fa-check"></i><b>22.7.1</b> 提取数据</a></li>
+<li class="chapter" data-level="22.7.2" data-path="ejtlj.html"><a href="ejtlj.html#d版"><i class="fa fa-check"></i><b>22.7.2</b> 3d版</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="iurgsdh.html"><a href="iurgsdh.html"><i class="fa fa-check"></i><b>23</b> R语言因子分析</a>
+<ul>
+<li class="chapter" data-level="23.1" data-path="iurgsdh.html"><a href="iurgsdh.html#演示数据-1"><i class="fa fa-check"></i><b>23.1</b> 演示数据</a></li>
+<li class="chapter" data-level="23.2" data-path="iurgsdh.html"><a href="iurgsdh.html#判断需要提取的因子个数"><i class="fa fa-check"></i><b>23.2</b> 判断需要提取的因子个数</a></li>
+<li class="chapter" data-level="23.3" data-path="iurgsdh.html"><a href="iurgsdh.html#进行因子分析"><i class="fa fa-check"></i><b>23.3</b> 进行因子分析</a></li>
+<li class="chapter" data-level="23.4" data-path="iurgsdh.html"><a href="iurgsdh.html#因子旋转"><i class="fa fa-check"></i><b>23.4</b> 因子旋转</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="ljhgjsj.html"><a href="ljhgjsj.html"><i class="fa fa-check"></i><b>24</b> 二分类资料ROC曲线绘制</a>
+<ul>
+<li class="chapter" data-level="24.1" data-path="ljhgjsj.html"><a href="ljhgjsj.html#方法1-1"><i class="fa fa-check"></i><b>24.1</b> 方法1</a></li>
+<li class="chapter" data-level="24.2" data-path="ljhgjsj.html"><a href="ljhgjsj.html#方法2-1"><i class="fa fa-check"></i><b>24.2</b> 方法2</a></li>
+<li class="chapter" data-level="24.3" data-path="ljhgjsj.html"><a href="ljhgjsj.html#方法3"><i class="fa fa-check"></i><b>24.3</b> 方法3</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="xlkjgj.html"><a href="xlkjgj.html"><i class="fa fa-check"></i><b>25</b> 生存资料ROC曲线绘制</a>
+<ul>
+<li class="chapter" data-level="25.1" data-path="xlkjgj.html"><a href="xlkjgj.html#加载r包和数据"><i class="fa fa-check"></i><b>25.1</b> 加载R包和数据</a></li>
+<li class="chapter" data-level="25.2" data-path="xlkjgj.html"><a href="xlkjgj.html#多个时间点roc"><i class="fa fa-check"></i><b>25.2</b> 多个时间点ROC</a></li>
+<li class="chapter" data-level="25.3" data-path="xlkjgj.html"><a href="xlkjgj.html#多指标roc"><i class="fa fa-check"></i><b>25.3</b> 多指标ROC</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="lsjdglj.html"><a href="lsjdglj.html"><i class="fa fa-check"></i><b>26</b> 生存资料ROC曲线的最佳截点和平滑曲线</a>
+<ul>
+<li class="chapter" data-level="26.1" data-path="lsjdglj.html"><a href="lsjdglj.html#平滑曲线"><i class="fa fa-check"></i><b>26.1</b> 平滑曲线</a>
+<ul>
+<li class="chapter" data-level="26.1.1" data-path="lsjdglj.html"><a href="lsjdglj.html#加载r包和数据-1"><i class="fa fa-check"></i><b>26.1.1</b> 加载R包和数据</a></li>
+<li class="chapter" data-level="26.1.2" data-path="lsjdglj.html"><a href="lsjdglj.html#多个时间点roc-1"><i class="fa fa-check"></i><b>26.1.2</b> 多个时间点ROC</a></li>
+<li class="chapter" data-level="26.1.3" data-path="lsjdglj.html"><a href="lsjdglj.html#画平滑曲线"><i class="fa fa-check"></i><b>26.1.3</b> 画平滑曲线</a></li>
+</ul></li>
+<li class="chapter" data-level="26.2" data-path="lsjdglj.html"><a href="lsjdglj.html#找最佳截点"><i class="fa fa-check"></i><b>26.2</b> 找最佳截点</a></li>
+</ul></li>
+<li class="chapter" data-level="27" data-path="oljgja.html"><a href="oljgja.html"><i class="fa fa-check"></i><b>27</b> ROC曲线的显著性检验</a>
+<ul>
+<li class="chapter" data-level="27.1" data-path="oljgja.html"><a href="oljgja.html#二分类资料的roc比较"><i class="fa fa-check"></i><b>27.1</b> 二分类资料的ROC比较</a></li>
+<li class="chapter" data-level="27.2" data-path="oljgja.html"><a href="oljgja.html#生存资料roc的比较"><i class="fa fa-check"></i><b>27.2</b> 生存资料ROC的比较</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="uxijsjg.html"><a href="uxijsjg.html"><i class="fa fa-check"></i><b>28</b> ROC阴性结果还是阳性结果</a>
+<ul>
+<li class="chapter" data-level="28.1" data-path="uxijsjg.html"><a href="uxijsjg.html#探索roc曲线"><i class="fa fa-check"></i><b>28.1</b> 探索ROC曲线</a></li>
+<li class="chapter" data-level="28.2" data-path="uxijsjg.html"><a href="uxijsjg.html#反过来可以吗"><i class="fa fa-check"></i><b>28.2</b> 反过来可以吗？</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="yrlhksdg.html"><a href="yrlhksdg.html"><i class="fa fa-check"></i><b>29</b> ROC曲线ggplot2绘制</a>
+<ul>
+<li class="chapter" data-level="29.1" data-path="yrlhksdg.html"><a href="yrlhksdg.html#准备数据"><i class="fa fa-check"></i><b>29.1</b> 准备数据</a></li>
+<li class="chapter" data-level="29.2" data-path="yrlhksdg.html"><a href="yrlhksdg.html#计算"><i class="fa fa-check"></i><b>29.2</b> 计算</a></li>
+<li class="chapter" data-level="29.3" data-path="yrlhksdg.html"><a href="yrlhksdg.html#画图"><i class="fa fa-check"></i><b>29.3</b> 画图</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="sjgjaklj.html"><a href="sjgjaklj.html"><i class="fa fa-check"></i><b>30</b> R语言计算AUC(ROC)注意事项</a>
+<ul>
+<li class="chapter" data-level="30.1" data-path="sjgjaklj.html"><a href="sjgjaklj.html#准备数据-1"><i class="fa fa-check"></i><b>30.1</b> 准备数据</a></li>
+<li class="chapter" data-level="30.2" data-path="sjgjaklj.html"><a href="sjgjaklj.html#rocr"><i class="fa fa-check"></i><b>30.2</b> ROCR</a></li>
+<li class="chapter" data-level="30.3" data-path="sjgjaklj.html"><a href="sjgjaklj.html#proc"><i class="fa fa-check"></i><b>30.3</b> pROC</a></li>
+<li class="chapter" data-level="30.4" data-path="sjgjaklj.html"><a href="sjgjaklj.html#yardstick"><i class="fa fa-check"></i><b>30.4</b> yardstick</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="oljgji.html"><a href="oljgji.html"><i class="fa fa-check"></i><b>31</b> 多指标联合诊断的ROC曲线</a>
+<ul>
+<li class="chapter" data-level="31.1" data-path="oljgji.html"><a href="oljgji.html#准备数据-2"><i class="fa fa-check"></i><b>31.1</b> 准备数据</a></li>
+<li class="chapter" data-level="31.2" data-path="oljgji.html"><a href="oljgji.html#多指标联合诊断的roc"><i class="fa fa-check"></i><b>31.2</b> 多指标联合诊断的ROC</a></li>
+<li class="chapter" data-level="31.3" data-path="oljgji.html"><a href="oljgji.html#测试集怎么办"><i class="fa fa-check"></i><b>31.3</b> 测试集怎么办？</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="djgkas.html"><a href="djgkas.html"><i class="fa fa-check"></i><b>32</b> R语言生存分析</a>
+<ul>
+<li class="chapter" data-level="32.1" data-path="djgkas.html"><a href="djgkas.html#生存过程的描述"><i class="fa fa-check"></i><b>32.1</b> 生存过程的描述</a></li>
+<li class="chapter" data-level="32.2" data-path="djgkas.html"><a href="djgkas.html#生存过程的比较"><i class="fa fa-check"></i><b>32.2</b> 生存过程的比较</a></li>
+<li class="chapter" data-level="32.3" data-path="djgkas.html"><a href="djgkas.html#cox回归"><i class="fa fa-check"></i><b>32.3</b> Cox回归</a></li>
+<li class="chapter" data-level="32.4" data-path="djgkas.html"><a href="djgkas.html#时间依存协变量的cox回归和时间依存系数cox回归"><i class="fa fa-check"></i><b>32.4</b> 时间依存协变量的Cox回归和时间依存系数Cox回归</a>
+<ul>
+<li class="chapter" data-level="32.4.1" data-path="djgkas.html"><a href="djgkas.html#对时间分层"><i class="fa fa-check"></i><b>32.4.1</b> 对时间分层</a></li>
+<li class="chapter" data-level="32.4.2" data-path="djgkas.html"><a href="djgkas.html#连续性时依系数变换"><i class="fa fa-check"></i><b>32.4.2</b> 连续性时依系数变换</a></li>
+</ul></li>
+<li class="chapter" data-level="32.5" data-path="djgkas.html"><a href="djgkas.html#参考资料-2"><i class="fa fa-check"></i><b>32.5</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html"><i class="fa fa-check"></i><b>33</b> R语言超详细的生存曲线可视化</a>
+<ul>
+<li class="chapter" data-level="33.1" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#演示数据-2"><i class="fa fa-check"></i><b>33.1</b> 演示数据</a></li>
+<li class="chapter" data-level="33.2" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#基本的生存曲线"><i class="fa fa-check"></i><b>33.2</b> 基本的生存曲线</a></li>
+<li class="chapter" data-level="33.3" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#增加-risk-table"><i class="fa fa-check"></i><b>33.3</b> 增加 risk table</a></li>
+<li class="chapter" data-level="33.4" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#增加删失时间表ncensor-plot"><i class="fa fa-check"></i><b>33.4</b> 增加删失时间表ncensor plot</a></li>
+<li class="chapter" data-level="33.5" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#超级无敌精细化自定设置"><i class="fa fa-check"></i><b>33.5</b> 超级无敌精细化自定设置</a></li>
+<li class="chapter" data-level="33.6" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#多个组的生存曲线"><i class="fa fa-check"></i><b>33.6</b> 多个组的生存曲线</a></li>
+<li class="chapter" data-level="33.7" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#多个分类变量分面绘制"><i class="fa fa-check"></i><b>33.7</b> 多个分类变量分面绘制</a></li>
+<li class="chapter" data-level="33.8" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#同时绘制多个生存函数"><i class="fa fa-check"></i><b>33.8</b> 同时绘制多个生存函数</a></li>
+<li class="chapter" data-level="33.9" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#根据某一个变量分组绘制"><i class="fa fa-check"></i><b>33.9</b> 根据某一个变量分组绘制</a></li>
+<li class="chapter" data-level="33.10" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#在原有生存曲线的基础上增加"><i class="fa fa-check"></i><b>33.10</b> 在原有生存曲线的基础上增加</a></li>
+<li class="chapter" data-level="33.11" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#多个生存函数画在一起"><i class="fa fa-check"></i><b>33.11</b> 多个生存函数画在一起</a></li>
+<li class="chapter" data-level="33.12" data-path="oiewjrtsjl.html"><a href="oiewjrtsjl.html#参考资料-3"><i class="fa fa-check"></i><b>33.12</b> 参考资料</a></li>
+</ul></li>
+<li class="part"><span><b>III 文献中常用的统计方法</b></span></li>
+<li class="chapter" data-level="34" data-path="lxjjgjja.html"><a href="lxjjgjja.html"><i class="fa fa-check"></i><b>34</b> Fine-Gray检验、竞争风险模型列线图绘制</a>
+<ul>
+<li class="chapter" data-level="34.1" data-path="lxjjgjja.html"><a href="lxjjgjja.html#加载数据和r包"><i class="fa fa-check"></i><b>34.1</b> 加载数据和R包</a></li>
+<li class="chapter" data-level="34.2" data-path="lxjjgjja.html"><a href="lxjjgjja.html#fine-gray检验单因素分析"><i class="fa fa-check"></i><b>34.2</b> Fine-Gray检验（单因素分析）</a>
+<ul>
+<li class="chapter" data-level="34.2.1" data-path="lxjjgjja.html"><a href="lxjjgjja.html#图形展示结果"><i class="fa fa-check"></i><b>34.2.1</b> 图形展示结果</a></li>
+<li class="chapter" data-level="34.2.2" data-path="lxjjgjja.html"><a href="lxjjgjja.html#ggplot2"><i class="fa fa-check"></i><b>34.2.2</b> ggplot2</a></li>
+</ul></li>
+<li class="chapter" data-level="34.3" data-path="lxjjgjja.html"><a href="lxjjgjja.html#竞争风险模型多因素分析"><i class="fa fa-check"></i><b>34.3</b> 竞争风险模型（多因素分析）</a></li>
+<li class="chapter" data-level="34.4" data-path="lxjjgjja.html"><a href="lxjjgjja.html#列线图"><i class="fa fa-check"></i><b>34.4</b> 列线图</a></li>
+</ul></li>
+<li class="chapter" data-level="35" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html"><i class="fa fa-check"></i><b>35</b> R语言倾向性评分：匹配</a>
+<ul>
+<li class="chapter" data-level="35.1" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#准备数据-3"><i class="fa fa-check"></i><b>35.1</b> 准备数据</a></li>
+<li class="chapter" data-level="35.2" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#matchit包进行psm"><i class="fa fa-check"></i><b>35.2</b> matchIt包进行PSM</a>
+<ul>
+<li class="chapter" data-level="35.2.1" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#使用随机森林计算ps"><i class="fa fa-check"></i><b>35.2.1</b> 使用随机森林计算PS</a></li>
+</ul></li>
+<li class="chapter" data-level="35.3" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#主要匹配方法选择"><i class="fa fa-check"></i><b>35.3</b> 主要匹配方法选择</a></li>
+<li class="chapter" data-level="35.4" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#匹配后数据的平衡性检验"><i class="fa fa-check"></i><b>35.4</b> 匹配后数据的平衡性检验</a>
+<ul>
+<li class="chapter" data-level="35.4.1" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#cobalt包"><i class="fa fa-check"></i><b>35.4.1</b> cobalt包</a></li>
+<li class="chapter" data-level="35.4.2" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#统计检验衡量均衡性"><i class="fa fa-check"></i><b>35.4.2</b> 统计检验衡量均衡性</a></li>
+</ul></li>
+<li class="chapter" data-level="35.5" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#结果可视化-1"><i class="fa fa-check"></i><b>35.5</b> 结果可视化</a></li>
+<li class="chapter" data-level="35.6" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#不平衡怎么办"><i class="fa fa-check"></i><b>35.6</b> 不平衡怎么办？</a></li>
+<li class="chapter" data-level="35.7" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#其他问题"><i class="fa fa-check"></i><b>35.7</b> 其他问题</a></li>
+<li class="chapter" data-level="35.8" data-path="ysdkfjhsjk.html"><a href="ysdkfjhsjk.html#参考资料-4"><i class="fa fa-check"></i><b>35.8</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="36" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html"><i class="fa fa-check"></i><b>36</b> R语言倾向性评分：回归和分层</a>
+<ul>
+<li class="chapter" data-level="36.1" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#演示数据-3"><i class="fa fa-check"></i><b>36.1</b> 演示数据</a></li>
+<li class="chapter" data-level="36.2" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#原始数据的概况"><i class="fa fa-check"></i><b>36.2</b> 原始数据的概况</a></li>
+<li class="chapter" data-level="36.3" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#计算倾向性评分"><i class="fa fa-check"></i><b>36.3</b> 计算倾向性评分</a></li>
+<li class="chapter" data-level="36.4" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#倾向性评分回归"><i class="fa fa-check"></i><b>36.4</b> 倾向性评分回归</a></li>
+<li class="chapter" data-level="36.5" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#倾向性评分分层"><i class="fa fa-check"></i><b>36.5</b> 倾向性评分分层</a></li>
+<li class="chapter" data-level="36.6" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#分层后的数据"><i class="fa fa-check"></i><b>36.6</b> 分层后的数据</a></li>
+<li class="chapter" data-level="36.7" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#总结"><i class="fa fa-check"></i><b>36.7</b> 总结</a></li>
+<li class="chapter" data-level="36.8" data-path="yxkskjhfk.html"><a href="yxkskjhfk.html#参考资料-5"><i class="fa fa-check"></i><b>36.8</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="37" data-path="yplksjhfk.html"><a href="yplksjhfk.html"><i class="fa fa-check"></i><b>37</b> R语言倾向性评分：加权</a>
+<ul>
+<li class="chapter" data-level="37.1" data-path="yplksjhfk.html"><a href="yplksjhfk.html#演示数据-4"><i class="fa fa-check"></i><b>37.1</b> 演示数据</a></li>
+<li class="chapter" data-level="37.2" data-path="yplksjhfk.html"><a href="yplksjhfk.html#iptw"><i class="fa fa-check"></i><b>37.2</b> IPTW</a></li>
+<li class="chapter" data-level="37.3" data-path="yplksjhfk.html"><a href="yplksjhfk.html#重叠加权"><i class="fa fa-check"></i><b>37.3</b> 重叠加权</a></li>
+<li class="chapter" data-level="37.4" data-path="yplksjhfk.html"><a href="yplksjhfk.html#参考资料-6"><i class="fa fa-check"></i><b>37.4</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="38" data-path="qdkjfgj.html"><a href="qdkjfgj.html"><i class="fa fa-check"></i><b>38</b> p for trend/ p for interaction/ per 1 sd 的R语言实现</a>
+<ul>
+<li class="chapter" data-level="38.1" data-path="qdkjfgj.html"><a href="qdkjfgj.html#p-for-trend"><i class="fa fa-check"></i><b>38.1</b> P for trend</a></li>
+<li class="chapter" data-level="38.2" data-path="qdkjfgj.html"><a href="qdkjfgj.html#p-for-interaction"><i class="fa fa-check"></i><b>38.2</b> p for interaction</a>
+<ul>
+<li class="chapter" data-level="38.2.1" data-path="qdkjfgj.html"><a href="qdkjfgj.html#方法1-2"><i class="fa fa-check"></i><b>38.2.1</b> 方法1</a></li>
+<li class="chapter" data-level="38.2.2" data-path="qdkjfgj.html"><a href="qdkjfgj.html#方法2-2"><i class="fa fa-check"></i><b>38.2.2</b> 方法2</a></li>
+</ul></li>
+<li class="chapter" data-level="38.3" data-path="qdkjfgj.html"><a href="qdkjfgj.html#per-1-sd"><i class="fa fa-check"></i><b>38.3</b> per 1 sd</a></li>
+</ul></li>
+<li class="chapter" data-level="39" data-path="jddsfsdf.html"><a href="jddsfsdf.html"><i class="fa fa-check"></i><b>39</b> R语言多项式拟合及样条回归</a>
+<ul>
+<li class="chapter" data-level="39.1" data-path="jddsfsdf.html"><a href="jddsfsdf.html#多项式拟合"><i class="fa fa-check"></i><b>39.1</b> 多项式拟合</a></li>
+<li class="chapter" data-level="39.2" data-path="jddsfsdf.html"><a href="jddsfsdf.html#样条回归"><i class="fa fa-check"></i><b>39.2</b> 样条回归</a>
+<ul>
+<li class="chapter" data-level="39.2.1" data-path="jddsfsdf.html"><a href="jddsfsdf.html#线性的立方样条"><i class="fa fa-check"></i><b>39.2.1</b> 线性的立方样条</a></li>
+<li class="chapter" data-level="39.2.2" data-path="jddsfsdf.html"><a href="jddsfsdf.html#逻辑回归的立方样条"><i class="fa fa-check"></i><b>39.2.2</b> 逻辑回归的立方样条</a></li>
+<li class="chapter" data-level="39.2.3" data-path="jddsfsdf.html"><a href="jddsfsdf.html#cox回归的立方样条"><i class="fa fa-check"></i><b>39.2.3</b> cox回归的立方样条</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV 附录</b></span></li>
+<li class="chapter" data-level="40" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html"><i class="fa fa-check"></i><b>40</b> R语言和R包安装</a>
+<ul>
+<li class="chapter" data-level="40.1" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html#r语言rtoolsrstudio的安装"><i class="fa fa-check"></i><b>40.1</b> R语言、Rtools、Rstudio的安装</a></li>
+<li class="chapter" data-level="40.2" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html#r包安装"><i class="fa fa-check"></i><b>40.2</b> R包安装</a></li>
+<li class="chapter" data-level="40.3" data-path="jdkhfgjad.html"><a href="jdkhfgjad.html#pass软件链接"><i class="fa fa-check"></i><b>40.3</b> PASS软件链接</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">常见医学统计方法R语言实战</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="tuishgh" class="section level1 hasAnchor" number="19">
+<h1><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案<a href="tuishgh.html#tuishgh" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>R语言中的分类变量在进行回归分析时，通常会进行一些编码设置，最常见的是哑变量设置，除了哑变量，还有其他的很多类型。</p>
+<p><strong>通常一个有K个类别的分类变量在进入回归分析时，会被自动编码成K-1个序列，然后会得到K-1个回归系数，这些回归系数对应着因变量根据K个类别分组后计算的平均值！</strong>这样说起来非常抽象，下面对着例子看可能更简单一点。</p>
+<p>R中的这些编码方案又叫做比较（contrast）矩阵设计，虽然都是默认自动进行的，但是了解它们的工作方式可以帮助我们更好的理解背后的意义，以及如何自定义设置各种方案。比如我们在做逻辑回归时哑变量的设置是如何进行的，重复测量方差分析多重比较中contrast是怎样设置的等。</p>
+<div id="演示数据" class="section level2 hasAnchor" number="19.1">
+<h2><span class="header-section-number">19.1</span> 演示数据<a href="tuishgh.html#演示数据" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<code>hsb2</code>数据集进行演示。其中<code>write</code>是数值型因变量，<code>race</code>是其中一个自变量，是无序分类变量，有4个类别：1 = Hispanic, 2 = Asian, 3 = African American and 4 = Caucasian。</p>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="tuishgh.html#cb304-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">&quot;datasets/codingSchemes.rdata&quot;</span>)</span>
+<span id="cb304-2"><a href="tuishgh.html#cb304-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-3"><a href="tuishgh.html#cb304-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 把race变为因子型，并放到新的一列中</span></span>
+<span id="cb304-4"><a href="tuishgh.html#cb304-4" aria-hidden="true" tabindex="-1"></a>hsb2<span class="sc">$</span>race.f <span class="ot">&lt;-</span> <span class="fu">factor</span>(hsb2<span class="sc">$</span>race, <span class="at">labels=</span><span class="fu">c</span>(<span class="st">&quot;Hispanic&quot;</span>, <span class="st">&quot;Asian&quot;</span>, <span class="st">&quot;African-Am&quot;</span>, <span class="st">&quot;Caucasian&quot;</span>))</span>
+<span id="cb304-5"><a href="tuishgh.html#cb304-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-6"><a href="tuishgh.html#cb304-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 根据race.f进行分组，计算分组后因变量write的均值</span></span>
+<span id="cb304-7"><a href="tuishgh.html#cb304-7" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(hsb2<span class="sc">$</span>write, hsb2<span class="sc">$</span>race.f, mean)</span>
+<span id="cb304-8"><a href="tuishgh.html#cb304-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   Hispanic      Asian African-Am  Caucasian </span></span>
+<span id="cb304-9"><a href="tuishgh.html#cb304-9" aria-hidden="true" tabindex="-1"></a><span class="do">##   46.45833   58.00000   48.20000   54.05517</span></span></code></pre></div>
+<p><strong>记住这个均值，很重要，后面要用的！</strong></p>
+</div>
+<div id="dummy-coding" class="section level2 hasAnchor" number="19.2">
+<h2><span class="header-section-number">19.2</span> Dummy Coding<a href="tuishgh.html#dummy-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>哑变量是最常见的分类变量编码方式，它以其中一个类别为参考，其他所有类别都和参考进行比较。比如，我们设定<code>race</code>中的1为参考，2,3,4都和1进行比较，也就是race=1时，write的均值。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-14-19.png" width="90%" /></p>
+<p>这也是R语言中数值型和无序因子型变量的默认编码方式，如果要手动设置，可以使用函数<code>contr.treatment()</code>，这个函数就是手动进行哑变量设置的函数。</p>
+<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="tuishgh.html#cb305-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contr.treatment</span>(<span class="dv">4</span>)</span>
+<span id="cb305-2"><a href="tuishgh.html#cb305-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   2 3 4</span></span>
+<span id="cb305-3"><a href="tuishgh.html#cb305-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 0 0 0</span></span>
+<span id="cb305-4"><a href="tuishgh.html#cb305-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 1 0 0</span></span>
+<span id="cb305-5"><a href="tuishgh.html#cb305-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 0 1 0</span></span>
+<span id="cb305-6"><a href="tuishgh.html#cb305-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 0 0 1</span></span></code></pre></div>
+<p>这是一个比较矩阵，如果有4个类别就是4行，每行代表一个类别，比如第一行，2,3,4都是0，那么就代表类别1,；第二行，2是1,3,4都是0，就是代表类别2，以此类推。</p>
+<p><strong>如果有K个类别，就会有K-1个哑变量，比如我们这个例子，有4个类别，就有3个哑变量，在R中的其他编码方式也是这样的。</strong></p>
+<p>R语言中对不同类型的变量都会有默认的编码方式，可以通过<code>contrasts()</code>函数查看，比如对于<code>race.f</code>默认的就是哑变量编码：</p>
+<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="tuishgh.html#cb306-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 和上面的比较矩阵一模一样的形式</span></span>
+<span id="cb306-2"><a href="tuishgh.html#cb306-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f)</span>
+<span id="cb306-3"><a href="tuishgh.html#cb306-3" aria-hidden="true" tabindex="-1"></a><span class="do">##            Asian African-Am Caucasian</span></span>
+<span id="cb306-4"><a href="tuishgh.html#cb306-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Hispanic       0          0         0</span></span>
+<span id="cb306-5"><a href="tuishgh.html#cb306-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Asian          1          0         0</span></span>
+<span id="cb306-6"><a href="tuishgh.html#cb306-6" aria-hidden="true" tabindex="-1"></a><span class="do">## African-Am     0          1         0</span></span>
+<span id="cb306-7"><a href="tuishgh.html#cb306-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Caucasian      0          0         1</span></span></code></pre></div>
+<p>在前面介绍logistic回归时，多次使用过哑变量编码的方式，因为是默认的，所以并不用手动设置！</p>
+<p>手动设置也可以，和默认是一样的结果，现在我们定义<code>race.f</code>这个变量进入回归模型后使用哑变量编码的方式：</p>
+<div class="sourceCode" id="cb307"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb307-1"><a href="tuishgh.html#cb307-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 手动定义变量的编码方式</span></span>
+<span id="cb307-2"><a href="tuishgh.html#cb307-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> <span class="fu">contr.treatment</span>(<span class="dv">4</span>)</span>
+<span id="cb307-3"><a href="tuishgh.html#cb307-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb307-4"><a href="tuishgh.html#cb307-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行回归</span></span>
+<span id="cb307-5"><a href="tuishgh.html#cb307-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, <span class="at">data =</span> hsb2))</span>
+<span id="cb307-6"><a href="tuishgh.html#cb307-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb307-7"><a href="tuishgh.html#cb307-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb307-8"><a href="tuishgh.html#cb307-8" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb307-9"><a href="tuishgh.html#cb307-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb307-10"><a href="tuishgh.html#cb307-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb307-11"><a href="tuishgh.html#cb307-11" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb307-12"><a href="tuishgh.html#cb307-12" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb307-13"><a href="tuishgh.html#cb307-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb307-14"><a href="tuishgh.html#cb307-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb307-15"><a href="tuishgh.html#cb307-15" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb307-16"><a href="tuishgh.html#cb307-16" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)   46.458      1.842  25.218  &lt; 2e-16 ***</span></span>
+<span id="cb307-17"><a href="tuishgh.html#cb307-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2       11.542      3.286   3.512 0.000552 ***</span></span>
+<span id="cb307-18"><a href="tuishgh.html#cb307-18" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3        1.742      2.732   0.637 0.524613    </span></span>
+<span id="cb307-19"><a href="tuishgh.html#cb307-19" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f4        7.597      1.989   3.820 0.000179 ***</span></span>
+<span id="cb307-20"><a href="tuishgh.html#cb307-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb307-21"><a href="tuishgh.html#cb307-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb307-22"><a href="tuishgh.html#cb307-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb307-23"><a href="tuishgh.html#cb307-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb307-24"><a href="tuishgh.html#cb307-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb307-25"><a href="tuishgh.html#cb307-25" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>可以看到结果中<code>race.f2/race.f3/race.f4</code>，都是和<code>race.f1</code>进行比较！和不设置的是一模一样的结果。</p>
+<blockquote>
+<p>请注意它们的系数，比如<code>race.f2</code>的系数是11.542，这个系数就是根据<code>race.f</code>进行分组后，race.f=2时write的均值 减去 race.f=1时write的均值，也就是58-46.45833！intercept（截距）的系数就是参考组write的平均值46.45833！</p>
+</blockquote>
+<p>哑变量编码后的数据进入回归分析时的具体操作可以这么理解，比如现在是<code>race.f</code>这个变量设置了哑变量编码的方式，那当它进入回归分析时，这一列就被我们设置的另外3列替代了，也就是原数据中的<code>race.f</code>这一列被另外3列哑变量替代了，当<code>race.f</code>这列的值是<code>Hispanic</code>时，3列哑变量就分别是0,0,0，如果<code>race.f</code>这列的值是<code>Asian</code>时，3列哑变量就分别是1,0,0，不知道大家理解了没有。</p>
+</div>
+<div id="simple-coding" class="section level2 hasAnchor" number="19.3">
+<h2><span class="header-section-number">19.3</span> simple coding<a href="tuishgh.html#simple-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>简单编码和哑变量编码的唯一不同之处是截距！哑变量的截距是参考组的因变量平均值，简单编码的截距是总的平均值。</p>
+<p>下面这张图是简单编码的方式。简单编码的所有类别编码相加需要等于1。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-15-25.png" width="90%" /></p>
+<p>level 1还是参考组，对于race.f1，是类别2比类别1，类别2就被编码为3/4，其他类别都是 -1/4，对于race.f2是类别3比类别1，类别3就别编码为为3/4，其他类别被编码为 -1/4，对于race.f3是类别4比类别1，类别4别编码为3/4，其他类别被编码为 -1/4。</p>
+<p>也就是说，参考组肯定是被编码为 -1/4（和类别个数有关，这里race.f是4个类别），谁和参考组比谁就被编码为 3/4。</p>
+<p>如果变量有K个类别的话，那就是参考组被编码为 -1/k，谁和参考组比谁就被编码为(k-1)/k。</p>
+<p>simple coding在R中并没有提供直接的函数，但是可以通过哑变量进行转换：</p>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="tuishgh.html#cb308-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 设置simple coding</span></span>
+<span id="cb308-2"><a href="tuishgh.html#cb308-2" aria-hidden="true" tabindex="-1"></a>c<span class="ot">&lt;-</span><span class="fu">contr.treatment</span>(<span class="dv">4</span>)</span>
+<span id="cb308-3"><a href="tuishgh.html#cb308-3" aria-hidden="true" tabindex="-1"></a>my.coding<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">12</span>), <span class="at">ncol=</span><span class="dv">3</span>)</span>
+<span id="cb308-4"><a href="tuishgh.html#cb308-4" aria-hidden="true" tabindex="-1"></a>my.simple<span class="ot">&lt;-</span>c<span class="sc">-</span>my.coding</span>
+<span id="cb308-5"><a href="tuishgh.html#cb308-5" aria-hidden="true" tabindex="-1"></a>my.simple</span>
+<span id="cb308-6"><a href="tuishgh.html#cb308-6" aria-hidden="true" tabindex="-1"></a><span class="do">##       2     3     4</span></span>
+<span id="cb308-7"><a href="tuishgh.html#cb308-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -0.25 -0.25 -0.25</span></span>
+<span id="cb308-8"><a href="tuishgh.html#cb308-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  0.75 -0.25 -0.25</span></span>
+<span id="cb308-9"><a href="tuishgh.html#cb308-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -0.25  0.75 -0.25</span></span>
+<span id="cb308-10"><a href="tuishgh.html#cb308-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 -0.25 -0.25  0.75</span></span></code></pre></div>
+<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="tuishgh.html#cb309-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 把race.f变成simple coding</span></span>
+<span id="cb309-2"><a href="tuishgh.html#cb309-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> my.simple</span>
+<span id="cb309-3"><a href="tuishgh.html#cb309-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb309-4"><a href="tuishgh.html#cb309-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行回归</span></span>
+<span id="cb309-5"><a href="tuishgh.html#cb309-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, <span class="at">data =</span> hsb2))</span>
+<span id="cb309-6"><a href="tuishgh.html#cb309-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb309-7"><a href="tuishgh.html#cb309-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb309-8"><a href="tuishgh.html#cb309-8" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb309-9"><a href="tuishgh.html#cb309-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb309-10"><a href="tuishgh.html#cb309-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb309-11"><a href="tuishgh.html#cb309-11" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb309-12"><a href="tuishgh.html#cb309-12" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb309-13"><a href="tuishgh.html#cb309-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb309-14"><a href="tuishgh.html#cb309-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb309-15"><a href="tuishgh.html#cb309-15" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb309-16"><a href="tuishgh.html#cb309-16" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span id="cb309-17"><a href="tuishgh.html#cb309-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2      11.5417     3.2861   3.512 0.000552 ***</span></span>
+<span id="cb309-18"><a href="tuishgh.html#cb309-18" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3       1.7417     2.7325   0.637 0.524613    </span></span>
+<span id="cb309-19"><a href="tuishgh.html#cb309-19" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f4       7.5968     1.9889   3.820 0.000179 ***</span></span>
+<span id="cb309-20"><a href="tuishgh.html#cb309-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb309-21"><a href="tuishgh.html#cb309-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb309-22"><a href="tuishgh.html#cb309-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb309-23"><a href="tuishgh.html#cb309-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb309-24"><a href="tuishgh.html#cb309-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb309-25"><a href="tuishgh.html#cb309-25" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>可以看到除了截距不一样，其他的系数都是一样的，这里的截距51.6784 = (46.45833 + 58 + 48.2 + 54.05517)/4 。</p>
+</div>
+<div id="deviation-coding" class="section level2 hasAnchor" number="19.4">
+<h2><span class="header-section-number">19.4</span> Deviation coding<a href="tuishgh.html#deviation-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>这种编码方式比较的是某个类别的因变量的均值和其他所有类别的因变量的均值。它的比较矩阵是下面这种的。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-16-04.png" width="90%" /></p>
+<p>第1组是比较类别1和其它所有类别，第2组是比较类别2和其它所有类别，第3组是比较类别3和其它所有类别。</p>
+<p>这种比较矩阵（编码方式）通过赋值1，0，-1实现。第1组中，类别1被设为1（因为是类别1和其他所有类别比较），第2组是类别2被设为1，第3组是类别3倍设为1，而类别4一直是 -1，因为它没和别人比过。</p>
+<p>在R中通过函数<code>contr.sum()</code>实现这种编码方式（比较矩阵）：</p>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="tuishgh.html#cb310-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contr.sum</span>(<span class="dv">4</span>)</span>
+<span id="cb310-2"><a href="tuishgh.html#cb310-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   [,1] [,2] [,3]</span></span>
+<span id="cb310-3"><a href="tuishgh.html#cb310-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1    1    0    0</span></span>
+<span id="cb310-4"><a href="tuishgh.html#cb310-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2    0    1    0</span></span>
+<span id="cb310-5"><a href="tuishgh.html#cb310-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3    0    0    1</span></span>
+<span id="cb310-6"><a href="tuishgh.html#cb310-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4   -1   -1   -1</span></span></code></pre></div>
+<p>现在我们把<code>race.f</code>这个变量设置为deviation coding，再次进行回归分析：</p>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="tuishgh.html#cb311-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> <span class="fu">contr.sum</span>(<span class="dv">4</span>)</span>
+<span id="cb311-2"><a href="tuishgh.html#cb311-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb311-3"><a href="tuishgh.html#cb311-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, <span class="at">data =</span> hsb2))</span>
+<span id="cb311-4"><a href="tuishgh.html#cb311-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb311-5"><a href="tuishgh.html#cb311-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb311-6"><a href="tuishgh.html#cb311-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb311-7"><a href="tuishgh.html#cb311-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb311-8"><a href="tuishgh.html#cb311-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb311-9"><a href="tuishgh.html#cb311-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb311-10"><a href="tuishgh.html#cb311-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb311-11"><a href="tuishgh.html#cb311-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb311-12"><a href="tuishgh.html#cb311-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb311-13"><a href="tuishgh.html#cb311-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb311-14"><a href="tuishgh.html#cb311-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span id="cb311-15"><a href="tuishgh.html#cb311-15" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f1      -5.2200     1.6314  -3.200  0.00160 ** </span></span>
+<span id="cb311-16"><a href="tuishgh.html#cb311-16" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2       6.3216     2.1603   2.926  0.00384 ** </span></span>
+<span id="cb311-17"><a href="tuishgh.html#cb311-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3      -3.4784     1.7323  -2.008  0.04602 *  </span></span>
+<span id="cb311-18"><a href="tuishgh.html#cb311-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb311-19"><a href="tuishgh.html#cb311-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb311-20"><a href="tuishgh.html#cb311-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb311-21"><a href="tuishgh.html#cb311-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb311-22"><a href="tuishgh.html#cb311-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb311-23"><a href="tuishgh.html#cb311-23" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>此时的截距是总的均值，也就是(46.4583 + 58 + 48.2 + 54.0552) / 4 = 51.678375，回归系数是相应类别的均值减去总的均值，比如<code>race.f1</code>的回归系数 -5.2200 = 46.4583 – 51.678375。</p>
+</div>
+<div id="orthogonal-polynomial-coding" class="section level2 hasAnchor" number="19.5">
+<h2><span class="header-section-number">19.5</span> Orthogonal Polynomial Coding<a href="tuishgh.html#orthogonal-polynomial-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>正交多项式编码，在重复测量方差分析的多重比较中用过，这种编码方式常用于线性趋势检验，检测某自变量的1次项、2次项、3次项等和因变量之间有无线性关系。只用在有序分类变量（有序因子）且不同类别间对因变量影响相同的情况下。</p>
+<p>在R语言中中通过函数<code>contr.poly()</code>实现对某个变量的正交多项式编码，对于有序因子变量来说，这种编码方式是默认的，不需要手动指定。</p>
+<p>我们使用<code>hsb2</code>数据集中的<code>read</code>这一个变量，把它变成一个有序因子：</p>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="tuishgh.html#cb312-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 新建一列，根据read转换为有序因子</span></span>
+<span id="cb312-2"><a href="tuishgh.html#cb312-2" aria-hidden="true" tabindex="-1"></a>hsb2<span class="sc">$</span>readcat <span class="ot">&lt;-</span> <span class="fu">cut</span>(hsb2<span class="sc">$</span>read, <span class="dv">4</span>, <span class="at">ordered=</span>T)</span>
+<span id="cb312-3"><a href="tuishgh.html#cb312-3" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(hsb2<span class="sc">$</span>readcat)</span>
+<span id="cb312-4"><a href="tuishgh.html#cb312-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb312-5"><a href="tuishgh.html#cb312-5" aria-hidden="true" tabindex="-1"></a><span class="do">## (28,40] (40,52] (52,64] (64,76] </span></span>
+<span id="cb312-6"><a href="tuishgh.html#cb312-6" aria-hidden="true" tabindex="-1"></a><span class="do">##      22      93      55      30</span></span>
+<span id="cb312-7"><a href="tuishgh.html#cb312-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb312-8"><a href="tuishgh.html#cb312-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(hsb2<span class="sc">$</span>write, hsb2<span class="sc">$</span>readcat, mean)</span>
+<span id="cb312-9"><a href="tuishgh.html#cb312-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  (28,40]  (40,52]  (52,64]  (64,76] </span></span>
+<span id="cb312-10"><a href="tuishgh.html#cb312-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 42.77273 49.97849 56.56364 61.83333</span></span></code></pre></div>
+<p><img src="figs/Snipaste_2023-04-05_16-16-38.png" width="90%" /></p>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="tuishgh.html#cb313-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contr.poly</span>(<span class="dv">4</span>)</span>
+<span id="cb313-2"><a href="tuishgh.html#cb313-2" aria-hidden="true" tabindex="-1"></a><span class="do">##              .L   .Q         .C</span></span>
+<span id="cb313-3"><a href="tuishgh.html#cb313-3" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,] -0.6708204  0.5 -0.2236068</span></span>
+<span id="cb313-4"><a href="tuishgh.html#cb313-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] -0.2236068 -0.5  0.6708204</span></span>
+<span id="cb313-5"><a href="tuishgh.html#cb313-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,]  0.2236068 -0.5 -0.6708204</span></span>
+<span id="cb313-6"><a href="tuishgh.html#cb313-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,]  0.6708204  0.5  0.2236068</span></span></code></pre></div>
+<p>目前我们还未对<code>readcat</code>这个变量进行任何编码设置，但是R语言是有默认编码方式的，可以通过<code>contrasts()</code>查看：</p>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="tuishgh.html#cb314-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 发现默认就是正交多项式编码</span></span>
+<span id="cb314-2"><a href="tuishgh.html#cb314-2" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>readcat)</span>
+<span id="cb314-3"><a href="tuishgh.html#cb314-3" aria-hidden="true" tabindex="-1"></a><span class="do">##              .L   .Q         .C</span></span>
+<span id="cb314-4"><a href="tuishgh.html#cb314-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,] -0.6708204  0.5 -0.2236068</span></span>
+<span id="cb314-5"><a href="tuishgh.html#cb314-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] -0.2236068 -0.5  0.6708204</span></span>
+<span id="cb314-6"><a href="tuishgh.html#cb314-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,]  0.2236068 -0.5 -0.6708204</span></span>
+<span id="cb314-7"><a href="tuishgh.html#cb314-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,]  0.6708204  0.5  0.2236068</span></span></code></pre></div>
+<p>当然也可以手动设置：</p>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="tuishgh.html#cb315-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>readcat) <span class="ot">&lt;-</span> <span class="fu">contr.poly</span>(<span class="dv">4</span>)</span>
+<span id="cb315-2"><a href="tuishgh.html#cb315-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb315-3"><a href="tuishgh.html#cb315-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> readcat, <span class="at">data =</span> hsb2))</span>
+<span id="cb315-4"><a href="tuishgh.html#cb315-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb315-5"><a href="tuishgh.html#cb315-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb315-6"><a href="tuishgh.html#cb315-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ readcat, data = hsb2)</span></span>
+<span id="cb315-7"><a href="tuishgh.html#cb315-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb315-8"><a href="tuishgh.html#cb315-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb315-9"><a href="tuishgh.html#cb315-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb315-10"><a href="tuishgh.html#cb315-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -18.979  -5.824   1.227   5.436  17.021 </span></span>
+<span id="cb315-11"><a href="tuishgh.html#cb315-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb315-12"><a href="tuishgh.html#cb315-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb315-13"><a href="tuishgh.html#cb315-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb315-14"><a href="tuishgh.html#cb315-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  52.7870     0.6339  83.268   &lt;2e-16 ***</span></span>
+<span id="cb315-15"><a href="tuishgh.html#cb315-15" aria-hidden="true" tabindex="-1"></a><span class="do">## readcat.L    14.2587     1.4841   9.607   &lt;2e-16 ***</span></span>
+<span id="cb315-16"><a href="tuishgh.html#cb315-16" aria-hidden="true" tabindex="-1"></a><span class="do">## readcat.Q    -0.9680     1.2679  -0.764    0.446    </span></span>
+<span id="cb315-17"><a href="tuishgh.html#cb315-17" aria-hidden="true" tabindex="-1"></a><span class="do">## readcat.C    -0.1554     1.0062  -0.154    0.877    </span></span>
+<span id="cb315-18"><a href="tuishgh.html#cb315-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb315-19"><a href="tuishgh.html#cb315-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb315-20"><a href="tuishgh.html#cb315-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb315-21"><a href="tuishgh.html#cb315-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 7.726 on 196 degrees of freedom</span></span>
+<span id="cb315-22"><a href="tuishgh.html#cb315-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.3456, Adjusted R-squared:  0.3356 </span></span>
+<span id="cb315-23"><a href="tuishgh.html#cb315-23" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 34.51 on 3 and 196 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>回归分析结果显示<code>readcat</code>的一次项和因变量有很强的的线性关系，二次项和三次项没有明显的线性关系。</p>
+</div>
+<div id="helmert-coding" class="section level2 hasAnchor" number="19.6">
+<h2><span class="header-section-number">19.6</span> Helmert Coding<a href="tuishgh.html#helmert-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Helmert Coding比较的是当前类别下的因变量平均值和后面的类别的因变量平均值。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-18-14.png" width="90%" /></p>
+<p>如上图所示，<code>race.f1</code>比较的是类别1的因变量平均值和类别2,3,4的因变量平均值，<code>race.f2</code>比较的是类别2的因变量平均值和类别3,4的因变量平均值，<code>race.f3</code>比较的是类别3的因变量平均值和类别4的因变量平均值。</p>
+<p>R中提供了<code>contr.helmert</code>，但是对应的是 反helmert编码方式。所以如果想要对一个变量使用Helmert coding，需要手动设置：</p>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="tuishgh.html#cb316-1" aria-hidden="true" tabindex="-1"></a>my.helmert <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span><span class="sc">/</span></span>
+<span id="cb316-2"><a href="tuishgh.html#cb316-2" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb316-3"><a href="tuishgh.html#cb316-3" aria-hidden="true" tabindex="-1"></a>my.helmert</span>
+<span id="cb316-4"><a href="tuishgh.html#cb316-4" aria-hidden="true" tabindex="-1"></a><span class="do">##       [,1]       [,2] [,3]</span></span>
+<span id="cb316-5"><a href="tuishgh.html#cb316-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,]  0.75  0.0000000  0.0</span></span>
+<span id="cb316-6"><a href="tuishgh.html#cb316-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] -0.25  0.6666667  0.0</span></span>
+<span id="cb316-7"><a href="tuishgh.html#cb316-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,] -0.25 -0.3333333  0.5</span></span>
+<span id="cb316-8"><a href="tuishgh.html#cb316-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,] -0.25 -0.3333333 -0.5</span></span></code></pre></div>
+<p>现在把<code>race.f</code>设置为Helmert coding：</p>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="tuishgh.html#cb317-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> my.helmert</span>
+<span id="cb317-2"><a href="tuishgh.html#cb317-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb317-3"><a href="tuishgh.html#cb317-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, hsb2))</span>
+<span id="cb317-4"><a href="tuishgh.html#cb317-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb317-5"><a href="tuishgh.html#cb317-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb317-6"><a href="tuishgh.html#cb317-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb317-7"><a href="tuishgh.html#cb317-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb317-8"><a href="tuishgh.html#cb317-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb317-9"><a href="tuishgh.html#cb317-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb317-10"><a href="tuishgh.html#cb317-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb317-11"><a href="tuishgh.html#cb317-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb317-12"><a href="tuishgh.html#cb317-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb317-13"><a href="tuishgh.html#cb317-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb317-14"><a href="tuishgh.html#cb317-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span id="cb317-15"><a href="tuishgh.html#cb317-15" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f1      -6.9601     2.1752  -3.200  0.00160 ** </span></span>
+<span id="cb317-16"><a href="tuishgh.html#cb317-16" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2       6.8724     2.9263   2.348  0.01985 *  </span></span>
+<span id="cb317-17"><a href="tuishgh.html#cb317-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3      -5.8552     2.1528  -2.720  0.00712 ** </span></span>
+<span id="cb317-18"><a href="tuishgh.html#cb317-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb317-19"><a href="tuishgh.html#cb317-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb317-20"><a href="tuishgh.html#cb317-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb317-21"><a href="tuishgh.html#cb317-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb317-22"><a href="tuishgh.html#cb317-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb317-23"><a href="tuishgh.html#cb317-23" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p><code>race.f1</code>的回归系数 -6.9601 = 46.4583 – [(58 + 48.2 + 54.0552) / 3]，也就是类别1的因变量平均值减去类别2,3,4的因变量平均值；<code>race.f2</code>和<code>race.f3</code>的系数同理。</p>
+</div>
+<div id="reverse-helmert-coding" class="section level2 hasAnchor" number="19.7">
+<h2><span class="header-section-number">19.7</span> Reverse Helmert Coding<a href="tuishgh.html#reverse-helmert-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>和Helmert Coding刚好完全相反，每一个类别和它前面的类别比较。</p>
+<p>如下图所示，<code>race.f1</code>比较的是类别2的因变量平均值和类别1的因变量平均值，<code>race.f2</code>比较的是类别3的因变量平均值和类别1,2的因变量平均值，<code>race.f3</code>比较的是类别4的因变量平均值和类别1,2,3的因变量平均值。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-18-56.png" width="90%" /></p>
+<p>R中提供了<code>contr.helmert</code>，可以进行Reverse Helmert Coding：</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="tuishgh.html#cb318-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contr.helmert</span>(<span class="dv">4</span>)</span>
+<span id="cb318-2"><a href="tuishgh.html#cb318-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   [,1] [,2] [,3]</span></span>
+<span id="cb318-3"><a href="tuishgh.html#cb318-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   -1   -1   -1</span></span>
+<span id="cb318-4"><a href="tuishgh.html#cb318-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2    1   -1   -1</span></span>
+<span id="cb318-5"><a href="tuishgh.html#cb318-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3    0    2   -1</span></span>
+<span id="cb318-6"><a href="tuishgh.html#cb318-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4    0    0    3</span></span></code></pre></div>
+<p>把<code>race.f</code>设置为这种编码方式再次进行回归分析：</p>
+<div class="sourceCode" id="cb319"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb319-1"><a href="tuishgh.html#cb319-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> <span class="fu">contr.helmert</span>(<span class="dv">4</span>)</span>
+<span id="cb319-2"><a href="tuishgh.html#cb319-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb319-3"><a href="tuishgh.html#cb319-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, hsb2))</span>
+<span id="cb319-4"><a href="tuishgh.html#cb319-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb319-5"><a href="tuishgh.html#cb319-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb319-6"><a href="tuishgh.html#cb319-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb319-7"><a href="tuishgh.html#cb319-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb319-8"><a href="tuishgh.html#cb319-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb319-9"><a href="tuishgh.html#cb319-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb319-10"><a href="tuishgh.html#cb319-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb319-11"><a href="tuishgh.html#cb319-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb319-12"><a href="tuishgh.html#cb319-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb319-13"><a href="tuishgh.html#cb319-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb319-14"><a href="tuishgh.html#cb319-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span id="cb319-15"><a href="tuishgh.html#cb319-15" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f1       5.7708     1.6431   3.512 0.000552 ***</span></span>
+<span id="cb319-16"><a href="tuishgh.html#cb319-16" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2      -1.3431     0.8675  -1.548 0.123170    </span></span>
+<span id="cb319-17"><a href="tuishgh.html#cb319-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3       0.7923     0.3720   2.130 0.034439 *  </span></span>
+<span id="cb319-18"><a href="tuishgh.html#cb319-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb319-19"><a href="tuishgh.html#cb319-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb319-20"><a href="tuishgh.html#cb319-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb319-21"><a href="tuishgh.html#cb319-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb319-22"><a href="tuishgh.html#cb319-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb319-23"><a href="tuishgh.html#cb319-23" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>看完了上面那么多例子，这个回归系数的解读大家应该明白了吧，这里就不再赘述了。</p>
+</div>
+<div id="forward-difference-coding" class="section level2 hasAnchor" number="19.8">
+<h2><span class="header-section-number">19.8</span> Forward Difference Coding<a href="tuishgh.html#forward-difference-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>这种编码方式比较的是当前类别的因变量均值和它相邻的下一个类别的因变量均值，注意是下一个，Helmert coding是多个。</p>
+<p>如下图所示，<code>race.f1</code>比较的是类别1和类别2，<code>race.f2比较的是类别2和3，</code>race.f3`比较的是类别3和类别4。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-19-34.png" width="90%" /></p>
+<p>R语言中并没有默认函数提供此类编码方式，需要手动设置。</p>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="tuishgh.html#cb320-1" aria-hidden="true" tabindex="-1"></a>my.forward.diff <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span></span>
+<span id="cb320-2"><a href="tuishgh.html#cb320-2" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb320-3"><a href="tuishgh.html#cb320-3" aria-hidden="true" tabindex="-1"></a>my.forward.diff</span>
+<span id="cb320-4"><a href="tuishgh.html#cb320-4" aria-hidden="true" tabindex="-1"></a><span class="do">##       [,1] [,2]  [,3]</span></span>
+<span id="cb320-5"><a href="tuishgh.html#cb320-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,]  0.75  0.5  0.25</span></span>
+<span id="cb320-6"><a href="tuishgh.html#cb320-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] -0.25  0.5  0.25</span></span>
+<span id="cb320-7"><a href="tuishgh.html#cb320-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,] -0.25 -0.5  0.25</span></span>
+<span id="cb320-8"><a href="tuishgh.html#cb320-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,] -0.25 -0.5 -0.75</span></span></code></pre></div>
+<p>把<code>race.f</code>设置为这种编码方式：</p>
+<div class="sourceCode" id="cb321"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb321-1"><a href="tuishgh.html#cb321-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> my.forward.diff</span>
+<span id="cb321-2"><a href="tuishgh.html#cb321-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-3"><a href="tuishgh.html#cb321-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, <span class="at">data =</span> hsb2))</span>
+<span id="cb321-4"><a href="tuishgh.html#cb321-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb321-5"><a href="tuishgh.html#cb321-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb321-6"><a href="tuishgh.html#cb321-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb321-7"><a href="tuishgh.html#cb321-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb321-8"><a href="tuishgh.html#cb321-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb321-9"><a href="tuishgh.html#cb321-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb321-10"><a href="tuishgh.html#cb321-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb321-11"><a href="tuishgh.html#cb321-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb321-12"><a href="tuishgh.html#cb321-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb321-13"><a href="tuishgh.html#cb321-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb321-14"><a href="tuishgh.html#cb321-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span id="cb321-15"><a href="tuishgh.html#cb321-15" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f1     -11.5417     3.2861  -3.512 0.000552 ***</span></span>
+<span id="cb321-16"><a href="tuishgh.html#cb321-16" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2       9.8000     3.3878   2.893 0.004251 ** </span></span>
+<span id="cb321-17"><a href="tuishgh.html#cb321-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3      -5.8552     2.1528  -2.720 0.007118 ** </span></span>
+<span id="cb321-18"><a href="tuishgh.html#cb321-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb321-19"><a href="tuishgh.html#cb321-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb321-20"><a href="tuishgh.html#cb321-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb321-21"><a href="tuishgh.html#cb321-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb321-22"><a href="tuishgh.html#cb321-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb321-23"><a href="tuishgh.html#cb321-23" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p><code>race.f1</code>的截距是类别2和类别1的因变量差值， -11.5417 = 46.4583 – 58，<code>race.f2</code>的截距 是类别3和类别2的因变量差值，9.9 = 58 – 48.2，<code>race.f3</code>的截距是类别4和类别3的因变量差值，-5.8552 = 48.2 – 54.0552。</p>
+</div>
+<div id="backward-difference-coding" class="section level2 hasAnchor" number="19.9">
+<h2><span class="header-section-number">19.9</span> Backward Difference Coding<a href="tuishgh.html#backward-difference-coding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>这种编码方式和前一种刚好相反，比较的是当前类别和它相邻的前一个类别的因变量均值。</p>
+<p><img src="figs/Snipaste_2023-04-05_16-20-10.png" width="90%" /></p>
+<p>在R语言中实现这种编码方式也是需要手动设置的：</p>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="tuishgh.html#cb322-1" aria-hidden="true" tabindex="-1"></a>my.backward.diff <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="sc">-</span><span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>, <span class="dv">3</span><span class="sc">/</span><span class="dv">4</span>), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb322-2"><a href="tuishgh.html#cb322-2" aria-hidden="true" tabindex="-1"></a>my.backward.diff</span>
+<span id="cb322-3"><a href="tuishgh.html#cb322-3" aria-hidden="true" tabindex="-1"></a><span class="do">##       [,1] [,2]  [,3]</span></span>
+<span id="cb322-4"><a href="tuishgh.html#cb322-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,] -0.75 -0.5 -0.25</span></span>
+<span id="cb322-5"><a href="tuishgh.html#cb322-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,]  0.25 -0.5 -0.25</span></span>
+<span id="cb322-6"><a href="tuishgh.html#cb322-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,]  0.25  0.5 -0.25</span></span>
+<span id="cb322-7"><a href="tuishgh.html#cb322-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,]  0.25  0.5  0.75</span></span></code></pre></div>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="tuishgh.html#cb323-1" aria-hidden="true" tabindex="-1"></a><span class="fu">contrasts</span>(hsb2<span class="sc">$</span>race.f) <span class="ot">&lt;-</span> my.backward.diff</span>
+<span id="cb323-2"><a href="tuishgh.html#cb323-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb323-3"><a href="tuishgh.html#cb323-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(write <span class="sc">~</span> race.f, <span class="at">data =</span> hsb2))</span>
+<span id="cb323-4"><a href="tuishgh.html#cb323-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb323-5"><a href="tuishgh.html#cb323-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb323-6"><a href="tuishgh.html#cb323-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span id="cb323-7"><a href="tuishgh.html#cb323-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb323-8"><a href="tuishgh.html#cb323-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb323-9"><a href="tuishgh.html#cb323-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      Min       1Q   Median       3Q      Max </span></span>
+<span id="cb323-10"><a href="tuishgh.html#cb323-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span id="cb323-11"><a href="tuishgh.html#cb323-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb323-12"><a href="tuishgh.html#cb323-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb323-13"><a href="tuishgh.html#cb323-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb323-14"><a href="tuishgh.html#cb323-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span id="cb323-15"><a href="tuishgh.html#cb323-15" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f1      11.5417     3.2861   3.512 0.000552 ***</span></span>
+<span id="cb323-16"><a href="tuishgh.html#cb323-16" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f2      -9.8000     3.3878  -2.893 0.004251 ** </span></span>
+<span id="cb323-17"><a href="tuishgh.html#cb323-17" aria-hidden="true" tabindex="-1"></a><span class="do">## race.f3       5.8552     2.1528   2.720 0.007118 ** </span></span>
+<span id="cb323-18"><a href="tuishgh.html#cb323-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb323-19"><a href="tuishgh.html#cb323-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb323-20"><a href="tuishgh.html#cb323-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb323-21"><a href="tuishgh.html#cb323-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span id="cb323-22"><a href="tuishgh.html#cb323-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span id="cb323-23"><a href="tuishgh.html#cb323-23" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>此时的截距正负号刚好和上面一种情况相反。</p>
+<p>这几种就是常见的R语言中分类变量的编码方式，除了这几个，大家还可以根据自己需要灵活手动设置。</p>
+<p>大家以为这套规则只是R语言中独有的吗？并不是，<strong>在SPSS、SAS等软件中，分类变量的编码方式也是类似的！</strong></p>
+<p>这里只演示了线性回归的，logistic回归、cox回归也是类似的编码方案！</p>
+</div>
+<div id="参考资料-1" class="section level2 hasAnchor" number="19.10">
+<h2><span class="header-section-number">19.10</span> 参考资料<a href="tuishgh.html#参考资料-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/" class="uri">https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/</a></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="rlkdfjj.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="erutgjdflk.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

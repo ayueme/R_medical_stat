@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>20 R语言判别分析 | R语言实战医学统计</title>
+  <meta name="description" content="20 R语言判别分析 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="20 R语言判别分析 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="20 R语言判别分析 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="20 R语言判别分析 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="20 R语言判别分析 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1019-rcodecheme.html"/>
+<link rel="next" href="1021-cluster.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,315 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="erutgjdflk" class="section level1 hasAnchor" number="20">
+<h1><span class="header-section-number">20</span> R语言判别分析<a href="1020-discriminant.html#erutgjdflk" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>判别分析（discriminant analysis）是根据判别对象若干个指标的观测结果判定其属于哪一类的统计方法。经典的判别分析方法有Fisher判别和贝叶斯判别分析。当分类很确定时，判别分析可以有效替代logistic回归，但是如果自变量和因变量关系很复杂时，判别分析表现不如logistic回归。</p>
+<div id="fisher判别分析" class="section level2 hasAnchor" number="20.1">
+<h2><span class="header-section-number">20.1</span> Fisher判别分析<a href="1020-discriminant.html#fisher判别分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Fisher判别又称为典型判别（canonical discriminant）分析，适用于两类和多分类判别。</p>
+<p>Fisher判别使用贝叶斯定理确定每个观测属于某个类别的概率。如果你有两个类别，比如良性和恶性，判别分析会分别计算属于两个类别的概率，然后选择概率大的类别作为正确的类别。</p>
+<p>线性判别分析假设每个类中的观测服从多元正态分布，并且不同类别之间的协方差相等。二次判别假设观测服从正态分布，每种类别都有自己的协方差。</p>
+<p>使用孙振球版《医学统计学》第4版<strong>例20-1</strong>的数据。电子版及配套数据已上传到QQ群，需要的加群下载即可。</p>
+<p>收集了22例肝硬化患者的3个指标，其中早期患者（用1表示）12例，晚期患者（用2表示），试做判别分析。</p>
+<div class="sourceCode" id="cb324"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb324-1"><a href="1020-discriminant.html#cb324-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;datasets/例20-1.csv&quot;</span>)</span>
+<span id="cb324-2"><a href="1020-discriminant.html#cb324-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb324-3"><a href="1020-discriminant.html#cb324-3" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(df)</span>
+<span id="cb324-4"><a href="1020-discriminant.html#cb324-4" aria-hidden="true" tabindex="-1"></a><span class="do">##      id  x1  x2  x3   y</span></span>
+<span id="cb324-5"><a href="1020-discriminant.html#cb324-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     1  23   8   0   1</span></span>
+<span id="cb324-6"><a href="1020-discriminant.html#cb324-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     2  -1   9  -2   1</span></span>
+<span id="cb324-7"><a href="1020-discriminant.html#cb324-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     3 -10   5   0   1</span></span>
+<span id="cb324-8"><a href="1020-discriminant.html#cb324-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     4  -7  -2   1   1</span></span>
+<span id="cb324-9"><a href="1020-discriminant.html#cb324-9" aria-hidden="true" tabindex="-1"></a><span class="do">## ... ... ... ... ... ...</span></span>
+<span id="cb324-10"><a href="1020-discriminant.html#cb324-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 19   19  -9 -20   3   2</span></span>
+<span id="cb324-11"><a href="1020-discriminant.html#cb324-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 20   20  -7  -2   3   2</span></span>
+<span id="cb324-12"><a href="1020-discriminant.html#cb324-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 21   21  -9   6   0   2</span></span>
+<span id="cb324-13"><a href="1020-discriminant.html#cb324-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 22   22  12   0   0   2</span></span></code></pre></div>
+<p>这个数据集中id是编号，x1,x2,x3是自变量，y是因变量。</p>
+<p>线性判别分析可以通过<code>MASS</code>包中的<code>lda</code>函数实现：</p>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="1020-discriminant.html#cb325-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb325-2"><a href="1020-discriminant.html#cb325-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb325-3"><a href="1020-discriminant.html#cb325-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lda</span>(y <span class="sc">~</span> x1<span class="sc">+</span>x2<span class="sc">+</span>x3, <span class="at">data =</span> df)</span>
+<span id="cb325-4"><a href="1020-discriminant.html#cb325-4" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb325-5"><a href="1020-discriminant.html#cb325-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb325-6"><a href="1020-discriminant.html#cb325-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lda(y ~ x1 + x2 + x3, data = df)</span></span>
+<span id="cb325-7"><a href="1020-discriminant.html#cb325-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb325-8"><a href="1020-discriminant.html#cb325-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Prior probabilities of groups:</span></span>
+<span id="cb325-9"><a href="1020-discriminant.html#cb325-9" aria-hidden="true" tabindex="-1"></a><span class="do">##         1         2 </span></span>
+<span id="cb325-10"><a href="1020-discriminant.html#cb325-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.5454545 0.4545455 </span></span>
+<span id="cb325-11"><a href="1020-discriminant.html#cb325-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb325-12"><a href="1020-discriminant.html#cb325-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Group means:</span></span>
+<span id="cb325-13"><a href="1020-discriminant.html#cb325-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   x1 x2 x3</span></span>
+<span id="cb325-14"><a href="1020-discriminant.html#cb325-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -3  4 -1</span></span>
+<span id="cb325-15"><a href="1020-discriminant.html#cb325-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  4 -5  1</span></span>
+<span id="cb325-16"><a href="1020-discriminant.html#cb325-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb325-17"><a href="1020-discriminant.html#cb325-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients of linear discriminants:</span></span>
+<span id="cb325-18"><a href="1020-discriminant.html#cb325-18" aria-hidden="true" tabindex="-1"></a><span class="do">##           LD1</span></span>
+<span id="cb325-19"><a href="1020-discriminant.html#cb325-19" aria-hidden="true" tabindex="-1"></a><span class="do">## x1  0.0395150</span></span>
+<span id="cb325-20"><a href="1020-discriminant.html#cb325-20" aria-hidden="true" tabindex="-1"></a><span class="do">## x2 -0.1265698</span></span>
+<span id="cb325-21"><a href="1020-discriminant.html#cb325-21" aria-hidden="true" tabindex="-1"></a><span class="do">## x3  0.1792631</span></span></code></pre></div>
+<p><code>Prior probabilities of groups</code>是先验概率，类别1的概率是0.5454545，类别2是0.4545455。</p>
+<p>然后给出了每个组在不同类别中的均值。</p>
+<p>最下面给出了线性判别系数，如果你的结果变量是3个类别，会给出两组判别系数，这里我的结果变量只有2分类，所以结果只有1组。</p>
+<p>结果可以画出来：</p>
+<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="1020-discriminant.html#cb326-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit,<span class="at">type=</span><span class="st">&quot;both&quot;</span>)</span></code></pre></div>
+<p><img src="1020-discriminant_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>上图是判别分析结果的直方图和密度图，可以看出组间有重合，说明有些分组分错了。</p>
+<p>下面用<code>predict</code>提取判别分析的分类结果。</p>
+<p><code>predict</code>用于判别分析可以得到3种类型的结果，class是类别，posterior是概率，x是线性判别评分。</p>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="1020-discriminant.html#cb327-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit)<span class="sc">$</span>class</span>
+<span id="cb327-2"><a href="1020-discriminant.html#cb327-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df<span class="sc">$</span>y, pred)</span>
+<span id="cb327-3"><a href="1020-discriminant.html#cb327-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    pred</span></span>
+<span id="cb327-4"><a href="1020-discriminant.html#cb327-4" aria-hidden="true" tabindex="-1"></a><span class="do">##      1  2</span></span>
+<span id="cb327-5"><a href="1020-discriminant.html#cb327-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   1 11  1</span></span>
+<span id="cb327-6"><a href="1020-discriminant.html#cb327-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   2  2  8</span></span></code></pre></div>
+<p>可以看到有3个分类分错了，结果还是可以的。</p>
+<p>可以查看每个患者的后验概率：</p>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="1020-discriminant.html#cb328-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看概率</span></span>
+<span id="cb328-2"><a href="1020-discriminant.html#cb328-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit)<span class="sc">$</span>posterior</span>
+<span id="cb328-3"><a href="1020-discriminant.html#cb328-3" aria-hidden="true" tabindex="-1"></a><span class="do">##             1           2</span></span>
+<span id="cb328-4"><a href="1020-discriminant.html#cb328-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  0.62566758 0.374332416</span></span>
+<span id="cb328-5"><a href="1020-discriminant.html#cb328-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  0.95508370 0.044916302</span></span>
+<span id="cb328-6"><a href="1020-discriminant.html#cb328-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  0.89600449 0.103995511</span></span>
+<span id="cb328-7"><a href="1020-discriminant.html#cb328-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  0.51330556 0.486694443</span></span>
+<span id="cb328-8"><a href="1020-discriminant.html#cb328-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  0.95464457 0.045355435</span></span>
+<span id="cb328-9"><a href="1020-discriminant.html#cb328-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  0.88314148 0.116858515</span></span>
+<span id="cb328-10"><a href="1020-discriminant.html#cb328-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 7  0.77454260 0.225457398</span></span>
+<span id="cb328-11"><a href="1020-discriminant.html#cb328-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 8  0.99508599 0.004914013</span></span>
+<span id="cb328-12"><a href="1020-discriminant.html#cb328-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 9  0.89391137 0.106088634</span></span>
+<span id="cb328-13"><a href="1020-discriminant.html#cb328-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 0.84899794 0.151002059</span></span>
+<span id="cb328-14"><a href="1020-discriminant.html#cb328-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 11 0.31960372 0.680396284</span></span>
+<span id="cb328-15"><a href="1020-discriminant.html#cb328-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 12 0.64144092 0.358559076</span></span>
+<span id="cb328-16"><a href="1020-discriminant.html#cb328-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 13 0.14903037 0.850969632</span></span>
+<span id="cb328-17"><a href="1020-discriminant.html#cb328-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 14 0.57026493 0.429735074</span></span>
+<span id="cb328-18"><a href="1020-discriminant.html#cb328-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 15 0.13106732 0.868932682</span></span>
+<span id="cb328-19"><a href="1020-discriminant.html#cb328-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 16 0.26925350 0.730746503</span></span>
+<span id="cb328-20"><a href="1020-discriminant.html#cb328-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 17 0.03911397 0.960886034</span></span>
+<span id="cb328-21"><a href="1020-discriminant.html#cb328-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 18 0.04332382 0.956676176</span></span>
+<span id="cb328-22"><a href="1020-discriminant.html#cb328-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 19 0.01115243 0.988847571</span></span>
+<span id="cb328-23"><a href="1020-discriminant.html#cb328-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 20 0.35826933 0.641730670</span></span>
+<span id="cb328-24"><a href="1020-discriminant.html#cb328-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 21 0.90954200 0.090457999</span></span>
+<span id="cb328-25"><a href="1020-discriminant.html#cb328-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 22 0.37480490 0.625195100</span></span></code></pre></div>
+<p>上面的图我们也可以用<code>ggplot2</code>画出来。</p>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="1020-discriminant.html#cb329-1" aria-hidden="true" tabindex="-1"></a>df.plot <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">LD1 =</span> <span class="fu">predict</span>(fit)<span class="sc">$</span>x[,<span class="dv">1</span>],</span>
+<span id="cb329-2"><a href="1020-discriminant.html#cb329-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">y =</span> <span class="fu">factor</span>(df<span class="sc">$</span>y,<span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;早期患者&quot;</span>,<span class="st">&quot;晚期患者&quot;</span>))</span>
+<span id="cb329-3"><a href="1020-discriminant.html#cb329-3" aria-hidden="true" tabindex="-1"></a>                      )</span>
+<span id="cb329-4"><a href="1020-discriminant.html#cb329-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb329-5"><a href="1020-discriminant.html#cb329-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb329-6"><a href="1020-discriminant.html#cb329-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</span></span>
+<span id="cb329-7"><a href="1020-discriminant.html#cb329-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb329-8"><a href="1020-discriminant.html#cb329-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df.plot, <span class="fu">aes</span>(<span class="at">x=</span>LD1, <span class="at">fill=</span>y))<span class="sc">+</span></span>
+<span id="cb329-9"><a href="1020-discriminant.html#cb329-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()<span class="sc">+</span></span>
+<span id="cb329-10"><a href="1020-discriminant.html#cb329-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> y, <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb329-11"><a href="1020-discriminant.html#cb329-11" aria-hidden="true" tabindex="-1"></a><span class="do">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
+<p><img src="1020-discriminant_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>如果你想用这个模型预测新的数据，只需要<code>predict(fit, newdata = xxx)</code>即可。比如我们新建一个数据：</p>
+<div class="sourceCode" id="cb330"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb330-1"><a href="1020-discriminant.html#cb330-1" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x1 =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">9</span>,<span class="sc">-</span><span class="dv">7</span>,<span class="sc">-</span><span class="dv">9</span>),</span>
+<span id="cb330-2"><a href="1020-discriminant.html#cb330-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">x2 =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">18</span>,<span class="sc">-</span><span class="dv">2</span>,<span class="dv">6</span>),</span>
+<span id="cb330-3"><a href="1020-discriminant.html#cb330-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">x3 =</span> <span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">1</span>)</span>
+<span id="cb330-4"><a href="1020-discriminant.html#cb330-4" aria-hidden="true" tabindex="-1"></a>                  )</span>
+<span id="cb330-5"><a href="1020-discriminant.html#cb330-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb330-6"><a href="1020-discriminant.html#cb330-6" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(fit, <span class="at">newdata =</span> tmp)</span>
+<span id="cb330-7"><a href="1020-discriminant.html#cb330-7" aria-hidden="true" tabindex="-1"></a><span class="do">## $class</span></span>
+<span id="cb330-8"><a href="1020-discriminant.html#cb330-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2 2 1</span></span>
+<span id="cb330-9"><a href="1020-discriminant.html#cb330-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Levels: 1 2</span></span>
+<span id="cb330-10"><a href="1020-discriminant.html#cb330-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb330-11"><a href="1020-discriminant.html#cb330-11" aria-hidden="true" tabindex="-1"></a><span class="do">## $posterior</span></span>
+<span id="cb330-12"><a href="1020-discriminant.html#cb330-12" aria-hidden="true" tabindex="-1"></a><span class="do">##            1         2</span></span>
+<span id="cb330-13"><a href="1020-discriminant.html#cb330-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 0.01736557 0.9826344</span></span>
+<span id="cb330-14"><a href="1020-discriminant.html#cb330-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 0.35826933 0.6417307</span></span>
+<span id="cb330-15"><a href="1020-discriminant.html#cb330-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 0.87974275 0.1202573</span></span>
+<span id="cb330-16"><a href="1020-discriminant.html#cb330-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb330-17"><a href="1020-discriminant.html#cb330-17" aria-hidden="true" tabindex="-1"></a><span class="do">## $x</span></span>
+<span id="cb330-18"><a href="1020-discriminant.html#cb330-18" aria-hidden="true" tabindex="-1"></a><span class="do">##          LD1</span></span>
+<span id="cb330-19"><a href="1020-discriminant.html#cb330-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  2.4580167</span></span>
+<span id="cb330-20"><a href="1020-discriminant.html#cb330-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  0.5119296</span></span>
+<span id="cb330-21"><a href="1020-discriminant.html#cb330-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -0.9381851</span></span></code></pre></div>
+<p>这样就得到新的结果。</p>
+<p>我们再用一个<code>iris</code>鸢尾花数据集演示下线性判别分析的结果可视化，这个结果变量是3分类的。</p>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="1020-discriminant.html#cb331-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(iris)</span>
+<span id="cb331-2"><a href="1020-discriminant.html#cb331-2" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    150 obs. of  5 variables:</span></span>
+<span id="cb331-3"><a href="1020-discriminant.html#cb331-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...</span></span>
+<span id="cb331-4"><a href="1020-discriminant.html#cb331-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...</span></span>
+<span id="cb331-5"><a href="1020-discriminant.html#cb331-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...</span></span>
+<span id="cb331-6"><a href="1020-discriminant.html#cb331-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...</span></span>
+<span id="cb331-7"><a href="1020-discriminant.html#cb331-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ Species     : Factor w/ 3 levels &quot;setosa&quot;,&quot;versicolor&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</span></span></code></pre></div>
+<p>拟合模型：</p>
+<div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="1020-discriminant.html#cb332-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb332-2"><a href="1020-discriminant.html#cb332-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb332-3"><a href="1020-discriminant.html#cb332-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species <span class="sc">~</span> Sepal.Length <span class="sc">+</span> Sepal.Width <span class="sc">+</span> Petal.Length <span class="sc">+</span> Petal.Width, <span class="at">data =</span> iris)</span>
+<span id="cb332-4"><a href="1020-discriminant.html#cb332-4" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb332-5"><a href="1020-discriminant.html#cb332-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb332-6"><a href="1020-discriminant.html#cb332-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lda(Species ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width, </span></span>
+<span id="cb332-7"><a href="1020-discriminant.html#cb332-7" aria-hidden="true" tabindex="-1"></a><span class="do">##     data = iris)</span></span>
+<span id="cb332-8"><a href="1020-discriminant.html#cb332-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb332-9"><a href="1020-discriminant.html#cb332-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Prior probabilities of groups:</span></span>
+<span id="cb332-10"><a href="1020-discriminant.html#cb332-10" aria-hidden="true" tabindex="-1"></a><span class="do">##     setosa versicolor  virginica </span></span>
+<span id="cb332-11"><a href="1020-discriminant.html#cb332-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  0.3333333  0.3333333  0.3333333 </span></span>
+<span id="cb332-12"><a href="1020-discriminant.html#cb332-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb332-13"><a href="1020-discriminant.html#cb332-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Group means:</span></span>
+<span id="cb332-14"><a href="1020-discriminant.html#cb332-14" aria-hidden="true" tabindex="-1"></a><span class="do">##            Sepal.Length Sepal.Width Petal.Length Petal.Width</span></span>
+<span id="cb332-15"><a href="1020-discriminant.html#cb332-15" aria-hidden="true" tabindex="-1"></a><span class="do">## setosa            5.006       3.428        1.462       0.246</span></span>
+<span id="cb332-16"><a href="1020-discriminant.html#cb332-16" aria-hidden="true" tabindex="-1"></a><span class="do">## versicolor        5.936       2.770        4.260       1.326</span></span>
+<span id="cb332-17"><a href="1020-discriminant.html#cb332-17" aria-hidden="true" tabindex="-1"></a><span class="do">## virginica         6.588       2.974        5.552       2.026</span></span>
+<span id="cb332-18"><a href="1020-discriminant.html#cb332-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb332-19"><a href="1020-discriminant.html#cb332-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients of linear discriminants:</span></span>
+<span id="cb332-20"><a href="1020-discriminant.html#cb332-20" aria-hidden="true" tabindex="-1"></a><span class="do">##                     LD1         LD2</span></span>
+<span id="cb332-21"><a href="1020-discriminant.html#cb332-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.8293776  0.02410215</span></span>
+<span id="cb332-22"><a href="1020-discriminant.html#cb332-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width   1.5344731  2.16452123</span></span>
+<span id="cb332-23"><a href="1020-discriminant.html#cb332-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length -2.2012117 -0.93192121</span></span>
+<span id="cb332-24"><a href="1020-discriminant.html#cb332-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width  -2.8104603  2.83918785</span></span>
+<span id="cb332-25"><a href="1020-discriminant.html#cb332-25" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb332-26"><a href="1020-discriminant.html#cb332-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion of trace:</span></span>
+<span id="cb332-27"><a href="1020-discriminant.html#cb332-27" aria-hidden="true" tabindex="-1"></a><span class="do">##    LD1    LD2 </span></span>
+<span id="cb332-28"><a href="1020-discriminant.html#cb332-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.9912 0.0088</span></span></code></pre></div>
+<p>可视化结果：</p>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="1020-discriminant.html#cb333-1" aria-hidden="true" tabindex="-1"></a>iris<span class="sc">$</span>LD1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit)<span class="sc">$</span>x[,<span class="dv">1</span>]</span>
+<span id="cb333-2"><a href="1020-discriminant.html#cb333-2" aria-hidden="true" tabindex="-1"></a>iris<span class="sc">$</span>LD2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit)<span class="sc">$</span>x[,<span class="dv">2</span>]</span>
+<span id="cb333-3"><a href="1020-discriminant.html#cb333-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb333-4"><a href="1020-discriminant.html#cb333-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb333-5"><a href="1020-discriminant.html#cb333-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb333-6"><a href="1020-discriminant.html#cb333-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(LD1,LD2))<span class="sc">+</span></span>
+<span id="cb333-7"><a href="1020-discriminant.html#cb333-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>Species),<span class="at">size=</span><span class="dv">3</span>)</span></code></pre></div>
+<p><img src="1020-discriminant_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb334"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb334-1"><a href="1020-discriminant.html#cb334-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(iris, <span class="fu">aes</span>(<span class="at">x=</span>LD1, <span class="at">fill=</span>Species))<span class="sc">+</span></span>
+<span id="cb334-2"><a href="1020-discriminant.html#cb334-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()<span class="sc">+</span></span>
+<span id="cb334-3"><a href="1020-discriminant.html#cb334-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Species, <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb334-4"><a href="1020-discriminant.html#cb334-4" aria-hidden="true" tabindex="-1"></a><span class="do">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
+<p><img src="1020-discriminant_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>二次判别分析和线性判别分析用法一样。</p>
+<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="1020-discriminant.html#cb335-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">qda</span>(y <span class="sc">~</span> x1<span class="sc">+</span>x2<span class="sc">+</span>x3, <span class="at">data =</span> df)</span>
+<span id="cb335-2"><a href="1020-discriminant.html#cb335-2" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb335-3"><a href="1020-discriminant.html#cb335-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb335-4"><a href="1020-discriminant.html#cb335-4" aria-hidden="true" tabindex="-1"></a><span class="do">## qda(y ~ x1 + x2 + x3, data = df)</span></span>
+<span id="cb335-5"><a href="1020-discriminant.html#cb335-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb335-6"><a href="1020-discriminant.html#cb335-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Prior probabilities of groups:</span></span>
+<span id="cb335-7"><a href="1020-discriminant.html#cb335-7" aria-hidden="true" tabindex="-1"></a><span class="do">##         1         2 </span></span>
+<span id="cb335-8"><a href="1020-discriminant.html#cb335-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.5454545 0.4545455 </span></span>
+<span id="cb335-9"><a href="1020-discriminant.html#cb335-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb335-10"><a href="1020-discriminant.html#cb335-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Group means:</span></span>
+<span id="cb335-11"><a href="1020-discriminant.html#cb335-11" aria-hidden="true" tabindex="-1"></a><span class="do">##   x1 x2 x3</span></span>
+<span id="cb335-12"><a href="1020-discriminant.html#cb335-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -3  4 -1</span></span>
+<span id="cb335-13"><a href="1020-discriminant.html#cb335-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  4 -5  1</span></span></code></pre></div>
+<p>结果不含判别系数，查看分类结果：</p>
+<div class="sourceCode" id="cb336"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb336-1"><a href="1020-discriminant.html#cb336-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit)<span class="sc">$</span>class</span>
+<span id="cb336-2"><a href="1020-discriminant.html#cb336-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df<span class="sc">$</span>y, pred)</span>
+<span id="cb336-3"><a href="1020-discriminant.html#cb336-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    pred</span></span>
+<span id="cb336-4"><a href="1020-discriminant.html#cb336-4" aria-hidden="true" tabindex="-1"></a><span class="do">##      1  2</span></span>
+<span id="cb336-5"><a href="1020-discriminant.html#cb336-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   1 10  2</span></span>
+<span id="cb336-6"><a href="1020-discriminant.html#cb336-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   2  1  9</span></span></code></pre></div>
+<p>也是3个分错了。</p>
+</div>
+<div id="bayes判别分析" class="section level2 hasAnchor" number="20.2">
+<h2><span class="header-section-number">20.2</span> Bayes判别分析<a href="1020-discriminant.html#bayes判别分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>贝叶斯判别也是根据概率大小进行判别，要求各类近似服从多元正态分布。当各类的协方差相等时，可得到线性贝叶斯判别函数，当各类的协方差不相等时，可得到二次贝叶斯判别函数。</p>
+<p>欲用4个标化后的影像学指标鉴别脑囊肿（1）、胶质瘤（2）、转移瘤（3），收集了17个病例，试建立判别贝叶斯函数。</p>
+<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="1020-discriminant.html#cb337-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;datasets/例20-4.csv&quot;</span>)</span>
+<span id="cb337-2"><a href="1020-discriminant.html#cb337-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb337-3"><a href="1020-discriminant.html#cb337-3" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>y)</span>
+<span id="cb337-4"><a href="1020-discriminant.html#cb337-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb337-5"><a href="1020-discriminant.html#cb337-5" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(df)</span>
+<span id="cb337-6"><a href="1020-discriminant.html#cb337-6" aria-hidden="true" tabindex="-1"></a><span class="do">##       x1    x2  x3  x4    y</span></span>
+<span id="cb337-7"><a href="1020-discriminant.html#cb337-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1      6 -11.5  19  90    1</span></span>
+<span id="cb337-8"><a href="1020-discriminant.html#cb337-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2    -11 -18.5  25 -36    3</span></span>
+<span id="cb337-9"><a href="1020-discriminant.html#cb337-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3   90.2   -17  17   3    2</span></span>
+<span id="cb337-10"><a href="1020-discriminant.html#cb337-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     -4   -15  13  54    1</span></span>
+<span id="cb337-11"><a href="1020-discriminant.html#cb337-11" aria-hidden="true" tabindex="-1"></a><span class="do">## ...  ...   ... ... ... &lt;NA&gt;</span></span>
+<span id="cb337-12"><a href="1020-discriminant.html#cb337-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 14    10   -18  14  50    1</span></span>
+<span id="cb337-13"><a href="1020-discriminant.html#cb337-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 15    -8   -14  16  56    1</span></span>
+<span id="cb337-14"><a href="1020-discriminant.html#cb337-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 16   0.6   -13  26  21    3</span></span>
+<span id="cb337-15"><a href="1020-discriminant.html#cb337-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 17   -40   -20  22 -50    3</span></span></code></pre></div>
+<p>使用<code>klaR</code>包实现贝叶斯判别分析：</p>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="1020-discriminant.html#cb338-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(klaR)</span>
+<span id="cb338-2"><a href="1020-discriminant.html#cb338-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb338-3"><a href="1020-discriminant.html#cb338-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">NaiveBayes</span>(y <span class="sc">~</span> ., <span class="at">data =</span> df)</span>
+<span id="cb338-4"><a href="1020-discriminant.html#cb338-4" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb338-5"><a href="1020-discriminant.html#cb338-5" aria-hidden="true" tabindex="-1"></a><span class="do">## $apriori</span></span>
+<span id="cb338-6"><a href="1020-discriminant.html#cb338-6" aria-hidden="true" tabindex="-1"></a><span class="do">## grouping</span></span>
+<span id="cb338-7"><a href="1020-discriminant.html#cb338-7" aria-hidden="true" tabindex="-1"></a><span class="do">##         1         2         3 </span></span>
+<span id="cb338-8"><a href="1020-discriminant.html#cb338-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.4117647 0.2352941 0.3529412 </span></span>
+<span id="cb338-9"><a href="1020-discriminant.html#cb338-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-10"><a href="1020-discriminant.html#cb338-10" aria-hidden="true" tabindex="-1"></a><span class="do">## $tables</span></span>
+<span id="cb338-11"><a href="1020-discriminant.html#cb338-11" aria-hidden="true" tabindex="-1"></a><span class="do">## $tables$x1</span></span>
+<span id="cb338-12"><a href="1020-discriminant.html#cb338-12" aria-hidden="true" tabindex="-1"></a><span class="do">##        [,1]     [,2]</span></span>
+<span id="cb338-13"><a href="1020-discriminant.html#cb338-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -14.42857 38.26163</span></span>
+<span id="cb338-14"><a href="1020-discriminant.html#cb338-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   0.80000 78.10779</span></span>
+<span id="cb338-15"><a href="1020-discriminant.html#cb338-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  -6.65000 19.78017</span></span>
+<span id="cb338-16"><a href="1020-discriminant.html#cb338-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-17"><a href="1020-discriminant.html#cb338-17" aria-hidden="true" tabindex="-1"></a><span class="do">## $tables$x2</span></span>
+<span id="cb338-18"><a href="1020-discriminant.html#cb338-18" aria-hidden="true" tabindex="-1"></a><span class="do">##        [,1]     [,2]</span></span>
+<span id="cb338-19"><a href="1020-discriminant.html#cb338-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -17.34286 4.103599</span></span>
+<span id="cb338-20"><a href="1020-discriminant.html#cb338-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 -17.42500 3.085855</span></span>
+<span id="cb338-21"><a href="1020-discriminant.html#cb338-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -17.33333 4.143268</span></span>
+<span id="cb338-22"><a href="1020-discriminant.html#cb338-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-23"><a href="1020-discriminant.html#cb338-23" aria-hidden="true" tabindex="-1"></a><span class="do">## $tables$x3</span></span>
+<span id="cb338-24"><a href="1020-discriminant.html#cb338-24" aria-hidden="true" tabindex="-1"></a><span class="do">##       [,1]     [,2]</span></span>
+<span id="cb338-25"><a href="1020-discriminant.html#cb338-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 12.71429 4.990467</span></span>
+<span id="cb338-26"><a href="1020-discriminant.html#cb338-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 17.50000 2.081666</span></span>
+<span id="cb338-27"><a href="1020-discriminant.html#cb338-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 20.16667 6.493587</span></span>
+<span id="cb338-28"><a href="1020-discriminant.html#cb338-28" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-29"><a href="1020-discriminant.html#cb338-29" aria-hidden="true" tabindex="-1"></a><span class="do">## $tables$x4</span></span>
+<span id="cb338-30"><a href="1020-discriminant.html#cb338-30" aria-hidden="true" tabindex="-1"></a><span class="do">##        [,1]     [,2]</span></span>
+<span id="cb338-31"><a href="1020-discriminant.html#cb338-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  31.14286 44.03948</span></span>
+<span id="cb338-32"><a href="1020-discriminant.html#cb338-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   0.00000 30.75711</span></span>
+<span id="cb338-33"><a href="1020-discriminant.html#cb338-33" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -15.00000 35.83295</span></span>
+<span id="cb338-34"><a href="1020-discriminant.html#cb338-34" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-35"><a href="1020-discriminant.html#cb338-35" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-36"><a href="1020-discriminant.html#cb338-36" aria-hidden="true" tabindex="-1"></a><span class="do">## $levels</span></span>
+<span id="cb338-37"><a href="1020-discriminant.html#cb338-37" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot;</span></span>
+<span id="cb338-38"><a href="1020-discriminant.html#cb338-38" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-39"><a href="1020-discriminant.html#cb338-39" aria-hidden="true" tabindex="-1"></a><span class="do">## $call</span></span>
+<span id="cb338-40"><a href="1020-discriminant.html#cb338-40" aria-hidden="true" tabindex="-1"></a><span class="do">## NaiveBayes.default(x = X, grouping = Y)</span></span>
+<span id="cb338-41"><a href="1020-discriminant.html#cb338-41" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-42"><a href="1020-discriminant.html#cb338-42" aria-hidden="true" tabindex="-1"></a><span class="do">## $x</span></span>
+<span id="cb338-43"><a href="1020-discriminant.html#cb338-43" aria-hidden="true" tabindex="-1"></a><span class="do">##        x1    x2 x3  x4</span></span>
+<span id="cb338-44"><a href="1020-discriminant.html#cb338-44" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     6.0 -11.5 19  90</span></span>
+<span id="cb338-45"><a href="1020-discriminant.html#cb338-45" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   -11.0 -18.5 25 -36</span></span>
+<span id="cb338-46"><a href="1020-discriminant.html#cb338-46" aria-hidden="true" tabindex="-1"></a><span class="do">## 3    90.2 -17.0 17   3</span></span>
+<span id="cb338-47"><a href="1020-discriminant.html#cb338-47" aria-hidden="true" tabindex="-1"></a><span class="do">## 4    -4.0 -15.0 13  54</span></span>
+<span id="cb338-48"><a href="1020-discriminant.html#cb338-48" aria-hidden="true" tabindex="-1"></a><span class="do">## 5     0.0 -14.0 20  35</span></span>
+<span id="cb338-49"><a href="1020-discriminant.html#cb338-49" aria-hidden="true" tabindex="-1"></a><span class="do">## 6     0.5 -11.5 19  37</span></span>
+<span id="cb338-50"><a href="1020-discriminant.html#cb338-50" aria-hidden="true" tabindex="-1"></a><span class="do">## 7   -10.0 -19.0 21 -42</span></span>
+<span id="cb338-51"><a href="1020-discriminant.html#cb338-51" aria-hidden="true" tabindex="-1"></a><span class="do">## 8     0.0 -23.0  5 -35</span></span>
+<span id="cb338-52"><a href="1020-discriminant.html#cb338-52" aria-hidden="true" tabindex="-1"></a><span class="do">## 9    20.0 -22.0  8 -20</span></span>
+<span id="cb338-53"><a href="1020-discriminant.html#cb338-53" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 -100.0 -21.4  7 -15</span></span>
+<span id="cb338-54"><a href="1020-discriminant.html#cb338-54" aria-hidden="true" tabindex="-1"></a><span class="do">## 11 -100.0 -21.5 15 -40</span></span>
+<span id="cb338-55"><a href="1020-discriminant.html#cb338-55" aria-hidden="true" tabindex="-1"></a><span class="do">## 12   13.0 -17.2 18   2</span></span>
+<span id="cb338-56"><a href="1020-discriminant.html#cb338-56" aria-hidden="true" tabindex="-1"></a><span class="do">## 13   -5.0 -18.5 15  18</span></span>
+<span id="cb338-57"><a href="1020-discriminant.html#cb338-57" aria-hidden="true" tabindex="-1"></a><span class="do">## 14   10.0 -18.0 14  50</span></span>
+<span id="cb338-58"><a href="1020-discriminant.html#cb338-58" aria-hidden="true" tabindex="-1"></a><span class="do">## 15   -8.0 -14.0 16  56</span></span>
+<span id="cb338-59"><a href="1020-discriminant.html#cb338-59" aria-hidden="true" tabindex="-1"></a><span class="do">## 16    0.6 -13.0 26  21</span></span>
+<span id="cb338-60"><a href="1020-discriminant.html#cb338-60" aria-hidden="true" tabindex="-1"></a><span class="do">## 17  -40.0 -20.0 22 -50</span></span>
+<span id="cb338-61"><a href="1020-discriminant.html#cb338-61" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-62"><a href="1020-discriminant.html#cb338-62" aria-hidden="true" tabindex="-1"></a><span class="do">## $usekernel</span></span>
+<span id="cb338-63"><a href="1020-discriminant.html#cb338-63" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] FALSE</span></span>
+<span id="cb338-64"><a href="1020-discriminant.html#cb338-64" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-65"><a href="1020-discriminant.html#cb338-65" aria-hidden="true" tabindex="-1"></a><span class="do">## $varnames</span></span>
+<span id="cb338-66"><a href="1020-discriminant.html#cb338-66" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;x1&quot; &quot;x2&quot; &quot;x3&quot; &quot;x4&quot;</span></span>
+<span id="cb338-67"><a href="1020-discriminant.html#cb338-67" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb338-68"><a href="1020-discriminant.html#cb338-68" aria-hidden="true" tabindex="-1"></a><span class="do">## attr(,&quot;class&quot;)</span></span>
+<span id="cb338-69"><a href="1020-discriminant.html#cb338-69" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;NaiveBayes&quot;</span></span></code></pre></div>
+<p>获取预测结果，并查看混淆矩阵：</p>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="1020-discriminant.html#cb339-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit)<span class="sc">$</span>class</span>
+<span id="cb339-2"><a href="1020-discriminant.html#cb339-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning in FUN(X[[i]], ...): Numerical 0 probability for all classes with</span></span>
+<span id="cb339-3"><a href="1020-discriminant.html#cb339-3" aria-hidden="true" tabindex="-1"></a><span class="do">## observation 10</span></span>
+<span id="cb339-4"><a href="1020-discriminant.html#cb339-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(pred, df<span class="sc">$</span>y)</span>
+<span id="cb339-5"><a href="1020-discriminant.html#cb339-5" aria-hidden="true" tabindex="-1"></a><span class="do">##     </span></span>
+<span id="cb339-6"><a href="1020-discriminant.html#cb339-6" aria-hidden="true" tabindex="-1"></a><span class="do">## pred 1 2 3</span></span>
+<span id="cb339-7"><a href="1020-discriminant.html#cb339-7" aria-hidden="true" tabindex="-1"></a><span class="do">##    1 7 0 1</span></span>
+<span id="cb339-8"><a href="1020-discriminant.html#cb339-8" aria-hidden="true" tabindex="-1"></a><span class="do">##    2 0 3 0</span></span>
+<span id="cb339-9"><a href="1020-discriminant.html#cb339-9" aria-hidden="true" tabindex="-1"></a><span class="do">##    3 0 1 5</span></span></code></pre></div>
+<p>只有两个分错了。</p>
+<p>如果要预测新的数据，只需要<code>predict(fit, newdata = xxx)</code>即可。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1019-rcodecheme.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1021-cluster.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

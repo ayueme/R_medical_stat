@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>36 R语言倾向性评分：回归和分层 | R语言实战医学统计</title>
+  <meta name="description" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1035-psm.html"/>
+<link rel="next" href="1037-psw.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,330 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="yxkskjhfk" class="section level1 hasAnchor" number="36">
+<h1><span class="header-section-number">36</span> R语言倾向性评分：回归和分层<a href="1036-pssc.html#yxkskjhfk" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>倾向性评分有4种应用，前面介绍了倾向性评分匹配及<code>matchIt</code>和<code>cobalt</code>包的使用。</p>
+<p>今天说一下倾向性评分回归和分层。使用了一个不是很成功的案例，并使用了大量<code>purrr</code>风格的代码实现。</p>
+<div id="演示数据-3" class="section level2 hasAnchor" number="36.1">
+<h2><span class="header-section-number">36.1</span> 演示数据<a href="1036-pssc.html#演示数据-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>下面这个例子探讨<strong>不同学校对学生成绩的影响</strong>，这个数据一共有11078行，23列，我们只用其中一部分数据演示<strong>倾向性评分回归和分层</strong>。</p>
+<p>我们用到以下几个变量：</p>
+<ul>
+<li><code>catholic</code>：是我们的处理因素，1是天主教（catholic）学校，0是公立（public）学校，</li>
+<li><code>c5r2mtsc_std</code>：结果变量（因变量），标准化之后的学生成绩，</li>
+<li><code>race_white</code>：是否是白人，1是0否，</li>
+<li><code>w3momed_hsb</code>：妈妈的教育水平，1高中及以下，0大学及以上，</li>
+<li><code>p5hmage</code>：妈妈的年龄，要控制的混杂因素，</li>
+<li><code>w3momscr</code>：妈妈的成绩，</li>
+<li><code>w3dadscr</code>：爸爸的成绩。</li>
+</ul>
+<p>首先加载数据，已上传到QQ群，需要的加群下载即可。</p>
+<div class="sourceCode" id="cb588"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb588-1"><a href="1036-pssc.html#cb588-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb588-2"><a href="1036-pssc.html#cb588-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb588-3"><a href="1036-pssc.html#cb588-3" aria-hidden="true" tabindex="-1"></a>ecls <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;datasets/ecls.csv&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb588-4"><a href="1036-pssc.html#cb588-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(c5r2mtsc_std,catholic,race_white,w3momed_hsb,p5hmage,</span>
+<span id="cb588-5"><a href="1036-pssc.html#cb588-5" aria-hidden="true" tabindex="-1"></a>                w3momscr,w3dadscr) <span class="sc">%&gt;%</span></span>
+<span id="cb588-6"><a href="1036-pssc.html#cb588-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
+<span id="cb588-7"><a href="1036-pssc.html#cb588-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb588-8"><a href="1036-pssc.html#cb588-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(ecls)</span>
+<span id="cb588-9"><a href="1036-pssc.html#cb588-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 5548    7</span></span>
+<span id="cb588-10"><a href="1036-pssc.html#cb588-10" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ecls)</span>
+<span id="cb588-11"><a href="1036-pssc.html#cb588-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Rows: 5,548</span></span>
+<span id="cb588-12"><a href="1036-pssc.html#cb588-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Columns: 7</span></span>
+<span id="cb588-13"><a href="1036-pssc.html#cb588-13" aria-hidden="true" tabindex="-1"></a><span class="do">## $ c5r2mtsc_std &lt;dbl&gt; 0.98175332, 0.59437751, 0.49061062, 1.45127793, 2.5956991…</span></span>
+<span id="cb588-14"><a href="1036-pssc.html#cb588-14" aria-hidden="true" tabindex="-1"></a><span class="do">## $ catholic     &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb588-15"><a href="1036-pssc.html#cb588-15" aria-hidden="true" tabindex="-1"></a><span class="do">## $ race_white   &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, …</span></span>
+<span id="cb588-16"><a href="1036-pssc.html#cb588-16" aria-hidden="true" tabindex="-1"></a><span class="do">## $ w3momed_hsb  &lt;int&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, …</span></span>
+<span id="cb588-17"><a href="1036-pssc.html#cb588-17" aria-hidden="true" tabindex="-1"></a><span class="do">## $ p5hmage      &lt;int&gt; 47, 41, 43, 38, 47, 41, 31, 38, 26, 38, 27, 40, 33, 36, 4…</span></span>
+<span id="cb588-18"><a href="1036-pssc.html#cb588-18" aria-hidden="true" tabindex="-1"></a><span class="do">## $ w3momscr     &lt;dbl&gt; 53.50, 34.95, 63.43, 53.50, 61.56, 38.18, 34.95, 63.43, 3…</span></span>
+<span id="cb588-19"><a href="1036-pssc.html#cb588-19" aria-hidden="true" tabindex="-1"></a><span class="do">## $ w3dadscr     &lt;dbl&gt; 77.50, 53.50, 53.50, 53.50, 77.50, 53.50, 29.60, 33.42, 2…</span></span></code></pre></div>
+</div>
+<div id="原始数据的概况" class="section level2 hasAnchor" number="36.2">
+<h2><span class="header-section-number">36.2</span> 原始数据的概况<a href="1036-pssc.html#原始数据的概况" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>首先看一下原始数据的情况。</p>
+<div class="sourceCode" id="cb589"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb589-1"><a href="1036-pssc.html#cb589-1" aria-hidden="true" tabindex="-1"></a>ecls <span class="sc">%&gt;%</span></span>
+<span id="cb589-2"><a href="1036-pssc.html#cb589-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(catholic) <span class="sc">%&gt;%</span></span>
+<span id="cb589-3"><a href="1036-pssc.html#cb589-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_students =</span> <span class="fu">n</span>(),</span>
+<span id="cb589-4"><a href="1036-pssc.html#cb589-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_math =</span> <span class="fu">mean</span>(c5r2mtsc_std),</span>
+<span id="cb589-5"><a href="1036-pssc.html#cb589-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">std_error =</span> <span class="fu">sd</span>(c5r2mtsc_std) <span class="sc">/</span> <span class="fu">sqrt</span>(n_students))</span>
+<span id="cb589-6"><a href="1036-pssc.html#cb589-6" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 2 × 4</span></span>
+<span id="cb589-7"><a href="1036-pssc.html#cb589-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   catholic n_students mean_math std_error</span></span>
+<span id="cb589-8"><a href="1036-pssc.html#cb589-8" aria-hidden="true" tabindex="-1"></a><span class="do">##      &lt;int&gt;      &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb589-9"><a href="1036-pssc.html#cb589-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 1        0       4597     0.156    0.0144</span></span>
+<span id="cb589-10"><a href="1036-pssc.html#cb589-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 2        1        951     0.221    0.0277</span></span></code></pre></div>
+<p>可以看到去公立学校的4597人，去天主教学校的才951人，并且去天主教的学校的学生成绩明显高于去公立学校的学生。</p>
+<p>此时如果不控制混杂因素直接进行t检验，结果是有统计学意义的，但是由于基线资料不可比，一开始两组学生的各种情况就不一样，所以结果很难说明成绩不同到底是不同学校导致的还是混杂因素导致的。</p>
+<div class="sourceCode" id="cb590"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb590-1"><a href="1036-pssc.html#cb590-1" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(ecls, <span class="fu">t.test</span>(c5r2mtsc_std <span class="sc">~</span> catholic))</span>
+<span id="cb590-2"><a href="1036-pssc.html#cb590-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb590-3"><a href="1036-pssc.html#cb590-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Welch Two Sample t-test</span></span>
+<span id="cb590-4"><a href="1036-pssc.html#cb590-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb590-5"><a href="1036-pssc.html#cb590-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  c5r2mtsc_std by catholic</span></span>
+<span id="cb590-6"><a href="1036-pssc.html#cb590-6" aria-hidden="true" tabindex="-1"></a><span class="do">## t = -2.0757, df = 1508.1, p-value = 0.03809</span></span>
+<span id="cb590-7"><a href="1036-pssc.html#cb590-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0</span></span>
+<span id="cb590-8"><a href="1036-pssc.html#cb590-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb590-9"><a href="1036-pssc.html#cb590-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  -0.126029105 -0.003564746</span></span>
+<span id="cb590-10"><a href="1036-pssc.html#cb590-10" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb590-11"><a href="1036-pssc.html#cb590-11" aria-hidden="true" tabindex="-1"></a><span class="do">## mean in group 0 mean in group 1 </span></span>
+<span id="cb590-12"><a href="1036-pssc.html#cb590-12" aria-hidden="true" tabindex="-1"></a><span class="do">##       0.1562757       0.2210727</span></span></code></pre></div>
+<p>我们可以看看不同组别间混杂因素的差异，首先是3个连续型变量在两组间的平均值，可以看到都是不一样的：</p>
+<div class="sourceCode" id="cb591"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb591-1"><a href="1036-pssc.html#cb591-1" aria-hidden="true" tabindex="-1"></a>ecls <span class="sc">%&gt;%</span></span>
+<span id="cb591-2"><a href="1036-pssc.html#cb591-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(catholic) <span class="sc">%&gt;%</span></span>
+<span id="cb591-3"><a href="1036-pssc.html#cb591-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(p5hmage, w3momscr, w3dadscr) <span class="sc">%&gt;%</span></span>
+<span id="cb591-4"><a href="1036-pssc.html#cb591-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(<span class="fu">list</span>(<span class="sc">~</span><span class="fu">mean</span>(., <span class="at">na.rm =</span> T)))</span>
+<span id="cb591-5"><a href="1036-pssc.html#cb591-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Adding missing grouping variables: `catholic`</span></span>
+<span id="cb591-6"><a href="1036-pssc.html#cb591-6" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 2 × 4</span></span>
+<span id="cb591-7"><a href="1036-pssc.html#cb591-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   catholic p5hmage w3momscr w3dadscr</span></span>
+<span id="cb591-8"><a href="1036-pssc.html#cb591-8" aria-hidden="true" tabindex="-1"></a><span class="do">##      &lt;int&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb591-9"><a href="1036-pssc.html#cb591-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 1        0    37.8     43.8     42.6</span></span>
+<span id="cb591-10"><a href="1036-pssc.html#cb591-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 2        1    39.8     47.5     45.8</span></span></code></pre></div>
+<p>可以看到不同组别间混杂因素明显是不同的，还可以分别对3个连续型变量做t检验，结果也显示这些混杂因素在一开始就是存在差异的。</p>
+<div class="sourceCode" id="cb592"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb592-1"><a href="1036-pssc.html#cb592-1" aria-hidden="true" tabindex="-1"></a>ecls <span class="sc">%&gt;%</span> </span>
+<span id="cb592-2"><a href="1036-pssc.html#cb592-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(p5hmage,w3momscr,w3dadscr),</span>
+<span id="cb592-3"><a href="1036-pssc.html#cb592-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">&quot;covs&quot;</span>,</span>
+<span id="cb592-4"><a href="1036-pssc.html#cb592-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">&quot;values&quot;</span></span>
+<span id="cb592-5"><a href="1036-pssc.html#cb592-5" aria-hidden="true" tabindex="-1"></a>               ) <span class="sc">%&gt;%</span> </span>
+<span id="cb592-6"><a href="1036-pssc.html#cb592-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_split</span>(covs) <span class="sc">%&gt;%</span> </span>
+<span id="cb592-7"><a href="1036-pssc.html#cb592-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span><span class="fu">t.test</span>(values <span class="sc">~</span> catholic, <span class="at">data =</span> .x)) <span class="sc">%&gt;%</span> </span>
+<span id="cb592-8"><a href="1036-pssc.html#cb592-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dbl</span>(<span class="st">&quot;p.value&quot;</span>)</span>
+<span id="cb592-9"><a href="1036-pssc.html#cb592-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1.062659e-28 3.722314e-16 2.208513e-18</span></span></code></pre></div>
+<p>对于两个分类变量，我们可以看看分别在两组间的数量构成比有没有差异。</p>
+<div class="sourceCode" id="cb593"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb593-1"><a href="1036-pssc.html#cb593-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">xtabs</span>(<span class="sc">~</span>race_white<span class="sc">+</span>catholic,<span class="at">data =</span> ecls)</span>
+<span id="cb593-2"><a href="1036-pssc.html#cb593-2" aria-hidden="true" tabindex="-1"></a>tab</span>
+<span id="cb593-3"><a href="1036-pssc.html#cb593-3" aria-hidden="true" tabindex="-1"></a><span class="do">##           catholic</span></span>
+<span id="cb593-4"><a href="1036-pssc.html#cb593-4" aria-hidden="true" tabindex="-1"></a><span class="do">## race_white    0    1</span></span>
+<span id="cb593-5"><a href="1036-pssc.html#cb593-5" aria-hidden="true" tabindex="-1"></a><span class="do">##          0 1610  222</span></span>
+<span id="cb593-6"><a href="1036-pssc.html#cb593-6" aria-hidden="true" tabindex="-1"></a><span class="do">##          1 2987  729</span></span>
+<span id="cb593-7"><a href="1036-pssc.html#cb593-7" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab,<span class="at">correct =</span> F)</span>
+<span id="cb593-8"><a href="1036-pssc.html#cb593-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb593-9"><a href="1036-pssc.html#cb593-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pearson&#39;s Chi-squared test</span></span>
+<span id="cb593-10"><a href="1036-pssc.html#cb593-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb593-11"><a href="1036-pssc.html#cb593-11" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  tab</span></span>
+<span id="cb593-12"><a href="1036-pssc.html#cb593-12" aria-hidden="true" tabindex="-1"></a><span class="do">## X-squared = 48.596, df = 1, p-value = 3.145e-12</span></span></code></pre></div>
+<div class="sourceCode" id="cb594"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb594-1"><a href="1036-pssc.html#cb594-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">xtabs</span>(<span class="sc">~</span>w3momed_hsb<span class="sc">+</span>catholic,<span class="at">data =</span> ecls)</span>
+<span id="cb594-2"><a href="1036-pssc.html#cb594-2" aria-hidden="true" tabindex="-1"></a>tab</span>
+<span id="cb594-3"><a href="1036-pssc.html#cb594-3" aria-hidden="true" tabindex="-1"></a><span class="do">##            catholic</span></span>
+<span id="cb594-4"><a href="1036-pssc.html#cb594-4" aria-hidden="true" tabindex="-1"></a><span class="do">## w3momed_hsb    0    1</span></span>
+<span id="cb594-5"><a href="1036-pssc.html#cb594-5" aria-hidden="true" tabindex="-1"></a><span class="do">##           0 2777  751</span></span>
+<span id="cb594-6"><a href="1036-pssc.html#cb594-6" aria-hidden="true" tabindex="-1"></a><span class="do">##           1 1820  200</span></span>
+<span id="cb594-7"><a href="1036-pssc.html#cb594-7" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab,<span class="at">correct =</span> F)</span>
+<span id="cb594-8"><a href="1036-pssc.html#cb594-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb594-9"><a href="1036-pssc.html#cb594-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pearson&#39;s Chi-squared test</span></span>
+<span id="cb594-10"><a href="1036-pssc.html#cb594-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb594-11"><a href="1036-pssc.html#cb594-11" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  tab</span></span>
+<span id="cb594-12"><a href="1036-pssc.html#cb594-12" aria-hidden="true" tabindex="-1"></a><span class="do">## X-squared = 117.24, df = 1, p-value &lt; 2.2e-16</span></span></code></pre></div>
+<p>可以看到两个分类变量在两组间的差异是非常明显的！</p>
+<p>所以我们现在要做的事就是控制混杂因素，让这些混杂因素变成可比的状态，不要影响我们的处理因素。</p>
+<p>开头也说过，控制混杂因素的方法其实是很多的，比如分层、协方差分析、多因素分析等，每种情况都要具体分析，选择一种最合适的。</p>
+<p>下面我们介绍倾向性评分回归和分层。</p>
+</div>
+<div id="计算倾向性评分" class="section level2 hasAnchor" number="36.3">
+<h2><span class="header-section-number">36.3</span> 计算倾向性评分<a href="1036-pssc.html#计算倾向性评分" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>倾向性评分就是倾向干预的概率，所以可以通过逻辑回归计算P值，这个P值就是倾向性评分，所以也不一定要用到专用的R包！</p>
+<p>首先以处理因素（这里是<code>catholic</code>）为因变量，混杂因素为自变量构建逻辑回归模型：</p>
+<div class="sourceCode" id="cb595"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb595-1"><a href="1036-pssc.html#cb595-1" aria-hidden="true" tabindex="-1"></a>m_ps <span class="ot">&lt;-</span> <span class="fu">glm</span>(catholic <span class="sc">~</span> race_white<span class="sc">+</span>w3momed_hsb<span class="sc">+</span>p5hmage<span class="sc">+</span>w3momscr<span class="sc">+</span>w3dadscr,</span>
+<span id="cb595-2"><a href="1036-pssc.html#cb595-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> ecls)</span></code></pre></div>
+<p>提取P值，也就是倾向性评分：</p>
+<div class="sourceCode" id="cb596"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb596-1"><a href="1036-pssc.html#cb596-1" aria-hidden="true" tabindex="-1"></a>prs_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">pr_score =</span> <span class="fu">predict</span>(m_ps, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>),</span>
+<span id="cb596-2"><a href="1036-pssc.html#cb596-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">catholic =</span> m_ps<span class="sc">$</span>model<span class="sc">$</span>catholic)</span>
+<span id="cb596-3"><a href="1036-pssc.html#cb596-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(prs_df)</span>
+<span id="cb596-4"><a href="1036-pssc.html#cb596-4" aria-hidden="true" tabindex="-1"></a><span class="do">##    pr_score catholic</span></span>
+<span id="cb596-5"><a href="1036-pssc.html#cb596-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 0.3755223        0</span></span>
+<span id="cb596-6"><a href="1036-pssc.html#cb596-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 0.2340976        0</span></span>
+<span id="cb596-7"><a href="1036-pssc.html#cb596-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 0.2990706        0</span></span>
+<span id="cb596-8"><a href="1036-pssc.html#cb596-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 0.2394663        1</span></span>
+<span id="cb596-9"><a href="1036-pssc.html#cb596-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 0.3920115        0</span></span>
+<span id="cb596-10"><a href="1036-pssc.html#cb596-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 8 0.2391453        0</span></span></code></pre></div>
+<p>可以看一下不同处理因素间的P值（倾向性评分）分布：</p>
+<div class="sourceCode" id="cb597"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb597-1"><a href="1036-pssc.html#cb597-1" aria-hidden="true" tabindex="-1"></a>labs <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;Actual school type attended:&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;Catholic&quot;</span>, <span class="st">&quot;Public&quot;</span>))</span>
+<span id="cb597-2"><a href="1036-pssc.html#cb597-2" aria-hidden="true" tabindex="-1"></a>prs_df <span class="sc">%&gt;%</span></span>
+<span id="cb597-3"><a href="1036-pssc.html#cb597-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">catholic =</span> <span class="fu">ifelse</span>(catholic <span class="sc">==</span> <span class="dv">1</span>, labs[<span class="dv">1</span>], labs[<span class="dv">2</span>])) <span class="sc">%&gt;%</span></span>
+<span id="cb597-4"><a href="1036-pssc.html#cb597-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> pr_score)) <span class="sc">+</span></span>
+<span id="cb597-5"><a href="1036-pssc.html#cb597-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb597-6"><a href="1036-pssc.html#cb597-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>catholic) <span class="sc">+</span></span>
+<span id="cb597-7"><a href="1036-pssc.html#cb597-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">&quot;Probability of going to Catholic school&quot;</span>) <span class="sc">+</span></span>
+<span id="cb597-8"><a href="1036-pssc.html#cb597-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb597-9"><a href="1036-pssc.html#cb597-9" aria-hidden="true" tabindex="-1"></a><span class="do">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
+<p><img src="1036-pssc_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p>计算倾向性评分只是第一步，有了这个倾向性评分后，就可以进行下面的分析了，比如回归、匹配、加权、分层等。</p>
+<p>可以看出我们这个PS是偏态的，其实是可以<strong>对PS做一些变换的，比如log</strong>，然后使用变换后的PS继续进行后面的分析。这里就不做变换了。</p>
+</div>
+<div id="倾向性评分回归" class="section level2 hasAnchor" number="36.4">
+<h2><span class="header-section-number">36.4</span> 倾向性评分回归<a href="1036-pssc.html#倾向性评分回归" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>此时如果直接把这个评分和<code>catholic</code>作为自变量进行回归分析，就是倾向性评分回归了（也叫协变量调整/倾向性评分矫正等）！应该是倾向性评分4种方法里面最简单的一种了。</p>
+<div class="sourceCode" id="cb598"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb598-1"><a href="1036-pssc.html#cb598-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 计算倾向性评分</span></span>
+<span id="cb598-2"><a href="1036-pssc.html#cb598-2" aria-hidden="true" tabindex="-1"></a>pr_score <span class="ot">&lt;-</span> <span class="fu">predict</span>(m_ps, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb598-3"><a href="1036-pssc.html#cb598-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb598-4"><a href="1036-pssc.html#cb598-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 把倾向性评分加入到原数据中</span></span>
+<span id="cb598-5"><a href="1036-pssc.html#cb598-5" aria-hidden="true" tabindex="-1"></a>ecls_ps <span class="ot">&lt;-</span> ecls <span class="sc">%&gt;%</span> </span>
+<span id="cb598-6"><a href="1036-pssc.html#cb598-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ps =</span> pr_score)</span>
+<span id="cb598-7"><a href="1036-pssc.html#cb598-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb598-8"><a href="1036-pssc.html#cb598-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 把处理因素和倾向性评分作为自变量进行回归</span></span>
+<span id="cb598-9"><a href="1036-pssc.html#cb598-9" aria-hidden="true" tabindex="-1"></a>psl <span class="ot">&lt;-</span> <span class="fu">lm</span>(c5r2mtsc_std <span class="sc">~</span> catholic <span class="sc">+</span> ps, <span class="at">data =</span> ecls_ps)</span>
+<span id="cb598-10"><a href="1036-pssc.html#cb598-10" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(psl)</span>
+<span id="cb598-11"><a href="1036-pssc.html#cb598-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb598-12"><a href="1036-pssc.html#cb598-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb598-13"><a href="1036-pssc.html#cb598-13" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = c5r2mtsc_std ~ catholic + ps, data = ecls_ps)</span></span>
+<span id="cb598-14"><a href="1036-pssc.html#cb598-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb598-15"><a href="1036-pssc.html#cb598-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb598-16"><a href="1036-pssc.html#cb598-16" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb598-17"><a href="1036-pssc.html#cb598-17" aria-hidden="true" tabindex="-1"></a><span class="do">## -4.0525 -0.5741  0.0462  0.6106  3.1468 </span></span>
+<span id="cb598-18"><a href="1036-pssc.html#cb598-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb598-19"><a href="1036-pssc.html#cb598-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb598-20"><a href="1036-pssc.html#cb598-20" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb598-21"><a href="1036-pssc.html#cb598-21" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept) -0.58249    0.02929 -19.885  &lt; 2e-16 ***</span></span>
+<span id="cb598-22"><a href="1036-pssc.html#cb598-22" aria-hidden="true" tabindex="-1"></a><span class="do">## catholic    -0.10772    0.03241  -3.324 0.000893 ***</span></span>
+<span id="cb598-23"><a href="1036-pssc.html#cb598-23" aria-hidden="true" tabindex="-1"></a><span class="do">## ps           4.48236    0.15873  28.239  &lt; 2e-16 ***</span></span>
+<span id="cb598-24"><a href="1036-pssc.html#cb598-24" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb598-25"><a href="1036-pssc.html#cb598-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb598-26"><a href="1036-pssc.html#cb598-26" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb598-27"><a href="1036-pssc.html#cb598-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 0.8934 on 5545 degrees of freedom</span></span>
+<span id="cb598-28"><a href="1036-pssc.html#cb598-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.1263, Adjusted R-squared:  0.126 </span></span>
+<span id="cb598-29"><a href="1036-pssc.html#cb598-29" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 400.8 on 2 and 5545 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>结果表明处理因素(分组变量)还是有意义的！</p>
+</div>
+<div id="倾向性评分分层" class="section level2 hasAnchor" number="36.5">
+<h2><span class="header-section-number">36.5</span> 倾向性评分分层<a href="1036-pssc.html#倾向性评分分层" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>顾名思义，根据PS值进行分层，然后在每层内进行分析。每一层的协变量分布可认为是同质或均衡的。先对每一层干预与结局之间的关联进行估算，然后对所有层的关联作加权平均，最后得出干预与结局之间的总的关联效应。</p>
+<p>一般来说最好保证干预组和对照组两组的PS范围在差不多的范围内，如果相差很大，那分层效果肯定不好。比如干预组PS范围是0.5<sub>0.9，对照组PS范围是0.01</sub>0.4，这样两组PS完全没有交集，按照PS进行分层没啥意义。</p>
+<p>首先看一下PS的范围：</p>
+<div class="sourceCode" id="cb599"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb599-1"><a href="1036-pssc.html#cb599-1" aria-hidden="true" tabindex="-1"></a>ecls_ps <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(catholic) <span class="sc">%&gt;%</span> </span>
+<span id="cb599-2"><a href="1036-pssc.html#cb599-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">range =</span> <span class="fu">range</span>(ps))</span>
+<span id="cb599-3"><a href="1036-pssc.html#cb599-3" aria-hidden="true" tabindex="-1"></a><span class="do">## `summarise()` has grouped output by &#39;catholic&#39;. You can override using the</span></span>
+<span id="cb599-4"><a href="1036-pssc.html#cb599-4" aria-hidden="true" tabindex="-1"></a><span class="do">## `.groups` argument.</span></span>
+<span id="cb599-5"><a href="1036-pssc.html#cb599-5" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 4 × 2</span></span>
+<span id="cb599-6"><a href="1036-pssc.html#cb599-6" aria-hidden="true" tabindex="-1"></a><span class="do">## # Groups:   catholic [2]</span></span>
+<span id="cb599-7"><a href="1036-pssc.html#cb599-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   catholic  range</span></span>
+<span id="cb599-8"><a href="1036-pssc.html#cb599-8" aria-hidden="true" tabindex="-1"></a><span class="do">##      &lt;int&gt;  &lt;dbl&gt;</span></span>
+<span id="cb599-9"><a href="1036-pssc.html#cb599-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 1        0 0.0370</span></span>
+<span id="cb599-10"><a href="1036-pssc.html#cb599-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 2        0 0.477 </span></span>
+<span id="cb599-11"><a href="1036-pssc.html#cb599-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 3        1 0.0492</span></span>
+<span id="cb599-12"><a href="1036-pssc.html#cb599-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 4        1 0.404</span></span></code></pre></div>
+<p>两组分别是0.037<sub>0.477和0.049</sub>0.404，范围基本一致，所以我们就直接按照总体PS的最大值和最小值进行分层，如果两组PS差很多，可以按照两组PS的交集进行分层。</p>
+<p>文献一般建议分5-10层，可以根据PS进行平分，也可以按照百分位数进行分层，具体方法很多，大家自己看文献即可。</p>
+<p>我们这里简单点，结合上面PS的分布图，分4层，切点就用0.1,0.2,0.3。</p>
+<div class="sourceCode" id="cb600"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb600-1"><a href="1036-pssc.html#cb600-1" aria-hidden="true" tabindex="-1"></a>ecls_pslevel <span class="ot">&lt;-</span> ecls_ps <span class="sc">%&gt;%</span> </span>
+<span id="cb600-2"><a href="1036-pssc.html#cb600-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ps_level =</span> <span class="fu">case_when</span>(ps<span class="sc">&lt;=</span><span class="fl">0.1</span> <span class="sc">~</span> <span class="st">&quot;level_1&quot;</span>,</span>
+<span id="cb600-3"><a href="1036-pssc.html#cb600-3" aria-hidden="true" tabindex="-1"></a>                              ps<span class="sc">&gt;</span><span class="fl">0.1</span> <span class="sc">&amp;</span> ps<span class="sc">&lt;=</span><span class="fl">0.2</span> <span class="sc">~</span> <span class="st">&quot;level_2&quot;</span>,</span>
+<span id="cb600-4"><a href="1036-pssc.html#cb600-4" aria-hidden="true" tabindex="-1"></a>                              ps<span class="sc">&gt;</span><span class="fl">0.2</span> <span class="sc">&amp;</span> ps<span class="sc">&lt;=</span><span class="fl">0.3</span> <span class="sc">~</span> <span class="st">&quot;level_3&quot;</span>,</span>
+<span id="cb600-5"><a href="1036-pssc.html#cb600-5" aria-hidden="true" tabindex="-1"></a>                              <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;level_4&quot;</span></span>
+<span id="cb600-6"><a href="1036-pssc.html#cb600-6" aria-hidden="true" tabindex="-1"></a>                              ),</span>
+<span id="cb600-7"><a href="1036-pssc.html#cb600-7" aria-hidden="true" tabindex="-1"></a>         <span class="co">#ps_level = factor(ps_level),</span></span>
+<span id="cb600-8"><a href="1036-pssc.html#cb600-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">p5hmage =</span> <span class="fu">as.double</span>(p5hmage),</span>
+<span id="cb600-9"><a href="1036-pssc.html#cb600-9" aria-hidden="true" tabindex="-1"></a>         <span class="fu">across</span>(<span class="fu">where</span>(is.integer), as.factor)</span>
+<span id="cb600-10"><a href="1036-pssc.html#cb600-10" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb600-11"><a href="1036-pssc.html#cb600-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb600-12"><a href="1036-pssc.html#cb600-12" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ecls_pslevel)</span>
+<span id="cb600-13"><a href="1036-pssc.html#cb600-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Rows: 5,548</span></span>
+<span id="cb600-14"><a href="1036-pssc.html#cb600-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Columns: 9</span></span>
+<span id="cb600-15"><a href="1036-pssc.html#cb600-15" aria-hidden="true" tabindex="-1"></a><span class="do">## $ c5r2mtsc_std &lt;dbl&gt; 0.98175332, 0.59437751, 0.49061062, 1.45127793, 2.5956991…</span></span>
+<span id="cb600-16"><a href="1036-pssc.html#cb600-16" aria-hidden="true" tabindex="-1"></a><span class="do">## $ catholic     &lt;fct&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span id="cb600-17"><a href="1036-pssc.html#cb600-17" aria-hidden="true" tabindex="-1"></a><span class="do">## $ race_white   &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, …</span></span>
+<span id="cb600-18"><a href="1036-pssc.html#cb600-18" aria-hidden="true" tabindex="-1"></a><span class="do">## $ w3momed_hsb  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, …</span></span>
+<span id="cb600-19"><a href="1036-pssc.html#cb600-19" aria-hidden="true" tabindex="-1"></a><span class="do">## $ p5hmage      &lt;dbl&gt; 47, 41, 43, 38, 47, 41, 31, 38, 26, 38, 27, 40, 33, 36, 4…</span></span>
+<span id="cb600-20"><a href="1036-pssc.html#cb600-20" aria-hidden="true" tabindex="-1"></a><span class="do">## $ w3momscr     &lt;dbl&gt; 53.50, 34.95, 63.43, 53.50, 61.56, 38.18, 34.95, 63.43, 3…</span></span>
+<span id="cb600-21"><a href="1036-pssc.html#cb600-21" aria-hidden="true" tabindex="-1"></a><span class="do">## $ w3dadscr     &lt;dbl&gt; 77.50, 53.50, 53.50, 53.50, 77.50, 53.50, 29.60, 33.42, 2…</span></span>
+<span id="cb600-22"><a href="1036-pssc.html#cb600-22" aria-hidden="true" tabindex="-1"></a><span class="do">## $ ps           &lt;dbl&gt; 0.37552233, 0.23409764, 0.29907061, 0.23946627, 0.3920115…</span></span>
+<span id="cb600-23"><a href="1036-pssc.html#cb600-23" aria-hidden="true" tabindex="-1"></a><span class="do">## $ ps_level     &lt;chr&gt; &quot;level_4&quot;, &quot;level_3&quot;, &quot;level_3&quot;, &quot;level_3&quot;, &quot;level_4&quot;, &quot;l…</span></span></code></pre></div>
+</div>
+<div id="分层后的数据" class="section level2 hasAnchor" number="36.6">
+<h2><span class="header-section-number">36.6</span> 分层后的数据<a href="1036-pssc.html#分层后的数据" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>下面我们对每一层内的3个连续型协变量和我们的因变量进行t检验，其实这里可以直接用<code>rstatix</code>包解决，非常好用，但其实<code>rstatix</code>包就是基于<code>purrr</code>的，所以直接用<code>purrr</code>也可以。</p>
+<div class="sourceCode" id="cb601"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb601-1"><a href="1036-pssc.html#cb601-1" aria-hidden="true" tabindex="-1"></a>ecls_pslevel <span class="sc">%&gt;%</span> </span>
+<span id="cb601-2"><a href="1036-pssc.html#cb601-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span><span class="sc">:</span><span class="dv">7</span>),<span class="at">names_to =</span> <span class="st">&quot;variates&quot;</span>,<span class="at">values_to =</span> <span class="st">&quot;values&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb601-3"><a href="1036-pssc.html#cb601-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_nest</span>(ps_level,variates) <span class="sc">%&gt;%</span> </span>
+<span id="cb601-4"><a href="1036-pssc.html#cb601-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">tt =</span> <span class="fu">map</span>(data, <span class="sc">~</span> <span class="fu">t.test</span>(values <span class="sc">~</span> catholic,<span class="at">data =</span> .x)),</span>
+<span id="cb601-5"><a href="1036-pssc.html#cb601-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">res =</span> <span class="fu">map_dfr</span>(tt, broom<span class="sc">::</span>tidy)</span>
+<span id="cb601-6"><a href="1036-pssc.html#cb601-6" aria-hidden="true" tabindex="-1"></a>                ) <span class="sc">%&gt;%</span> </span>
+<span id="cb601-7"><a href="1036-pssc.html#cb601-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(res)</span>
+<span id="cb601-8"><a href="1036-pssc.html#cb601-8" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 16 × 14</span></span>
+<span id="cb601-9"><a href="1036-pssc.html#cb601-9" aria-hidden="true" tabindex="-1"></a><span class="do">##    ps_le…¹ varia…²        data tt      estimate estim…³ estim…⁴ statis…⁵ p.value</span></span>
+<span id="cb601-10"><a href="1036-pssc.html#cb601-10" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;   &lt;chr&gt;   &lt;list&lt;tibb&gt; &lt;list&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb601-11"><a href="1036-pssc.html#cb601-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 level_1 c5r2mt… [1,202 × 5] &lt;htest&gt; -0.00108  -0.347 -0.346  -0.00973 9.92e-1</span></span>
+<span id="cb601-12"><a href="1036-pssc.html#cb601-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 level_1 p5hmage [1,202 × 5] &lt;htest&gt; -1.00     32.9   33.9    -1.66    1.02e-1</span></span>
+<span id="cb601-13"><a href="1036-pssc.html#cb601-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 level_1 w3dads… [1,202 × 5] &lt;htest&gt; -0.639    36.8   37.4    -0.886   3.79e-1</span></span>
+<span id="cb601-14"><a href="1036-pssc.html#cb601-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 level_1 w3moms… [1,202 × 5] &lt;htest&gt; -1.07     37.0   38.1    -1.40    1.67e-1</span></span>
+<span id="cb601-15"><a href="1036-pssc.html#cb601-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 level_2 c5r2mt… [2,388 × 5] &lt;htest&gt;  0.0685    0.142  0.0737  1.54    1.24e-1</span></span>
+<span id="cb601-16"><a href="1036-pssc.html#cb601-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 level_2 p5hmage [2,388 × 5] &lt;htest&gt; -0.724    37.4   38.1    -2.92    3.57e-3</span></span>
+<span id="cb601-17"><a href="1036-pssc.html#cb601-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 level_2 w3dads… [2,388 × 5] &lt;htest&gt; -0.818    40.7   41.5    -1.73    8.47e-2</span></span>
+<span id="cb601-18"><a href="1036-pssc.html#cb601-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 level_2 w3moms… [2,388 × 5] &lt;htest&gt; -1.13     41.3   42.5    -2.21    2.76e-2</span></span>
+<span id="cb601-19"><a href="1036-pssc.html#cb601-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 level_3 c5r2mt… [1,618 × 5] &lt;htest&gt;  0.171     0.533  0.361   3.46    5.62e-4</span></span>
+<span id="cb601-20"><a href="1036-pssc.html#cb601-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 level_3 p5hmage [1,618 × 5] &lt;htest&gt;  0.00290  41.1   41.1     0.0141  9.89e-1</span></span>
+<span id="cb601-21"><a href="1036-pssc.html#cb601-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 11 level_3 w3dads… [1,618 × 5] &lt;htest&gt; -1.36     47.5   48.8    -2.17    3.02e-2</span></span>
+<span id="cb601-22"><a href="1036-pssc.html#cb601-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 12 level_3 w3moms… [1,618 × 5] &lt;htest&gt; -0.371    50.9   51.3    -0.573   5.67e-1</span></span>
+<span id="cb601-23"><a href="1036-pssc.html#cb601-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 13 level_4 c5r2mt…   [340 × 5] &lt;htest&gt;  0.0580    0.728  0.670   0.548   5.84e-1</span></span>
+<span id="cb601-24"><a href="1036-pssc.html#cb601-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 14 level_4 p5hmage   [340 × 5] &lt;htest&gt;  0.820    46.2   45.4     1.84    6.81e-2</span></span>
+<span id="cb601-25"><a href="1036-pssc.html#cb601-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 15 level_4 w3dads…   [340 × 5] &lt;htest&gt;  0.868    59.6   58.7     0.582   5.62e-1</span></span>
+<span id="cb601-26"><a href="1036-pssc.html#cb601-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 16 level_4 w3moms…   [340 × 5] &lt;htest&gt; -0.739    60.0   60.7    -0.637   5.25e-1</span></span>
+<span id="cb601-27"><a href="1036-pssc.html#cb601-27" aria-hidden="true" tabindex="-1"></a><span class="do">## # … with 5 more variables: parameter &lt;dbl&gt;, conf.low &lt;dbl&gt;, conf.high &lt;dbl&gt;,</span></span>
+<span id="cb601-28"><a href="1036-pssc.html#cb601-28" aria-hidden="true" tabindex="-1"></a><span class="do">## #   method &lt;chr&gt;, alternative &lt;chr&gt;, and abbreviated variable names ¹​ps_level,</span></span>
+<span id="cb601-29"><a href="1036-pssc.html#cb601-29" aria-hidden="true" tabindex="-1"></a><span class="do">## #   ²​variates, ³​estimate1, ⁴​estimate2, ⁵​statistic</span></span></code></pre></div>
+<p>直接看<code>p.value</code>这一列，可以看到大部分都是大于0.05的，因变量<code>c5r2mtsc_std</code>只有在第3层是有差异的！</p>
+<p><code>level_2</code>中的<code>p5hmage</code>和<code>w3momscr</code>变量的P值是小于0.05的，<code>level_3</code>中的<code>w3dadscr</code>变量P值也是小于0.05的。</p>
+<p>这说明我们的分层并没有很好的解决这几个混杂因素的影响，而且分层后每一层内（除了第3层）的因变量都没有差异了。。。<strong>理想的结果应该是分层后每一层内混杂因素在两组间都是没有差异的，而因变量都是有差异的！</strong>这样才能说明我们的分层很好地控制了混杂因素！</p>
+<p>但我们的这个结果很明显很差劲！大家可以考虑不同的分层方法再重新尝试几次，或者这个数据并不适合使用这种方法，可以用其他方法试试看，比如匹配、回归等。</p>
+<p>下面再看看分类变量，首先是<code>race_white</code>，在每一层内使用卡方检验，我们直接提取P值：</p>
+<div class="sourceCode" id="cb602"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb602-1"><a href="1036-pssc.html#cb602-1" aria-hidden="true" tabindex="-1"></a>ecls_pslevel <span class="sc">%&gt;%</span> </span>
+<span id="cb602-2"><a href="1036-pssc.html#cb602-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_split</span>(ps_level) <span class="sc">%&gt;%</span> </span>
+<span id="cb602-3"><a href="1036-pssc.html#cb602-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span><span class="fu">chisq.test</span>(.<span class="sc">$</span>race_white,.<span class="sc">$</span>catholic,<span class="at">correct=</span>F)) <span class="sc">%&gt;%</span> </span>
+<span id="cb602-4"><a href="1036-pssc.html#cb602-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dbl</span>(<span class="st">&quot;p.value&quot;</span>)</span>
+<span id="cb602-5"><a href="1036-pssc.html#cb602-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.4755703 0.8423902 0.5696924 0.2667193</span></span></code></pre></div>
+<p>结果还不错，每一层内都没有差异了。</p>
+<p>然后是<code>w3momed_hsb</code>这个变量，但是由于我们的分层有问题，导致<code>level_4</code>这一层中<code>w3momed_hsb</code>全都是0！</p>
+<div class="sourceCode" id="cb603"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb603-1"><a href="1036-pssc.html#cb603-1" aria-hidden="true" tabindex="-1"></a><span class="co"># level_4有问题</span></span>
+<span id="cb603-2"><a href="1036-pssc.html#cb603-2" aria-hidden="true" tabindex="-1"></a>ecls_pslevel <span class="sc">%&gt;%</span> </span>
+<span id="cb603-3"><a href="1036-pssc.html#cb603-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(ps_level,w3momed_hsb,catholic) <span class="sc">%&gt;%</span> </span>
+<span id="cb603-4"><a href="1036-pssc.html#cb603-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count=</span><span class="fu">n</span>())</span>
+<span id="cb603-5"><a href="1036-pssc.html#cb603-5" aria-hidden="true" tabindex="-1"></a><span class="do">## `summarise()` has grouped output by &#39;ps_level&#39;, &#39;w3momed_hsb&#39;. You can override</span></span>
+<span id="cb603-6"><a href="1036-pssc.html#cb603-6" aria-hidden="true" tabindex="-1"></a><span class="do">## using the `.groups` argument.</span></span>
+<span id="cb603-7"><a href="1036-pssc.html#cb603-7" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 14 × 4</span></span>
+<span id="cb603-8"><a href="1036-pssc.html#cb603-8" aria-hidden="true" tabindex="-1"></a><span class="do">## # Groups:   ps_level, w3momed_hsb [7]</span></span>
+<span id="cb603-9"><a href="1036-pssc.html#cb603-9" aria-hidden="true" tabindex="-1"></a><span class="do">##    ps_level w3momed_hsb catholic count</span></span>
+<span id="cb603-10"><a href="1036-pssc.html#cb603-10" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;chr&gt;    &lt;fct&gt;       &lt;fct&gt;    &lt;int&gt;</span></span>
+<span id="cb603-11"><a href="1036-pssc.html#cb603-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 level_1  0           0           61</span></span>
+<span id="cb603-12"><a href="1036-pssc.html#cb603-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 level_1  0           1            5</span></span>
+<span id="cb603-13"><a href="1036-pssc.html#cb603-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  3 level_1  1           0         1082</span></span>
+<span id="cb603-14"><a href="1036-pssc.html#cb603-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  4 level_1  1           1           54</span></span>
+<span id="cb603-15"><a href="1036-pssc.html#cb603-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  5 level_2  0           0         1262</span></span>
+<span id="cb603-16"><a href="1036-pssc.html#cb603-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  6 level_2  0           1          261</span></span>
+<span id="cb603-17"><a href="1036-pssc.html#cb603-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 level_2  1           0          724</span></span>
+<span id="cb603-18"><a href="1036-pssc.html#cb603-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  8 level_2  1           1          141</span></span>
+<span id="cb603-19"><a href="1036-pssc.html#cb603-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 level_3  0           0         1192</span></span>
+<span id="cb603-20"><a href="1036-pssc.html#cb603-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 level_3  0           1          407</span></span>
+<span id="cb603-21"><a href="1036-pssc.html#cb603-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 11 level_3  1           0           14</span></span>
+<span id="cb603-22"><a href="1036-pssc.html#cb603-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 12 level_3  1           1            5</span></span>
+<span id="cb603-23"><a href="1036-pssc.html#cb603-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 13 level_4  0           0          262</span></span>
+<span id="cb603-24"><a href="1036-pssc.html#cb603-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 14 level_4  0           1           78</span></span></code></pre></div>
+<p>所以我们就对前3层做一个统计检验吧。</p>
+<div class="sourceCode" id="cb604"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb604-1"><a href="1036-pssc.html#cb604-1" aria-hidden="true" tabindex="-1"></a>ecls_pslevel <span class="sc">%&gt;%</span> </span>
+<span id="cb604-2"><a href="1036-pssc.html#cb604-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>ps_level <span class="sc">==</span> <span class="st">&quot;level_4&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb604-3"><a href="1036-pssc.html#cb604-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_split</span>(ps_level) <span class="sc">%&gt;%</span> </span>
+<span id="cb604-4"><a href="1036-pssc.html#cb604-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span><span class="fu">chisq.test</span>(.<span class="sc">$</span>w3momed_hsb,.<span class="sc">$</span>catholic,<span class="at">correct=</span>F)) <span class="sc">%&gt;%</span> </span>
+<span id="cb604-5"><a href="1036-pssc.html#cb604-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dbl</span>(<span class="st">&quot;p.value&quot;</span>)</span>
+<span id="cb604-6"><a href="1036-pssc.html#cb604-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.3022080 0.5994507 0.9316443</span></span></code></pre></div>
+<p>可以看到每一层内也是没有明显差别的。</p>
+<p>说明我们的分层对2个分类变量的平衡效果还是可以的，但是对连续型变量的效果真是一言难尽！</p>
+</div>
+<div id="总结" class="section level2 hasAnchor" number="36.7">
+<h2><span class="header-section-number">36.7</span> 总结<a href="1036-pssc.html#总结" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>倾向性评分回归和分层的大致过程就是这样的，但其实很多细节我都忽略了，比如到底分几层？依据是什么？用PS还是log(PS)？</p>
+<p>而且特地找了一个不是很成功的例子（可能不是很恰当），结果并不是很完美，还有很多可以调整测试的空间，大家可以适当修改其中的方法细节，最后得到一个笔记好的结果。</p>
+<p>实际使用时大家要根据自己的实际情况选择最合适的方法，多读文献，从文献中找灵感。</p>
+</div>
+<div id="参考资料-5" class="section level2 hasAnchor" number="36.8">
+<h2><span class="header-section-number">36.8</span> 参考资料<a href="1036-pssc.html#参考资料-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://sejdemyr.github.io/r-tutorials/statistics/tutorial8.html" class="uri">https://sejdemyr.github.io/r-tutorials/statistics/tutorial8.html</a></li>
+</ol>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1035-psm.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1037-psw.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

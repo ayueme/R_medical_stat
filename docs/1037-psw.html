@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>37 R语言倾向性评分：加权 | R语言实战医学统计</title>
+  <meta name="description" content="37 R语言倾向性评分：加权 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="37 R语言倾向性评分：加权 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="37 R语言倾向性评分：加权 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="37 R语言倾向性评分：加权 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="37 R语言倾向性评分：加权 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1036-pssc.html"/>
+<link rel="next" href="1038-p4trend.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,360 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="yplksjhfk" class="section level1 hasAnchor" number="37">
+<h1><span class="header-section-number">37</span> R语言倾向性评分：加权<a href="1037-psw.html#yplksjhfk" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>之前已经介绍过<strong>倾向性评分匹配（propensity score matching）</strong>、<strong>倾向性评分回归和分层</strong>。</p>
+<p>今天继续介绍倾向性评分最后一个重要的部分：<strong>倾向性评分加权</strong>。</p>
+<p>主要介绍两种加权方法：<strong>逆概率加权</strong>(inverse probability weighting, IPW)和<strong>重叠加权</strong>(overlap weighting)。</p>
+<p>倾向性评分加权的方法有很多，常见的一些加权方法比较如下：</p>
+<p><img src="figs/Snipaste_2023-04-05_17-06-17.png" width="90%" /></p>
+<p>其中<code>ATE</code>就是大家比较常见的<code>IPW</code>方法，还有一种常见的<strong>inverse probability of treatment weighting, IPTW</strong>，是这里的<code>ATT</code>。前者是针对所有研究对象，后者是针对病例组。</p>
+<div id="演示数据-4" class="section level2 hasAnchor" number="37.1">
+<h2><span class="header-section-number">37.1</span> 演示数据<a href="1037-psw.html#演示数据-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb605"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb605-1"><a href="1037-psw.html#cb605-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(lindner, <span class="at">package =</span> <span class="st">&quot;twang&quot;</span>)</span>
+<span id="cb605-2"><a href="1037-psw.html#cb605-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb605-3"><a href="1037-psw.html#cb605-3" aria-hidden="true" tabindex="-1"></a>lindner[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">10</span>)] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(lindner[,<span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">10</span>)],factor)</span>
+<span id="cb605-4"><a href="1037-psw.html#cb605-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb605-5"><a href="1037-psw.html#cb605-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(lindner)</span>
+<span id="cb605-6"><a href="1037-psw.html#cb605-6" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    996 obs. of  11 variables:</span></span>
+<span id="cb605-7"><a href="1037-psw.html#cb605-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ lifepres       : num  0 11.6 11.6 11.6 11.6 11.6 11.6 11.6 11.6 11.6 ...</span></span>
+<span id="cb605-8"><a href="1037-psw.html#cb605-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ cardbill       : int  14301 3563 4694 7366 8247 8319 8410 8517 8763 8823 ...</span></span>
+<span id="cb605-9"><a href="1037-psw.html#cb605-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ abcix          : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span id="cb605-10"><a href="1037-psw.html#cb605-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ stent          : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb605-11"><a href="1037-psw.html#cb605-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ height         : int  163 168 188 175 168 178 185 173 152 180 ...</span></span>
+<span id="cb605-12"><a href="1037-psw.html#cb605-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ female         : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 1 2 1 1 2 2 1 ...</span></span>
+<span id="cb605-13"><a href="1037-psw.html#cb605-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ diabetic       : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 2 1 1 1 1 1 1 ...</span></span>
+<span id="cb605-14"><a href="1037-psw.html#cb605-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ acutemi        : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb605-15"><a href="1037-psw.html#cb605-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ejecfrac       : int  56 56 50 50 55 50 58 30 60 60 ...</span></span>
+<span id="cb605-16"><a href="1037-psw.html#cb605-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ves1proc       : Factor w/ 6 levels &quot;0&quot;,&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,..: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span id="cb605-17"><a href="1037-psw.html#cb605-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ sixMonthSurvive: logi  FALSE TRUE TRUE TRUE TRUE TRUE ...</span></span></code></pre></div>
+<p><img src="figs/Snipaste_2023-04-05_17-06-55.png" width="90%" /></p>
+<p>其中<code>abcix</code>是处理因素变量，<code>sixMonthSurvive</code>是二分类的结局变量，<code>cardbill</code>是连续型的结局变量，其余变量是协变量。</p>
+<p>首先可以通过<code>tableone</code>包看一下加权前的数据情况：</p>
+<div class="sourceCode" id="cb606"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb606-1"><a href="1037-psw.html#cb606-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tableone)</span>
+<span id="cb606-2"><a href="1037-psw.html#cb606-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb606-3"><a href="1037-psw.html#cb606-3" aria-hidden="true" tabindex="-1"></a>covs <span class="ot">&lt;-</span> <span class="fu">colnames</span>(lindner)[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span><span class="sc">:</span><span class="dv">10</span>)]</span>
+<span id="cb606-4"><a href="1037-psw.html#cb606-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb606-5"><a href="1037-psw.html#cb606-5" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">CreateTableOne</span>(<span class="at">vars =</span> covs,</span>
+<span id="cb606-6"><a href="1037-psw.html#cb606-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">strata =</span> <span class="st">&quot;abcix&quot;</span>,</span>
+<span id="cb606-7"><a href="1037-psw.html#cb606-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">data =</span> lindner</span>
+<span id="cb606-8"><a href="1037-psw.html#cb606-8" aria-hidden="true" tabindex="-1"></a>                      )</span>
+<span id="cb606-9"><a href="1037-psw.html#cb606-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tab,<span class="at">showAllLevels =</span> T,<span class="at">smd =</span> T)</span>
+<span id="cb606-10"><a href="1037-psw.html#cb606-10" aria-hidden="true" tabindex="-1"></a><span class="do">##                       Stratified by abcix</span></span>
+<span id="cb606-11"><a href="1037-psw.html#cb606-11" aria-hidden="true" tabindex="-1"></a><span class="do">##                        level 0              1              p      test SMD   </span></span>
+<span id="cb606-12"><a href="1037-psw.html#cb606-12" aria-hidden="true" tabindex="-1"></a><span class="do">##   n                             298            698                           </span></span>
+<span id="cb606-13"><a href="1037-psw.html#cb606-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   lifepres (mean (SD))        11.02 (2.54)   11.42 (1.45)   0.002       0.194</span></span>
+<span id="cb606-14"><a href="1037-psw.html#cb606-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   stent (%)            0        124 (41.6)     206 (29.5)  &lt;0.001       0.255</span></span>
+<span id="cb606-15"><a href="1037-psw.html#cb606-15" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1        174 (58.4)     492 (70.5)                    </span></span>
+<span id="cb606-16"><a href="1037-psw.html#cb606-16" aria-hidden="true" tabindex="-1"></a><span class="do">##   height (mean (SD))         171.45 (10.59) 171.44 (10.69)  0.996      &lt;0.001</span></span>
+<span id="cb606-17"><a href="1037-psw.html#cb606-17" aria-hidden="true" tabindex="-1"></a><span class="do">##   female (%)           0        183 (61.4)     467 (66.9)   0.111       0.115</span></span>
+<span id="cb606-18"><a href="1037-psw.html#cb606-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1        115 (38.6)     231 (33.1)                    </span></span>
+<span id="cb606-19"><a href="1037-psw.html#cb606-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   diabetic (%)         0        218 (73.2)     555 (79.5)   0.034       0.150</span></span>
+<span id="cb606-20"><a href="1037-psw.html#cb606-20" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1         80 (26.8)     143 (20.5)                    </span></span>
+<span id="cb606-21"><a href="1037-psw.html#cb606-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   acutemi (%)          0        280 (94.0)     573 (82.1)  &lt;0.001       0.372</span></span>
+<span id="cb606-22"><a href="1037-psw.html#cb606-22" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1         18 ( 6.0)     125 (17.9)                    </span></span>
+<span id="cb606-23"><a href="1037-psw.html#cb606-23" aria-hidden="true" tabindex="-1"></a><span class="do">##   ejecfrac (mean (SD))        52.29 (10.30)  50.40 (10.42)  0.009       0.182</span></span>
+<span id="cb606-24"><a href="1037-psw.html#cb606-24" aria-hidden="true" tabindex="-1"></a><span class="do">##   ves1proc (%)         0          1 ( 0.3)       3 ( 0.4)  &lt;0.001       0.446</span></span>
+<span id="cb606-25"><a href="1037-psw.html#cb606-25" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1        243 (81.5)     437 (62.6)                    </span></span>
+<span id="cb606-26"><a href="1037-psw.html#cb606-26" aria-hidden="true" tabindex="-1"></a><span class="do">##                        2         47 (15.8)     205 (29.4)                    </span></span>
+<span id="cb606-27"><a href="1037-psw.html#cb606-27" aria-hidden="true" tabindex="-1"></a><span class="do">##                        3          6 ( 2.0)      39 ( 5.6)                    </span></span>
+<span id="cb606-28"><a href="1037-psw.html#cb606-28" aria-hidden="true" tabindex="-1"></a><span class="do">##                        4          1 ( 0.3)      13 ( 1.9)                    </span></span>
+<span id="cb606-29"><a href="1037-psw.html#cb606-29" aria-hidden="true" tabindex="-1"></a><span class="do">##                        5          0 ( 0.0)       1 ( 0.1)</span></span></code></pre></div>
+<p>如果只是看一下协变量是否在不同组间均衡，可以通过之前介绍过的<code>cobalt</code>实现：</p>
+<div class="sourceCode" id="cb607"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb607-1"><a href="1037-psw.html#cb607-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cobalt)</span>
+<span id="cb607-2"><a href="1037-psw.html#cb607-2" aria-hidden="true" tabindex="-1"></a><span class="do">##  cobalt (Version 4.4.1, Build Date: 2022-11-03)</span></span>
+<span id="cb607-3"><a href="1037-psw.html#cb607-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb607-4"><a href="1037-psw.html#cb607-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择只有协变量的数据框</span></span>
+<span id="cb607-5"><a href="1037-psw.html#cb607-5" aria-hidden="true" tabindex="-1"></a>covariates <span class="ot">&lt;-</span> <span class="fu">subset</span>(lindner, <span class="at">select =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span><span class="sc">:</span><span class="dv">10</span>))</span>
+<span id="cb607-6"><a href="1037-psw.html#cb607-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb607-7"><a href="1037-psw.html#cb607-7" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.tab</span>(covariates,<span class="at">treat =</span> lindner<span class="sc">$</span>abcix, <span class="at">s.d.denom =</span> <span class="st">&quot;pooled&quot;</span>,</span>
+<span id="cb607-8"><a href="1037-psw.html#cb607-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">m.threshold =</span> <span class="fl">0.1</span>, <span class="at">un =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb607-9"><a href="1037-psw.html#cb607-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">v.threshold =</span> <span class="dv">2</span></span>
+<span id="cb607-10"><a href="1037-psw.html#cb607-10" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb607-11"><a href="1037-psw.html#cb607-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance Measures</span></span>
+<span id="cb607-12"><a href="1037-psw.html#cb607-12" aria-hidden="true" tabindex="-1"></a><span class="do">##               Type Diff.Un     M.Threshold.Un V.Ratio.Un   V.Threshold.Un</span></span>
+<span id="cb607-13"><a href="1037-psw.html#cb607-13" aria-hidden="true" tabindex="-1"></a><span class="do">## lifepres   Contin.  0.1941 Not Balanced, &gt;0.1     0.3239 Not Balanced, &gt;2</span></span>
+<span id="cb607-14"><a href="1037-psw.html#cb607-14" aria-hidden="true" tabindex="-1"></a><span class="do">## stent       Binary  0.1210 Not Balanced, &gt;0.1          .                 </span></span>
+<span id="cb607-15"><a href="1037-psw.html#cb607-15" aria-hidden="true" tabindex="-1"></a><span class="do">## height     Contin. -0.0003     Balanced, &lt;0.1     1.0201     Balanced, &lt;2</span></span>
+<span id="cb607-16"><a href="1037-psw.html#cb607-16" aria-hidden="true" tabindex="-1"></a><span class="do">## female      Binary -0.0550     Balanced, &lt;0.1          .                 </span></span>
+<span id="cb607-17"><a href="1037-psw.html#cb607-17" aria-hidden="true" tabindex="-1"></a><span class="do">## diabetic    Binary -0.0636     Balanced, &lt;0.1          .                 </span></span>
+<span id="cb607-18"><a href="1037-psw.html#cb607-18" aria-hidden="true" tabindex="-1"></a><span class="do">## acutemi     Binary  0.1187 Not Balanced, &gt;0.1          .                 </span></span>
+<span id="cb607-19"><a href="1037-psw.html#cb607-19" aria-hidden="true" tabindex="-1"></a><span class="do">## ejecfrac   Contin. -0.1821 Not Balanced, &gt;0.1     1.0238     Balanced, &lt;2</span></span>
+<span id="cb607-20"><a href="1037-psw.html#cb607-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_0  Binary  0.0009     Balanced, &lt;0.1          .                 </span></span>
+<span id="cb607-21"><a href="1037-psw.html#cb607-21" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_1  Binary -0.1894 Not Balanced, &gt;0.1          .                 </span></span>
+<span id="cb607-22"><a href="1037-psw.html#cb607-22" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_2  Binary  0.1360 Not Balanced, &gt;0.1          .                 </span></span>
+<span id="cb607-23"><a href="1037-psw.html#cb607-23" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_3  Binary  0.0357     Balanced, &lt;0.1          .                 </span></span>
+<span id="cb607-24"><a href="1037-psw.html#cb607-24" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_4  Binary  0.0153     Balanced, &lt;0.1          .                 </span></span>
+<span id="cb607-25"><a href="1037-psw.html#cb607-25" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_5  Binary  0.0014     Balanced, &lt;0.1          .                 </span></span>
+<span id="cb607-26"><a href="1037-psw.html#cb607-26" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb607-27"><a href="1037-psw.html#cb607-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for mean differences</span></span>
+<span id="cb607-28"><a href="1037-psw.html#cb607-28" aria-hidden="true" tabindex="-1"></a><span class="do">##                    count</span></span>
+<span id="cb607-29"><a href="1037-psw.html#cb607-29" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;0.1         7</span></span>
+<span id="cb607-30"><a href="1037-psw.html#cb607-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;0.1     6</span></span>
+<span id="cb607-31"><a href="1037-psw.html#cb607-31" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb607-32"><a href="1037-psw.html#cb607-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest mean difference</span></span>
+<span id="cb607-33"><a href="1037-psw.html#cb607-33" aria-hidden="true" tabindex="-1"></a><span class="do">##  Variable Diff.Un     M.Threshold.Un</span></span>
+<span id="cb607-34"><a href="1037-psw.html#cb607-34" aria-hidden="true" tabindex="-1"></a><span class="do">##  lifepres  0.1941 Not Balanced, &gt;0.1</span></span>
+<span id="cb607-35"><a href="1037-psw.html#cb607-35" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb607-36"><a href="1037-psw.html#cb607-36" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for variance ratios</span></span>
+<span id="cb607-37"><a href="1037-psw.html#cb607-37" aria-hidden="true" tabindex="-1"></a><span class="do">##                  count</span></span>
+<span id="cb607-38"><a href="1037-psw.html#cb607-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;2         2</span></span>
+<span id="cb607-39"><a href="1037-psw.html#cb607-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;2     1</span></span>
+<span id="cb607-40"><a href="1037-psw.html#cb607-40" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb607-41"><a href="1037-psw.html#cb607-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest variance ratio</span></span>
+<span id="cb607-42"><a href="1037-psw.html#cb607-42" aria-hidden="true" tabindex="-1"></a><span class="do">##  Variable V.Ratio.Un   V.Threshold.Un</span></span>
+<span id="cb607-43"><a href="1037-psw.html#cb607-43" aria-hidden="true" tabindex="-1"></a><span class="do">##  lifepres     0.3239 Not Balanced, &gt;2</span></span>
+<span id="cb607-44"><a href="1037-psw.html#cb607-44" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb607-45"><a href="1037-psw.html#cb607-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Sample sizes</span></span>
+<span id="cb607-46"><a href="1037-psw.html#cb607-46" aria-hidden="true" tabindex="-1"></a><span class="do">##     Control Treated</span></span>
+<span id="cb607-47"><a href="1037-psw.html#cb607-47" aria-hidden="true" tabindex="-1"></a><span class="do">## All     298     698</span></span></code></pre></div>
+<p><code>Diff.Adj</code>就是<code>SMD</code></p>
+</div>
+<div id="iptw" class="section level2 hasAnchor" number="37.2">
+<h2><span class="header-section-number">37.2</span> IPTW<a href="1037-psw.html#iptw" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>倾向性评分只是一个概率（倾向干预组的概率）</strong>，计算概率的算法是在是太多了，选择自己喜欢的就好，我这里就用最简单的逻辑回归，之前的推文中也演示过随机森林等其他估计PS的方法。</p>
+<div class="sourceCode" id="cb608"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb608-1"><a href="1037-psw.html#cb608-1" aria-hidden="true" tabindex="-1"></a>psfit <span class="ot">&lt;-</span> <span class="fu">glm</span>(abcix <span class="sc">~</span> stent <span class="sc">+</span> height <span class="sc">+</span> female <span class="sc">+</span> diabetic <span class="sc">+</span> acutemi <span class="sc">+</span> </span>
+<span id="cb608-2"><a href="1037-psw.html#cb608-2" aria-hidden="true" tabindex="-1"></a>               ejecfrac <span class="sc">+</span> ves1proc,</span>
+<span id="cb608-3"><a href="1037-psw.html#cb608-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> lindner, <span class="at">family =</span> <span class="fu">binomial</span>())</span>
+<span id="cb608-4"><a href="1037-psw.html#cb608-4" aria-hidden="true" tabindex="-1"></a>ps <span class="ot">&lt;-</span> psfit<span class="sc">$</span>fitted.values</span></code></pre></div>
+<p>逆概率加权以全部研究对象（ATE）为目标人群，通过加权是每一组研究对象的协变量分布于全部研究对象相似。</p>
+<p>该种加权方法下，研究对象的权重为该对象所在组的概率的倒数。</p>
+<ul>
+<li>干预组：1/ps</li>
+<li>对照组：1/(1-ps)</li>
+</ul>
+<p>下面根据计算出的PS计算每一个样本的权重：</p>
+<div class="sourceCode" id="cb609"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb609-1"><a href="1037-psw.html#cb609-1" aria-hidden="true" tabindex="-1"></a>iptw <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(lindner<span class="sc">$</span>abcix <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span><span class="sc">/</span>ps, <span class="dv">1</span><span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>ps))</span>
+<span id="cb609-2"><a href="1037-psw.html#cb609-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb609-3"><a href="1037-psw.html#cb609-3" aria-hidden="true" tabindex="-1"></a>lindner<span class="sc">$</span>iptw <span class="ot">&lt;-</span> iptw</span></code></pre></div>
+<p>加权后可以再次看看数据是否已经均衡：</p>
+<div class="sourceCode" id="cb610"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb610-1"><a href="1037-psw.html#cb610-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.tab</span>(covariates,<span class="at">treat =</span> lindner<span class="sc">$</span>abcix, <span class="at">s.d.denom =</span> <span class="st">&quot;pooled&quot;</span>,</span>
+<span id="cb610-2"><a href="1037-psw.html#cb610-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">weights =</span> lindner<span class="sc">$</span>iptw,</span>
+<span id="cb610-3"><a href="1037-psw.html#cb610-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">m.threshold =</span> <span class="fl">0.1</span>, <span class="at">un =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb610-4"><a href="1037-psw.html#cb610-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">v.threshold =</span> <span class="dv">2</span></span>
+<span id="cb610-5"><a href="1037-psw.html#cb610-5" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb610-6"><a href="1037-psw.html#cb610-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance Measures</span></span>
+<span id="cb610-7"><a href="1037-psw.html#cb610-7" aria-hidden="true" tabindex="-1"></a><span class="do">##               Type Diff.Un V.Ratio.Un Diff.Adj        M.Threshold V.Ratio.Adj</span></span>
+<span id="cb610-8"><a href="1037-psw.html#cb610-8" aria-hidden="true" tabindex="-1"></a><span class="do">## lifepres   Contin.  0.1941     0.3239   0.3310 Not Balanced, &gt;0.1      0.2185</span></span>
+<span id="cb610-9"><a href="1037-psw.html#cb610-9" aria-hidden="true" tabindex="-1"></a><span class="do">## stent       Binary  0.1210          .   0.0036     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-10"><a href="1037-psw.html#cb610-10" aria-hidden="true" tabindex="-1"></a><span class="do">## height     Contin. -0.0003     1.0201  -0.0175     Balanced, &lt;0.1      0.8647</span></span>
+<span id="cb610-11"><a href="1037-psw.html#cb610-11" aria-hidden="true" tabindex="-1"></a><span class="do">## female      Binary -0.0550          .   0.0101     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-12"><a href="1037-psw.html#cb610-12" aria-hidden="true" tabindex="-1"></a><span class="do">## diabetic    Binary -0.0636          .  -0.0175     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-13"><a href="1037-psw.html#cb610-13" aria-hidden="true" tabindex="-1"></a><span class="do">## acutemi     Binary  0.1187          .  -0.0028     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-14"><a href="1037-psw.html#cb610-14" aria-hidden="true" tabindex="-1"></a><span class="do">## ejecfrac   Contin. -0.1821     1.0238  -0.0119     Balanced, &lt;0.1      0.9784</span></span>
+<span id="cb610-15"><a href="1037-psw.html#cb610-15" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_0  Binary  0.0009          .   0.0009     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-16"><a href="1037-psw.html#cb610-16" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_1  Binary -0.1894          .   0.0211     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-17"><a href="1037-psw.html#cb610-17" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_2  Binary  0.1360          .  -0.0073     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-18"><a href="1037-psw.html#cb610-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_3  Binary  0.0357          .  -0.0155     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-19"><a href="1037-psw.html#cb610-19" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_4  Binary  0.0153          .  -0.0002     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-20"><a href="1037-psw.html#cb610-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_5  Binary  0.0014          .   0.0010     Balanced, &lt;0.1           .</span></span>
+<span id="cb610-21"><a href="1037-psw.html#cb610-21" aria-hidden="true" tabindex="-1"></a><span class="do">##                 V.Threshold</span></span>
+<span id="cb610-22"><a href="1037-psw.html#cb610-22" aria-hidden="true" tabindex="-1"></a><span class="do">## lifepres   Not Balanced, &gt;2</span></span>
+<span id="cb610-23"><a href="1037-psw.html#cb610-23" aria-hidden="true" tabindex="-1"></a><span class="do">## stent                      </span></span>
+<span id="cb610-24"><a href="1037-psw.html#cb610-24" aria-hidden="true" tabindex="-1"></a><span class="do">## height         Balanced, &lt;2</span></span>
+<span id="cb610-25"><a href="1037-psw.html#cb610-25" aria-hidden="true" tabindex="-1"></a><span class="do">## female                     </span></span>
+<span id="cb610-26"><a href="1037-psw.html#cb610-26" aria-hidden="true" tabindex="-1"></a><span class="do">## diabetic                   </span></span>
+<span id="cb610-27"><a href="1037-psw.html#cb610-27" aria-hidden="true" tabindex="-1"></a><span class="do">## acutemi                    </span></span>
+<span id="cb610-28"><a href="1037-psw.html#cb610-28" aria-hidden="true" tabindex="-1"></a><span class="do">## ejecfrac       Balanced, &lt;2</span></span>
+<span id="cb610-29"><a href="1037-psw.html#cb610-29" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_0                 </span></span>
+<span id="cb610-30"><a href="1037-psw.html#cb610-30" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_1                 </span></span>
+<span id="cb610-31"><a href="1037-psw.html#cb610-31" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_2                 </span></span>
+<span id="cb610-32"><a href="1037-psw.html#cb610-32" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_3                 </span></span>
+<span id="cb610-33"><a href="1037-psw.html#cb610-33" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_4                 </span></span>
+<span id="cb610-34"><a href="1037-psw.html#cb610-34" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc_5                 </span></span>
+<span id="cb610-35"><a href="1037-psw.html#cb610-35" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb610-36"><a href="1037-psw.html#cb610-36" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for mean differences</span></span>
+<span id="cb610-37"><a href="1037-psw.html#cb610-37" aria-hidden="true" tabindex="-1"></a><span class="do">##                    count</span></span>
+<span id="cb610-38"><a href="1037-psw.html#cb610-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;0.1        12</span></span>
+<span id="cb610-39"><a href="1037-psw.html#cb610-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;0.1     1</span></span>
+<span id="cb610-40"><a href="1037-psw.html#cb610-40" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb610-41"><a href="1037-psw.html#cb610-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest mean difference</span></span>
+<span id="cb610-42"><a href="1037-psw.html#cb610-42" aria-hidden="true" tabindex="-1"></a><span class="do">##  Variable Diff.Adj        M.Threshold</span></span>
+<span id="cb610-43"><a href="1037-psw.html#cb610-43" aria-hidden="true" tabindex="-1"></a><span class="do">##  lifepres    0.331 Not Balanced, &gt;0.1</span></span>
+<span id="cb610-44"><a href="1037-psw.html#cb610-44" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb610-45"><a href="1037-psw.html#cb610-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for variance ratios</span></span>
+<span id="cb610-46"><a href="1037-psw.html#cb610-46" aria-hidden="true" tabindex="-1"></a><span class="do">##                  count</span></span>
+<span id="cb610-47"><a href="1037-psw.html#cb610-47" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;2         2</span></span>
+<span id="cb610-48"><a href="1037-psw.html#cb610-48" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;2     1</span></span>
+<span id="cb610-49"><a href="1037-psw.html#cb610-49" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb610-50"><a href="1037-psw.html#cb610-50" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest variance ratio</span></span>
+<span id="cb610-51"><a href="1037-psw.html#cb610-51" aria-hidden="true" tabindex="-1"></a><span class="do">##  Variable V.Ratio.Adj      V.Threshold</span></span>
+<span id="cb610-52"><a href="1037-psw.html#cb610-52" aria-hidden="true" tabindex="-1"></a><span class="do">##  lifepres      0.2185 Not Balanced, &gt;2</span></span>
+<span id="cb610-53"><a href="1037-psw.html#cb610-53" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb610-54"><a href="1037-psw.html#cb610-54" aria-hidden="true" tabindex="-1"></a><span class="do">## Effective sample sizes</span></span>
+<span id="cb610-55"><a href="1037-psw.html#cb610-55" aria-hidden="true" tabindex="-1"></a><span class="do">##            Control Treated</span></span>
+<span id="cb610-56"><a href="1037-psw.html#cb610-56" aria-hidden="true" tabindex="-1"></a><span class="do">## Unadjusted  298.    698.  </span></span>
+<span id="cb610-57"><a href="1037-psw.html#cb610-57" aria-hidden="true" tabindex="-1"></a><span class="do">## Adjusted    202.27  671.09</span></span></code></pre></div>
+<p>可以看到除了<code>lifepres</code>之外，其他全都均衡了，效果还是挺不错的。加权后，干预组和对照组的样本量已经变了哦！</p>
+<p>如果想要画出加权后数据的基线资料表，可以借助<code>survey</code>包。</p>
+<div class="sourceCode" id="cb611"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb611-1"><a href="1037-psw.html#cb611-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb611-2"><a href="1037-psw.html#cb611-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: grid</span></span>
+<span id="cb611-3"><a href="1037-psw.html#cb611-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: Matrix</span></span>
+<span id="cb611-4"><a href="1037-psw.html#cb611-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: survival</span></span>
+<span id="cb611-5"><a href="1037-psw.html#cb611-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb611-6"><a href="1037-psw.html#cb611-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;survey&#39;</span></span>
+<span id="cb611-7"><a href="1037-psw.html#cb611-7" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from &#39;package:graphics&#39;:</span></span>
+<span id="cb611-8"><a href="1037-psw.html#cb611-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb611-9"><a href="1037-psw.html#cb611-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     dotchart</span></span>
+<span id="cb611-10"><a href="1037-psw.html#cb611-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb611-11"><a href="1037-psw.html#cb611-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 获取加权后的数据</span></span>
+<span id="cb611-12"><a href="1037-psw.html#cb611-12" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">svydesign</span>(<span class="at">ids =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">data =</span> lindner, <span class="at">weights =</span> <span class="sc">~</span> iptw)</span>
+<span id="cb611-13"><a href="1037-psw.html#cb611-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb611-14"><a href="1037-psw.html#cb611-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用tableone中的函数创建加权后的三线表</span></span>
+<span id="cb611-15"><a href="1037-psw.html#cb611-15" aria-hidden="true" tabindex="-1"></a>tab_IPTW<span class="ot">=</span><span class="fu">svyCreateTableOne</span>(<span class="at">vars=</span>covs, <span class="at">strata=</span><span class="st">&quot;abcix&quot;</span>,<span class="at">data=</span>df ,<span class="at">test=</span>T) </span>
+<span id="cb611-16"><a href="1037-psw.html#cb611-16" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(tab_IPTW,<span class="at">showAllLevels=</span><span class="cn">TRUE</span>,<span class="at">smd=</span><span class="cn">TRUE</span>)</span>
+<span id="cb611-17"><a href="1037-psw.html#cb611-17" aria-hidden="true" tabindex="-1"></a><span class="do">##                       Stratified by abcix</span></span>
+<span id="cb611-18"><a href="1037-psw.html#cb611-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        level 0               1              p      test SMD   </span></span>
+<span id="cb611-19"><a href="1037-psw.html#cb611-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   n                          1004.38         994.47                           </span></span>
+<span id="cb611-20"><a href="1037-psw.html#cb611-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   lifepres (mean (SD))         10.74 (3.05)   11.42 (1.43)   0.024       0.288</span></span>
+<span id="cb611-21"><a href="1037-psw.html#cb611-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   stent (%)            0       333.7 (33.2)   326.8 (32.9)   0.921       0.008</span></span>
+<span id="cb611-22"><a href="1037-psw.html#cb611-22" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1       670.7 (66.8)   667.7 (67.1)                    </span></span>
+<span id="cb611-23"><a href="1037-psw.html#cb611-23" aria-hidden="true" tabindex="-1"></a><span class="do">##   height (mean (SD))          171.60 (11.39) 171.41 (10.60)  0.849       0.017</span></span>
+<span id="cb611-24"><a href="1037-psw.html#cb611-24" aria-hidden="true" tabindex="-1"></a><span class="do">##   female (%)           0       668.5 (66.6)   651.8 (65.5)   0.782       0.021</span></span>
+<span id="cb611-25"><a href="1037-psw.html#cb611-25" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1       335.9 (33.4)   342.7 (34.5)                    </span></span>
+<span id="cb611-26"><a href="1037-psw.html#cb611-26" aria-hidden="true" tabindex="-1"></a><span class="do">##   diabetic (%)         0       762.7 (75.9)   772.6 (77.7)   0.610       0.042</span></span>
+<span id="cb611-27"><a href="1037-psw.html#cb611-27" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1       241.7 (24.1)   221.8 (22.3)                    </span></span>
+<span id="cb611-28"><a href="1037-psw.html#cb611-28" aria-hidden="true" tabindex="-1"></a><span class="do">##   acutemi (%)          0       857.6 (85.4)   851.8 (85.7)   0.942       0.008</span></span>
+<span id="cb611-29"><a href="1037-psw.html#cb611-29" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1       146.8 (14.6)   142.6 (14.3)                    </span></span>
+<span id="cb611-30"><a href="1037-psw.html#cb611-30" aria-hidden="true" tabindex="-1"></a><span class="do">##   ejecfrac (mean (SD))         51.07 (10.23)  50.95 (10.12)  0.879       0.012</span></span>
+<span id="cb611-31"><a href="1037-psw.html#cb611-31" aria-hidden="true" tabindex="-1"></a><span class="do">##   ves1proc (%)         0         3.0 ( 0.3)     3.9 ( 0.4)   0.937       0.088</span></span>
+<span id="cb611-32"><a href="1037-psw.html#cb611-32" aria-hidden="true" tabindex="-1"></a><span class="do">##                        1       664.1 (66.1)   678.6 (68.2)                    </span></span>
+<span id="cb611-33"><a href="1037-psw.html#cb611-33" aria-hidden="true" tabindex="-1"></a><span class="do">##                        2       261.6 (26.0)   251.7 (25.3)                    </span></span>
+<span id="cb611-34"><a href="1037-psw.html#cb611-34" aria-hidden="true" tabindex="-1"></a><span class="do">##                        3        61.3 ( 6.1)    45.3 ( 4.6)                    </span></span>
+<span id="cb611-35"><a href="1037-psw.html#cb611-35" aria-hidden="true" tabindex="-1"></a><span class="do">##                        4        14.4 ( 1.4)    14.0 ( 1.4)                    </span></span>
+<span id="cb611-36"><a href="1037-psw.html#cb611-36" aria-hidden="true" tabindex="-1"></a><span class="do">##                        5         0.0 ( 0.0)     1.0 ( 0.1)</span></span></code></pre></div>
+<p><strong>加权之后，就可以做各种分析了，比如回归分析等，分析时把权重因素也考虑进去即可。</strong></p>
+<p>这里演示逻辑回归，根据因变量的类型，可选择不同的回归方法。</p>
+<div class="sourceCode" id="cb612"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb612-1"><a href="1037-psw.html#cb612-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">glm</span>(sixMonthSurvive<span class="sc">~</span>abcix<span class="sc">+</span>stent<span class="sc">+</span>height<span class="sc">+</span>female<span class="sc">+</span>diabetic<span class="sc">+</span>acutemi<span class="sc">+</span></span>
+<span id="cb612-2"><a href="1037-psw.html#cb612-2" aria-hidden="true" tabindex="-1"></a>           ejecfrac<span class="sc">+</span>ves1proc,</span>
+<span id="cb612-3"><a href="1037-psw.html#cb612-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> lindner, <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb612-4"><a href="1037-psw.html#cb612-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">weights =</span> iptw <span class="co"># 把权重加进去</span></span>
+<span id="cb612-5"><a href="1037-psw.html#cb612-5" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb612-6"><a href="1037-psw.html#cb612-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb612-7"><a href="1037-psw.html#cb612-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f)</span>
+<span id="cb612-8"><a href="1037-psw.html#cb612-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb612-9"><a href="1037-psw.html#cb612-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb612-10"><a href="1037-psw.html#cb612-10" aria-hidden="true" tabindex="-1"></a><span class="do">## glm(formula = sixMonthSurvive ~ abcix + stent + height + female + </span></span>
+<span id="cb612-11"><a href="1037-psw.html#cb612-11" aria-hidden="true" tabindex="-1"></a><span class="do">##     diabetic + acutemi + ejecfrac + ves1proc, family = binomial(), </span></span>
+<span id="cb612-12"><a href="1037-psw.html#cb612-12" aria-hidden="true" tabindex="-1"></a><span class="do">##     data = lindner, weights = iptw)</span></span>
+<span id="cb612-13"><a href="1037-psw.html#cb612-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb612-14"><a href="1037-psw.html#cb612-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Deviance Residuals: </span></span>
+<span id="cb612-15"><a href="1037-psw.html#cb612-15" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min       1Q   Median       3Q      Max  </span></span>
+<span id="cb612-16"><a href="1037-psw.html#cb612-16" aria-hidden="true" tabindex="-1"></a><span class="do">## -4.9894   0.0958   0.1640   0.3071   2.8009  </span></span>
+<span id="cb612-17"><a href="1037-psw.html#cb612-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb612-18"><a href="1037-psw.html#cb612-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb612-19"><a href="1037-psw.html#cb612-19" aria-hidden="true" tabindex="-1"></a><span class="do">##               Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span id="cb612-20"><a href="1037-psw.html#cb612-20" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  8.598e+00  1.585e+03   0.005  0.99567    </span></span>
+<span id="cb612-21"><a href="1037-psw.html#cb612-21" aria-hidden="true" tabindex="-1"></a><span class="do">## abcix1       1.785e+00  3.215e-01   5.551 2.84e-08 ***</span></span>
+<span id="cb612-22"><a href="1037-psw.html#cb612-22" aria-hidden="true" tabindex="-1"></a><span class="do">## stent1      -6.401e-01  3.024e-01  -2.117  0.03426 *  </span></span>
+<span id="cb612-23"><a href="1037-psw.html#cb612-23" aria-hidden="true" tabindex="-1"></a><span class="do">## height       3.491e-02  1.154e-02   3.025  0.00248 ** </span></span>
+<span id="cb612-24"><a href="1037-psw.html#cb612-24" aria-hidden="true" tabindex="-1"></a><span class="do">## female1      8.123e-03  3.143e-01   0.026  0.97938    </span></span>
+<span id="cb612-25"><a href="1037-psw.html#cb612-25" aria-hidden="true" tabindex="-1"></a><span class="do">## diabetic1   -7.314e-01  2.813e-01  -2.599  0.00934 ** </span></span>
+<span id="cb612-26"><a href="1037-psw.html#cb612-26" aria-hidden="true" tabindex="-1"></a><span class="do">## acutemi1    -1.540e+00  3.011e-01  -5.116 3.11e-07 ***</span></span>
+<span id="cb612-27"><a href="1037-psw.html#cb612-27" aria-hidden="true" tabindex="-1"></a><span class="do">## ejecfrac     5.923e-02  1.057e-02   5.604 2.10e-08 ***</span></span>
+<span id="cb612-28"><a href="1037-psw.html#cb612-28" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc1   -1.378e+01  1.585e+03  -0.009  0.99306    </span></span>
+<span id="cb612-29"><a href="1037-psw.html#cb612-29" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc2   -1.184e+01  1.585e+03  -0.007  0.99404    </span></span>
+<span id="cb612-30"><a href="1037-psw.html#cb612-30" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc3   -1.569e+01  1.585e+03  -0.010  0.99210    </span></span>
+<span id="cb612-31"><a href="1037-psw.html#cb612-31" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc4   -7.180e-02  1.787e+03   0.000  0.99997    </span></span>
+<span id="cb612-32"><a href="1037-psw.html#cb612-32" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc5   -1.817e+00  4.262e+03   0.000  0.99966    </span></span>
+<span id="cb612-33"><a href="1037-psw.html#cb612-33" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb612-34"><a href="1037-psw.html#cb612-34" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb612-35"><a href="1037-psw.html#cb612-35" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb612-36"><a href="1037-psw.html#cb612-36" aria-hidden="true" tabindex="-1"></a><span class="do">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span id="cb612-37"><a href="1037-psw.html#cb612-37" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb612-38"><a href="1037-psw.html#cb612-38" aria-hidden="true" tabindex="-1"></a><span class="do">##     Null deviance: 732.98  on 995  degrees of freedom</span></span>
+<span id="cb612-39"><a href="1037-psw.html#cb612-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual deviance: 469.49  on 983  degrees of freedom</span></span>
+<span id="cb612-40"><a href="1037-psw.html#cb612-40" aria-hidden="true" tabindex="-1"></a><span class="do">## AIC: 485.36</span></span>
+<span id="cb612-41"><a href="1037-psw.html#cb612-41" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb612-42"><a href="1037-psw.html#cb612-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Fisher Scoring iterations: 16</span></span></code></pre></div>
+<blockquote>
+<p>但是这种方法存在问题，我在<a href="https://stackoverflow.com/questions/7026549/weight-data-with-r-part-ii">stackoverflow</a>中的帖子中看到有人指出，R自带的<code>lm</code>和<code>glm</code>中的<code>weights</code>参数并不是样本的权重，这点可以查看帮助文档确定，所以如果想要使用加权后的数据进行线性回归和逻辑回归，需要使用其他的R包，比如survey包。</p>
+</blockquote>
+<p>除了上面介绍的手动计算权重的方法，也可以通过多个R包实现，比如<code>PSW</code>/<code>PSweight</code>/<code>twang</code>等，大家感兴趣的可以自己查看相关说明。</p>
+</div>
+<div id="重叠加权" class="section level2 hasAnchor" number="37.3">
+<h2><span class="header-section-number">37.3</span> 重叠加权<a href="1037-psw.html#重叠加权" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>重叠加权的目标人群是两组协变量相似的人，即PS值分布重叠的人，其估计的效应为重叠人群平均处理效应（ATO）。</p>
+<ul>
+<li>干预组：1-ps</li>
+<li>对照组：ps</li>
+</ul>
+<p>重叠加权的优缺点可以看这篇文章：<a href="https://mp.weixin.qq.com/s/OgsRAuMFD9kuiT1Dsze62g">最强的倾向性评分方法—重叠加权</a></p>
+<p>使用<code>PSweight</code>包演示重叠加权，这个包不仅可以用于二分类，还可以用于多分类。</p>
+<p>还是使用<code>lindner</code>这个数据集。</p>
+<div class="sourceCode" id="cb613"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb613-1"><a href="1037-psw.html#cb613-1" aria-hidden="true" tabindex="-1"></a><span class="do">## 数据准备</span></span>
+<span id="cb613-2"><a href="1037-psw.html#cb613-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb613-3"><a href="1037-psw.html#cb613-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(lindner, <span class="at">package =</span> <span class="st">&quot;twang&quot;</span>) </span>
+<span id="cb613-4"><a href="1037-psw.html#cb613-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb613-5"><a href="1037-psw.html#cb613-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建估计PS的formula</span></span>
+<span id="cb613-6"><a href="1037-psw.html#cb613-6" aria-hidden="true" tabindex="-1"></a>formula.ps <span class="ot">&lt;-</span> abcix <span class="sc">~</span> stent <span class="sc">+</span> height <span class="sc">+</span> female <span class="sc">+</span> diabetic <span class="sc">+</span> acutemi <span class="sc">+</span> ejecfrac <span class="sc">+</span> ves1proc</span></code></pre></div>
+<p>进行重叠加权：</p>
+<div class="sourceCode" id="cb614"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb614-1"><a href="1037-psw.html#cb614-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PSweight)</span>
+<span id="cb614-2"><a href="1037-psw.html#cb614-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb614-3"><a href="1037-psw.html#cb614-3" aria-hidden="true" tabindex="-1"></a>PSweight <span class="ot">&lt;-</span> <span class="fu">PSweight</span>(<span class="at">ps.formula =</span> formula.ps, <span class="at">data =</span> lindner, </span>
+<span id="cb614-4"><a href="1037-psw.html#cb614-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">weight =</span> <span class="st">&quot;overlap&quot;</span>, <span class="co"># 重叠加权</span></span>
+<span id="cb614-5"><a href="1037-psw.html#cb614-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">yname =</span> <span class="st">&quot;cardbill&quot;</span>, <span class="co"># 因变量</span></span>
+<span id="cb614-6"><a href="1037-psw.html#cb614-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">family =</span> <span class="st">&quot;gaussian&quot;</span>, </span>
+<span id="cb614-7"><a href="1037-psw.html#cb614-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">ps.method =</span> <span class="st">&quot;glm&quot;</span>, </span>
+<span id="cb614-8"><a href="1037-psw.html#cb614-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">out.method =</span> <span class="st">&quot;glm&quot;</span></span>
+<span id="cb614-9"><a href="1037-psw.html#cb614-9" aria-hidden="true" tabindex="-1"></a>                     )</span>
+<span id="cb614-10"><a href="1037-psw.html#cb614-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb614-11"><a href="1037-psw.html#cb614-11" aria-hidden="true" tabindex="-1"></a><span class="co">#返回结果，效应估计及其标准误、置信区间、P值</span></span>
+<span id="cb614-12"><a href="1037-psw.html#cb614-12" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(PSweight)</span>
+<span id="cb614-13"><a href="1037-psw.html#cb614-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb614-14"><a href="1037-psw.html#cb614-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Closed-form inference: </span></span>
+<span id="cb614-15"><a href="1037-psw.html#cb614-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb614-16"><a href="1037-psw.html#cb614-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Original group value:  0, 1 </span></span>
+<span id="cb614-17"><a href="1037-psw.html#cb614-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb614-18"><a href="1037-psw.html#cb614-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Contrast: </span></span>
+<span id="cb614-19"><a href="1037-psw.html#cb614-19" aria-hidden="true" tabindex="-1"></a><span class="do">##             0 1</span></span>
+<span id="cb614-20"><a href="1037-psw.html#cb614-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Contrast 1 -1 1</span></span>
+<span id="cb614-21"><a href="1037-psw.html#cb614-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb614-22"><a href="1037-psw.html#cb614-22" aria-hidden="true" tabindex="-1"></a><span class="do">##            Estimate Std.Error     lwr    upr Pr(&gt;|z|)</span></span>
+<span id="cb614-23"><a href="1037-psw.html#cb614-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Contrast 1  1134.91    879.51 -588.90 2858.7   0.1969</span></span></code></pre></div>
+<p>计算数据均衡性：</p>
+<div class="sourceCode" id="cb615"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb615-1"><a href="1037-psw.html#cb615-1" aria-hidden="true" tabindex="-1"></a>SumStat<span class="ot">&lt;-</span><span class="fu">SumStat</span>(<span class="at">ps.formula =</span> formula.ps, <span class="at">data =</span> lindner, <span class="at">weight =</span> <span class="st">&quot;overlap&quot;</span>)</span>
+<span id="cb615-2"><a href="1037-psw.html#cb615-2" aria-hidden="true" tabindex="-1"></a>SumStat[[<span class="st">&quot;ess&quot;</span>]] <span class="co">#有效样本量</span></span>
+<span id="cb615-3"><a href="1037-psw.html#cb615-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   unweighted  overlap</span></span>
+<span id="cb615-4"><a href="1037-psw.html#cb615-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 0        298 287.4367</span></span>
+<span id="cb615-5"><a href="1037-psw.html#cb615-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1        698 569.5826</span></span>
+<span id="cb615-6"><a href="1037-psw.html#cb615-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(SumStat) <span class="co">#均衡性检验图形</span></span></code></pre></div>
+<p><img src="1037-psw_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb616"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb616-1"><a href="1037-psw.html#cb616-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(SumStat) <span class="co">#均衡性检验</span></span>
+<span id="cb616-2"><a href="1037-psw.html#cb616-2" aria-hidden="true" tabindex="-1"></a><span class="do">## unweighted result</span></span>
+<span id="cb616-3"><a href="1037-psw.html#cb616-3" aria-hidden="true" tabindex="-1"></a><span class="do">##           Mean 0  Mean 1   SMD</span></span>
+<span id="cb616-4"><a href="1037-psw.html#cb616-4" aria-hidden="true" tabindex="-1"></a><span class="do">## stent      0.584   0.705 0.254</span></span>
+<span id="cb616-5"><a href="1037-psw.html#cb616-5" aria-hidden="true" tabindex="-1"></a><span class="do">## height   171.446 171.443 0.000</span></span>
+<span id="cb616-6"><a href="1037-psw.html#cb616-6" aria-hidden="true" tabindex="-1"></a><span class="do">## female     0.386   0.331 0.115</span></span>
+<span id="cb616-7"><a href="1037-psw.html#cb616-7" aria-hidden="true" tabindex="-1"></a><span class="do">## diabetic   0.268   0.205 0.150</span></span>
+<span id="cb616-8"><a href="1037-psw.html#cb616-8" aria-hidden="true" tabindex="-1"></a><span class="do">## acutemi    0.060   0.179 0.371</span></span>
+<span id="cb616-9"><a href="1037-psw.html#cb616-9" aria-hidden="true" tabindex="-1"></a><span class="do">## ejecfrac  52.289  50.403 0.182</span></span>
+<span id="cb616-10"><a href="1037-psw.html#cb616-10" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc   1.205   1.463 0.427</span></span>
+<span id="cb616-11"><a href="1037-psw.html#cb616-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb616-12"><a href="1037-psw.html#cb616-12" aria-hidden="true" tabindex="-1"></a><span class="do">## overlap result</span></span>
+<span id="cb616-13"><a href="1037-psw.html#cb616-13" aria-hidden="true" tabindex="-1"></a><span class="do">##           Mean 0  Mean 1 SMD</span></span>
+<span id="cb616-14"><a href="1037-psw.html#cb616-14" aria-hidden="true" tabindex="-1"></a><span class="do">## stent      0.633   0.633   0</span></span>
+<span id="cb616-15"><a href="1037-psw.html#cb616-15" aria-hidden="true" tabindex="-1"></a><span class="do">## height   171.464 171.464   0</span></span>
+<span id="cb616-16"><a href="1037-psw.html#cb616-16" aria-hidden="true" tabindex="-1"></a><span class="do">## female     0.359   0.359   0</span></span>
+<span id="cb616-17"><a href="1037-psw.html#cb616-17" aria-hidden="true" tabindex="-1"></a><span class="do">## diabetic   0.242   0.242   0</span></span>
+<span id="cb616-18"><a href="1037-psw.html#cb616-18" aria-hidden="true" tabindex="-1"></a><span class="do">## acutemi    0.078   0.078   0</span></span>
+<span id="cb616-19"><a href="1037-psw.html#cb616-19" aria-hidden="true" tabindex="-1"></a><span class="do">## ejecfrac  51.830  51.830   0</span></span>
+<span id="cb616-20"><a href="1037-psw.html#cb616-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ves1proc   1.257   1.257   0</span></span></code></pre></div>
+<p>加权后，可以进行后续的各种分析，这里就不演示了。</p>
+</div>
+<div id="参考资料-6" class="section level2 hasAnchor" number="37.4">
+<h2><span class="header-section-number">37.4</span> 参考资料<a href="1037-psw.html#参考资料-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>涂博祥, 秦婴逸, 吴骋, 等. 倾向性评分加权方法介绍及R软件实现[J]. 中国循证医学杂志, 2022, 22(3): 365–372.</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1036-pssc.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1038-p4trend.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

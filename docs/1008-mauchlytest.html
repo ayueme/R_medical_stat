@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>8 球对称检验 | R语言实战医学统计</title>
+  <meta name="description" content="8 球对称检验 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="8 球对称检验 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="8 球对称检验 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="8 球对称检验 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="8 球对称检验 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1007-wilcoxn.html"/>
+<link rel="next" href="1009-cochranarmitage.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,111 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="yruugkjh" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">8</span> 球对称检验<a href="1008-mauchlytest.html#yruugkjh" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="球对称检验" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> 球对称检验<a href="1008-mauchlytest.html#球对称检验" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>如何使用R语言进行球形检验？</strong></p>
+<p>球形检验是非常重要的内容，在进行重复测量方差分析之前，都应该先进行球形假设检验！</p>
+<p>R语言作为专为统计而生的语言，球形检验的函数就内置在<code>stats</code>包中，就是<code>mauchly.test()</code>，但是用法却和其他常见统计检验函数很不一样。</p>
+<p>下面我将会为大家讲解如何使用R语言进行球形检验！</p>
+<div id="使用课本表12-3的数据" class="section level3 hasAnchor" number="8.1.1">
+<h3><span class="header-section-number">8.1.1</span> 使用课本<strong>表12-3</strong>的数据<a href="1008-mauchlytest.html#使用课本表12-3的数据" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>这是一个只有1组的！</p>
+<p>读取数据：</p>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="1008-mauchlytest.html#cb138-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="st">&quot;datasets/表12-3重复测量ANOVA.sav&quot;</span>,</span>
+<span id="cb138-2"><a href="1008-mauchlytest.html#cb138-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">to.data.frame =</span> T, <span class="at">reencode =</span> <span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb138-3"><a href="1008-mauchlytest.html#cb138-3" aria-hidden="true" tabindex="-1"></a><span class="do">## re-encoding from utf-8</span></span>
+<span id="cb138-4"><a href="1008-mauchlytest.html#cb138-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb138-5"><a href="1008-mauchlytest.html#cb138-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb138-6"><a href="1008-mauchlytest.html#cb138-6" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    8 obs. of  4 variables:</span></span>
+<span id="cb138-7"><a href="1008-mauchlytest.html#cb138-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t0  : num  5.32 5.32 5.94 5.49 5.71 6.27 5.88 5.32</span></span>
+<span id="cb138-8"><a href="1008-mauchlytest.html#cb138-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t45 : num  5.32 5.26 5.88 5.43 5.49 6.27 5.77 5.15</span></span>
+<span id="cb138-9"><a href="1008-mauchlytest.html#cb138-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t90 : num  4.98 4.93 5.43 5.32 5.43 5.66 5.43 5.04</span></span>
+<span id="cb138-10"><a href="1008-mauchlytest.html#cb138-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t135: num  4.65 4.7 5.04 5.04 4.93 5.26 4.93 4.48</span></span>
+<span id="cb138-11"><a href="1008-mauchlytest.html#cb138-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;variable.labels&quot;)= Named chr(0) </span></span>
+<span id="cb138-12"><a href="1008-mauchlytest.html#cb138-12" aria-hidden="true" tabindex="-1"></a><span class="do">##   ..- attr(*, &quot;names&quot;)= chr(0) </span></span>
+<span id="cb138-13"><a href="1008-mauchlytest.html#cb138-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;codepage&quot;)= int 936</span></span>
+<span id="cb138-14"><a href="1008-mauchlytest.html#cb138-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span>
+<span id="cb138-15"><a href="1008-mauchlytest.html#cb138-15" aria-hidden="true" tabindex="-1"></a><span class="do">##     t0  t45  t90 t135</span></span>
+<span id="cb138-16"><a href="1008-mauchlytest.html#cb138-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 5.32 5.32 4.98 4.65</span></span>
+<span id="cb138-17"><a href="1008-mauchlytest.html#cb138-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 5.32 5.26 4.93 4.70</span></span>
+<span id="cb138-18"><a href="1008-mauchlytest.html#cb138-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 5.94 5.88 5.43 5.04</span></span>
+<span id="cb138-19"><a href="1008-mauchlytest.html#cb138-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 5.49 5.43 5.32 5.04</span></span>
+<span id="cb138-20"><a href="1008-mauchlytest.html#cb138-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 5.71 5.49 5.43 4.93</span></span>
+<span id="cb138-21"><a href="1008-mauchlytest.html#cb138-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 6.27 6.27 5.66 5.26</span></span></code></pre></div>
+<p>数据一共4列，就是4个时间点的血糖值。</p>
+<p>首先将数据变为矩阵：</p>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="1008-mauchlytest.html#cb139-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(df)</span></code></pre></div>
+<p>然后进行球对称检验（球形检验）：</p>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="1008-mauchlytest.html#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mauchly.test</span>(<span class="fu">lm</span>(df <span class="sc">~</span> <span class="dv">1</span>), <span class="at">X =</span> <span class="sc">~</span> <span class="dv">1</span>)</span>
+<span id="cb140-2"><a href="1008-mauchlytest.html#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb140-3"><a href="1008-mauchlytest.html#cb140-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Mauchly&#39;s test of sphericity</span></span>
+<span id="cb140-4"><a href="1008-mauchlytest.html#cb140-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  Contrasts orthogonal to</span></span>
+<span id="cb140-5"><a href="1008-mauchlytest.html#cb140-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  ~1</span></span>
+<span id="cb140-6"><a href="1008-mauchlytest.html#cb140-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb140-7"><a href="1008-mauchlytest.html#cb140-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb140-8"><a href="1008-mauchlytest.html#cb140-8" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  SSD matrix from lm(formula = df ~ 1)</span></span>
+<span id="cb140-9"><a href="1008-mauchlytest.html#cb140-9" aria-hidden="true" tabindex="-1"></a><span class="do">## W = 0.06273, p-value = 0.008207</span></span></code></pre></div>
+<p>结果就有了，就是这么简单直接，网上很多资料都是直接复制粘贴帮助文档里的内容，非常费脑子！</p>
+</div>
+<div id="使用课本例12-3的数据" class="section level3 hasAnchor" number="8.1.2">
+<h3><span class="header-section-number">8.1.2</span> 使用课本<strong>例12-3</strong>的数据<a href="1008-mauchlytest.html#使用课本例12-3的数据" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>这个数据有2组！</p>
+<p>直接读取：</p>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="1008-mauchlytest.html#cb141-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="st">&quot;datasets/例12-03.sav&quot;</span>,<span class="at">to.data.frame =</span> T)</span>
+<span id="cb141-2"><a href="1008-mauchlytest.html#cb141-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-3"><a href="1008-mauchlytest.html#cb141-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df1)</span>
+<span id="cb141-4"><a href="1008-mauchlytest.html#cb141-4" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    15 obs. of  7 variables:</span></span>
+<span id="cb141-5"><a href="1008-mauchlytest.html#cb141-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ No   : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb141-6"><a href="1008-mauchlytest.html#cb141-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ group: Factor w/ 3 levels &quot;A&quot;,&quot;B&quot;,&quot;C&quot;: 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span id="cb141-7"><a href="1008-mauchlytest.html#cb141-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t0   : num  120 118 119 121 127 121 122 128 117 118 ...</span></span>
+<span id="cb141-8"><a href="1008-mauchlytest.html#cb141-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t1   : num  108 109 112 112 121 120 121 129 115 114 ...</span></span>
+<span id="cb141-9"><a href="1008-mauchlytest.html#cb141-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t2   : num  112 115 119 119 127 118 119 126 111 116 ...</span></span>
+<span id="cb141-10"><a href="1008-mauchlytest.html#cb141-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t3   : num  120 126 124 126 133 131 129 135 123 123 ...</span></span>
+<span id="cb141-11"><a href="1008-mauchlytest.html#cb141-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t4   : num  117 123 118 120 126 137 133 142 131 133 ...</span></span>
+<span id="cb141-12"><a href="1008-mauchlytest.html#cb141-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;variable.labels&quot;)= Named chr [1:7] &quot;\xd0\xf2\xba\xc5&quot; &quot;\xd7\xe9\xb1\xf0&quot; &quot;&quot; &quot;&quot; ...</span></span>
+<span id="cb141-13"><a href="1008-mauchlytest.html#cb141-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   ..- attr(*, &quot;names&quot;)= chr [1:7] &quot;No&quot; &quot;group&quot; &quot;t0&quot; &quot;t1&quot; ...</span></span>
+<span id="cb141-14"><a href="1008-mauchlytest.html#cb141-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df1)</span>
+<span id="cb141-15"><a href="1008-mauchlytest.html#cb141-15" aria-hidden="true" tabindex="-1"></a><span class="do">##   No group  t0  t1  t2  t3  t4</span></span>
+<span id="cb141-16"><a href="1008-mauchlytest.html#cb141-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  1     A 120 108 112 120 117</span></span>
+<span id="cb141-17"><a href="1008-mauchlytest.html#cb141-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  2     A 118 109 115 126 123</span></span>
+<span id="cb141-18"><a href="1008-mauchlytest.html#cb141-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  3     A 119 112 119 124 118</span></span>
+<span id="cb141-19"><a href="1008-mauchlytest.html#cb141-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  4     A 121 112 119 126 120</span></span>
+<span id="cb141-20"><a href="1008-mauchlytest.html#cb141-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  5     A 127 121 127 133 126</span></span>
+<span id="cb141-21"><a href="1008-mauchlytest.html#cb141-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  6     B 121 120 118 131 137</span></span></code></pre></div>
+<p>数据一共7列，第1列是患者编号，第2列是诱导方法（3种），第3-7列是5个时间点的血压。</p>
+<p>首先将数据变为矩阵，转换数据格式：</p>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="1008-mauchlytest.html#cb142-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(<span class="fu">cbind</span>(df1[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>], df1[<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>], df1[<span class="dv">11</span><span class="sc">:</span><span class="dv">15</span>,<span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>]))</span></code></pre></div>
+<p>把测量点和分组单独建立，注意要和上面的顺序一致：</p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="1008-mauchlytest.html#cb143-1" aria-hidden="true" tabindex="-1"></a>times <span class="ot">=</span> <span class="fu">ordered</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,<span class="dv">3</span>))</span>
+<span id="cb143-2"><a href="1008-mauchlytest.html#cb143-2" aria-hidden="true" tabindex="-1"></a>group <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>),<span class="at">each =</span> <span class="dv">5</span>))</span></code></pre></div>
+<p>然后进行球对称检验（球形检验）：</p>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="1008-mauchlytest.html#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mauchly.test</span>(<span class="fu">lm</span>(df2 <span class="sc">~</span> <span class="dv">1</span>), <span class="at">M =</span> <span class="sc">~</span> group <span class="sc">+</span> times, <span class="at">X =</span> <span class="sc">~</span> times)</span>
+<span id="cb144-2"><a href="1008-mauchlytest.html#cb144-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb144-3"><a href="1008-mauchlytest.html#cb144-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Mauchly&#39;s test of sphericity</span></span>
+<span id="cb144-4"><a href="1008-mauchlytest.html#cb144-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  Contrasts orthogonal to</span></span>
+<span id="cb144-5"><a href="1008-mauchlytest.html#cb144-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  ~times</span></span>
+<span id="cb144-6"><a href="1008-mauchlytest.html#cb144-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb144-7"><a href="1008-mauchlytest.html#cb144-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  Contrasts spanned by</span></span>
+<span id="cb144-8"><a href="1008-mauchlytest.html#cb144-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  ~group + times</span></span>
+<span id="cb144-9"><a href="1008-mauchlytest.html#cb144-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb144-10"><a href="1008-mauchlytest.html#cb144-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb144-11"><a href="1008-mauchlytest.html#cb144-11" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  SSD matrix from lm(formula = df2 ~ 1)</span></span>
+<span id="cb144-12"><a href="1008-mauchlytest.html#cb144-12" aria-hidden="true" tabindex="-1"></a><span class="do">## W = 0.427, p-value = 0.279</span></span></code></pre></div>
+<p>真的是有点费事儿！</p>
+<p>后面会介绍一种更为简单的方法，在进行重复测量方差分析时会自动进行球形检验！</p>
+
+</div>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1007-wilcoxn.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1009-cochranarmitage.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>28 ROC阴性结果还是阳性结果 | R语言实战医学统计</title>
+  <meta name="description" content="28 ROC阴性结果还是阳性结果 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="28 ROC阴性结果还是阳性结果 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="28 ROC阴性结果还是阳性结果 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="28 ROC阴性结果还是阳性结果 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="28 ROC阴性结果还是阳性结果 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1027-roccompare.html"/>
+<link rel="next" href="1029-rocggplot.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,132 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="uxijsjg" class="section level1 hasAnchor" number="28">
+<h1><span class="header-section-number">28</span> ROC阴性结果还是阳性结果<a href="1028-rocdirection.html#uxijsjg" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="探索roc曲线" class="section level2 hasAnchor" number="28.1">
+<h2><span class="header-section-number">28.1</span> 探索ROC曲线<a href="1028-rocdirection.html#探索roc曲线" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>大家都知道ROC曲线的横坐标是假阳性率，纵坐标是真阳性率，根据数据，我们可以计算很多个假阳性率和真阳性率，然后就可以在坐标轴上画出很多个点，把这些点连接成线就是ROC曲线了。</p>
+<p>那这些横纵坐标的值到底是怎么计算的呢？</p>
+<p>假如，我想根据ca125的值判定一个人到底有没有肿瘤，找了10个肿瘤患者，20个非肿瘤患者，都给他们测一下ca125，这样就得到了30个ca125的值。</p>
+<div class="sourceCode" id="cb452"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb452-1"><a href="1028-rocdirection.html#cb452-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20220840</span>)</span>
+<span id="cb452-2"><a href="1028-rocdirection.html#cb452-2" aria-hidden="true" tabindex="-1"></a>ca125_1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">10</span>,<span class="dv">80</span>,<span class="dv">20</span>),<span class="fu">rnorm</span>(<span class="dv">20</span>,<span class="dv">50</span>,<span class="dv">10</span>))</span>
+<span id="cb452-3"><a href="1028-rocdirection.html#cb452-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb452-4"><a href="1028-rocdirection.html#cb452-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 30个人的ca125的值如下</span></span>
+<span id="cb452-5"><a href="1028-rocdirection.html#cb452-5" aria-hidden="true" tabindex="-1"></a>ca125_1</span>
+<span id="cb452-6"><a href="1028-rocdirection.html#cb452-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  [1]  51.88470  82.45907 113.66834  63.49476  98.29077  63.27374  74.25079</span></span>
+<span id="cb452-7"><a href="1028-rocdirection.html#cb452-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  [8]  80.22945  83.01740  99.17105  42.52889  54.56804  48.88383  65.67865</span></span>
+<span id="cb452-8"><a href="1028-rocdirection.html#cb452-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [15]  44.73153  45.99028  55.82554  42.79242  60.84917  64.80764  51.11468</span></span>
+<span id="cb452-9"><a href="1028-rocdirection.html#cb452-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [22]  43.40118  47.03850  44.75943  68.34163  60.83829  53.32599  59.92225</span></span>
+<span id="cb452-10"><a href="1028-rocdirection.html#cb452-10" aria-hidden="true" tabindex="-1"></a><span class="do">## [29]  46.46360  30.02914</span></span></code></pre></div>
+<p>假定前10个人是肿瘤，后20个人是非肿瘤。</p>
+<div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb453-1"><a href="1028-rocdirection.html#cb453-1" aria-hidden="true" tabindex="-1"></a>outcome <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;肿瘤&quot;</span>,<span class="st">&quot;非肿瘤&quot;</span>),<span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">20</span>)))</span>
+<span id="cb453-2"><a href="1028-rocdirection.html#cb453-2" aria-hidden="true" tabindex="-1"></a>outcome</span>
+<span id="cb453-3"><a href="1028-rocdirection.html#cb453-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  [1] &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;肿瘤&quot;  </span></span>
+<span id="cb453-4"><a href="1028-rocdirection.html#cb453-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  [9] &quot;肿瘤&quot;   &quot;肿瘤&quot;   &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot;</span></span>
+<span id="cb453-5"><a href="1028-rocdirection.html#cb453-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [17] &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot;</span></span>
+<span id="cb453-6"><a href="1028-rocdirection.html#cb453-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [25] &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot; &quot;非肿瘤&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb454-1"><a href="1028-rocdirection.html#cb454-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">`</span><span class="at">outcome</span><span class="st">`</span><span class="ot">=</span>outcome,</span>
+<span id="cb454-2"><a href="1028-rocdirection.html#cb454-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">`</span><span class="at">ca125</span><span class="st">`</span><span class="ot">=</span>ca125_1</span>
+<span id="cb454-3"><a href="1028-rocdirection.html#cb454-3" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb454-4"><a href="1028-rocdirection.html#cb454-4" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headtail</span>(df)</span>
+<span id="cb454-5"><a href="1028-rocdirection.html#cb454-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: headtail is deprecated.  Please use the headTail function</span></span>
+<span id="cb454-6"><a href="1028-rocdirection.html#cb454-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     outcome  ca125</span></span>
+<span id="cb454-7"><a href="1028-rocdirection.html#cb454-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1      肿瘤  51.88</span></span>
+<span id="cb454-8"><a href="1028-rocdirection.html#cb454-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2      肿瘤  82.46</span></span>
+<span id="cb454-9"><a href="1028-rocdirection.html#cb454-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3      肿瘤 113.67</span></span>
+<span id="cb454-10"><a href="1028-rocdirection.html#cb454-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4      肿瘤  63.49</span></span>
+<span id="cb454-11"><a href="1028-rocdirection.html#cb454-11" aria-hidden="true" tabindex="-1"></a><span class="do">## ...    &lt;NA&gt;    ...</span></span>
+<span id="cb454-12"><a href="1028-rocdirection.html#cb454-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 27   非肿瘤  53.33</span></span>
+<span id="cb454-13"><a href="1028-rocdirection.html#cb454-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 28   非肿瘤  59.92</span></span>
+<span id="cb454-14"><a href="1028-rocdirection.html#cb454-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 29   非肿瘤  46.46</span></span>
+<span id="cb454-15"><a href="1028-rocdirection.html#cb454-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 30   非肿瘤  30.03</span></span></code></pre></div>
+<p>现在如果我们设置ca125&gt;60，判断为肿瘤，ca125≤50判断为非肿瘤，就能得到如下的结果：</p>
+<div class="sourceCode" id="cb455"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb455-1"><a href="1028-rocdirection.html#cb455-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> <span class="fu">transform</span>(df, <span class="at">pred =</span> <span class="fu">ifelse</span>(ca125<span class="sc">&gt;</span><span class="dv">60</span>,<span class="st">&quot;猜他是肿瘤&quot;</span>,<span class="st">&quot;猜他不是肿瘤&quot;</span>))</span>
+<span id="cb455-2"><a href="1028-rocdirection.html#cb455-2" aria-hidden="true" tabindex="-1"></a>df1</span>
+<span id="cb455-3"><a href="1028-rocdirection.html#cb455-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    outcome     ca125         pred</span></span>
+<span id="cb455-4"><a href="1028-rocdirection.html#cb455-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     肿瘤  51.88470 猜他不是肿瘤</span></span>
+<span id="cb455-5"><a href="1028-rocdirection.html#cb455-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     肿瘤  82.45907   猜他是肿瘤</span></span>
+<span id="cb455-6"><a href="1028-rocdirection.html#cb455-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     肿瘤 113.66834   猜他是肿瘤</span></span>
+<span id="cb455-7"><a href="1028-rocdirection.html#cb455-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     肿瘤  63.49476   猜他是肿瘤</span></span>
+<span id="cb455-8"><a href="1028-rocdirection.html#cb455-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5     肿瘤  98.29077   猜他是肿瘤</span></span>
+<span id="cb455-9"><a href="1028-rocdirection.html#cb455-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6     肿瘤  63.27374   猜他是肿瘤</span></span>
+<span id="cb455-10"><a href="1028-rocdirection.html#cb455-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 7     肿瘤  74.25079   猜他是肿瘤</span></span>
+<span id="cb455-11"><a href="1028-rocdirection.html#cb455-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 8     肿瘤  80.22945   猜他是肿瘤</span></span>
+<span id="cb455-12"><a href="1028-rocdirection.html#cb455-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 9     肿瘤  83.01740   猜他是肿瘤</span></span>
+<span id="cb455-13"><a href="1028-rocdirection.html#cb455-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10    肿瘤  99.17105   猜他是肿瘤</span></span>
+<span id="cb455-14"><a href="1028-rocdirection.html#cb455-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 11  非肿瘤  42.52889 猜他不是肿瘤</span></span>
+<span id="cb455-15"><a href="1028-rocdirection.html#cb455-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 12  非肿瘤  54.56804 猜他不是肿瘤</span></span>
+<span id="cb455-16"><a href="1028-rocdirection.html#cb455-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 13  非肿瘤  48.88383 猜他不是肿瘤</span></span>
+<span id="cb455-17"><a href="1028-rocdirection.html#cb455-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 14  非肿瘤  65.67865   猜他是肿瘤</span></span>
+<span id="cb455-18"><a href="1028-rocdirection.html#cb455-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 15  非肿瘤  44.73153 猜他不是肿瘤</span></span>
+<span id="cb455-19"><a href="1028-rocdirection.html#cb455-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 16  非肿瘤  45.99028 猜他不是肿瘤</span></span>
+<span id="cb455-20"><a href="1028-rocdirection.html#cb455-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 17  非肿瘤  55.82554 猜他不是肿瘤</span></span>
+<span id="cb455-21"><a href="1028-rocdirection.html#cb455-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 18  非肿瘤  42.79242 猜他不是肿瘤</span></span>
+<span id="cb455-22"><a href="1028-rocdirection.html#cb455-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 19  非肿瘤  60.84917   猜他是肿瘤</span></span>
+<span id="cb455-23"><a href="1028-rocdirection.html#cb455-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 20  非肿瘤  64.80764   猜他是肿瘤</span></span>
+<span id="cb455-24"><a href="1028-rocdirection.html#cb455-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 21  非肿瘤  51.11468 猜他不是肿瘤</span></span>
+<span id="cb455-25"><a href="1028-rocdirection.html#cb455-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 22  非肿瘤  43.40118 猜他不是肿瘤</span></span>
+<span id="cb455-26"><a href="1028-rocdirection.html#cb455-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 23  非肿瘤  47.03850 猜他不是肿瘤</span></span>
+<span id="cb455-27"><a href="1028-rocdirection.html#cb455-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 24  非肿瘤  44.75943 猜他不是肿瘤</span></span>
+<span id="cb455-28"><a href="1028-rocdirection.html#cb455-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 25  非肿瘤  68.34163   猜他是肿瘤</span></span>
+<span id="cb455-29"><a href="1028-rocdirection.html#cb455-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 26  非肿瘤  60.83829   猜他是肿瘤</span></span>
+<span id="cb455-30"><a href="1028-rocdirection.html#cb455-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 27  非肿瘤  53.32599 猜他不是肿瘤</span></span>
+<span id="cb455-31"><a href="1028-rocdirection.html#cb455-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 28  非肿瘤  59.92225 猜他不是肿瘤</span></span>
+<span id="cb455-32"><a href="1028-rocdirection.html#cb455-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 29  非肿瘤  46.46360 猜他不是肿瘤</span></span>
+<span id="cb455-33"><a href="1028-rocdirection.html#cb455-33" aria-hidden="true" tabindex="-1"></a><span class="do">## 30  非肿瘤  30.02914 猜他不是肿瘤</span></span></code></pre></div>
+<p>这样就能得出一个四格表：</p>
+<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb456-1"><a href="1028-rocdirection.html#cb456-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xtabs</span>(<span class="sc">~</span>outcome<span class="sc">+</span>pred,<span class="at">data =</span> df1)</span>
+<span id="cb456-2"><a href="1028-rocdirection.html#cb456-2" aria-hidden="true" tabindex="-1"></a><span class="do">##         pred</span></span>
+<span id="cb456-3"><a href="1028-rocdirection.html#cb456-3" aria-hidden="true" tabindex="-1"></a><span class="do">## outcome  猜他不是肿瘤 猜他是肿瘤</span></span>
+<span id="cb456-4"><a href="1028-rocdirection.html#cb456-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   非肿瘤           15          5</span></span>
+<span id="cb456-5"><a href="1028-rocdirection.html#cb456-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   肿瘤              1          9</span></span></code></pre></div>
+<p>根据这个四格表我们就能算出目前的真阳性率和假阳性率：</p>
+<p>真阳性率：猜他是肿瘤的人数 / 所有肿瘤人数
+假阳性率：猜他是肿瘤的人数 / 所有非肿瘤人数</p>
+<p>真阳性率 = 9 / (1+9) = 0.9
+假阳性率 = 5 / (15+5) = 0.25</p>
+<p>一个阈值就能算出1个真阳性率和假阳性率，多找几个阈值就能算出多个率，把这些率画在坐标轴里，再连成线，就是ROC曲线了。</p>
+<p>此时，我们计算的是<em>确定是肿瘤</em>的真阳性率和假阳性率，画出来的也是<em>确定是肿瘤</em>的ROC曲线。</p>
+<p>现在大家可以思考一个问题，如果我想知道的是<em>确定不是肿瘤</em>的能力，那算出来的东西还一样吗？</p>
+</div>
+<div id="反过来可以吗" class="section level2 hasAnchor" number="28.2">
+<h2><span class="header-section-number">28.2</span> 反过来可以吗？<a href="1028-rocdirection.html#反过来可以吗" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>一般情况下我们感兴趣的是<strong>确定是肿瘤</strong>的能力，此时真阳性率和假阳性率的计算如下：</p>
+<div class="sourceCode" id="cb457"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb457-1"><a href="1028-rocdirection.html#cb457-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 首先是获得四格表</span></span>
+<span id="cb457-2"><a href="1028-rocdirection.html#cb457-2" aria-hidden="true" tabindex="-1"></a><span class="fu">xtabs</span>(<span class="sc">~</span>outcome<span class="sc">+</span>pred,<span class="at">data =</span> df1)</span>
+<span id="cb457-3"><a href="1028-rocdirection.html#cb457-3" aria-hidden="true" tabindex="-1"></a><span class="do">##         pred</span></span>
+<span id="cb457-4"><a href="1028-rocdirection.html#cb457-4" aria-hidden="true" tabindex="-1"></a><span class="do">## outcome  猜他不是肿瘤 猜他是肿瘤</span></span>
+<span id="cb457-5"><a href="1028-rocdirection.html#cb457-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   非肿瘤           15          5</span></span>
+<span id="cb457-6"><a href="1028-rocdirection.html#cb457-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   肿瘤              1          9</span></span></code></pre></div>
+<p>真阳性率：猜他是肿瘤的人数 / 所有肿瘤人数
+假阳性率：猜他是肿瘤的人数 / 所有非肿瘤人数</p>
+<p>真阳性率 = 9 / (1+9) = 0.9
+假阳性率 = 5 / (15+5) = 0.25</p>
+<p>但是如果我们感兴趣的是<strong>确定为非肿瘤的能力</strong>呢？</p>
+<div class="sourceCode" id="cb458"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb458-1"><a href="1028-rocdirection.html#cb458-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 此时四格表还是这个四格表</span></span>
+<span id="cb458-2"><a href="1028-rocdirection.html#cb458-2" aria-hidden="true" tabindex="-1"></a><span class="fu">xtabs</span>(<span class="sc">~</span>outcome<span class="sc">+</span>pred,<span class="at">data =</span> df1)</span>
+<span id="cb458-3"><a href="1028-rocdirection.html#cb458-3" aria-hidden="true" tabindex="-1"></a><span class="do">##         pred</span></span>
+<span id="cb458-4"><a href="1028-rocdirection.html#cb458-4" aria-hidden="true" tabindex="-1"></a><span class="do">## outcome  猜他不是肿瘤 猜他是肿瘤</span></span>
+<span id="cb458-5"><a href="1028-rocdirection.html#cb458-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   非肿瘤           15          5</span></span>
+<span id="cb458-6"><a href="1028-rocdirection.html#cb458-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   肿瘤              1          9</span></span></code></pre></div>
+<p><strong>但是真阳性率和假阳性率的计算已经变了！</strong></p>
+<p>假阳性率：猜他不是肿瘤且猜错的人数 / 所有肿瘤人数
+真阳性率：猜他不是肿瘤且猜对的人数 / 所有非肿瘤人数</p>
+<p>假阳性率 = 1 / (1+9) = 0.1
+真阳性率 = 15 / (15+5) = 0.75</p>
+<p>此时再多取几个阈值，画出来的就是阴性结果的ROC曲线。</p>
+<p>不知道大家平时有没有关注过这个问题呢？</p>
+<p>在R语言中很多画ROC曲线的包都会提供一个参数，让你可以自由选择ROC哪一个结果，一般默认都是阳性结果的ROC，比如这里的<em>有肿瘤</em>，如果你不放心，可以手动指定，想计算谁就计算谁！</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1027-roccompare.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1029-rocggplot.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>27 ROC曲线的显著性检验 | R语言实战医学统计</title>
+  <meta name="description" content="27 ROC曲线的显著性检验 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="27 ROC曲线的显著性检验 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="27 ROC曲线的显著性检验 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="27 ROC曲线的显著性检验 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="27 ROC曲线的显著性检验 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1026-rocsurvsmooth.html"/>
+<link rel="next" href="1028-rocdirection.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,164 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="oljgja" class="section level1 hasAnchor" number="27">
+<h1><span class="header-section-number">27</span> ROC曲线的显著性检验<a href="1027-roccompare.html#oljgja" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>今天说一说ROC(AUC)的比较。</p>
+<div id="二分类资料的roc比较" class="section level2 hasAnchor" number="27.1">
+<h2><span class="header-section-number">27.1</span> 二分类资料的ROC比较<a href="1027-roccompare.html#二分类资料的roc比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>可以通过<code>pROC</code>包实现的，使用其中<code>roc.test()</code>函数可实现两个ROC
+的<code>Delong</code>检验。</p>
+<p>使用<code>pROC</code>包的<code>aSAH</code>数据，其中<code>outcome</code>列是结果变量，1代表Good，2代表Poor。</p>
+<div class="sourceCode" id="cb444"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb444-1"><a href="1027-roccompare.html#cb444-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb444-2"><a href="1027-roccompare.html#cb444-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.</span></span>
+<span id="cb444-3"><a href="1027-roccompare.html#cb444-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb444-4"><a href="1027-roccompare.html#cb444-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;pROC&#39;</span></span>
+<span id="cb444-5"><a href="1027-roccompare.html#cb444-5" aria-hidden="true" tabindex="-1"></a><span class="do">## The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb444-6"><a href="1027-roccompare.html#cb444-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb444-7"><a href="1027-roccompare.html#cb444-7" aria-hidden="true" tabindex="-1"></a><span class="do">##     cov, smooth, var</span></span>
+<span id="cb444-8"><a href="1027-roccompare.html#cb444-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb444-9"><a href="1027-roccompare.html#cb444-9" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(aSAH)</span>
+<span id="cb444-10"><a href="1027-roccompare.html#cb444-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(aSAH)</span>
+<span id="cb444-11"><a href="1027-roccompare.html#cb444-11" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 113   7</span></span>
+<span id="cb444-12"><a href="1027-roccompare.html#cb444-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb444-13"><a href="1027-roccompare.html#cb444-13" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(aSAH)</span>
+<span id="cb444-14"><a href="1027-roccompare.html#cb444-14" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    113 obs. of  7 variables:</span></span>
+<span id="cb444-15"><a href="1027-roccompare.html#cb444-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ gos6   : Ord.factor w/ 5 levels &quot;1&quot;&lt;&quot;2&quot;&lt;&quot;3&quot;&lt;&quot;4&quot;&lt;..: 5 5 5 5 1 1 4 1 5 4 ...</span></span>
+<span id="cb444-16"><a href="1027-roccompare.html#cb444-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ outcome: Factor w/ 2 levels &quot;Good&quot;,&quot;Poor&quot;: 1 1 1 1 2 2 1 2 1 1 ...</span></span>
+<span id="cb444-17"><a href="1027-roccompare.html#cb444-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ gender : Factor w/ 2 levels &quot;Male&quot;,&quot;Female&quot;: 2 2 2 2 2 1 1 1 2 2 ...</span></span>
+<span id="cb444-18"><a href="1027-roccompare.html#cb444-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age    : int  42 37 42 27 42 48 57 41 49 75 ...</span></span>
+<span id="cb444-19"><a href="1027-roccompare.html#cb444-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ wfns   : Ord.factor w/ 5 levels &quot;1&quot;&lt;&quot;2&quot;&lt;&quot;3&quot;&lt;&quot;4&quot;&lt;..: 1 1 1 1 3 2 5 4 1 2 ...</span></span>
+<span id="cb444-20"><a href="1027-roccompare.html#cb444-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ s100b  : num  0.13 0.14 0.1 0.04 0.13 0.1 0.47 0.16 0.18 0.1 ...</span></span>
+<span id="cb444-21"><a href="1027-roccompare.html#cb444-21" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ndka   : num  3.01 8.54 8.09 10.42 17.4 ...</span></span></code></pre></div>
+<p>构建两个ROC对象，然后直接比较即可：</p>
+<div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb445-1"><a href="1027-roccompare.html#cb445-1" aria-hidden="true" tabindex="-1"></a>roc1 <span class="ot">&lt;-</span> <span class="fu">roc</span>(aSAH<span class="sc">$</span>outcome,aSAH<span class="sc">$</span>s100b)</span>
+<span id="cb445-2"><a href="1027-roccompare.html#cb445-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb445-3"><a href="1027-roccompare.html#cb445-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb445-4"><a href="1027-roccompare.html#cb445-4" aria-hidden="true" tabindex="-1"></a>roc2 <span class="ot">&lt;-</span> <span class="fu">roc</span>(aSAH<span class="sc">$</span>outcome,aSAH<span class="sc">$</span>ndka)</span>
+<span id="cb445-5"><a href="1027-roccompare.html#cb445-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb445-6"><a href="1027-roccompare.html#cb445-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb445-7"><a href="1027-roccompare.html#cb445-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-8"><a href="1027-roccompare.html#cb445-8" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">roc.test</span>(roc1,roc2)</span>
+<span id="cb445-9"><a href="1027-roccompare.html#cb445-9" aria-hidden="true" tabindex="-1"></a>res</span>
+<span id="cb445-10"><a href="1027-roccompare.html#cb445-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb445-11"><a href="1027-roccompare.html#cb445-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  DeLong&#39;s test for two correlated ROC curves</span></span>
+<span id="cb445-12"><a href="1027-roccompare.html#cb445-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb445-13"><a href="1027-roccompare.html#cb445-13" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  roc1 and roc2</span></span>
+<span id="cb445-14"><a href="1027-roccompare.html#cb445-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Z = 1.3908, p-value = 0.1643</span></span>
+<span id="cb445-15"><a href="1027-roccompare.html#cb445-15" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true difference in AUC is not equal to 0</span></span>
+<span id="cb445-16"><a href="1027-roccompare.html#cb445-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb445-17"><a href="1027-roccompare.html#cb445-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  -0.04887061  0.28769174</span></span>
+<span id="cb445-18"><a href="1027-roccompare.html#cb445-18" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb445-19"><a href="1027-roccompare.html#cb445-19" aria-hidden="true" tabindex="-1"></a><span class="do">## AUC of roc1 AUC of roc2 </span></span>
+<span id="cb445-20"><a href="1027-roccompare.html#cb445-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   0.7313686   0.6119580</span></span></code></pre></div>
+<p>这个函数里面有个<code>method</code>参数：<code>delong/bootstrap/venkatraman</code>，默认是<code>delong</code>，<code>delong</code>和<code>bootstrap</code>用于比较AUC，如果只是ROC曲线的比较，需要用<code>venkatraman</code>。关于这几种方法的具体原理，大家可以去翻相关的论文~</p>
+<p><code>roc.test</code>只能用于两个ROC的比较，如果是多个比较，可以使用<code>MedCalc</code>软件，这个是和SPSS类似的软件，只要点点点即可。</p>
+<p>当然也是可以直接画在图里的：</p>
+<div class="sourceCode" id="cb446"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb446-1"><a href="1027-roccompare.html#cb446-1" aria-hidden="true" tabindex="-1"></a>rocobj1 <span class="ot">&lt;-</span> <span class="fu">plot.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>s100,<span class="at">percent=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">&quot;#1c61b6&quot;</span>)</span>
+<span id="cb446-2"><a href="1027-roccompare.html#cb446-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb446-3"><a href="1027-roccompare.html#cb446-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb446-4"><a href="1027-roccompare.html#cb446-4" aria-hidden="true" tabindex="-1"></a>rocobj2 <span class="ot">&lt;-</span> <span class="fu">lines.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>ndka, <span class="at">percent=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">&quot;#008600&quot;</span>)</span>
+<span id="cb446-5"><a href="1027-roccompare.html#cb446-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb446-6"><a href="1027-roccompare.html#cb446-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb446-7"><a href="1027-roccompare.html#cb446-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb446-8"><a href="1027-roccompare.html#cb446-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;S100B&quot;</span>, <span class="st">&quot;NDKA&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;#1c61b6&quot;</span>, <span class="st">&quot;#008600&quot;</span>), <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb446-9"><a href="1027-roccompare.html#cb446-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb446-10"><a href="1027-roccompare.html#cb446-10" aria-hidden="true" tabindex="-1"></a>testobj <span class="ot">&lt;-</span> <span class="fu">roc.test</span>(rocobj1, rocobj2)</span>
+<span id="cb446-11"><a href="1027-roccompare.html#cb446-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb446-12"><a href="1027-roccompare.html#cb446-12" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">50</span>, <span class="dv">50</span>, <span class="at">labels=</span><span class="fu">paste</span>(<span class="st">&quot;p-value =&quot;</span>, <span class="fu">format.pval</span>(testobj<span class="sc">$</span>p.value)), <span class="at">adj=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>))</span></code></pre></div>
+<p><img src="1027-roccompare_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>当然你也可以用其他非参数检验的方法进行比较，比如<code>mann whitney u</code>检验。</p>
+</div>
+<div id="生存资料roc的比较" class="section level2 hasAnchor" number="27.2">
+<h2><span class="header-section-number">27.2</span> 生存资料ROC的比较<a href="1027-roccompare.html#生存资料roc的比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<code>timeROC</code>包实现。</p>
+<p>还是用之前推文中用过的例子，获取数据请翻看之前的推文~</p>
+<div class="sourceCode" id="cb447"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb447-1"><a href="1027-roccompare.html#cb447-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb447-2"><a href="1027-roccompare.html#cb447-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timeROC)</span>
+<span id="cb447-3"><a href="1027-roccompare.html#cb447-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb447-4"><a href="1027-roccompare.html#cb447-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb447-5"><a href="1027-roccompare.html#cb447-5" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">&quot;datasets/timeROC.RData&quot;</span>)</span></code></pre></div>
+<p>使用其中的<code>df2</code>这个数据：</p>
+<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb448-1"><a href="1027-roccompare.html#cb448-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df2)</span>
+<span id="cb448-2"><a href="1027-roccompare.html#cb448-2" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    297 obs. of  8 variables:</span></span>
+<span id="cb448-3"><a href="1027-roccompare.html#cb448-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ event    : num  0 0 1 0 0 1 0 0 0 0 ...</span></span>
+<span id="cb448-4"><a href="1027-roccompare.html#cb448-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age      : int  59 63 65 73 59 66 56 42 61 48 ...</span></span>
+<span id="cb448-5"><a href="1027-roccompare.html#cb448-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ riskScore: num  -0.249 -0.511 -0.211 -0.427 0.279 ...</span></span>
+<span id="cb448-6"><a href="1027-roccompare.html#cb448-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ futime   : num  3.03 1.16 1.82 1.52 1.34 ...</span></span>
+<span id="cb448-7"><a href="1027-roccompare.html#cb448-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ gender   : num  2 2 2 1 2 2 1 2 2 2 ...</span></span>
+<span id="cb448-8"><a href="1027-roccompare.html#cb448-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t        : num  4 4 4 3 3 3 5 3 NA 4 ...</span></span>
+<span id="cb448-9"><a href="1027-roccompare.html#cb448-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ n        : num  1 5 1 1 1 1 3 1 NA 1 ...</span></span>
+<span id="cb448-10"><a href="1027-roccompare.html#cb448-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ m        : num  1 1 1 1 1 3 1 1 3 3 ...</span></span></code></pre></div>
+<p>构建几个<code>timeROC</code>:</p>
+<div class="sourceCode" id="cb449"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb449-1"><a href="1027-roccompare.html#cb449-1" aria-hidden="true" tabindex="-1"></a><span class="co"># riskScore的ROC曲线</span></span>
+<span id="cb449-2"><a href="1027-roccompare.html#cb449-2" aria-hidden="true" tabindex="-1"></a>ROC.risk <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,</span>
+<span id="cb449-3"><a href="1027-roccompare.html#cb449-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb449-4"><a href="1027-roccompare.html#cb449-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">marker=</span>df2<span class="sc">$</span>riskScore,   </span>
+<span id="cb449-5"><a href="1027-roccompare.html#cb449-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">cause=</span><span class="dv">1</span>,                </span>
+<span id="cb449-6"><a href="1027-roccompare.html#cb449-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb449-7"><a href="1027-roccompare.html#cb449-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">times=</span><span class="dv">3</span>,  <span class="co"># c(1,2) </span></span>
+<span id="cb449-8"><a href="1027-roccompare.html#cb449-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb449-9"><a href="1027-roccompare.html#cb449-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb449-10"><a href="1027-roccompare.html#cb449-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb449-11"><a href="1027-roccompare.html#cb449-11" aria-hidden="true" tabindex="-1"></a><span class="co"># age的ROC曲线</span></span>
+<span id="cb449-12"><a href="1027-roccompare.html#cb449-12" aria-hidden="true" tabindex="-1"></a>ROC.age <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,   </span>
+<span id="cb449-13"><a href="1027-roccompare.html#cb449-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb449-14"><a href="1027-roccompare.html#cb449-14" aria-hidden="true" tabindex="-1"></a>                   <span class="at">marker=</span>df2<span class="sc">$</span>age,   </span>
+<span id="cb449-15"><a href="1027-roccompare.html#cb449-15" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cause=</span><span class="dv">1</span>,   </span>
+<span id="cb449-16"><a href="1027-roccompare.html#cb449-16" aria-hidden="true" tabindex="-1"></a>                   <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb449-17"><a href="1027-roccompare.html#cb449-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">times=</span><span class="dv">3</span>,   <span class="co"># c(1,2)</span></span>
+<span id="cb449-18"><a href="1027-roccompare.html#cb449-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">iid=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>比较就用<code>compare()</code>函数即可：</p>
+<div class="sourceCode" id="cb450"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb450-1"><a href="1027-roccompare.html#cb450-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(ROC.risk, ROC.age)</span>
+<span id="cb450-2"><a href="1027-roccompare.html#cb450-2" aria-hidden="true" tabindex="-1"></a><span class="do">## $p_values_AUC</span></span>
+<span id="cb450-3"><a href="1027-roccompare.html#cb450-3" aria-hidden="true" tabindex="-1"></a><span class="do">##       t=0       t=3 </span></span>
+<span id="cb450-4"><a href="1027-roccompare.html#cb450-4" aria-hidden="true" tabindex="-1"></a><span class="do">##        NA 0.4544231</span></span></code></pre></div>
+<p>同时使用多个时间点也是可以的：</p>
+<div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb451-1"><a href="1027-roccompare.html#cb451-1" aria-hidden="true" tabindex="-1"></a><span class="co"># riskScore的ROC曲线</span></span>
+<span id="cb451-2"><a href="1027-roccompare.html#cb451-2" aria-hidden="true" tabindex="-1"></a>ROC.risk <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,</span>
+<span id="cb451-3"><a href="1027-roccompare.html#cb451-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb451-4"><a href="1027-roccompare.html#cb451-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">marker=</span>df2<span class="sc">$</span>riskScore,   </span>
+<span id="cb451-5"><a href="1027-roccompare.html#cb451-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">cause=</span><span class="dv">1</span>,                </span>
+<span id="cb451-6"><a href="1027-roccompare.html#cb451-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb451-7"><a href="1027-roccompare.html#cb451-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">times=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb451-8"><a href="1027-roccompare.html#cb451-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb451-9"><a href="1027-roccompare.html#cb451-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb451-10"><a href="1027-roccompare.html#cb451-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb451-11"><a href="1027-roccompare.html#cb451-11" aria-hidden="true" tabindex="-1"></a><span class="co"># age的ROC曲线</span></span>
+<span id="cb451-12"><a href="1027-roccompare.html#cb451-12" aria-hidden="true" tabindex="-1"></a>ROC.age <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,   </span>
+<span id="cb451-13"><a href="1027-roccompare.html#cb451-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb451-14"><a href="1027-roccompare.html#cb451-14" aria-hidden="true" tabindex="-1"></a>                   <span class="at">marker=</span>df2<span class="sc">$</span>age,   </span>
+<span id="cb451-15"><a href="1027-roccompare.html#cb451-15" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cause=</span><span class="dv">1</span>,   </span>
+<span id="cb451-16"><a href="1027-roccompare.html#cb451-16" aria-hidden="true" tabindex="-1"></a>                   <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb451-17"><a href="1027-roccompare.html#cb451-17" aria-hidden="true" tabindex="-1"></a>                   <span class="at">times=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>),</span>
+<span id="cb451-18"><a href="1027-roccompare.html#cb451-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb451-19"><a href="1027-roccompare.html#cb451-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb451-20"><a href="1027-roccompare.html#cb451-20" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(ROC.risk, ROC.age)</span>
+<span id="cb451-21"><a href="1027-roccompare.html#cb451-21" aria-hidden="true" tabindex="-1"></a><span class="do">## $p_values_AUC</span></span>
+<span id="cb451-22"><a href="1027-roccompare.html#cb451-22" aria-hidden="true" tabindex="-1"></a><span class="do">##        t=1        t=2 </span></span>
+<span id="cb451-23"><a href="1027-roccompare.html#cb451-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.09758546 0.27995259</span></span>
+<span id="cb451-24"><a href="1027-roccompare.html#cb451-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb451-25"><a href="1027-roccompare.html#cb451-25" aria-hidden="true" tabindex="-1"></a><span class="fu">compare</span>(ROC.risk, ROC.age, <span class="at">adjusted =</span> T) <span class="co"># 计算调整p值</span></span>
+<span id="cb451-26"><a href="1027-roccompare.html#cb451-26" aria-hidden="true" tabindex="-1"></a><span class="do">## $p_values_AUC</span></span>
+<span id="cb451-27"><a href="1027-roccompare.html#cb451-27" aria-hidden="true" tabindex="-1"></a><span class="do">##                     t=1       t=2</span></span>
+<span id="cb451-28"><a href="1027-roccompare.html#cb451-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Non-adjusted 0.09758546 0.2799526</span></span>
+<span id="cb451-29"><a href="1027-roccompare.html#cb451-29" aria-hidden="true" tabindex="-1"></a><span class="do">## Adjusted     0.14983636 0.3984702</span></span>
+<span id="cb451-30"><a href="1027-roccompare.html#cb451-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb451-31"><a href="1027-roccompare.html#cb451-31" aria-hidden="true" tabindex="-1"></a><span class="do">## $Cor</span></span>
+<span id="cb451-32"><a href="1027-roccompare.html#cb451-32" aria-hidden="true" tabindex="-1"></a><span class="do">##           [,1]      [,2]</span></span>
+<span id="cb451-33"><a href="1027-roccompare.html#cb451-33" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,] 1.0000000 0.7750774</span></span>
+<span id="cb451-34"><a href="1027-roccompare.html#cb451-34" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] 0.7750774 1.0000000</span></span></code></pre></div>
+<p>画图就不演示了，可以参考前面的内容。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1026-rocsurvsmooth.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1028-rocdirection.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

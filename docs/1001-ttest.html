@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>1 t检验 | R语言实战医学统计</title>
+  <meta name="description" content="1 t检验 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="1 t检验 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="1 t检验 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="1 t检验 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="1 t检验 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="index.html"/>
+<link rel="next" href="1002-anova.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,165 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="sdjfl" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">1</span> t检验<a href="1001-ttest.html#sdjfl" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>t检验主要适用于1组或2组的均数的比较，要求数据符合正态性和方差齐性。关于t检验的本质问题本文不做过多探讨，只是学习如何用R语言实现t检验！</p>
+<p>在R中进行t检验非常简单，就是<code>t.test()</code>函数，不管是单样本、两样本都是这一个函数。使用R语言进行统计学比SPSS好的一点是，当你需要使用某种检验时，直接打出这个检验的名字一般就会跳出来相关的函数，而我在学习使用SPSS进行各种统计检验时，可能更多的是关注如何点点点（鼠标点击菜单），不利于记住哪种情况使用什么方法。</p>
+<div id="单样本t检验" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> 单样本t检验<a href="1001-ttest.html#单样本t检验" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例3-5的数据。</p>
+<p>首先是读取数据，可以自己录入，也可以使用课本光盘里的数据，我这里直接使用了光盘里的数据。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="1001-ttest.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用foreign包读取SPSS数据</span></span>
+<span id="cb1-2"><a href="1001-ttest.html#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb1-3"><a href="1001-ttest.html#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.spss</span>(<span class="st">&#39;datasets/例03-05.sav&#39;</span>,<span class="at">to.data.frame =</span> T)</span>
+<span id="cb1-4"><a href="1001-ttest.html#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="1001-ttest.html#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span>
+<span id="cb1-6"><a href="1001-ttest.html#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   no  hb</span></span>
+<span id="cb1-7"><a href="1001-ttest.html#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  1 112</span></span>
+<span id="cb1-8"><a href="1001-ttest.html#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  2 137</span></span>
+<span id="cb1-9"><a href="1001-ttest.html#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  3 129</span></span>
+<span id="cb1-10"><a href="1001-ttest.html#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  4 126</span></span>
+<span id="cb1-11"><a href="1001-ttest.html#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  5  88</span></span>
+<span id="cb1-12"><a href="1001-ttest.html#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  6  90</span></span></code></pre></div>
+<p>进行单样本t检验，与140进行比较：</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="1001-ttest.html#cb2-1" aria-hidden="true" tabindex="-1"></a>st <span class="ot">&lt;-</span> <span class="fu">t.test</span>(df<span class="sc">$</span>hb,<span class="at">mu=</span><span class="dv">140</span>,<span class="at">alternative =</span> <span class="st">&#39;two.sided&#39;</span>) <span class="co"># 双侧检验</span></span>
+<span id="cb2-2"><a href="1001-ttest.html#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="1001-ttest.html#cb2-3" aria-hidden="true" tabindex="-1"></a>st</span>
+<span id="cb2-4"><a href="1001-ttest.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb2-5"><a href="1001-ttest.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  One Sample t-test</span></span>
+<span id="cb2-6"><a href="1001-ttest.html#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb2-7"><a href="1001-ttest.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  df$hb</span></span>
+<span id="cb2-8"><a href="1001-ttest.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="do">## t = -2.1367, df = 35, p-value = 0.03969</span></span>
+<span id="cb2-9"><a href="1001-ttest.html#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true mean is not equal to 140</span></span>
+<span id="cb2-10"><a href="1001-ttest.html#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb2-11"><a href="1001-ttest.html#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  122.1238 139.5428</span></span>
+<span id="cb2-12"><a href="1001-ttest.html#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb2-13"><a href="1001-ttest.html#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="do">## mean of x </span></span>
+<span id="cb2-14"><a href="1001-ttest.html#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  130.8333</span></span></code></pre></div>
+<p>结果显示t=-2.1367，自由度df=35，p=0.03969,和课本一致。</p>
+</div>
+<div id="配对样本t检验" class="section level2 hasAnchor" number="1.2">
+<h2><span class="header-section-number">1.2</span> 配对样本t检验<a href="1001-ttest.html#配对样本t检验" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<strong>课本例3-6</strong>的数据，首先是读取数据。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="1001-ttest.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb3-2"><a href="1001-ttest.html#cb3-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.spss</span>(<span class="st">&#39;datasets/例03-06.sav&#39;</span>,<span class="at">to.data.frame =</span> T)</span>
+<span id="cb3-3"><a href="1001-ttest.html#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="1001-ttest.html#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span>
+<span id="cb3-5"><a href="1001-ttest.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   no    x1    x2</span></span>
+<span id="cb3-6"><a href="1001-ttest.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  1 0.840 0.580</span></span>
+<span id="cb3-7"><a href="1001-ttest.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  2 0.591 0.509</span></span>
+<span id="cb3-8"><a href="1001-ttest.html#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  3 0.674 0.500</span></span>
+<span id="cb3-9"><a href="1001-ttest.html#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  4 0.632 0.316</span></span>
+<span id="cb3-10"><a href="1001-ttest.html#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  5 0.687 0.337</span></span>
+<span id="cb3-11"><a href="1001-ttest.html#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  6 0.978 0.517</span></span></code></pre></div>
+<p>数据一共3列10行，第1列是样本编号，第2列和第3列是要比较的值。</p>
+<p>进行配对样本t检验：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="1001-ttest.html#cb4-1" aria-hidden="true" tabindex="-1"></a>pt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(df<span class="sc">$</span>x1,df<span class="sc">$</span>x2,<span class="at">paired =</span> T,<span class="at">var.equal =</span> T)</span>
+<span id="cb4-2"><a href="1001-ttest.html#cb4-2" aria-hidden="true" tabindex="-1"></a>pt</span>
+<span id="cb4-3"><a href="1001-ttest.html#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb4-4"><a href="1001-ttest.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  Paired t-test</span></span>
+<span id="cb4-5"><a href="1001-ttest.html#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb4-6"><a href="1001-ttest.html#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  df$x1 and df$x2</span></span>
+<span id="cb4-7"><a href="1001-ttest.html#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="do">## t = 7.926, df = 9, p-value = 2.384e-05</span></span>
+<span id="cb4-8"><a href="1001-ttest.html#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true mean difference is not equal to 0</span></span>
+<span id="cb4-9"><a href="1001-ttest.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb4-10"><a href="1001-ttest.html#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  0.1946542 0.3501458</span></span>
+<span id="cb4-11"><a href="1001-ttest.html#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb4-12"><a href="1001-ttest.html#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">## mean difference </span></span>
+<span id="cb4-13"><a href="1001-ttest.html#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="do">##          0.2724</span></span></code></pre></div>
+<p>结果显示t=7.926，自由度df=9，p&lt;0.001，结果和课本一致。</p>
+<p>如果数据格式是两列数据，R语言也支持formula的形式，比如这样：</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="1001-ttest.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(tidyverse))</span>
+<span id="cb5-2"><a href="1001-ttest.html#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="1001-ttest.html#cb5-3" aria-hidden="true" tabindex="-1"></a>df.l <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="1001-ttest.html#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,<span class="at">names_to =</span> <span class="st">&quot;group&quot;</span>,<span class="at">values_to =</span> <span class="st">&quot;x&quot;</span>)</span>
+<span id="cb5-5"><a href="1001-ttest.html#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="1001-ttest.html#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 数据一列是分组，另一列是数值，还有一列id没什么用</span></span>
+<span id="cb5-7"><a href="1001-ttest.html#cb5-7" aria-hidden="true" tabindex="-1"></a>df.l</span>
+<span id="cb5-8"><a href="1001-ttest.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 20 × 3</span></span>
+<span id="cb5-9"><a href="1001-ttest.html#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="do">##       no group     x</span></span>
+<span id="cb5-10"><a href="1001-ttest.html#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;</span></span>
+<span id="cb5-11"><a href="1001-ttest.html#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  1     1 x1    0.84 </span></span>
+<span id="cb5-12"><a href="1001-ttest.html#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  2     1 x2    0.58 </span></span>
+<span id="cb5-13"><a href="1001-ttest.html#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  3     2 x1    0.591</span></span>
+<span id="cb5-14"><a href="1001-ttest.html#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  4     2 x2    0.509</span></span>
+<span id="cb5-15"><a href="1001-ttest.html#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  5     3 x1    0.674</span></span>
+<span id="cb5-16"><a href="1001-ttest.html#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  6     3 x2    0.5  </span></span>
+<span id="cb5-17"><a href="1001-ttest.html#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  7     4 x1    0.632</span></span>
+<span id="cb5-18"><a href="1001-ttest.html#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  8     4 x2    0.316</span></span>
+<span id="cb5-19"><a href="1001-ttest.html#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  9     5 x1    0.687</span></span>
+<span id="cb5-20"><a href="1001-ttest.html#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 10     5 x2    0.337</span></span>
+<span id="cb5-21"><a href="1001-ttest.html#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 11     6 x1    0.978</span></span>
+<span id="cb5-22"><a href="1001-ttest.html#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 12     6 x2    0.517</span></span>
+<span id="cb5-23"><a href="1001-ttest.html#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 13     7 x1    0.75 </span></span>
+<span id="cb5-24"><a href="1001-ttest.html#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 14     7 x2    0.454</span></span>
+<span id="cb5-25"><a href="1001-ttest.html#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 15     8 x1    0.73 </span></span>
+<span id="cb5-26"><a href="1001-ttest.html#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 16     8 x2    0.512</span></span>
+<span id="cb5-27"><a href="1001-ttest.html#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 17     9 x1    1.2  </span></span>
+<span id="cb5-28"><a href="1001-ttest.html#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 18     9 x2    0.997</span></span>
+<span id="cb5-29"><a href="1001-ttest.html#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 19    10 x1    0.87 </span></span>
+<span id="cb5-30"><a href="1001-ttest.html#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 20    10 x2    0.506</span></span></code></pre></div>
+<p>这时可以用formula形式：</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="1001-ttest.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(x <span class="sc">~</span> group, <span class="at">data =</span> df.l, <span class="at">paired =</span> T, <span class="at">var.equal =</span> T)</span>
+<span id="cb6-2"><a href="1001-ttest.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb6-3"><a href="1001-ttest.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Paired t-test</span></span>
+<span id="cb6-4"><a href="1001-ttest.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb6-5"><a href="1001-ttest.html#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  x by group</span></span>
+<span id="cb6-6"><a href="1001-ttest.html#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="do">## t = 7.926, df = 9, p-value = 2.384e-05</span></span>
+<span id="cb6-7"><a href="1001-ttest.html#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true mean difference is not equal to 0</span></span>
+<span id="cb6-8"><a href="1001-ttest.html#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb6-9"><a href="1001-ttest.html#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  0.1946542 0.3501458</span></span>
+<span id="cb6-10"><a href="1001-ttest.html#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb6-11"><a href="1001-ttest.html#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="do">## mean difference </span></span>
+<span id="cb6-12"><a href="1001-ttest.html#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="do">##          0.2724</span></span></code></pre></div>
+<p>结果也是一模一样的。</p>
+<blockquote>
+<p>在R语言中，绝大多数统计检验函数都是支持多种形式的输入样式的，需要自己注意。</p>
+</blockquote>
+</div>
+<div id="两样本t检验" class="section level2 hasAnchor" number="1.3">
+<h2><span class="header-section-number">1.3</span> 两样本t检验<a href="1001-ttest.html#两样本t检验" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本例3-7的数据。</p>
+<p>首先是读取数据.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="1001-ttest.html#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb7-2"><a href="1001-ttest.html#cb7-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.spss</span>(<span class="st">&#39;datasets/例03-07.sav&#39;</span>,<span class="at">to.data.frame =</span> T)</span>
+<span id="cb7-3"><a href="1001-ttest.html#cb7-3" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&#39;阿卡波糖&#39;</span>,<span class="dv">20</span>),<span class="fu">rep</span>(<span class="st">&#39;拜糖平&#39;</span>,<span class="dv">20</span>))</span>
+<span id="cb7-4"><a href="1001-ttest.html#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(df)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb7-5"><a href="1001-ttest.html#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="1001-ttest.html#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span>
+<span id="cb7-7"><a href="1001-ttest.html#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   no    x    group</span></span>
+<span id="cb7-8"><a href="1001-ttest.html#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  1 -0.7 阿卡波糖</span></span>
+<span id="cb7-9"><a href="1001-ttest.html#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  2 -5.6 阿卡波糖</span></span>
+<span id="cb7-10"><a href="1001-ttest.html#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  3  2.0 阿卡波糖</span></span>
+<span id="cb7-11"><a href="1001-ttest.html#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  4  2.8 阿卡波糖</span></span>
+<span id="cb7-12"><a href="1001-ttest.html#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  5  0.7 阿卡波糖</span></span>
+<span id="cb7-13"><a href="1001-ttest.html#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  6  3.5 阿卡波糖</span></span></code></pre></div>
+<p>一共有3列40行，第1列是编号，第2列是血糖值，第3列是组别（阿卡波糖组和拜糖平组，每组20个人）。</p>
+<p>进行两样本t检验：</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="1001-ttest.html#cb8-1" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(x <span class="sc">~</span> group, <span class="at">data =</span> df, <span class="at">paired =</span> F, <span class="at">var.equal =</span> T)</span>
+<span id="cb8-2"><a href="1001-ttest.html#cb8-2" aria-hidden="true" tabindex="-1"></a>tt</span>
+<span id="cb8-3"><a href="1001-ttest.html#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb8-4"><a href="1001-ttest.html#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  Two Sample t-test</span></span>
+<span id="cb8-5"><a href="1001-ttest.html#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb8-6"><a href="1001-ttest.html#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  x by group</span></span>
+<span id="cb8-7"><a href="1001-ttest.html#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="do">## t = -0.64187, df = 38, p-value = 0.5248</span></span>
+<span id="cb8-8"><a href="1001-ttest.html#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true difference in means between group 阿卡波糖 and group 拜糖平 is not equal to 0</span></span>
+<span id="cb8-9"><a href="1001-ttest.html#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb8-10"><a href="1001-ttest.html#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  -2.326179  1.206179</span></span>
+<span id="cb8-11"><a href="1001-ttest.html#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb8-12"><a href="1001-ttest.html#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="do">## mean in group 阿卡波糖   mean in group 拜糖平 </span></span>
+<span id="cb8-13"><a href="1001-ttest.html#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="do">##                  2.065                  2.625</span></span></code></pre></div>
+<p>结果显示t=-0.64187，自由度df=38，p=0.5248，结果和课本一致。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1002-anova.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

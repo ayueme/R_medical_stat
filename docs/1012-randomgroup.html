@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>12 随机分组 | R语言实战医学统计</title>
+  <meta name="description" content="12 随机分组 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="12 随机分组 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="12 随机分组 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="12 随机分组 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="12 随机分组 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1011-samplesize.html"/>
+<link rel="next" href="1013-rstastix.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,321 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="ytsgs" class="section level1 hasAnchor" number="12">
+<h1><span class="header-section-number">12</span> 随机分组<a href="1012-randomgroup.html#ytsgs" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>随机分组在临床设计中太常见了，只要你搞临床研究，必定会遇到随机分组的问题。</p>
+<p>随机分组临床比较常用的也就是4种：
+- 简单随机simple randomization
+- 区组随机blocked randomization
+- 分层随机stratified randomization
+- 整群随机cluster randomization
+- ……</p>
+<p>当然还有其他种类，关于随机分组问题，我推荐大家看医咖会的这篇文章：<a href="https://mp.weixin.qq.com/s/pYMZZs3mCuFDJm33lac2qA">10篇文章全面了解随机分组，赶快收藏！</a></p>
+<p>本文主要介绍如何使用R语言完成随机分组。</p>
+<p>简单随机（simple randomization）又称为完全随机，是最简单的一种随机分组方法。医学统计学中经常会遇到完全随机设计的xxx，指的就是简单随机分组！</p>
+<p>比如来一个病人，就抛一次硬币，根据正反面随机决定进入试验组还是对照组。不过实际操作起来没有这么随便，大家都是通过随机数字表法或者软件进行简单随机分组的。道理都是差不多的。</p>
+<p>假如需要收100个受试者，随机分为试验组和对照组，那么可以根据患者入组顺序，每人给一个编号，然后从随机数字表任意的某一行某一列开始，抽取随机数字，100个受试者有100个随机数，把这100个随机数按照从小到大排序，前50个进入试验组，后50个进入对照组（还有按照余数，奇偶数等，都可以）。</p>
+<p>上述方法通过SPSS可以实现，大家可以参考这篇文章：<a href="https://mp.weixin.qq.com/s/oODSdOK2ebMQrXvi2PXJWg">SPSS实现简单随机分组</a></p>
+<p>根据这个思路，R语言也是可以实现的。R语言在临床研究设计中的使用非常成熟，在<code>cran task views</code>中有两个专题都是关于研究设计的，大家感兴趣的可以自己去看一看哦。</p>
+<div id="简单随机" class="section level2 hasAnchor" number="12.1">
+<h2><span class="header-section-number">12.1</span> 简单随机<a href="1012-randomgroup.html#简单随机" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>比如30个人，按照完全随机化的方法分为2组，一组试验组，一组对照组，每组15人。</p>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="1012-randomgroup.html#cb172-1" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">30</span>)</span>
+<span id="cb172-2"><a href="1012-randomgroup.html#cb172-2" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;试验组&quot;</span>,<span class="st">&quot;对照组&quot;</span>),<span class="dv">15</span>)</span>
+<span id="cb172-3"><a href="1012-randomgroup.html#cb172-3" aria-hidden="true" tabindex="-1"></a>rand <span class="ot">&lt;-</span> <span class="fu">sample</span>(group, <span class="dv">30</span>, <span class="at">replace =</span> T)</span>
+<span id="cb172-4"><a href="1012-randomgroup.html#cb172-4" aria-hidden="true" tabindex="-1"></a>(res <span class="ot">&lt;-</span> <span class="fu">cbind</span>(id, group))</span>
+<span id="cb172-5"><a href="1012-randomgroup.html#cb172-5" aria-hidden="true" tabindex="-1"></a><span class="do">##       id   group   </span></span>
+<span id="cb172-6"><a href="1012-randomgroup.html#cb172-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  [1,] &quot;1&quot;  &quot;试验组&quot;</span></span>
+<span id="cb172-7"><a href="1012-randomgroup.html#cb172-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  [2,] &quot;2&quot;  &quot;对照组&quot;</span></span>
+<span id="cb172-8"><a href="1012-randomgroup.html#cb172-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  [3,] &quot;3&quot;  &quot;试验组&quot;</span></span>
+<span id="cb172-9"><a href="1012-randomgroup.html#cb172-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  [4,] &quot;4&quot;  &quot;对照组&quot;</span></span>
+<span id="cb172-10"><a href="1012-randomgroup.html#cb172-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  [5,] &quot;5&quot;  &quot;试验组&quot;</span></span>
+<span id="cb172-11"><a href="1012-randomgroup.html#cb172-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  [6,] &quot;6&quot;  &quot;对照组&quot;</span></span>
+<span id="cb172-12"><a href="1012-randomgroup.html#cb172-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  [7,] &quot;7&quot;  &quot;试验组&quot;</span></span>
+<span id="cb172-13"><a href="1012-randomgroup.html#cb172-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  [8,] &quot;8&quot;  &quot;对照组&quot;</span></span>
+<span id="cb172-14"><a href="1012-randomgroup.html#cb172-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  [9,] &quot;9&quot;  &quot;试验组&quot;</span></span>
+<span id="cb172-15"><a href="1012-randomgroup.html#cb172-15" aria-hidden="true" tabindex="-1"></a><span class="do">## [10,] &quot;10&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-16"><a href="1012-randomgroup.html#cb172-16" aria-hidden="true" tabindex="-1"></a><span class="do">## [11,] &quot;11&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-17"><a href="1012-randomgroup.html#cb172-17" aria-hidden="true" tabindex="-1"></a><span class="do">## [12,] &quot;12&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-18"><a href="1012-randomgroup.html#cb172-18" aria-hidden="true" tabindex="-1"></a><span class="do">## [13,] &quot;13&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-19"><a href="1012-randomgroup.html#cb172-19" aria-hidden="true" tabindex="-1"></a><span class="do">## [14,] &quot;14&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-20"><a href="1012-randomgroup.html#cb172-20" aria-hidden="true" tabindex="-1"></a><span class="do">## [15,] &quot;15&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-21"><a href="1012-randomgroup.html#cb172-21" aria-hidden="true" tabindex="-1"></a><span class="do">## [16,] &quot;16&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-22"><a href="1012-randomgroup.html#cb172-22" aria-hidden="true" tabindex="-1"></a><span class="do">## [17,] &quot;17&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-23"><a href="1012-randomgroup.html#cb172-23" aria-hidden="true" tabindex="-1"></a><span class="do">## [18,] &quot;18&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-24"><a href="1012-randomgroup.html#cb172-24" aria-hidden="true" tabindex="-1"></a><span class="do">## [19,] &quot;19&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-25"><a href="1012-randomgroup.html#cb172-25" aria-hidden="true" tabindex="-1"></a><span class="do">## [20,] &quot;20&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-26"><a href="1012-randomgroup.html#cb172-26" aria-hidden="true" tabindex="-1"></a><span class="do">## [21,] &quot;21&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-27"><a href="1012-randomgroup.html#cb172-27" aria-hidden="true" tabindex="-1"></a><span class="do">## [22,] &quot;22&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-28"><a href="1012-randomgroup.html#cb172-28" aria-hidden="true" tabindex="-1"></a><span class="do">## [23,] &quot;23&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-29"><a href="1012-randomgroup.html#cb172-29" aria-hidden="true" tabindex="-1"></a><span class="do">## [24,] &quot;24&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-30"><a href="1012-randomgroup.html#cb172-30" aria-hidden="true" tabindex="-1"></a><span class="do">## [25,] &quot;25&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-31"><a href="1012-randomgroup.html#cb172-31" aria-hidden="true" tabindex="-1"></a><span class="do">## [26,] &quot;26&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-32"><a href="1012-randomgroup.html#cb172-32" aria-hidden="true" tabindex="-1"></a><span class="do">## [27,] &quot;27&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-33"><a href="1012-randomgroup.html#cb172-33" aria-hidden="true" tabindex="-1"></a><span class="do">## [28,] &quot;28&quot; &quot;对照组&quot;</span></span>
+<span id="cb172-34"><a href="1012-randomgroup.html#cb172-34" aria-hidden="true" tabindex="-1"></a><span class="do">## [29,] &quot;29&quot; &quot;试验组&quot;</span></span>
+<span id="cb172-35"><a href="1012-randomgroup.html#cb172-35" aria-hidden="true" tabindex="-1"></a><span class="do">## [30,] &quot;30&quot; &quot;对照组&quot;</span></span></code></pre></div>
+<p>我们也可以通过<code>randomizr</code>这个包实现，没安装的需要先安装。</p>
+<div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="1012-randomgroup.html#cb173-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;randomizr&quot;</span>)</span></code></pre></div>
+<p>“抛硬币”式的简单随机分组通过<code>simple_ra()</code>函数实现：</p>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="1012-randomgroup.html#cb174-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomizr)</span>
+<span id="cb174-2"><a href="1012-randomgroup.html#cb174-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb174-3"><a href="1012-randomgroup.html#cb174-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 100人分2组</span></span>
+<span id="cb174-4"><a href="1012-randomgroup.html#cb174-4" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">simple_ra</span>(<span class="dv">100</span>, <span class="at">num_arms =</span> <span class="dv">2</span>, <span class="at">conditions =</span> <span class="fu">c</span>(<span class="st">&quot;试验组&quot;</span>,<span class="st">&quot;对照组&quot;</span>))</span>
+<span id="cb174-5"><a href="1012-randomgroup.html#cb174-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb174-6"><a href="1012-randomgroup.html#cb174-6" aria-hidden="true" tabindex="-1"></a>sim</span>
+<span id="cb174-7"><a href="1012-randomgroup.html#cb174-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   [1] 试验组 对照组 对照组 对照组 对照组 对照组 试验组 试验组 对照组 试验组</span></span>
+<span id="cb174-8"><a href="1012-randomgroup.html#cb174-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  [11] 对照组 试验组 对照组 对照组 试验组 对照组 试验组 试验组 试验组 试验组</span></span>
+<span id="cb174-9"><a href="1012-randomgroup.html#cb174-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  [21] 试验组 对照组 试验组 试验组 试验组 对照组 对照组 试验组 对照组 试验组</span></span>
+<span id="cb174-10"><a href="1012-randomgroup.html#cb174-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  [31] 对照组 对照组 对照组 对照组 试验组 试验组 试验组 试验组 试验组 试验组</span></span>
+<span id="cb174-11"><a href="1012-randomgroup.html#cb174-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  [41] 对照组 对照组 试验组 试验组 对照组 试验组 对照组 对照组 对照组 对照组</span></span>
+<span id="cb174-12"><a href="1012-randomgroup.html#cb174-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  [51] 对照组 试验组 对照组 对照组 对照组 对照组 试验组 试验组 试验组 试验组</span></span>
+<span id="cb174-13"><a href="1012-randomgroup.html#cb174-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  [61] 试验组 对照组 对照组 试验组 对照组 试验组 试验组 试验组 试验组 试验组</span></span>
+<span id="cb174-14"><a href="1012-randomgroup.html#cb174-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  [71] 试验组 试验组 对照组 对照组 对照组 试验组 对照组 试验组 试验组 试验组</span></span>
+<span id="cb174-15"><a href="1012-randomgroup.html#cb174-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  [81] 对照组 对照组 试验组 试验组 试验组 对照组 试验组 试验组 对照组 试验组</span></span>
+<span id="cb174-16"><a href="1012-randomgroup.html#cb174-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  [91] 试验组 试验组 对照组 对照组 试验组 试验组 试验组 对照组 试验组 对照组</span></span>
+<span id="cb174-17"><a href="1012-randomgroup.html#cb174-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Levels: 试验组 对照组</span></span>
+<span id="cb174-18"><a href="1012-randomgroup.html#cb174-18" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(sim)</span>
+<span id="cb174-19"><a href="1012-randomgroup.html#cb174-19" aria-hidden="true" tabindex="-1"></a><span class="do">## sim</span></span>
+<span id="cb174-20"><a href="1012-randomgroup.html#cb174-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 试验组 对照组 </span></span>
+<span id="cb174-21"><a href="1012-randomgroup.html#cb174-21" aria-hidden="true" tabindex="-1"></a><span class="do">##     55     45</span></span></code></pre></div>
+<p>但是这种分组最大的问题是组间人数不一样，通常在临床研究设计中都是1:1的，我们可以使用另一个函数解决这个问题。</p>
+<div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="1012-randomgroup.html#cb175-1" aria-hidden="true" tabindex="-1"></a>com <span class="ot">&lt;-</span> <span class="fu">complete_ra</span>(<span class="dv">100</span>, <span class="at">num_arms =</span> <span class="dv">2</span>, <span class="at">conditions =</span> <span class="fu">c</span>(<span class="st">&quot;试验组&quot;</span>,<span class="st">&quot;对照组&quot;</span>))</span>
+<span id="cb175-2"><a href="1012-randomgroup.html#cb175-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-3"><a href="1012-randomgroup.html#cb175-3" aria-hidden="true" tabindex="-1"></a>com</span>
+<span id="cb175-4"><a href="1012-randomgroup.html#cb175-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   [1] 试验组 对照组 试验组 对照组 试验组 试验组 对照组 对照组 试验组 对照组</span></span>
+<span id="cb175-5"><a href="1012-randomgroup.html#cb175-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  [11] 试验组 试验组 对照组 试验组 试验组 对照组 对照组 试验组 试验组 试验组</span></span>
+<span id="cb175-6"><a href="1012-randomgroup.html#cb175-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  [21] 对照组 对照组 试验组 对照组 试验组 对照组 试验组 试验组 对照组 试验组</span></span>
+<span id="cb175-7"><a href="1012-randomgroup.html#cb175-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  [31] 对照组 对照组 对照组 对照组 试验组 对照组 对照组 试验组 对照组 对照组</span></span>
+<span id="cb175-8"><a href="1012-randomgroup.html#cb175-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  [41] 对照组 对照组 对照组 对照组 对照组 对照组 试验组 对照组 试验组 试验组</span></span>
+<span id="cb175-9"><a href="1012-randomgroup.html#cb175-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  [51] 试验组 对照组 试验组 试验组 对照组 试验组 试验组 试验组 试验组 对照组</span></span>
+<span id="cb175-10"><a href="1012-randomgroup.html#cb175-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  [61] 对照组 对照组 对照组 试验组 对照组 试验组 对照组 对照组 对照组 试验组</span></span>
+<span id="cb175-11"><a href="1012-randomgroup.html#cb175-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  [71] 试验组 对照组 对照组 对照组 对照组 对照组 对照组 试验组 对照组 试验组</span></span>
+<span id="cb175-12"><a href="1012-randomgroup.html#cb175-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  [81] 试验组 试验组 试验组 对照组 试验组 试验组 试验组 对照组 试验组 试验组</span></span>
+<span id="cb175-13"><a href="1012-randomgroup.html#cb175-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  [91] 对照组 试验组 对照组 试验组 试验组 对照组 试验组 试验组 试验组 试验组</span></span>
+<span id="cb175-14"><a href="1012-randomgroup.html#cb175-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Levels: 试验组 对照组</span></span>
+<span id="cb175-15"><a href="1012-randomgroup.html#cb175-15" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(com)</span>
+<span id="cb175-16"><a href="1012-randomgroup.html#cb175-16" aria-hidden="true" tabindex="-1"></a><span class="do">## com</span></span>
+<span id="cb175-17"><a href="1012-randomgroup.html#cb175-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 试验组 对照组 </span></span>
+<span id="cb175-18"><a href="1012-randomgroup.html#cb175-18" aria-hidden="true" tabindex="-1"></a><span class="do">##     50     50</span></span></code></pre></div>
+<p>完美解决组间人数不相等问题。</p>
+<p>网络上的大神也给出了自己编写的函数：<a href="https://shumchi.github.io/Randomization/" class="uri">https://shumchi.github.io/Randomization/</a></p>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="1012-randomgroup.html#cb176-1" aria-hidden="true" tabindex="-1"></a>simple_random <span class="ot">&lt;-</span> <span class="cf">function</span>(size, <span class="at">grp =</span> <span class="dv">2</span>, <span class="at">T_2_C =</span> <span class="st">&quot;1:1&quot;</span>){</span>
+<span id="cb176-2"><a href="1012-randomgroup.html#cb176-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">set.seed</span>(<span class="dv">20210412</span>)</span>
+<span id="cb176-3"><a href="1012-randomgroup.html#cb176-3" aria-hidden="true" tabindex="-1"></a>    id_num <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>, size, <span class="dv">1</span>)</span>
+<span id="cb176-4"><a href="1012-randomgroup.html#cb176-4" aria-hidden="true" tabindex="-1"></a>    random_seq <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="at">n =</span> size, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">1</span>)</span>
+<span id="cb176-5"><a href="1012-randomgroup.html#cb176-5" aria-hidden="true" tabindex="-1"></a>    int_rank <span class="ot">&lt;-</span> <span class="fu">rank</span>(random_seq)</span>
+<span id="cb176-6"><a href="1012-randomgroup.html#cb176-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb176-7"><a href="1012-randomgroup.html#cb176-7" aria-hidden="true" tabindex="-1"></a>    ratio_T <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">substr</span>(T_2_C, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb176-8"><a href="1012-randomgroup.html#cb176-8" aria-hidden="true" tabindex="-1"></a>    ratio_C <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">substr</span>(T_2_C, <span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb176-9"><a href="1012-randomgroup.html#cb176-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb176-10"><a href="1012-randomgroup.html#cb176-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (grp <span class="sc">==</span> <span class="dv">2</span>) {</span>
+<span id="cb176-11"><a href="1012-randomgroup.html#cb176-11" aria-hidden="true" tabindex="-1"></a>        group <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(int_rank <span class="sc">&lt;=</span> size<span class="sc">/</span>(ratio_T <span class="sc">+</span> ratio_C), <span class="st">&quot;T&quot;</span>, <span class="st">&quot;C&quot;</span>)</span>
+<span id="cb176-12"><a href="1012-randomgroup.html#cb176-12" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (grp <span class="sc">&gt;</span> <span class="dv">3</span>) {</span>
+<span id="cb176-13"><a href="1012-randomgroup.html#cb176-13" aria-hidden="true" tabindex="-1"></a>        group <span class="ot">&lt;-</span> <span class="fu">cut</span>(int_rank, <span class="at">breaks =</span> grp, <span class="at">labels =</span> <span class="fu">paste</span>(<span class="st">&quot;Group&quot;</span>, <span class="dv">1</span><span class="sc">:</span>grp))</span>
+<span id="cb176-14"><a href="1012-randomgroup.html#cb176-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb176-15"><a href="1012-randomgroup.html#cb176-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb176-16"><a href="1012-randomgroup.html#cb176-16" aria-hidden="true" tabindex="-1"></a>    df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">&quot;ID&quot;</span> <span class="ot">=</span> id_num, <span class="st">&quot;RandomNum&quot;</span> <span class="ot">=</span> random_seq, </span>
+<span id="cb176-17"><a href="1012-randomgroup.html#cb176-17" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;Rank&quot;</span> <span class="ot">=</span> int_rank, <span class="st">&quot;Group&quot;</span> <span class="ot">=</span> group)</span>
+<span id="cb176-18"><a href="1012-randomgroup.html#cb176-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb176-19"><a href="1012-randomgroup.html#cb176-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#write.csv(df, &quot;simple randomization table.csv&quot;, row.names = FALSE)</span></span>
+<span id="cb176-20"><a href="1012-randomgroup.html#cb176-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb176-21"><a href="1012-randomgroup.html#cb176-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(df)</span>
+<span id="cb176-22"><a href="1012-randomgroup.html#cb176-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>20个人随机分组：</p>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="1012-randomgroup.html#cb177-1" aria-hidden="true" tabindex="-1"></a><span class="fu">simple_random</span>(<span class="dv">20</span>)</span>
+<span id="cb177-2"><a href="1012-randomgroup.html#cb177-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    ID  RandomNum Rank Group</span></span>
+<span id="cb177-3"><a href="1012-randomgroup.html#cb177-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   1 0.83237492   19     C</span></span>
+<span id="cb177-4"><a href="1012-randomgroup.html#cb177-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   2 0.95522177   20     C</span></span>
+<span id="cb177-5"><a href="1012-randomgroup.html#cb177-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3   3 0.59787880   10     T</span></span>
+<span id="cb177-6"><a href="1012-randomgroup.html#cb177-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4   4 0.35076793    4     T</span></span>
+<span id="cb177-7"><a href="1012-randomgroup.html#cb177-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 5   5 0.43157421    6     T</span></span>
+<span id="cb177-8"><a href="1012-randomgroup.html#cb177-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 6   6 0.63326323   13     C</span></span>
+<span id="cb177-9"><a href="1012-randomgroup.html#cb177-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 7   7 0.78015581   17     C</span></span>
+<span id="cb177-10"><a href="1012-randomgroup.html#cb177-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 8   8 0.46990952    7     T</span></span>
+<span id="cb177-11"><a href="1012-randomgroup.html#cb177-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 9   9 0.38535395    5     T</span></span>
+<span id="cb177-12"><a href="1012-randomgroup.html#cb177-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 10 0.63361183   14     C</span></span>
+<span id="cb177-13"><a href="1012-randomgroup.html#cb177-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 11 11 0.73655082   15     C</span></span>
+<span id="cb177-14"><a href="1012-randomgroup.html#cb177-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 12 12 0.49675139    8     T</span></span>
+<span id="cb177-15"><a href="1012-randomgroup.html#cb177-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 13 13 0.61201021   11     C</span></span>
+<span id="cb177-16"><a href="1012-randomgroup.html#cb177-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 14 14 0.23511285    3     T</span></span>
+<span id="cb177-17"><a href="1012-randomgroup.html#cb177-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 15 15 0.52894214    9     T</span></span>
+<span id="cb177-18"><a href="1012-randomgroup.html#cb177-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 16 16 0.04290597    1     T</span></span>
+<span id="cb177-19"><a href="1012-randomgroup.html#cb177-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 17 17 0.74367251   16     C</span></span>
+<span id="cb177-20"><a href="1012-randomgroup.html#cb177-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 18 18 0.79647582   18     C</span></span>
+<span id="cb177-21"><a href="1012-randomgroup.html#cb177-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 19 19 0.62653890   12     C</span></span>
+<span id="cb177-22"><a href="1012-randomgroup.html#cb177-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 20 20 0.22537775    2     T</span></span></code></pre></div>
+<p>除此之外，还有非常多的R包可以实现随机分组，包括但不限于简单随机分组/区组随机/分层随机等。</p>
+</div>
+<div id="区组随机" class="section level2 hasAnchor" number="12.2">
+<h2><span class="header-section-number">12.2</span> 区组随机<a href="1012-randomgroup.html#区组随机" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>可以用<code>randomizr</code>实现区组随机：</p>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="1012-randomgroup.html#cb178-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load built-in dataset</span></span>
+<span id="cb178-2"><a href="1012-randomgroup.html#cb178-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(HairEyeColor)</span>
+<span id="cb178-3"><a href="1012-randomgroup.html#cb178-3" aria-hidden="true" tabindex="-1"></a>HairEyeColor <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(HairEyeColor)</span>
+<span id="cb178-4"><a href="1012-randomgroup.html#cb178-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb178-5"><a href="1012-randomgroup.html#cb178-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Transform so each row is a subject</span></span>
+<span id="cb178-6"><a href="1012-randomgroup.html#cb178-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Columns describe subject&#39;s hair color, eye color, and gender</span></span>
+<span id="cb178-7"><a href="1012-randomgroup.html#cb178-7" aria-hidden="true" tabindex="-1"></a>hec <span class="ot">&lt;-</span> HairEyeColor[<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(HairEyeColor),</span>
+<span id="cb178-8"><a href="1012-randomgroup.html#cb178-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">times =</span> HairEyeColor<span class="sc">$</span>Freq), <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb178-9"><a href="1012-randomgroup.html#cb178-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb178-10"><a href="1012-randomgroup.html#cb178-10" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">nrow</span>(hec)</span>
+<span id="cb178-11"><a href="1012-randomgroup.html#cb178-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb178-12"><a href="1012-randomgroup.html#cb178-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Fix the rownames</span></span>
+<span id="cb178-13"><a href="1012-randomgroup.html#cb178-13" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(hec) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb178-14"><a href="1012-randomgroup.html#cb178-14" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(hec)</span>
+<span id="cb178-15"><a href="1012-randomgroup.html#cb178-15" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 592   3</span></span>
+<span id="cb178-16"><a href="1012-randomgroup.html#cb178-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hec)</span>
+<span id="cb178-17"><a href="1012-randomgroup.html#cb178-17" aria-hidden="true" tabindex="-1"></a><span class="do">##    Hair   Eye  Sex</span></span>
+<span id="cb178-18"><a href="1012-randomgroup.html#cb178-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 Black Brown Male</span></span>
+<span id="cb178-19"><a href="1012-randomgroup.html#cb178-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 Black Brown Male</span></span>
+<span id="cb178-20"><a href="1012-randomgroup.html#cb178-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 Black Brown Male</span></span>
+<span id="cb178-21"><a href="1012-randomgroup.html#cb178-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 Black Brown Male</span></span>
+<span id="cb178-22"><a href="1012-randomgroup.html#cb178-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 Black Brown Male</span></span>
+<span id="cb178-23"><a href="1012-randomgroup.html#cb178-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 Black Brown Male</span></span></code></pre></div>
+<p>根据毛发颜色进入不同的区组，然后再分为3组：</p>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb179-1"><a href="1012-randomgroup.html#cb179-1" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">block_ra</span>(<span class="at">blocks =</span> hec<span class="sc">$</span>Hair, <span class="at">conditions =</span> <span class="fu">c</span>(<span class="st">&quot;Control&quot;</span>, <span class="st">&quot;Placebo&quot;</span>, <span class="st">&quot;Treatment&quot;</span>))</span>
+<span id="cb179-2"><a href="1012-randomgroup.html#cb179-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(Z, hec<span class="sc">$</span>Hair)</span>
+<span id="cb179-3"><a href="1012-randomgroup.html#cb179-3" aria-hidden="true" tabindex="-1"></a><span class="do">##            </span></span>
+<span id="cb179-4"><a href="1012-randomgroup.html#cb179-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Z           Black Brown Red Blond</span></span>
+<span id="cb179-5"><a href="1012-randomgroup.html#cb179-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   Control      36    95  24    42</span></span>
+<span id="cb179-6"><a href="1012-randomgroup.html#cb179-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   Placebo      36    96  23    42</span></span>
+<span id="cb179-7"><a href="1012-randomgroup.html#cb179-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   Treatment    36    95  24    43</span></span></code></pre></div>
+<p>可以自由控制入组数量：</p>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="1012-randomgroup.html#cb180-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(hec<span class="sc">$</span>Hair))</span>
+<span id="cb180-2"><a href="1012-randomgroup.html#cb180-2" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] Black Brown Red   Blond</span></span>
+<span id="cb180-3"><a href="1012-randomgroup.html#cb180-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Levels: Black Brown Red Blond</span></span>
+<span id="cb180-4"><a href="1012-randomgroup.html#cb180-4" aria-hidden="true" tabindex="-1"></a>block_m_each <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">78</span>, <span class="dv">30</span>),</span>
+<span id="cb180-5"><a href="1012-randomgroup.html#cb180-5" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">c</span>(<span class="dv">186</span>, <span class="dv">100</span>),</span>
+<span id="cb180-6"><a href="1012-randomgroup.html#cb180-6" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">c</span>(<span class="dv">51</span>, <span class="dv">20</span>),</span>
+<span id="cb180-7"><a href="1012-randomgroup.html#cb180-7" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">c</span>(<span class="dv">87</span>,<span class="dv">40</span>))</span>
+<span id="cb180-8"><a href="1012-randomgroup.html#cb180-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb180-9"><a href="1012-randomgroup.html#cb180-9" aria-hidden="true" tabindex="-1"></a>block_m_each</span>
+<span id="cb180-10"><a href="1012-randomgroup.html#cb180-10" aria-hidden="true" tabindex="-1"></a><span class="do">##      [,1] [,2]</span></span>
+<span id="cb180-11"><a href="1012-randomgroup.html#cb180-11" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,]   78   30</span></span>
+<span id="cb180-12"><a href="1012-randomgroup.html#cb180-12" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,]  186  100</span></span>
+<span id="cb180-13"><a href="1012-randomgroup.html#cb180-13" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,]   51   20</span></span>
+<span id="cb180-14"><a href="1012-randomgroup.html#cb180-14" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,]   87   40</span></span>
+<span id="cb180-15"><a href="1012-randomgroup.html#cb180-15" aria-hidden="true" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">block_ra</span>(<span class="at">blocks =</span> hec<span class="sc">$</span>Hair, <span class="at">block_m_each =</span> block_m_each)</span>
+<span id="cb180-16"><a href="1012-randomgroup.html#cb180-16" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(Z, hec<span class="sc">$</span>Hair)</span>
+<span id="cb180-17"><a href="1012-randomgroup.html#cb180-17" aria-hidden="true" tabindex="-1"></a><span class="do">##    </span></span>
+<span id="cb180-18"><a href="1012-randomgroup.html#cb180-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Z   Black Brown Red Blond</span></span>
+<span id="cb180-19"><a href="1012-randomgroup.html#cb180-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   0    78   186  51    87</span></span>
+<span id="cb180-20"><a href="1012-randomgroup.html#cb180-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   1    30   100  20    40</span></span></code></pre></div>
+<p>但是这个区组随机对于临床研究来说不是很适用，因为这里的情况需要提前准备好所有的受试者，然后在进行分组，而对于临床研究来说，受试者是一个一个来的，不是一下子全部到齐的，所以<code>block_ra()</code>可能更适合动物实验或者基础研究的分组。更多关于区组随机的知识，大家可以参考医咖会的这篇文章：<a href="https://mp.weixin.qq.com/s/EsrX0ahVQjaExLGVLRCn2Q">一文详解区组随机化，包教包懂！</a></p>
+<p>临床研究的随机分组可以通过<code>blockrand</code>包实现，特别适合一次招募1人的临床研究！</p>
+<p>比如100人随机分为2组每组50人：</p>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb181-1"><a href="1012-randomgroup.html#cb181-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(blockrand)</span>
+<span id="cb181-2"><a href="1012-randomgroup.html#cb181-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-3"><a href="1012-randomgroup.html#cb181-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">111</span>)</span>
+<span id="cb181-4"><a href="1012-randomgroup.html#cb181-4" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">blockrand</span>(<span class="at">n=</span><span class="dv">100</span>, <span class="at">num.levels =</span> <span class="dv">2</span>, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;试验组&quot;</span>,<span class="st">&quot;对照组&quot;</span>))</span>
+<span id="cb181-5"><a href="1012-randomgroup.html#cb181-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res)</span>
+<span id="cb181-6"><a href="1012-randomgroup.html#cb181-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   id block.id block.size treatment</span></span>
+<span id="cb181-7"><a href="1012-randomgroup.html#cb181-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  1        1          4    试验组</span></span>
+<span id="cb181-8"><a href="1012-randomgroup.html#cb181-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  2        1          4    对照组</span></span>
+<span id="cb181-9"><a href="1012-randomgroup.html#cb181-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  3        1          4    试验组</span></span>
+<span id="cb181-10"><a href="1012-randomgroup.html#cb181-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  4        1          4    对照组</span></span>
+<span id="cb181-11"><a href="1012-randomgroup.html#cb181-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  5        2          6    试验组</span></span>
+<span id="cb181-12"><a href="1012-randomgroup.html#cb181-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  6        2          6    试验组</span></span>
+<span id="cb181-13"><a href="1012-randomgroup.html#cb181-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-14"><a href="1012-randomgroup.html#cb181-14" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(res<span class="sc">$</span>treatment)</span>
+<span id="cb181-15"><a href="1012-randomgroup.html#cb181-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb181-16"><a href="1012-randomgroup.html#cb181-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 对照组 试验组 </span></span>
+<span id="cb181-17"><a href="1012-randomgroup.html#cb181-17" aria-hidden="true" tabindex="-1"></a><span class="do">##     51     51</span></span></code></pre></div>
+<p>还可以顺便帮我们生成PDF文件，方便装入信封。</p>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="1012-randomgroup.html#cb182-1" aria-hidden="true" tabindex="-1"></a>showtext<span class="sc">::</span><span class="fu">showtext_auto</span>(<span class="at">enable =</span> T)</span>
+<span id="cb182-2"><a href="1012-randomgroup.html#cb182-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-3"><a href="1012-randomgroup.html#cb182-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotblockrand</span>(res,<span class="at">file =</span> <span class="st">&quot;res.pdf&quot;</span>,</span>
+<span id="cb182-4"><a href="1012-randomgroup.html#cb182-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">top =</span> <span class="fu">list</span>(<span class="at">text=</span><span class="fu">c</span>(<span class="st">&quot;xxx临床研究&quot;</span>,<span class="st">&quot;受试者编号：%ID%&quot;</span>,<span class="st">&quot;入组：%TREAT%&quot;</span>),</span>
+<span id="cb182-5"><a href="1012-randomgroup.html#cb182-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;red&quot;</span>),</span>
+<span id="cb182-6"><a href="1012-randomgroup.html#cb182-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">font=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">4</span>)</span>
+<span id="cb182-7"><a href="1012-randomgroup.html#cb182-7" aria-hidden="true" tabindex="-1"></a>                         ),</span>
+<span id="cb182-8"><a href="1012-randomgroup.html#cb182-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">middle=</span><span class="fu">list</span>(<span class="at">text=</span><span class="fu">c</span>(<span class="st">&quot;xxx临床研究&quot;</span>,<span class="st">&quot;受试者编号：%ID%&quot;</span>),</span>
+<span id="cb182-9"><a href="1012-randomgroup.html#cb182-9" aria-hidden="true" tabindex="-1"></a>                          <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;black&quot;</span>,<span class="st">&quot;blue&quot;</span>,<span class="st">&quot;red&quot;</span>),</span>
+<span id="cb182-10"><a href="1012-randomgroup.html#cb182-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">font=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">4</span>)</span>
+<span id="cb182-11"><a href="1012-randomgroup.html#cb182-11" aria-hidden="true" tabindex="-1"></a>                          ),</span>
+<span id="cb182-12"><a href="1012-randomgroup.html#cb182-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">bottom=</span><span class="st">&quot;联系电话：123456789&quot;</span>,</span>
+<span id="cb182-13"><a href="1012-randomgroup.html#cb182-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">cut.marks=</span><span class="cn">TRUE</span> <span class="co"># 裁剪标记</span></span>
+<span id="cb182-14"><a href="1012-randomgroup.html#cb182-14" aria-hidden="true" tabindex="-1"></a>              )</span></code></pre></div>
+<p><img src="figs/Snipaste_2023-04-05_13-47-55.png" width="90%" /></p>
+</div>
+<div id="分层随机" class="section level2 hasAnchor" number="12.3">
+<h2><span class="header-section-number">12.3</span> 分层随机<a href="1012-randomgroup.html#分层随机" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>比如120个受试者分成4组，试验组1，试验组2，阳性对照组，阴性对照组，每组30人，并且根据性别进行分层（男性和女性），要求男性60例，女性60例。</p>
+<p>使用<code>blockrand</code>实现。</p>
+<div class="sourceCode" id="cb183"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb183-1"><a href="1012-randomgroup.html#cb183-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(blockrand)</span>
+<span id="cb183-2"><a href="1012-randomgroup.html#cb183-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb183-3"><a href="1012-randomgroup.html#cb183-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 男性60例随机分组</span></span>
+<span id="cb183-4"><a href="1012-randomgroup.html#cb183-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb183-5"><a href="1012-randomgroup.html#cb183-5" aria-hidden="true" tabindex="-1"></a>res.M <span class="ot">&lt;-</span> <span class="fu">blockrand</span>(<span class="at">n =</span> <span class="dv">60</span>,</span>
+<span id="cb183-6"><a href="1012-randomgroup.html#cb183-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">num.levels =</span> <span class="dv">4</span>,</span>
+<span id="cb183-7"><a href="1012-randomgroup.html#cb183-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;试验组1&quot;</span>,<span class="st">&quot;试验组2&quot;</span>,<span class="st">&quot;阳性对照组&quot;</span>,<span class="st">&quot;阴性对照组&quot;</span>),</span>
+<span id="cb183-8"><a href="1012-randomgroup.html#cb183-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stratum =</span> <span class="st">&quot;男性&quot;</span>,</span>
+<span id="cb183-9"><a href="1012-randomgroup.html#cb183-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.prefix =</span> <span class="st">&quot;男&quot;</span>, <span class="co"># id前缀</span></span>
+<span id="cb183-10"><a href="1012-randomgroup.html#cb183-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">block.sizes =</span> <span class="fu">c</span>(<span class="dv">3</span>), </span>
+<span id="cb183-11"><a href="1012-randomgroup.html#cb183-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">block.prefix =</span> <span class="st">&quot;男&quot;</span> <span class="co"># 前缀</span></span>
+<span id="cb183-12"><a href="1012-randomgroup.html#cb183-12" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb183-13"><a href="1012-randomgroup.html#cb183-13" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(res.M<span class="sc">$</span>treatment)</span>
+<span id="cb183-14"><a href="1012-randomgroup.html#cb183-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb183-15"><a href="1012-randomgroup.html#cb183-15" aria-hidden="true" tabindex="-1"></a><span class="do">##    试验组1    试验组2 阳性对照组 阴性对照组 </span></span>
+<span id="cb183-16"><a href="1012-randomgroup.html#cb183-16" aria-hidden="true" tabindex="-1"></a><span class="do">##         15         15         15         15</span></span>
+<span id="cb183-17"><a href="1012-randomgroup.html#cb183-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb183-18"><a href="1012-randomgroup.html#cb183-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 女性60例随机分组</span></span>
+<span id="cb183-19"><a href="1012-randomgroup.html#cb183-19" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb183-20"><a href="1012-randomgroup.html#cb183-20" aria-hidden="true" tabindex="-1"></a>res.F <span class="ot">&lt;-</span> <span class="fu">blockrand</span>(<span class="at">n =</span> <span class="dv">60</span>,</span>
+<span id="cb183-21"><a href="1012-randomgroup.html#cb183-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">num.levels =</span> <span class="dv">4</span>,</span>
+<span id="cb183-22"><a href="1012-randomgroup.html#cb183-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;试验组1&quot;</span>,<span class="st">&quot;试验组2&quot;</span>,<span class="st">&quot;阳性对照组&quot;</span>,<span class="st">&quot;阴性对照组&quot;</span>),</span>
+<span id="cb183-23"><a href="1012-randomgroup.html#cb183-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stratum =</span> <span class="st">&quot;女性&quot;</span>,</span>
+<span id="cb183-24"><a href="1012-randomgroup.html#cb183-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id.prefix =</span> <span class="st">&quot;女&quot;</span>, <span class="co"># id前缀</span></span>
+<span id="cb183-25"><a href="1012-randomgroup.html#cb183-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">block.sizes =</span> <span class="fu">c</span>(<span class="dv">3</span>), </span>
+<span id="cb183-26"><a href="1012-randomgroup.html#cb183-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">block.prefix =</span> <span class="st">&quot;女&quot;</span> <span class="co"># 前缀</span></span>
+<span id="cb183-27"><a href="1012-randomgroup.html#cb183-27" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb183-28"><a href="1012-randomgroup.html#cb183-28" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(res.F<span class="sc">$</span>treatment)</span>
+<span id="cb183-29"><a href="1012-randomgroup.html#cb183-29" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb183-30"><a href="1012-randomgroup.html#cb183-30" aria-hidden="true" tabindex="-1"></a><span class="do">##    试验组1    试验组2 阳性对照组 阴性对照组 </span></span>
+<span id="cb183-31"><a href="1012-randomgroup.html#cb183-31" aria-hidden="true" tabindex="-1"></a><span class="do">##         15         15         15         15</span></span>
+<span id="cb183-32"><a href="1012-randomgroup.html#cb183-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb183-33"><a href="1012-randomgroup.html#cb183-33" aria-hidden="true" tabindex="-1"></a><span class="co"># 结果合并即可</span></span>
+<span id="cb183-34"><a href="1012-randomgroup.html#cb183-34" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">cbind</span>(res.M,res.F)</span>
+<span id="cb183-35"><a href="1012-randomgroup.html#cb183-35" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(res)</span>
+<span id="cb183-36"><a href="1012-randomgroup.html#cb183-36" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 60 10</span></span>
+<span id="cb183-37"><a href="1012-randomgroup.html#cb183-37" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res)</span>
+<span id="cb183-38"><a href="1012-randomgroup.html#cb183-38" aria-hidden="true" tabindex="-1"></a><span class="do">##     id stratum block.id block.size  treatment   id stratum block.id block.size</span></span>
+<span id="cb183-39"><a href="1012-randomgroup.html#cb183-39" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 男01    男性      男1         12 阳性对照组 女01    女性      女1         12</span></span>
+<span id="cb183-40"><a href="1012-randomgroup.html#cb183-40" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 男02    男性      男1         12 阴性对照组 女02    女性      女1         12</span></span>
+<span id="cb183-41"><a href="1012-randomgroup.html#cb183-41" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 男03    男性      男1         12    试验组2 女03    女性      女1         12</span></span>
+<span id="cb183-42"><a href="1012-randomgroup.html#cb183-42" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 男04    男性      男1         12    试验组2 女04    女性      女1         12</span></span>
+<span id="cb183-43"><a href="1012-randomgroup.html#cb183-43" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 男05    男性      男1         12    试验组2 女05    女性      女1         12</span></span>
+<span id="cb183-44"><a href="1012-randomgroup.html#cb183-44" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 男06    男性      男1         12 阳性对照组 女06    女性      女1         12</span></span>
+<span id="cb183-45"><a href="1012-randomgroup.html#cb183-45" aria-hidden="true" tabindex="-1"></a><span class="do">##    treatment</span></span>
+<span id="cb183-46"><a href="1012-randomgroup.html#cb183-46" aria-hidden="true" tabindex="-1"></a><span class="do">## 1    试验组1</span></span>
+<span id="cb183-47"><a href="1012-randomgroup.html#cb183-47" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 阳性对照组</span></span>
+<span id="cb183-48"><a href="1012-randomgroup.html#cb183-48" aria-hidden="true" tabindex="-1"></a><span class="do">## 3    试验组2</span></span>
+<span id="cb183-49"><a href="1012-randomgroup.html#cb183-49" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 阴性对照组</span></span>
+<span id="cb183-50"><a href="1012-randomgroup.html#cb183-50" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 阴性对照组</span></span>
+<span id="cb183-51"><a href="1012-randomgroup.html#cb183-51" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 阳性对照组</span></span></code></pre></div>
+<p>写入PDF文件，方便制作信封，分组隐匿：</p>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="1012-randomgroup.html#cb184-1" aria-hidden="true" tabindex="-1"></a>showtext<span class="sc">::</span><span class="fu">showtext_auto</span>(<span class="at">enable =</span> T)</span>
+<span id="cb184-2"><a href="1012-randomgroup.html#cb184-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb184-3"><a href="1012-randomgroup.html#cb184-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plotblockrand</span>(res, <span class="at">file =</span> <span class="st">&quot;res1.pdf&quot;</span>,</span>
+<span id="cb184-4"><a href="1012-randomgroup.html#cb184-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">top=</span><span class="fu">list</span>(<span class="at">text=</span><span class="fu">c</span>(<span class="st">&quot;不得了临床试验&quot;</span>,<span class="st">&quot;受试者编号: %ID%&quot;</span>,<span class="st">&quot;组别: %TREAT%&quot;</span>),</span>
+<span id="cb184-5"><a href="1012-randomgroup.html#cb184-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&#39;black&#39;</span>,<span class="st">&#39;blue&#39;</span>,<span class="st">&#39;red&#39;</span>),<span class="at">font=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">4</span>)),</span>
+<span id="cb184-6"><a href="1012-randomgroup.html#cb184-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">middle=</span><span class="fu">list</span>(<span class="at">text=</span><span class="fu">c</span>(<span class="st">&quot;不得了临床试验&quot;</span>,<span class="st">&quot;性别: %STRAT%&quot;</span>,<span class="st">&quot;受试者编号: %ID%&quot;</span>),</span>
+<span id="cb184-7"><a href="1012-randomgroup.html#cb184-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">col=</span><span class="fu">c</span>(<span class="st">&#39;black&#39;</span>,<span class="st">&#39;blue&#39;</span>,<span class="st">&#39;red&#39;</span>),<span class="at">font=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)),</span>
+<span id="cb184-8"><a href="1012-randomgroup.html#cb184-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">bottom=</span><span class="st">&quot;联系电话：123456789&quot;</span>,</span>
+<span id="cb184-9"><a href="1012-randomgroup.html#cb184-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">cut.marks=</span><span class="cn">TRUE</span></span>
+<span id="cb184-10"><a href="1012-randomgroup.html#cb184-10" aria-hidden="true" tabindex="-1"></a>              )</span></code></pre></div>
+<p><img src="figs/Snipaste_2023-04-05_13-48-43.png" width="90%" /></p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1011-samplesize.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1013-rstastix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

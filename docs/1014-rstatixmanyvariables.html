@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>14 R语言多个变量同时进行t检验 | R语言实战医学统计</title>
+  <meta name="description" content="14 R语言多个变量同时进行t检验 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="14 R语言多个变量同时进行t检验 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="14 R语言多个变量同时进行t检验 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="14 R语言多个变量同时进行t检验 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="14 R语言多个变量同时进行t检验 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1013-rstastix.html"/>
+<link rel="next" href="1015-twocorrelation.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,89 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="tjslrkjga" class="section level1 hasAnchor" number="14">
+<h1><span class="header-section-number">14</span> R语言多个变量同时进行t检验<a href="1014-rstatixmanyvariables.html#tjslrkjga" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="简介" class="section level2 hasAnchor" number="14.1">
+<h2><span class="header-section-number">14.1</span> 简介<a href="1014-rstatixmanyvariables.html#简介" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>虽然说是同时进行t检验，但是这是一种通用的方法，当然也可以同时进行方差分析、正态性检验、方差齐性检验、秩和检验等等。</p>
+<p>在spss中进行这些检验时，不管有多少列变量，只要都选中，就可以一次全部进行检验，在R语言里当然也可以！</p>
+<p>主要是通过<code>rstatix</code>这个包完成，数据格式要求是<strong>长数据</strong>，或者说整洁数据。</p>
+</div>
+<div id="实战" class="section level2 hasAnchor" number="14.2">
+<h2><span class="header-section-number">14.2</span> 实战<a href="1014-rstatixmanyvariables.html#实战" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>下面通过一个例子进行说明，可能有些不太适当，只是演示使用方法。</p>
+<p>60个病人随机分为实验组和对照组，每组30人，记录患者的4项评分，现在需要对这4项评分同时进行正态性和方差齐性检验和t检验（可能不符合t检验的条件，这里只是演示方法）。</p>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="1014-rstatixmanyvariables.html#cb235-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;datasets/20210801.csv&quot;</span>,<span class="at">header =</span> T)</span>
+<span id="cb235-2"><a href="1014-rstatixmanyvariables.html#cb235-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb235-3"><a href="1014-rstatixmanyvariables.html#cb235-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb235-4"><a href="1014-rstatixmanyvariables.html#cb235-4" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    60 obs. of  5 variables:</span></span>
+<span id="cb235-5"><a href="1014-rstatixmanyvariables.html#cb235-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 组别    : chr  &quot;实验组&quot; &quot;实验组&quot; &quot;实验组&quot; &quot;实验组&quot; ...</span></span>
+<span id="cb235-6"><a href="1014-rstatixmanyvariables.html#cb235-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 排便困难: int  12 11 15 14 11 13 11 14 13 15 ...</span></span>
+<span id="cb235-7"><a href="1014-rstatixmanyvariables.html#cb235-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 生活质量: int  87 94 95 85 101 91 84 89 84 92 ...</span></span>
+<span id="cb235-8"><a href="1014-rstatixmanyvariables.html#cb235-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 粪便性状: int  2 3 2 2 3 3 3 3 3 3 ...</span></span>
+<span id="cb235-9"><a href="1014-rstatixmanyvariables.html#cb235-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 排便时间: int  2 2 2 2 2 2 2 3 2 2 ...</span></span></code></pre></div>
+<p><code>df</code>这样的数据不是整洁数据，首先变成整洁数据：</p>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="1014-rstatixmanyvariables.html#cb236-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(tidyverse))</span>
+<span id="cb236-2"><a href="1014-rstatixmanyvariables.html#cb236-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb236-3"><a href="1014-rstatixmanyvariables.html#cb236-3" aria-hidden="true" tabindex="-1"></a>df_l <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb236-4"><a href="1014-rstatixmanyvariables.html#cb236-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">names_to =</span> <span class="st">&quot;变量&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;积分&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb236-5"><a href="1014-rstatixmanyvariables.html#cb236-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate_if</span>(is.character, as.factor)</span>
+<span id="cb236-6"><a href="1014-rstatixmanyvariables.html#cb236-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb236-7"><a href="1014-rstatixmanyvariables.html#cb236-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df_l)</span>
+<span id="cb236-8"><a href="1014-rstatixmanyvariables.html#cb236-8" aria-hidden="true" tabindex="-1"></a><span class="do">## tibble [240 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb236-9"><a href="1014-rstatixmanyvariables.html#cb236-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 组别: Factor w/ 2 levels &quot;对照组&quot;,&quot;实验组&quot;: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span id="cb236-10"><a href="1014-rstatixmanyvariables.html#cb236-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 变量: Factor w/ 4 levels &quot;粪便性状&quot;,&quot;排便困难&quot;,..: 2 4 1 3 2 4 1 3 2 4 ...</span></span>
+<span id="cb236-11"><a href="1014-rstatixmanyvariables.html#cb236-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 积分: int [1:240] 12 87 2 2 11 94 3 2 15 95 ...</span></span></code></pre></div>
+<p>同时进行正态性检验：</p>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="1014-rstatixmanyvariables.html#cb237-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstatix)</span>
+<span id="cb237-2"><a href="1014-rstatixmanyvariables.html#cb237-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb237-3"><a href="1014-rstatixmanyvariables.html#cb237-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;rstatix&#39;</span></span>
+<span id="cb237-4"><a href="1014-rstatixmanyvariables.html#cb237-4" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb237-5"><a href="1014-rstatixmanyvariables.html#cb237-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb237-6"><a href="1014-rstatixmanyvariables.html#cb237-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     filter</span></span>
+<span id="cb237-7"><a href="1014-rstatixmanyvariables.html#cb237-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb237-8"><a href="1014-rstatixmanyvariables.html#cb237-8" aria-hidden="true" tabindex="-1"></a>df_l <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(变量,组别) <span class="sc">%&gt;%</span> <span class="fu">shapiro_test</span>(积分)</span>
+<span id="cb237-9"><a href="1014-rstatixmanyvariables.html#cb237-9" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 8 × 5</span></span>
+<span id="cb237-10"><a href="1014-rstatixmanyvariables.html#cb237-10" aria-hidden="true" tabindex="-1"></a><span class="do">##   组别   变量     variable statistic        p</span></span>
+<span id="cb237-11"><a href="1014-rstatixmanyvariables.html#cb237-11" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;fct&gt;  &lt;fct&gt;    &lt;chr&gt;        &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb237-12"><a href="1014-rstatixmanyvariables.html#cb237-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 对照组 粪便性状 积分         0.452 1.73e- 9</span></span>
+<span id="cb237-13"><a href="1014-rstatixmanyvariables.html#cb237-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 实验组 粪便性状 积分         0.404 5.98e-10</span></span>
+<span id="cb237-14"><a href="1014-rstatixmanyvariables.html#cb237-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 对照组 排便困难 积分         0.871 1.78e- 3</span></span>
+<span id="cb237-15"><a href="1014-rstatixmanyvariables.html#cb237-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 实验组 排便困难 积分         0.915 1.95e- 2</span></span>
+<span id="cb237-16"><a href="1014-rstatixmanyvariables.html#cb237-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 对照组 排便时间 积分         0.577 3.91e- 8</span></span>
+<span id="cb237-17"><a href="1014-rstatixmanyvariables.html#cb237-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 实验组 排便时间 积分         0.597 6.64e- 8</span></span>
+<span id="cb237-18"><a href="1014-rstatixmanyvariables.html#cb237-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 7 对照组 生活质量 积分         0.974 6.47e- 1</span></span>
+<span id="cb237-19"><a href="1014-rstatixmanyvariables.html#cb237-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 8 实验组 生活质量 积分         0.962 3.46e- 1</span></span></code></pre></div>
+<p>方差齐性检验：</p>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="1014-rstatixmanyvariables.html#cb238-1" aria-hidden="true" tabindex="-1"></a>df_l <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(变量) <span class="sc">%&gt;%</span> <span class="fu">levene_test</span>(积分 <span class="sc">~</span> 组别)</span>
+<span id="cb238-2"><a href="1014-rstatixmanyvariables.html#cb238-2" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 4 × 5</span></span>
+<span id="cb238-3"><a href="1014-rstatixmanyvariables.html#cb238-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   变量       df1   df2 statistic      p</span></span>
+<span id="cb238-4"><a href="1014-rstatixmanyvariables.html#cb238-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;fct&gt;    &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb238-5"><a href="1014-rstatixmanyvariables.html#cb238-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 粪便性状     1    58    0.127  0.723 </span></span>
+<span id="cb238-6"><a href="1014-rstatixmanyvariables.html#cb238-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 排便困难     1    58    0.226  0.636 </span></span>
+<span id="cb238-7"><a href="1014-rstatixmanyvariables.html#cb238-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 排便时间     1    58    0.0746 0.786 </span></span>
+<span id="cb238-8"><a href="1014-rstatixmanyvariables.html#cb238-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 生活质量     1    58    3.96   0.0514</span></span></code></pre></div>
+<p>t检验：</p>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="1014-rstatixmanyvariables.html#cb239-1" aria-hidden="true" tabindex="-1"></a>df_l <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(变量) <span class="sc">%&gt;%</span> <span class="fu">t_test</span>(积分 <span class="sc">~</span> 组别)</span>
+<span id="cb239-2"><a href="1014-rstatixmanyvariables.html#cb239-2" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 4 × 9</span></span>
+<span id="cb239-3"><a href="1014-rstatixmanyvariables.html#cb239-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   变量     .y.   group1 group2    n1    n2 statistic    df     p</span></span>
+<span id="cb239-4"><a href="1014-rstatixmanyvariables.html#cb239-4" aria-hidden="true" tabindex="-1"></a><span class="do">## * &lt;fct&gt;    &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt; &lt;int&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb239-5"><a href="1014-rstatixmanyvariables.html#cb239-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 粪便性状 积分  对照组 实验组    30    30   -0.356   57.5 0.723</span></span>
+<span id="cb239-6"><a href="1014-rstatixmanyvariables.html#cb239-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 排便困难 积分  对照组 实验组    30    30    0.0890  57.4 0.929</span></span>
+<span id="cb239-7"><a href="1014-rstatixmanyvariables.html#cb239-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 排便时间 积分  对照组 实验组    30    30   -0.273   58.0 0.786</span></span>
+<span id="cb239-8"><a href="1014-rstatixmanyvariables.html#cb239-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 生活质量 积分  对照组 实验组    30    30   -0.101   52.4 0.92</span></span></code></pre></div>
+<p>非常方便，结果也是一目了然，再也不用羡慕SPSS的这一点了！</p>
+<p>你又多了一个用R语言进行医学统计学的理由！</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1013-rstastix.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1015-twocorrelation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

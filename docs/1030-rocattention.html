@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计</title>
+  <meta name="description" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1029-rocggplot.html"/>
+<link rel="next" href="1031-rocmany.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,144 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="sjgjaklj" class="section level1 hasAnchor" number="30">
+<h1><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项<a href="1030-rocattention.html#sjgjaklj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>上面的文章中介绍了ROC曲线的本质以及两面性，并详细介绍了如何手动计算真阳性率/假阳性率，以及怎样计算多个，并把点连接成线，变成ROC曲线。</p>
+<p>这些现在都有成熟的R包可以帮我们搞定，不需要我们手动计算。</p>
+<p>不过这些包在计算AUC时，默认是计算阳性结果的AUC，这在实际情况中有时会遇到问题，大家在使用时最好手动指定，到底是计算谁的AUC，关于ROC的两面性，可以参考上面的推文。</p>
+<p>这里以我最常用的<code>ROCR</code>和<code>pROC</code>进行演示。</p>
+<div id="准备数据-1" class="section level2 hasAnchor" number="30.1">
+<h2><span class="header-section-number">30.1</span> 准备数据<a href="1030-rocattention.html#准备数据-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>假如我们要用ca125的值预测患者是不是癌症，虚构一个数据：</p>
+<div class="sourceCode" id="cb469"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb469-1"><a href="1030-rocattention.html#cb469-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20220840</span>)</span>
+<span id="cb469-2"><a href="1030-rocattention.html#cb469-2" aria-hidden="true" tabindex="-1"></a>ca125_1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">10</span>,<span class="dv">80</span>,<span class="dv">20</span>),<span class="fu">rnorm</span>(<span class="dv">20</span>,<span class="dv">50</span>,<span class="dv">10</span>))</span>
+<span id="cb469-3"><a href="1030-rocattention.html#cb469-3" aria-hidden="true" tabindex="-1"></a>ca125_2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">20</span>),<span class="fu">rnorm</span>(<span class="dv">20</span>,<span class="dv">70</span>,<span class="dv">10</span>))</span>
+<span id="cb469-4"><a href="1030-rocattention.html#cb469-4" aria-hidden="true" tabindex="-1"></a>class<span class="ot">=</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">0</span>,<span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">20</span>)))</span>
+<span id="cb469-5"><a href="1030-rocattention.html#cb469-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb469-6"><a href="1030-rocattention.html#cb469-6" aria-hidden="true" tabindex="-1"></a>tumor <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;癌症&quot;</span>,<span class="st">&quot;非癌症&quot;</span>),<span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">20</span>)))</span>
+<span id="cb469-7"><a href="1030-rocattention.html#cb469-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb469-8"><a href="1030-rocattention.html#cb469-8" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">`</span><span class="at">class</span><span class="st">`</span><span class="ot">=</span>class,<span class="st">`</span><span class="at">ca125_1</span><span class="st">`</span><span class="ot">=</span>ca125_1,<span class="st">`</span><span class="at">ca125_2</span><span class="st">`</span><span class="ot">=</span>ca125_2,</span>
+<span id="cb469-9"><a href="1030-rocattention.html#cb469-9" aria-hidden="true" tabindex="-1"></a>                 <span class="st">`</span><span class="at">tumor</span><span class="st">`</span><span class="ot">=</span>tumor</span>
+<span id="cb469-10"><a href="1030-rocattention.html#cb469-10" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb469-11"><a href="1030-rocattention.html#cb469-11" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(df)</span>
+<span id="cb469-12"><a href="1030-rocattention.html#cb469-12" aria-hidden="true" tabindex="-1"></a><span class="do">##     class ca125_1 ca125_2  tumor</span></span>
+<span id="cb469-13"><a href="1030-rocattention.html#cb469-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 1       1   51.88    5.96   癌症</span></span>
+<span id="cb469-14"><a href="1030-rocattention.html#cb469-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 2       1   82.46   10.59   癌症</span></span>
+<span id="cb469-15"><a href="1030-rocattention.html#cb469-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 3       1  113.67  -19.22   癌症</span></span>
+<span id="cb469-16"><a href="1030-rocattention.html#cb469-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 4       1   63.49    6.08   癌症</span></span>
+<span id="cb469-17"><a href="1030-rocattention.html#cb469-17" aria-hidden="true" tabindex="-1"></a><span class="do">## ...   ...     ...     ...   &lt;NA&gt;</span></span>
+<span id="cb469-18"><a href="1030-rocattention.html#cb469-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 27      0   53.33   74.34 非癌症</span></span>
+<span id="cb469-19"><a href="1030-rocattention.html#cb469-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 28      0   59.92   51.11 非癌症</span></span>
+<span id="cb469-20"><a href="1030-rocattention.html#cb469-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 29      0   46.46   64.21 非癌症</span></span>
+<span id="cb469-21"><a href="1030-rocattention.html#cb469-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 30      0   30.03    66.5 非癌症</span></span></code></pre></div>
+</div>
+<div id="rocr" class="section level2 hasAnchor" number="30.2">
+<h2><span class="header-section-number">30.2</span> ROCR<a href="1030-rocattention.html#rocr" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><code>ROCR</code>的使用非常简单，两步完成，需要提供用来预测结果的指标以及真实结果。</p>
+<p>关于这个包计算的阳性结果的AUC还是阴性结果的AUC，它的规则是这样的：</p>
+<blockquote>
+<p><code>ROCR</code>默认计算顺序靠后的类别的AUC。如果提供给<code>labels</code>的值是有序因子型变量，排在前面的默认是阴性结果（negtive），排在后面的默认是阳性结果（positive），默认计算阳性结果（排序靠后）的AUC。如果是无序因子、数值、字符、逻辑型变量，会按照R语言的默认排序，比如按照数字大小、首字母顺序等，也是计算排序靠后的类别的AUC。</p>
+</blockquote>
+<p>比如我们这个<code>df</code>数据集，其中的<code>tumor</code>这一列是字符型，默认的顺序是：癌症，非癌症，是按照首字母顺序排列的，因此在计算AUC时，默认是计算的非癌症的AUC。</p>
+<div class="sourceCode" id="cb470"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb470-1"><a href="1030-rocattention.html#cb470-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ROCR)</span>
+<span id="cb470-2"><a href="1030-rocattention.html#cb470-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb470-3"><a href="1030-rocattention.html#cb470-3" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">prediction</span>(<span class="at">predictions =</span> ca125_1, <span class="co"># 预测指标</span></span>
+<span id="cb470-4"><a href="1030-rocattention.html#cb470-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">labels =</span> tumor <span class="co"># 真实结果</span></span>
+<span id="cb470-5"><a href="1030-rocattention.html#cb470-5" aria-hidden="true" tabindex="-1"></a>                   )</span>
+<span id="cb470-6"><a href="1030-rocattention.html#cb470-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb470-7"><a href="1030-rocattention.html#cb470-7" aria-hidden="true" tabindex="-1"></a><span class="fu">performance</span>(pred, <span class="st">&quot;auc&quot;</span>)<span class="sc">@</span>y.values[[<span class="dv">1</span>]]</span>
+<span id="cb470-8"><a href="1030-rocattention.html#cb470-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.075</span></span></code></pre></div>
+<p>但是大多数时候我们需要的都是阳性结果（比如这里我们想计算癌症的AUC，而不是非癌症）的AUC，所以我建议大家在使用R包计算AUC或者画ROC曲线时，手动指定顺序！</p>
+<div class="sourceCode" id="cb471"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb471-1"><a href="1030-rocattention.html#cb471-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">prediction</span>(<span class="at">predictions =</span> ca125_1, <span class="co"># 预测指标</span></span>
+<span id="cb471-2"><a href="1030-rocattention.html#cb471-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">labels =</span> tumor <span class="co"># 真实结果</span></span>
+<span id="cb471-3"><a href="1030-rocattention.html#cb471-3" aria-hidden="true" tabindex="-1"></a>                   ,<span class="at">label.ordering =</span> <span class="fu">c</span>(<span class="st">&quot;非癌症&quot;</span>,<span class="st">&quot;癌症&quot;</span>) <span class="co"># 此时就是计算癌症的AUC</span></span>
+<span id="cb471-4"><a href="1030-rocattention.html#cb471-4" aria-hidden="true" tabindex="-1"></a>                   )</span>
+<span id="cb471-5"><a href="1030-rocattention.html#cb471-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb471-6"><a href="1030-rocattention.html#cb471-6" aria-hidden="true" tabindex="-1"></a><span class="fu">performance</span>(pred, <span class="st">&quot;auc&quot;</span>)<span class="sc">@</span>y.values[[<span class="dv">1</span>]]</span>
+<span id="cb471-7"><a href="1030-rocattention.html#cb471-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.925</span></span></code></pre></div>
+</div>
+<div id="proc" class="section level2 hasAnchor" number="30.3">
+<h2><span class="header-section-number">30.3</span> pROC<a href="1030-rocattention.html#proc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<pre><code>## Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.
+## 
+## Attaching package: &#39;pROC&#39;
+## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     cov, smooth, var</code></pre>
+<p><code>pROC</code>包计算AUC也需要：用来预测结果的指标以及真实结果。</p>
+<p>这个包计算<code>pROC</code>略有不同，它是根据中位数来的，谁的中位数大，就计算谁的AUC，比如我们的这个例子，计算下中位数看看：</p>
+<div class="sourceCode" id="cb473"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb473-1"><a href="1030-rocattention.html#cb473-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 把ca125_1按照tumor的两个类别进行分组，然后分别计算中位数</span></span>
+<span id="cb473-2"><a href="1030-rocattention.html#cb473-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(ca125_1, tumor, median)</span>
+<span id="cb473-3"><a href="1030-rocattention.html#cb473-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     癌症   非癌症 </span></span>
+<span id="cb473-4"><a href="1030-rocattention.html#cb473-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 81.34426 49.99926</span></span></code></pre></div>
+<p>结果是癌症组的中位数＞非癌症组的中位数，所以是计算癌症的AUC。</p>
+<p>计算AUC：</p>
+<div class="sourceCode" id="cb474"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb474-1"><a href="1030-rocattention.html#cb474-1" aria-hidden="true" tabindex="-1"></a><span class="fu">roc</span>(<span class="at">response=</span>tumor, <span class="at">predictor=</span>ca125_1)</span>
+<span id="cb474-2"><a href="1030-rocattention.html#cb474-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = 癌症, case = 非癌症</span></span>
+<span id="cb474-3"><a href="1030-rocattention.html#cb474-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &gt; cases</span></span>
+<span id="cb474-4"><a href="1030-rocattention.html#cb474-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb474-5"><a href="1030-rocattention.html#cb474-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb474-6"><a href="1030-rocattention.html#cb474-6" aria-hidden="true" tabindex="-1"></a><span class="do">## roc.default(response = tumor, predictor = ca125_1)</span></span>
+<span id="cb474-7"><a href="1030-rocattention.html#cb474-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb474-8"><a href="1030-rocattention.html#cb474-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Data: ca125_1 in 10 controls (tumor 癌症) &gt; 20 cases (tumor 非癌症).</span></span>
+<span id="cb474-9"><a href="1030-rocattention.html#cb474-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Area under the curve: 0.925</span></span></code></pre></div>
+<p>再来看看ca125_2这一列指标：</p>
+<div class="sourceCode" id="cb475"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb475-1"><a href="1030-rocattention.html#cb475-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 把ca125_2按照tumor的两个类别进行分组，然后分别计算中位数</span></span>
+<span id="cb475-2"><a href="1030-rocattention.html#cb475-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(ca125_2, tumor, median)</span>
+<span id="cb475-3"><a href="1030-rocattention.html#cb475-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     癌症   非癌症 </span></span>
+<span id="cb475-4"><a href="1030-rocattention.html#cb475-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 13.52771 69.69272</span></span></code></pre></div>
+<p>结果是癌症组的中位数＜非癌症组，所以是计算非癌症的AUC。</p>
+<div class="sourceCode" id="cb476"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb476-1"><a href="1030-rocattention.html#cb476-1" aria-hidden="true" tabindex="-1"></a><span class="fu">roc</span>(<span class="at">response=</span>tumor, <span class="at">predictor=</span>ca125_2)</span>
+<span id="cb476-2"><a href="1030-rocattention.html#cb476-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = 癌症, case = 非癌症</span></span>
+<span id="cb476-3"><a href="1030-rocattention.html#cb476-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb476-4"><a href="1030-rocattention.html#cb476-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb476-5"><a href="1030-rocattention.html#cb476-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb476-6"><a href="1030-rocattention.html#cb476-6" aria-hidden="true" tabindex="-1"></a><span class="do">## roc.default(response = tumor, predictor = ca125_2)</span></span>
+<span id="cb476-7"><a href="1030-rocattention.html#cb476-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb476-8"><a href="1030-rocattention.html#cb476-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Data: ca125_2 in 10 controls (tumor 癌症) &lt; 20 cases (tumor 非癌症).</span></span>
+<span id="cb476-9"><a href="1030-rocattention.html#cb476-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Area under the curve: 0.9</span></span></code></pre></div>
+<p>如果想要手动指定，需要设置<code>levels</code>和<code>direction</code>：</p>
+<div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb477-1"><a href="1030-rocattention.html#cb477-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 此时计算的就是癌症的AUC</span></span>
+<span id="cb477-2"><a href="1030-rocattention.html#cb477-2" aria-hidden="true" tabindex="-1"></a><span class="fu">roc</span>(<span class="at">response=</span>tumor, <span class="at">predictor=</span>ca125_2,</span>
+<span id="cb477-3"><a href="1030-rocattention.html#cb477-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;非癌症&quot;</span>, <span class="st">&quot;癌症&quot;</span>), <span class="co"># 这个顺序随便设定，重要的是direction</span></span>
+<span id="cb477-4"><a href="1030-rocattention.html#cb477-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">direction =</span> <span class="st">&quot;&lt;&quot;</span> <span class="co"># 手动设定非癌症 &lt; 癌症</span></span>
+<span id="cb477-5"><a href="1030-rocattention.html#cb477-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb477-6"><a href="1030-rocattention.html#cb477-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb477-7"><a href="1030-rocattention.html#cb477-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb477-8"><a href="1030-rocattention.html#cb477-8" aria-hidden="true" tabindex="-1"></a><span class="do">## roc.default(response = tumor, predictor = ca125_2, levels = c(&quot;非癌症&quot;,     &quot;癌症&quot;), direction = &quot;&lt;&quot;)</span></span>
+<span id="cb477-9"><a href="1030-rocattention.html#cb477-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb477-10"><a href="1030-rocattention.html#cb477-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Data: ca125_2 in 20 controls (tumor 非癌症) &lt; 10 cases (tumor 癌症).</span></span>
+<span id="cb477-11"><a href="1030-rocattention.html#cb477-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Area under the curve: 0.1</span></span></code></pre></div>
+</div>
+<div id="yardstick" class="section level2 hasAnchor" number="30.4">
+<h2><span class="header-section-number">30.4</span> yardstick<a href="1030-rocattention.html#yardstick" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>最后给大家演示下<code>yardstick</code>包的做法，其中<code>truth</code>必须提供因子型，使用<code>event_level</code>指定到底是计算谁的AUC：</p>
+<div class="sourceCode" id="cb478"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb478-1"><a href="1030-rocattention.html#cb478-1" aria-hidden="true" tabindex="-1"></a>yardstick<span class="sc">::</span><span class="fu">roc_auc</span>(df, </span>
+<span id="cb478-2"><a href="1030-rocattention.html#cb478-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">truth=</span><span class="fu">factor</span>(tumor,<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;癌症&quot;</span>,<span class="st">&quot;非癌症&quot;</span>)),</span>
+<span id="cb478-3"><a href="1030-rocattention.html#cb478-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">estimate=</span>ca125_1,</span>
+<span id="cb478-4"><a href="1030-rocattention.html#cb478-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">event_level=</span><span class="st">&quot;first&quot;</span>)</span>
+<span id="cb478-5"><a href="1030-rocattention.html#cb478-5" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 1 × 3</span></span>
+<span id="cb478-6"><a href="1030-rocattention.html#cb478-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   .metric .estimator .estimate</span></span>
+<span id="cb478-7"><a href="1030-rocattention.html#cb478-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span id="cb478-8"><a href="1030-rocattention.html#cb478-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 roc_auc binary         0.925</span></span></code></pre></div>
+<p>画ROC曲线：</p>
+<div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb479-1"><a href="1030-rocattention.html#cb479-1" aria-hidden="true" tabindex="-1"></a>yardstick<span class="sc">::</span><span class="fu">roc_curve</span>(df, <span class="at">truth=</span><span class="fu">factor</span>(tumor,<span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;癌症&quot;</span>,<span class="st">&quot;非癌症&quot;</span>)),</span>
+<span id="cb479-2"><a href="1030-rocattention.html#cb479-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">estimate=</span>ca125_1,</span>
+<span id="cb479-3"><a href="1030-rocattention.html#cb479-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">event_level=</span><span class="st">&quot;first&quot;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb479-4"><a href="1030-rocattention.html#cb479-4" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">autoplot</span>()</span></code></pre></div>
+<p><img src="1030-rocattention_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p>R语言中的ROC曲线R包都有这样的<strong>潜规则</strong>，大家在使用的时候一定要注意哦~</p>
+<p>示例数据还提供了用数值表示的结果变量<code>class</code>，感兴趣的可以试试看，是不是和我说的一样！</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1029-rocggplot.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1031-rocmany.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

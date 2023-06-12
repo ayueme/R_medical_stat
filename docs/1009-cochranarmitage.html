@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>9 R语言Cochran Armitage检验 | R语言实战医学统计</title>
+  <meta name="description" content="9 R语言Cochran Armitage检验 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="9 R语言Cochran Armitage检验 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="9 R语言Cochran Armitage检验 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="9 R语言Cochran Armitage检验 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="9 R语言Cochran Armitage检验 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1008-mauchlytest.html"/>
+<link rel="next" href="1010-anovaattention.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,96 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="rugnjkdfgl" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">9</span> R语言Cochran Armitage检验<a href="1009-cochranarmitage.html#rugnjkdfgl" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><code>Cochran Armitage</code>检验是一种线性趋势检验，常用于自变量是有序分类变量，而因变量是二分类变量的资料，可以用来检验自变量和因变量存不存在线性趋势。</p>
+<p>注意和<code>Cochran-Mantel-Haenszel</code>检验区分，<code>CMH检验</code>是研究两个分类变量之间关联性的一种检验方法。但有时数据除了我们研究的变量外，还混杂或隐含了其它的变量，如果将这些变量纳入分析中，则有可能得出完全不同的结论，著名的<code>Simpson悖论</code>就是这个问题的典型案例。</p>
+<p>换句话说，在2 x 2表格数据的基础上，引入了第三个分类变量，称之为混杂变量。混杂变量的引入使得<code>CMH检验</code>可以用于分析分层样本，作为生物统计学领域的一种常用技术，该检验常用于疾病对照研究。</p>
+<p>现在我们想要了解某种药物剂量和疗效之间的关系，药物剂量有50mg，100mg，200mg，300mg，500mg，5个水平，疗效分为有效/无效两个水平。这种情况可以使用<code>Cochran Armitage</code>检验。</p>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="1009-cochranarmitage.html#cb145-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">13</span>, <span class="dv">136</span>, <span class="dv">17</span>, <span class="dv">125</span>, <span class="dv">16</span>, <span class="dv">104</span>, <span class="dv">32</span>, <span class="dv">149</span>, <span class="dv">9</span>, <span class="dv">45</span>), </span>
+<span id="cb145-2"><a href="1009-cochranarmitage.html#cb145-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">nrow =</span> <span class="dv">5</span>, <span class="at">byrow =</span> T,</span>
+<span id="cb145-3"><a href="1009-cochranarmitage.html#cb145-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="st">&quot;Dose&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;50&quot;</span>, <span class="st">&quot;100&quot;</span>, <span class="st">&quot;200&quot;</span>, <span class="st">&quot;300&quot;</span>, <span class="st">&quot;500&quot;</span>),</span>
+<span id="cb145-4"><a href="1009-cochranarmitage.html#cb145-4" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&quot;effect&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Yes&quot;</span>, <span class="st">&quot;No&quot;</span>))</span>
+<span id="cb145-5"><a href="1009-cochranarmitage.html#cb145-5" aria-hidden="true" tabindex="-1"></a>             )</span>
+<span id="cb145-6"><a href="1009-cochranarmitage.html#cb145-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-7"><a href="1009-cochranarmitage.html#cb145-7" aria-hidden="true" tabindex="-1"></a>df</span>
+<span id="cb145-8"><a href="1009-cochranarmitage.html#cb145-8" aria-hidden="true" tabindex="-1"></a><span class="do">##      effect</span></span>
+<span id="cb145-9"><a href="1009-cochranarmitage.html#cb145-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Dose  Yes  No</span></span>
+<span id="cb145-10"><a href="1009-cochranarmitage.html#cb145-10" aria-hidden="true" tabindex="-1"></a><span class="do">##   50   13 136</span></span>
+<span id="cb145-11"><a href="1009-cochranarmitage.html#cb145-11" aria-hidden="true" tabindex="-1"></a><span class="do">##   100  17 125</span></span>
+<span id="cb145-12"><a href="1009-cochranarmitage.html#cb145-12" aria-hidden="true" tabindex="-1"></a><span class="do">##   200  16 104</span></span>
+<span id="cb145-13"><a href="1009-cochranarmitage.html#cb145-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   300  32 149</span></span>
+<span id="cb145-14"><a href="1009-cochranarmitage.html#cb145-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   500   9  45</span></span></code></pre></div>
+<p>首先可以计算一下不同药物剂量下的有效率是多少：</p>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="1009-cochranarmitage.html#cb146-1" aria-hidden="true" tabindex="-1"></a>df[,<span class="dv">1</span>]<span class="sc">/</span><span class="fu">rowSums</span>(df)</span>
+<span id="cb146-2"><a href="1009-cochranarmitage.html#cb146-2" aria-hidden="true" tabindex="-1"></a><span class="do">##         50        100        200        300        500 </span></span>
+<span id="cb146-3"><a href="1009-cochranarmitage.html#cb146-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.08724832 0.11971831 0.13333333 0.17679558 0.16666667</span></span></code></pre></div>
+<p>可以看到随着药物剂量增加，有效率整体也是增加的，下面使用CAM检验验证一下。</p>
+<p>使用<code>DescTools</code>包中的<code>CochranArmitageTest()</code>函数进行检验：</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="1009-cochranarmitage.html#cb147-1" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">CochranArmitageTest</span>(df)</span>
+<span id="cb147-2"><a href="1009-cochranarmitage.html#cb147-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb147-3"><a href="1009-cochranarmitage.html#cb147-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Cochran-Armitage test for trend</span></span>
+<span id="cb147-4"><a href="1009-cochranarmitage.html#cb147-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb147-5"><a href="1009-cochranarmitage.html#cb147-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  df</span></span>
+<span id="cb147-6"><a href="1009-cochranarmitage.html#cb147-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Z = 2.2116, dim = 5, p-value = 0.02699</span></span>
+<span id="cb147-7"><a href="1009-cochranarmitage.html#cb147-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: two.sided</span></span></code></pre></div>
+<p>结果显示P值为p-value = 0.02699，小于0.05，可以认为疗效会随着药物剂量增加而增加。</p>
+<p>现在的<code>df</code>是一个频数统计表类型的数据，我们可以把它变成每行一个患者的数据，然后进行logistic回归看看结果。</p>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="1009-cochranarmitage.html#cb148-1" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> rstatix<span class="sc">::</span><span class="fu">counts_to_cases</span>(df)</span>
+<span id="cb148-2"><a href="1009-cochranarmitage.html#cb148-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(df1)</span>
+<span id="cb148-3"><a href="1009-cochranarmitage.html#cb148-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     Dose effect</span></span>
+<span id="cb148-4"><a href="1009-cochranarmitage.html#cb148-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     50    Yes</span></span>
+<span id="cb148-5"><a href="1009-cochranarmitage.html#cb148-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     50    Yes</span></span>
+<span id="cb148-6"><a href="1009-cochranarmitage.html#cb148-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     50    Yes</span></span>
+<span id="cb148-7"><a href="1009-cochranarmitage.html#cb148-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     50    Yes</span></span>
+<span id="cb148-8"><a href="1009-cochranarmitage.html#cb148-8" aria-hidden="true" tabindex="-1"></a><span class="do">## ... &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span id="cb148-9"><a href="1009-cochranarmitage.html#cb148-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 643  500     No</span></span>
+<span id="cb148-10"><a href="1009-cochranarmitage.html#cb148-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 644  500     No</span></span>
+<span id="cb148-11"><a href="1009-cochranarmitage.html#cb148-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 645  500     No</span></span>
+<span id="cb148-12"><a href="1009-cochranarmitage.html#cb148-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 646  500     No</span></span></code></pre></div>
+<p>把<code>Dose</code>变成数值型：</p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="1009-cochranarmitage.html#cb149-1" aria-hidden="true" tabindex="-1"></a>df1<span class="sc">$</span>Dose <span class="ot">&lt;-</span>  <span class="fu">as.numeric</span>(<span class="fu">factor</span>(df1<span class="sc">$</span>Dose))</span>
+<span id="cb149-2"><a href="1009-cochranarmitage.html#cb149-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-3"><a href="1009-cochranarmitage.html#cb149-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">glm</span>(effect<span class="sc">~</span>Dose, <span class="at">data =</span> df1,<span class="at">family =</span> <span class="fu">binomial</span>()))</span>
+<span id="cb149-4"><a href="1009-cochranarmitage.html#cb149-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb149-5"><a href="1009-cochranarmitage.html#cb149-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb149-6"><a href="1009-cochranarmitage.html#cb149-6" aria-hidden="true" tabindex="-1"></a><span class="do">## glm(formula = effect ~ Dose, family = binomial(), data = df1)</span></span>
+<span id="cb149-7"><a href="1009-cochranarmitage.html#cb149-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb149-8"><a href="1009-cochranarmitage.html#cb149-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Deviance Residuals: </span></span>
+<span id="cb149-9"><a href="1009-cochranarmitage.html#cb149-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min       1Q   Median       3Q      Max  </span></span>
+<span id="cb149-10"><a href="1009-cochranarmitage.html#cb149-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -2.1762   0.4435   0.4912   0.6001   0.6616  </span></span>
+<span id="cb149-11"><a href="1009-cochranarmitage.html#cb149-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb149-12"><a href="1009-cochranarmitage.html#cb149-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb149-13"><a href="1009-cochranarmitage.html#cb149-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span id="cb149-14"><a href="1009-cochranarmitage.html#cb149-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  2.48493    0.29598   8.396   &lt;2e-16 ***</span></span>
+<span id="cb149-15"><a href="1009-cochranarmitage.html#cb149-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Dose        -0.21544    0.08985  -2.398   0.0165 *  </span></span>
+<span id="cb149-16"><a href="1009-cochranarmitage.html#cb149-16" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb149-17"><a href="1009-cochranarmitage.html#cb149-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb149-18"><a href="1009-cochranarmitage.html#cb149-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb149-19"><a href="1009-cochranarmitage.html#cb149-19" aria-hidden="true" tabindex="-1"></a><span class="do">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span id="cb149-20"><a href="1009-cochranarmitage.html#cb149-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb149-21"><a href="1009-cochranarmitage.html#cb149-21" aria-hidden="true" tabindex="-1"></a><span class="do">##     Null deviance: 510.57  on 645  degrees of freedom</span></span>
+<span id="cb149-22"><a href="1009-cochranarmitage.html#cb149-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual deviance: 504.71  on 644  degrees of freedom</span></span>
+<span id="cb149-23"><a href="1009-cochranarmitage.html#cb149-23" aria-hidden="true" tabindex="-1"></a><span class="do">## AIC: 508.71</span></span>
+<span id="cb149-24"><a href="1009-cochranarmitage.html#cb149-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb149-25"><a href="1009-cochranarmitage.html#cb149-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Fisher Scoring iterations: 4</span></span></code></pre></div>
+<p>logistic回归的结果也显示，剂量的P值是小于0.05的。</p>
+<p>下面是CMH检验的一个补充。</p>
+<p>默认的CMH检验只能进行3个变量的检验，<code>vcdExtra</code>中的<code>CMHtest()</code>可以进行两个变量的CMH检验。</p>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="1009-cochranarmitage.html#cb150-1" aria-hidden="true" tabindex="-1"></a>vcdExtra<span class="sc">::</span><span class="fu">CMHtest</span>(df, <span class="at">types =</span> <span class="st">&quot;cor&quot;</span>)</span>
+<span id="cb150-2"><a href="1009-cochranarmitage.html#cb150-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Cochran-Mantel-Haenszel Statistics for Dose by effect </span></span>
+<span id="cb150-3"><a href="1009-cochranarmitage.html#cb150-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb150-4"><a href="1009-cochranarmitage.html#cb150-4" aria-hidden="true" tabindex="-1"></a><span class="do">##           AltHypothesis  Chisq Df     Prob</span></span>
+<span id="cb150-5"><a href="1009-cochranarmitage.html#cb150-5" aria-hidden="true" tabindex="-1"></a><span class="do">## cor Nonzero correlation 5.8217  1 0.015829</span></span></code></pre></div>
+
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1008-mauchlytest.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1010-anovaattention.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

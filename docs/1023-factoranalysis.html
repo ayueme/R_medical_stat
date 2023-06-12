@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>23 R语言因子分析 | R语言实战医学统计</title>
+  <meta name="description" content="23 R语言因子分析 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="23 R语言因子分析 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="23 R语言因子分析 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="23 R语言因子分析 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="23 R语言因子分析 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1022-pca.html"/>
+<link rel="next" href="1024-rocbinomial.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,245 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="iurgsdh" class="section level1 hasAnchor" number="23">
+<h1><span class="header-section-number">23</span> R语言因子分析<a href="1023-factoranalysis.html#iurgsdh" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>因子分析可以看做是主成分分析的进一步扩展，主成分分析重点在综合原始变量的信息，而因子分析重在解释原始变量之间的关系。</p>
+<p>主成分并没有实际的意义，只是原始变量的线性组合，但是因子有明确的意义，是可以解释的。</p>
+<p>因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，<strong>KMO检验和Bartlett球形检验</strong>等，这里不再介绍。</p>
+<p>只有数据之间的相关性好，才有可能提炼出公共因子，建议大家相关性分析和两个检验不要忘记。</p>
+<div id="演示数据-1" class="section level2 hasAnchor" number="23.1">
+<h2><span class="header-section-number">23.1</span> 演示数据<a href="1023-factoranalysis.html#演示数据-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>数据来自于孙振球医学统计学第4版例22-2.</p>
+<p>某医院为了评价医疗工作质量，收集了三年的门诊人次、出院人数、病床利用率、病床周转次数、平均住院天数、治愈好转率、病死率、诊断符合率、抢救成功率9个指标，采用因子分析方法，探讨其综合评价体系。</p>
+<div class="sourceCode" id="cb407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb407-1"><a href="1023-factoranalysis.html#cb407-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="st">&quot;datasets/例22-02.sav&quot;</span>,<span class="at">to.data.frame =</span> T,</span>
+<span id="cb407-2"><a href="1023-factoranalysis.html#cb407-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">reencode =</span> <span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb407-3"><a href="1023-factoranalysis.html#cb407-3" aria-hidden="true" tabindex="-1"></a><span class="do">## re-encoding from utf-8</span></span>
+<span id="cb407-4"><a href="1023-factoranalysis.html#cb407-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;年&quot;</span>,<span class="st">&quot;月&quot;</span>,<span class="st">&quot;门诊人次&quot;</span>,<span class="st">&quot;出院人数&quot;</span>,<span class="st">&quot;病床利用率&quot;</span>,<span class="st">&quot;病床周转次数&quot;</span>,</span>
+<span id="cb407-5"><a href="1023-factoranalysis.html#cb407-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">&quot;平均住院天数&quot;</span>,<span class="st">&quot;治愈好转率&quot;</span>,<span class="st">&quot;病死率&quot;</span>,<span class="st">&quot;诊断符合率&quot;</span>,<span class="st">&quot;抢救成功率&quot;</span>)</span>
+<span id="cb407-6"><a href="1023-factoranalysis.html#cb407-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb407-7"><a href="1023-factoranalysis.html#cb407-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb407-8"><a href="1023-factoranalysis.html#cb407-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    36 obs. of  11 variables:</span></span>
+<span id="cb407-9"><a href="1023-factoranalysis.html#cb407-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 年          : num  1991 1991 1991 1991 1991 ...</span></span>
+<span id="cb407-10"><a href="1023-factoranalysis.html#cb407-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 月          : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb407-11"><a href="1023-factoranalysis.html#cb407-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 门诊人次    : num  4.34 3.45 4.38 4.18 4.32 4.13 4.57 4.31 4.06 4.43 ...</span></span>
+<span id="cb407-12"><a href="1023-factoranalysis.html#cb407-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 出院人数    : num  389 271 385 377 378 349 361 209 425 458 ...</span></span>
+<span id="cb407-13"><a href="1023-factoranalysis.html#cb407-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 病床利用率  : num  99.1 88.3 104 99.5 102 ...</span></span>
+<span id="cb407-14"><a href="1023-factoranalysis.html#cb407-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 病床周转次数: num  1.23 0.85 1.21 1.19 1.19 1.1 1.14 0.52 0.93 0.95 ...</span></span>
+<span id="cb407-15"><a href="1023-factoranalysis.html#cb407-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 平均住院天数: num  25.5 23.6 26.5 26.9 27.6 ...</span></span>
+<span id="cb407-16"><a href="1023-factoranalysis.html#cb407-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 治愈好转率  : num  93.2 94.3 92.5 93.9 93.2 ...</span></span>
+<span id="cb407-17"><a href="1023-factoranalysis.html#cb407-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 病死率      : num  3.56 2.44 4.02 2.92 1.99 4.38 2.73 3.65 3.09 4.21 ...</span></span>
+<span id="cb407-18"><a href="1023-factoranalysis.html#cb407-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 诊断符合率  : num  97.5 97.9 98.5 99.4 99.7 ...</span></span>
+<span id="cb407-19"><a href="1023-factoranalysis.html#cb407-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ 抢救成功率  : num  61.7 73.3 76.8 63.2 80 ...</span></span>
+<span id="cb407-20"><a href="1023-factoranalysis.html#cb407-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;variable.labels&quot;)= Named chr [1:11] &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...</span></span>
+<span id="cb407-21"><a href="1023-factoranalysis.html#cb407-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   ..- attr(*, &quot;names&quot;)= chr [1:11] &quot;....&quot; &quot;.·.&quot; &quot;.....˴.&quot; &quot;..Ժ....&quot; ...</span></span>
+<span id="cb407-22"><a href="1023-factoranalysis.html#cb407-22" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(df)</span>
+<span id="cb407-23"><a href="1023-factoranalysis.html#cb407-23" aria-hidden="true" tabindex="-1"></a><span class="do">##       年  月 门诊人次 出院人数 病床利用率 病床周转次数 平均住院天数 治愈好转率</span></span>
+<span id="cb407-24"><a href="1023-factoranalysis.html#cb407-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   1991   1     4.34      389      99.06         1.23        25.46      93.15</span></span>
+<span id="cb407-25"><a href="1023-factoranalysis.html#cb407-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   1991   2     3.45      271      88.28         0.85        23.55      94.31</span></span>
+<span id="cb407-26"><a href="1023-factoranalysis.html#cb407-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 3   1991   3     4.38      385     103.97         1.21        26.54      92.53</span></span>
+<span id="cb407-27"><a href="1023-factoranalysis.html#cb407-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 4   1991   4     4.18      377      99.48         1.19        26.89      93.86</span></span>
+<span id="cb407-28"><a href="1023-factoranalysis.html#cb407-28" aria-hidden="true" tabindex="-1"></a><span class="do">## ...  ... ...      ...      ...        ...          ...          ...        ...</span></span>
+<span id="cb407-29"><a href="1023-factoranalysis.html#cb407-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 33  1993   9      3.9      555      80.58          1.1        23.08      94.38</span></span>
+<span id="cb407-30"><a href="1023-factoranalysis.html#cb407-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 34  1993  10     3.62      554      87.21          1.1         22.5      92.43</span></span>
+<span id="cb407-31"><a href="1023-factoranalysis.html#cb407-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 35  1993  11     3.75      586      90.31         1.12        23.73      92.47</span></span>
+<span id="cb407-32"><a href="1023-factoranalysis.html#cb407-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 36  1993  12     3.77      627      86.47         1.24        23.22      91.17</span></span>
+<span id="cb407-33"><a href="1023-factoranalysis.html#cb407-33" aria-hidden="true" tabindex="-1"></a><span class="do">##     病死率 诊断符合率 抢救成功率</span></span>
+<span id="cb407-34"><a href="1023-factoranalysis.html#cb407-34" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     3.56      97.51      61.66</span></span>
+<span id="cb407-35"><a href="1023-factoranalysis.html#cb407-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     2.44      97.94      73.33</span></span>
+<span id="cb407-36"><a href="1023-factoranalysis.html#cb407-36" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     4.02      98.48      76.79</span></span>
+<span id="cb407-37"><a href="1023-factoranalysis.html#cb407-37" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     2.92      99.41      63.16</span></span>
+<span id="cb407-38"><a href="1023-factoranalysis.html#cb407-38" aria-hidden="true" tabindex="-1"></a><span class="do">## ...    ...        ...        ...</span></span>
+<span id="cb407-39"><a href="1023-factoranalysis.html#cb407-39" aria-hidden="true" tabindex="-1"></a><span class="do">## 33    2.06      96.82      91.79</span></span>
+<span id="cb407-40"><a href="1023-factoranalysis.html#cb407-40" aria-hidden="true" tabindex="-1"></a><span class="do">## 34    3.22      97.16      87.77</span></span>
+<span id="cb407-41"><a href="1023-factoranalysis.html#cb407-41" aria-hidden="true" tabindex="-1"></a><span class="do">## 35    2.07      97.74      93.89</span></span>
+<span id="cb407-42"><a href="1023-factoranalysis.html#cb407-42" aria-hidden="true" tabindex="-1"></a><span class="do">## 36     3.4      98.98       89.8</span></span></code></pre></div>
+</div>
+<div id="判断需要提取的因子个数" class="section level2 hasAnchor" number="23.2">
+<h2><span class="header-section-number">23.2</span> 判断需要提取的因子个数<a href="1023-factoranalysis.html#判断需要提取的因子个数" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>R中自带了<code>factanal()</code>进行因子分析，不过不如<code>psych</code>包好用，我们这里使用<code>psych</code>包演示。</p>
+<div class="sourceCode" id="cb408"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb408-1"><a href="1023-factoranalysis.html#cb408-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 只用后面9列数据</span></span>
+<span id="cb408-2"><a href="1023-factoranalysis.html#cb408-2" aria-hidden="true" tabindex="-1"></a>df.use <span class="ot">&lt;-</span> df[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</span>
+<span id="cb408-3"><a href="1023-factoranalysis.html#cb408-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb408-4"><a href="1023-factoranalysis.html#cb408-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb408-5"><a href="1023-factoranalysis.html#cb408-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb408-6"><a href="1023-factoranalysis.html#cb408-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 碎石图</span></span>
+<span id="cb408-7"><a href="1023-factoranalysis.html#cb408-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.parallel</span>(df.use, <span class="at">fa =</span> <span class="st">&quot;both&quot;</span>,<span class="at">fm=</span><span class="st">&quot;ml&quot;</span>)</span></code></pre></div>
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<pre><code>## Parallel analysis suggests that the number of factors =  2  and the number of components =  2</code></pre>
+<p>通过参数<code>fa = "both"</code>同时给出了PCA和因子分析的碎石图，根据因子分析碎石图的结果，建议我们提取3个因子。</p>
+<p>但是提取几个因子并没有绝对的标准，我们可以结合多种方法或专业知识，和提取主成分的方法类似，可以参考之前的介绍的方法：<a href="https://mp.weixin.qq.com/s/B_RD4pAemEE7pHkr2VfDwA">R语言主成分分析</a></p>
+<p>除此之外，还可以结合特征值大小、累计贡献率来确定使用几个因子。</p>
+<p>下面我们首先用9个因子进行因子分析，看看结果再说。</p>
+<p><code>rotate</code>参数确定旋转方法，有多种不同的选择，比如不旋转、正交旋转法（比如最大方差法）、斜交旋转法等，</p>
+<p><code>fm</code>参数选择因子计算方法，比如最大似然法ml、主轴迭代法pa、加权最小二乘wls、广义加权最小二乘gls、最小残差minres，等。</p>
+<div class="sourceCode" id="cb410"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb410-1"><a href="1023-factoranalysis.html#cb410-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行因子分析，首先9个因子用一下看看结果再说，最大似然法，不旋转</span></span>
+<span id="cb410-2"><a href="1023-factoranalysis.html#cb410-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">9</span>, <span class="at">rotate =</span> <span class="st">&quot;none&quot;</span>, <span class="at">fm=</span><span class="st">&quot;ml&quot;</span>)</span>
+<span id="cb410-3"><a href="1023-factoranalysis.html#cb410-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb410-4"><a href="1023-factoranalysis.html#cb410-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
+<span id="cb410-5"><a href="1023-factoranalysis.html#cb410-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 9, rotate = &quot;none&quot;, fm = &quot;ml&quot;)</span></span>
+<span id="cb410-6"><a href="1023-factoranalysis.html#cb410-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb410-7"><a href="1023-factoranalysis.html#cb410-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML1   ML2   ML3   ML4   ML5   ML6 ML7 ML8 ML9   h2   u2 com</span></span>
+<span id="cb410-8"><a href="1023-factoranalysis.html#cb410-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次      0.14  0.68  0.09  0.37 -0.06 -0.03   0   0   0 0.63 0.37 1.7</span></span>
+<span id="cb410-9"><a href="1023-factoranalysis.html#cb410-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.68 -0.30  0.19  0.32  0.06  0.03   0   0   0 0.69 0.31 2.1</span></span>
+<span id="cb410-10"><a href="1023-factoranalysis.html#cb410-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率    0.58  0.52 -0.09 -0.31  0.04  0.05   0   0   0 0.71 0.29 2.6</span></span>
+<span id="cb410-11"><a href="1023-factoranalysis.html#cb410-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.90  0.20 -0.01 -0.01  0.01 -0.01   0   0   0 0.85 0.15 1.1</span></span>
+<span id="cb410-12"><a href="1023-factoranalysis.html#cb410-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.53  0.43  0.38  0.05  0.02  0.09   0   0   0 0.62 0.38 2.9</span></span>
+<span id="cb410-13"><a href="1023-factoranalysis.html#cb410-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率   -0.03 -0.07  0.69 -0.18  0.13 -0.02   0   0   0 0.53 0.47 1.2</span></span>
+<span id="cb410-14"><a href="1023-factoranalysis.html#cb410-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.33  0.08 -0.46  0.18  0.24  0.09   0   0   0 0.42 0.58 2.9</span></span>
+<span id="cb410-15"><a href="1023-factoranalysis.html#cb410-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.31  0.54  0.02  0.02 -0.15  0.07   0   0   0 0.41 0.59 1.8</span></span>
+<span id="cb410-16"><a href="1023-factoranalysis.html#cb410-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.41 -0.64  0.07 -0.03 -0.12  0.10   0   0   0 0.60 0.40 1.9</span></span>
+<span id="cb410-17"><a href="1023-factoranalysis.html#cb410-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb410-18"><a href="1023-factoranalysis.html#cb410-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML1  ML2  ML3  ML4  ML5  ML6  ML7  ML8  ML9</span></span>
+<span id="cb410-19"><a href="1023-factoranalysis.html#cb410-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.27 1.75 0.89 0.40 0.12 0.04 0.00 0.00 0.00</span></span>
+<span id="cb410-20"><a href="1023-factoranalysis.html#cb410-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.25 0.19 0.10 0.04 0.01 0.00 0.00 0.00 0.00</span></span>
+<span id="cb410-21"><a href="1023-factoranalysis.html#cb410-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.25 0.45 0.55 0.59 0.60 0.61 0.61 0.61 0.61</span></span>
+<span id="cb410-22"><a href="1023-factoranalysis.html#cb410-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.41 0.32 0.16 0.07 0.02 0.01 0.00 0.00 0.00</span></span>
+<span id="cb410-23"><a href="1023-factoranalysis.html#cb410-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.41 0.74 0.90 0.97 0.99 1.00 1.00 1.00 1.00</span></span>
+<span id="cb410-24"><a href="1023-factoranalysis.html#cb410-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb410-25"><a href="1023-factoranalysis.html#cb410-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  2</span></span>
+<span id="cb410-26"><a href="1023-factoranalysis.html#cb410-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 9 factors are sufficient.</span></span>
+<span id="cb410-27"><a href="1023-factoranalysis.html#cb410-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb410-28"><a href="1023-factoranalysis.html#cb410-28" aria-hidden="true" tabindex="-1"></a><span class="do">## The degrees of freedom for the null model are  36  and the objective function was  3.82 with Chi Square of  119.03</span></span>
+<span id="cb410-29"><a href="1023-factoranalysis.html#cb410-29" aria-hidden="true" tabindex="-1"></a><span class="do">## The degrees of freedom for the model are -9  and the objective function was  0.46 </span></span>
+<span id="cb410-30"><a href="1023-factoranalysis.html#cb410-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb410-31"><a href="1023-factoranalysis.html#cb410-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span id="cb410-32"><a href="1023-factoranalysis.html#cb410-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  NA </span></span>
+<span id="cb410-33"><a href="1023-factoranalysis.html#cb410-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb410-34"><a href="1023-factoranalysis.html#cb410-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic number of observations is  36 with the empirical chi square  3.42  with prob &lt;  NA </span></span>
+<span id="cb410-35"><a href="1023-factoranalysis.html#cb410-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total number of observations was  36  with Likelihood Chi Square =  11.69  with prob &lt;  NA </span></span>
+<span id="cb410-36"><a href="1023-factoranalysis.html#cb410-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb410-37"><a href="1023-factoranalysis.html#cb410-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  2.377</span></span>
+<span id="cb410-38"><a href="1023-factoranalysis.html#cb410-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
+<span id="cb410-39"><a href="1023-factoranalysis.html#cb410-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
+<span id="cb410-40"><a href="1023-factoranalysis.html#cb410-40" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML1  ML2  ML3   ML4   ML5</span></span>
+<span id="cb410-41"><a href="1023-factoranalysis.html#cb410-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   0.94 0.90 0.79  0.70  0.42</span></span>
+<span id="cb410-42"><a href="1023-factoranalysis.html#cb410-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.88 0.80 0.63  0.50  0.18</span></span>
+<span id="cb410-43"><a href="1023-factoranalysis.html#cb410-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.77 0.61 0.26 -0.01 -0.65</span></span>
+<span id="cb410-44"><a href="1023-factoranalysis.html#cb410-44" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                     ML6 ML7 ML8 ML9</span></span>
+<span id="cb410-45"><a href="1023-factoranalysis.html#cb410-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors    0.26   0   0   0</span></span>
+<span id="cb410-46"><a href="1023-factoranalysis.html#cb410-46" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors           0.07   0   0   0</span></span>
+<span id="cb410-47"><a href="1023-factoranalysis.html#cb410-47" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     -0.86  -1  -1  -1</span></span></code></pre></div>
+<p>h2是公因子方差，表示因子对每个变量的解释度，u2=1-h2，表示不能被因子解释的比例。</p>
+<p>看结果中的<code>Cumulative Var</code>，累积方差解释，可以看到在使用3个因子时，累计贡献度是0.55,4个因子是0.59，结合碎石图，我们选择用4个因子。</p>
+</div>
+<div id="进行因子分析" class="section level2 hasAnchor" number="23.3">
+<h2><span class="header-section-number">23.3</span> 进行因子分析<a href="1023-factoranalysis.html#进行因子分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>选择4个因子</p>
+<div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="1023-factoranalysis.html#cb411-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，不旋转，最大似然法</span></span>
+<span id="cb411-2"><a href="1023-factoranalysis.html#cb411-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">&quot;none&quot;</span>, <span class="at">fm=</span><span class="st">&quot;ml&quot;</span>)</span>
+<span id="cb411-3"><a href="1023-factoranalysis.html#cb411-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb411-4"><a href="1023-factoranalysis.html#cb411-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
+<span id="cb411-5"><a href="1023-factoranalysis.html#cb411-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = &quot;none&quot;, fm = &quot;ml&quot;)</span></span>
+<span id="cb411-6"><a href="1023-factoranalysis.html#cb411-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb411-7"><a href="1023-factoranalysis.html#cb411-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
+<span id="cb411-8"><a href="1023-factoranalysis.html#cb411-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次      0.61  0.78  0.11 -0.01 1.00 0.005 1.9</span></span>
+<span id="cb411-9"><a href="1023-factoranalysis.html#cb411-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数     -0.40  0.31  0.34 -0.59 0.72 0.276 3.1</span></span>
+<span id="cb411-10"><a href="1023-factoranalysis.html#cb411-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率   -0.30  0.56  0.25  0.49 0.71 0.289 2.9</span></span>
+<span id="cb411-11"><a href="1023-factoranalysis.html#cb411-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数 -0.55  0.75  0.35  0.01 1.00 0.005 2.3</span></span>
+<span id="cb411-12"><a href="1023-factoranalysis.html#cb411-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数  0.67 -0.13  0.16  0.26 0.57 0.435 1.5</span></span>
+<span id="cb411-13"><a href="1023-factoranalysis.html#cb411-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率    0.15 -0.39  0.91  0.00 1.00 0.005 1.4</span></span>
+<span id="cb411-14"><a href="1023-factoranalysis.html#cb411-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率        0.14 -0.07 -0.47  0.10 0.26 0.743 1.3</span></span>
+<span id="cb411-15"><a href="1023-factoranalysis.html#cb411-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率    0.45  0.11 -0.10  0.36 0.36 0.642 2.2</span></span>
+<span id="cb411-16"><a href="1023-factoranalysis.html#cb411-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率   -0.56 -0.12  0.05 -0.46 0.55 0.455 2.1</span></span>
+<span id="cb411-17"><a href="1023-factoranalysis.html#cb411-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb411-18"><a href="1023-factoranalysis.html#cb411-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML3  ML1  ML2  ML4</span></span>
+<span id="cb411-19"><a href="1023-factoranalysis.html#cb411-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           1.94 1.79 1.40 1.02</span></span>
+<span id="cb411-20"><a href="1023-factoranalysis.html#cb411-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.22 0.20 0.16 0.11</span></span>
+<span id="cb411-21"><a href="1023-factoranalysis.html#cb411-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.22 0.41 0.57 0.68</span></span>
+<span id="cb411-22"><a href="1023-factoranalysis.html#cb411-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.32 0.29 0.23 0.17</span></span>
+<span id="cb411-23"><a href="1023-factoranalysis.html#cb411-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.32 0.61 0.83 1.00</span></span>
+<span id="cb411-24"><a href="1023-factoranalysis.html#cb411-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb411-25"><a href="1023-factoranalysis.html#cb411-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  2.1</span></span>
+<span id="cb411-26"><a href="1023-factoranalysis.html#cb411-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span id="cb411-27"><a href="1023-factoranalysis.html#cb411-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb411-28"><a href="1023-factoranalysis.html#cb411-28" aria-hidden="true" tabindex="-1"></a><span class="do">## The degrees of freedom for the null model are  36  and the objective function was  3.82 with Chi Square of  119.03</span></span>
+<span id="cb411-29"><a href="1023-factoranalysis.html#cb411-29" aria-hidden="true" tabindex="-1"></a><span class="do">## The degrees of freedom for the model are 6  and the objective function was  0.24 </span></span>
+<span id="cb411-30"><a href="1023-factoranalysis.html#cb411-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb411-31"><a href="1023-factoranalysis.html#cb411-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span id="cb411-32"><a href="1023-factoranalysis.html#cb411-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.09 </span></span>
+<span id="cb411-33"><a href="1023-factoranalysis.html#cb411-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb411-34"><a href="1023-factoranalysis.html#cb411-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic number of observations is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
+<span id="cb411-35"><a href="1023-factoranalysis.html#cb411-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total number of observations was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
+<span id="cb411-36"><a href="1023-factoranalysis.html#cb411-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb411-37"><a href="1023-factoranalysis.html#cb411-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
+<span id="cb411-38"><a href="1023-factoranalysis.html#cb411-38" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
+<span id="cb411-39"><a href="1023-factoranalysis.html#cb411-39" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -14.67</span></span>
+<span id="cb411-40"><a href="1023-factoranalysis.html#cb411-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
+<span id="cb411-41"><a href="1023-factoranalysis.html#cb411-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
+<span id="cb411-42"><a href="1023-factoranalysis.html#cb411-42" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML3  ML1  ML2  ML4</span></span>
+<span id="cb411-43"><a href="1023-factoranalysis.html#cb411-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   1.00 1.00 1.00 0.87</span></span>
+<span id="cb411-44"><a href="1023-factoranalysis.html#cb411-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.99 1.00 0.99 0.75</span></span>
+<span id="cb411-45"><a href="1023-factoranalysis.html#cb411-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.99 0.99 0.99 0.50</span></span></code></pre></div>
+<p>选择4个因子，最终的累积方差解释是0.68，再看因子载荷矩阵，因子1（ML1）在病床周转、门诊人次、病床利用率等具有较高的载荷，因子2在治愈好转率方面具有很大的载荷，因子3在门诊人次，平均住院天数、抢救成功率具有较高的载荷，因子4在出院人数具有较高的载荷。</p>
+<p>从专业角度来看，并没有发现什么规律，好像不能很好的解释专业意义。</p>
+<p>所以我们需要进行因子旋转！</p>
+</div>
+<div id="因子旋转" class="section level2 hasAnchor" number="23.4">
+<h2><span class="header-section-number">23.4</span> 因子旋转<a href="1023-factoranalysis.html#因子旋转" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>通过因子旋转我们可以更容易找到内在规律，使得结果更加容易结合专业背景进行解释。</p>
+<div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="1023-factoranalysis.html#cb412-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，最大方差旋转，最大似然法</span></span>
+<span id="cb412-2"><a href="1023-factoranalysis.html#cb412-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">&quot;varimax&quot;</span>, <span class="at">fm=</span><span class="st">&quot;ml&quot;</span>)</span>
+<span id="cb412-3"><a href="1023-factoranalysis.html#cb412-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb412-4"><a href="1023-factoranalysis.html#cb412-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
+<span id="cb412-5"><a href="1023-factoranalysis.html#cb412-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = &quot;varimax&quot;, fm = &quot;ml&quot;)</span></span>
+<span id="cb412-6"><a href="1023-factoranalysis.html#cb412-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb412-7"><a href="1023-factoranalysis.html#cb412-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
+<span id="cb412-8"><a href="1023-factoranalysis.html#cb412-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次     -0.31  0.23 -0.03  0.92 1.00 0.005 1.4</span></span>
+<span id="cb412-9"><a href="1023-factoranalysis.html#cb412-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.75  0.16  0.24  0.27 0.72 0.276 1.6</span></span>
+<span id="cb412-10"><a href="1023-factoranalysis.html#cb412-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率   -0.10  0.83  0.03  0.07 0.71 0.289 1.0</span></span>
+<span id="cb412-11"><a href="1023-factoranalysis.html#cb412-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.46  0.84  0.09  0.26 1.00 0.005 1.8</span></span>
+<span id="cb412-12"><a href="1023-factoranalysis.html#cb412-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.64 -0.23  0.24  0.21 0.57 0.435 1.8</span></span>
+<span id="cb412-13"><a href="1023-factoranalysis.html#cb412-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率   -0.09 -0.09  0.98 -0.10 1.00 0.005 1.1</span></span>
+<span id="cb412-14"><a href="1023-factoranalysis.html#cb412-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.20 -0.18 -0.42 -0.06 0.26 0.743 1.9</span></span>
+<span id="cb412-15"><a href="1023-factoranalysis.html#cb412-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.56  0.02 -0.10  0.18 0.36 0.642 1.3</span></span>
+<span id="cb412-16"><a href="1023-factoranalysis.html#cb412-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.70 -0.04  0.04 -0.21 0.55 0.455 1.2</span></span>
+<span id="cb412-17"><a href="1023-factoranalysis.html#cb412-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb412-18"><a href="1023-factoranalysis.html#cb412-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML3  ML1  ML2  ML4</span></span>
+<span id="cb412-19"><a href="1023-factoranalysis.html#cb412-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.15 1.58 1.29 1.12</span></span>
+<span id="cb412-20"><a href="1023-factoranalysis.html#cb412-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.24 0.18 0.14 0.12</span></span>
+<span id="cb412-21"><a href="1023-factoranalysis.html#cb412-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.24 0.41 0.56 0.68</span></span>
+<span id="cb412-22"><a href="1023-factoranalysis.html#cb412-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.35 0.26 0.21 0.18</span></span>
+<span id="cb412-23"><a href="1023-factoranalysis.html#cb412-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.35 0.61 0.82 1.00</span></span>
+<span id="cb412-24"><a href="1023-factoranalysis.html#cb412-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb412-25"><a href="1023-factoranalysis.html#cb412-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  1.4</span></span>
+<span id="cb412-26"><a href="1023-factoranalysis.html#cb412-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span id="cb412-27"><a href="1023-factoranalysis.html#cb412-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb412-28"><a href="1023-factoranalysis.html#cb412-28" aria-hidden="true" tabindex="-1"></a><span class="do">## The degrees of freedom for the null model are  36  and the objective function was  3.82 with Chi Square of  119.03</span></span>
+<span id="cb412-29"><a href="1023-factoranalysis.html#cb412-29" aria-hidden="true" tabindex="-1"></a><span class="do">## The degrees of freedom for the model are 6  and the objective function was  0.24 </span></span>
+<span id="cb412-30"><a href="1023-factoranalysis.html#cb412-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb412-31"><a href="1023-factoranalysis.html#cb412-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span id="cb412-32"><a href="1023-factoranalysis.html#cb412-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.09 </span></span>
+<span id="cb412-33"><a href="1023-factoranalysis.html#cb412-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb412-34"><a href="1023-factoranalysis.html#cb412-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic number of observations is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
+<span id="cb412-35"><a href="1023-factoranalysis.html#cb412-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total number of observations was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
+<span id="cb412-36"><a href="1023-factoranalysis.html#cb412-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb412-37"><a href="1023-factoranalysis.html#cb412-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
+<span id="cb412-38"><a href="1023-factoranalysis.html#cb412-38" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
+<span id="cb412-39"><a href="1023-factoranalysis.html#cb412-39" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -14.67</span></span>
+<span id="cb412-40"><a href="1023-factoranalysis.html#cb412-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
+<span id="cb412-41"><a href="1023-factoranalysis.html#cb412-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
+<span id="cb412-42"><a href="1023-factoranalysis.html#cb412-42" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML3  ML1  ML2  ML4</span></span>
+<span id="cb412-43"><a href="1023-factoranalysis.html#cb412-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   0.93 0.96 1.00 0.98</span></span>
+<span id="cb412-44"><a href="1023-factoranalysis.html#cb412-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.86 0.92 0.99 0.96</span></span>
+<span id="cb412-45"><a href="1023-factoranalysis.html#cb412-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.72 0.85 0.99 0.91</span></span></code></pre></div>
+<p>此时我们再看因子载荷阵，因子3在门诊人次、出院人数、病床周转、平均住院天数、诊断符合率、抢救成功率等多个指标上具有较大的载荷，因子2在治愈好转率、病死率上载荷最大，因子1在病床利用率、病床周转率这两个指标上载荷最高，因子4在门诊人次、出院人数这两个指标的载荷最大。</p>
+<p>因此可以认为因子3反映了反映了医疗工作质量各个方面的情况，称为综合因子；因子1反应病床利用情况，可以成为病床利用因子；因子2反映了医疗水平，称为水平因子；因子4反应了就诊患者数量，称为数量因子。</p>
+<p>可以把结果可视化：</p>
+<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="1023-factoranalysis.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.diagram</span>(fa.res)</span></code></pre></div>
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="1023-factoranalysis.html#cb414-1" aria-hidden="true" tabindex="-1"></a><span class="fu">factor.plot</span>(fa.res)</span></code></pre></div>
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>关于因子分析，我并没有找到好用的可视化R包，如果大家知道，欢迎评论区留言。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1022-pca.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1024-rocbinomial.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

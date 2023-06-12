@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>17 多元线性回归 | R语言实战医学统计</title>
+  <meta name="description" content="17 多元线性回归 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="17 多元线性回归 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="17 多元线性回归 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="17 多元线性回归 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="17 多元线性回归 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1016-piancorrelation.html"/>
+<link rel="next" href="1018-logistic.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,278 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="raljflksdj" class="section level1 hasAnchor" number="17">
+<h1><span class="header-section-number">17</span> 多元线性回归<a href="1017-multiregression.html#raljflksdj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="多元线性回归" class="section level2 hasAnchor" number="17.1">
+<h2><span class="header-section-number">17.1</span> 多元线性回归<a href="1017-multiregression.html#多元线性回归" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例15-1</strong>的数据，手动摘录：</p>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="1017-multiregression.html#cb253-1" aria-hidden="true" tabindex="-1"></a>df15_1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb253-2"><a href="1017-multiregression.html#cb253-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cho =</span> <span class="fu">c</span>(<span class="fl">5.68</span>,<span class="fl">3.79</span>,<span class="fl">6.02</span>,<span class="fl">4.85</span>,<span class="fl">4.60</span>,<span class="fl">6.05</span>,<span class="fl">4.90</span>,<span class="fl">7.08</span>,<span class="fl">3.85</span>,<span class="fl">4.65</span>,<span class="fl">4.59</span>,<span class="fl">4.29</span>,<span class="fl">7.97</span>,</span>
+<span id="cb253-3"><a href="1017-multiregression.html#cb253-3" aria-hidden="true" tabindex="-1"></a>      <span class="fl">6.19</span>,<span class="fl">6.13</span>,<span class="fl">5.71</span>,<span class="fl">6.40</span>,<span class="fl">6.06</span>,<span class="fl">5.09</span>,<span class="fl">6.13</span>,<span class="fl">5.78</span>,<span class="fl">5.43</span>,<span class="fl">6.50</span>,<span class="fl">7.98</span>,<span class="fl">11.54</span>,<span class="fl">5.84</span>,</span>
+<span id="cb253-4"><a href="1017-multiregression.html#cb253-4" aria-hidden="true" tabindex="-1"></a>      <span class="fl">3.84</span>),</span>
+<span id="cb253-5"><a href="1017-multiregression.html#cb253-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">tg =</span> <span class="fu">c</span>(<span class="fl">1.90</span>,<span class="fl">1.64</span>,<span class="fl">3.56</span>,<span class="fl">1.07</span>,<span class="fl">2.32</span>,<span class="fl">0.64</span>,<span class="fl">8.50</span>,<span class="fl">3.00</span>,<span class="fl">2.11</span>,<span class="fl">0.63</span>,<span class="fl">1.97</span>,<span class="fl">1.97</span>,<span class="fl">1.93</span>,</span>
+<span id="cb253-6"><a href="1017-multiregression.html#cb253-6" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1.18</span>,<span class="fl">2.06</span>,<span class="fl">1.78</span>,<span class="fl">2.40</span>,<span class="fl">3.67</span>,<span class="fl">1.03</span>,<span class="fl">1.71</span>,<span class="fl">3.36</span>,<span class="fl">1.13</span>,<span class="fl">6.21</span>,<span class="fl">7.92</span>,<span class="fl">10.89</span>,<span class="fl">0.92</span>,</span>
+<span id="cb253-7"><a href="1017-multiregression.html#cb253-7" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1.20</span>),</span>
+<span id="cb253-8"><a href="1017-multiregression.html#cb253-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">ri =</span> <span class="fu">c</span>(<span class="fl">4.53</span>, <span class="fl">7.32</span>,<span class="fl">6.95</span>,<span class="fl">5.88</span>,<span class="fl">4.05</span>,<span class="fl">1.42</span>,<span class="fl">12.60</span>,<span class="fl">6.75</span>,<span class="fl">16.28</span>,<span class="fl">6.59</span>,<span class="fl">3.61</span>,<span class="fl">6.61</span>,<span class="fl">7.57</span>,</span>
+<span id="cb253-9"><a href="1017-multiregression.html#cb253-9" aria-hidden="true" tabindex="-1"></a>      <span class="fl">1.42</span>,<span class="fl">10.35</span>,<span class="fl">8.53</span>,<span class="fl">4.53</span>,<span class="fl">12.79</span>,<span class="fl">2.53</span>,<span class="fl">5.28</span>,<span class="fl">2.96</span>,<span class="fl">4.31</span>,<span class="fl">3.47</span>,<span class="fl">3.37</span>,<span class="fl">1.20</span>,<span class="fl">8.61</span>,</span>
+<span id="cb253-10"><a href="1017-multiregression.html#cb253-10" aria-hidden="true" tabindex="-1"></a>      <span class="fl">6.45</span>),</span>
+<span id="cb253-11"><a href="1017-multiregression.html#cb253-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">hba =</span> <span class="fu">c</span>(<span class="fl">8.2</span>,<span class="fl">6.9</span>,<span class="fl">10.8</span>,<span class="fl">8.3</span>,<span class="fl">7.5</span>,<span class="fl">13.6</span>,<span class="fl">8.5</span>,<span class="fl">11.5</span>,<span class="fl">7.9</span>,<span class="fl">7.1</span>,<span class="fl">8.7</span>,<span class="fl">7.8</span>,<span class="fl">9.9</span>,<span class="fl">6.9</span>,<span class="fl">10.5</span>,<span class="fl">8.0</span>,</span>
+<span id="cb253-12"><a href="1017-multiregression.html#cb253-12" aria-hidden="true" tabindex="-1"></a>      <span class="fl">10.3</span>,<span class="fl">7.1</span>,<span class="fl">8.9</span>,<span class="fl">9.9</span>,<span class="fl">8.0</span>,<span class="fl">11.3</span>,<span class="fl">12.3</span>,<span class="fl">9.8</span>,<span class="fl">10.5</span>,<span class="fl">6.4</span>,<span class="fl">9.6</span>),</span>
+<span id="cb253-13"><a href="1017-multiregression.html#cb253-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fpg =</span> <span class="fu">c</span>(<span class="fl">11.2</span>,<span class="fl">8.8</span>,<span class="fl">12.3</span>,<span class="fl">11.6</span>,<span class="fl">13.4</span>,<span class="fl">18.3</span>,<span class="fl">11.1</span>,<span class="fl">12.1</span>,<span class="fl">9.6</span>,<span class="fl">8.4</span>,<span class="fl">9.3</span>,<span class="fl">10.6</span>,<span class="fl">8.4</span>,<span class="fl">9.6</span>,<span class="fl">10.9</span>,</span>
+<span id="cb253-14"><a href="1017-multiregression.html#cb253-14" aria-hidden="true" tabindex="-1"></a>     <span class="fl">10.1</span>,<span class="fl">14.8</span>,<span class="fl">9.1</span>,<span class="fl">10.8</span>,<span class="fl">10.2</span>,<span class="fl">13.6</span>,<span class="fl">14.9</span>,<span class="fl">16.0</span>,<span class="fl">13.2</span>,<span class="fl">20.0</span>,<span class="fl">13.3</span>,<span class="fl">10.4</span>)</span>
+<span id="cb253-15"><a href="1017-multiregression.html#cb253-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb253-16"><a href="1017-multiregression.html#cb253-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb253-17"><a href="1017-multiregression.html#cb253-17" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df15_1)</span>
+<span id="cb253-18"><a href="1017-multiregression.html#cb253-18" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    27 obs. of  5 variables:</span></span>
+<span id="cb253-19"><a href="1017-multiregression.html#cb253-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ cho: num  5.68 3.79 6.02 4.85 4.6 6.05 4.9 7.08 3.85 4.65 ...</span></span>
+<span id="cb253-20"><a href="1017-multiregression.html#cb253-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ tg : num  1.9 1.64 3.56 1.07 2.32 0.64 8.5 3 2.11 0.63 ...</span></span>
+<span id="cb253-21"><a href="1017-multiregression.html#cb253-21" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ri : num  4.53 7.32 6.95 5.88 4.05 ...</span></span>
+<span id="cb253-22"><a href="1017-multiregression.html#cb253-22" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ hba: num  8.2 6.9 10.8 8.3 7.5 13.6 8.5 11.5 7.9 7.1 ...</span></span>
+<span id="cb253-23"><a href="1017-multiregression.html#cb253-23" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ fpg: num  11.2 8.8 12.3 11.6 13.4 18.3 11.1 12.1 9.6 8.4 ...</span></span>
+<span id="cb253-24"><a href="1017-multiregression.html#cb253-24" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df15_1)</span>
+<span id="cb253-25"><a href="1017-multiregression.html#cb253-25" aria-hidden="true" tabindex="-1"></a><span class="do">##    cho   tg   ri  hba  fpg</span></span>
+<span id="cb253-26"><a href="1017-multiregression.html#cb253-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 5.68 1.90 4.53  8.2 11.2</span></span>
+<span id="cb253-27"><a href="1017-multiregression.html#cb253-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 3.79 1.64 7.32  6.9  8.8</span></span>
+<span id="cb253-28"><a href="1017-multiregression.html#cb253-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 6.02 3.56 6.95 10.8 12.3</span></span>
+<span id="cb253-29"><a href="1017-multiregression.html#cb253-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 4.85 1.07 5.88  8.3 11.6</span></span>
+<span id="cb253-30"><a href="1017-multiregression.html#cb253-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 4.60 2.32 4.05  7.5 13.4</span></span>
+<span id="cb253-31"><a href="1017-multiregression.html#cb253-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 6.05 0.64 1.42 13.6 18.3</span></span></code></pre></div>
+<p>数据一共5列，第1列是总胆固醇，第2列是甘油三酯，第3列是胰岛素，第4列是糖化血红蛋白，第5列是空腹血糖（因变量）。</p>
+<p>在建立回归方程前，先简单探索下数据：</p>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="1017-multiregression.html#cb254-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb254-2"><a href="1017-multiregression.html#cb254-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: ggplot2</span></span>
+<span id="cb254-3"><a href="1017-multiregression.html#cb254-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</span></span>
+<span id="cb254-4"><a href="1017-multiregression.html#cb254-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Registered S3 method overwritten by &#39;GGally&#39;:</span></span>
+<span id="cb254-5"><a href="1017-multiregression.html#cb254-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   method from   </span></span>
+<span id="cb254-6"><a href="1017-multiregression.html#cb254-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   +.gg   ggplot2</span></span>
+<span id="cb254-7"><a href="1017-multiregression.html#cb254-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb254-8"><a href="1017-multiregression.html#cb254-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(df15_1) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="1017-multiregression_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>从这幅图来看，血糖和糖化血红蛋白相关性最大，和甘油三酯关系最小。</p>
+<p>接下来建立回归方程：</p>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="1017-multiregression.html#cb255-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">lm</span>(fpg <span class="sc">~</span> cho <span class="sc">+</span> tg <span class="sc">+</span> ri <span class="sc">+</span> hba, <span class="at">data =</span> df15_1)</span>
+<span id="cb255-2"><a href="1017-multiregression.html#cb255-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb255-3"><a href="1017-multiregression.html#cb255-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f)</span>
+<span id="cb255-4"><a href="1017-multiregression.html#cb255-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb255-5"><a href="1017-multiregression.html#cb255-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb255-6"><a href="1017-multiregression.html#cb255-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = fpg ~ cho + tg + ri + hba, data = df15_1)</span></span>
+<span id="cb255-7"><a href="1017-multiregression.html#cb255-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb255-8"><a href="1017-multiregression.html#cb255-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb255-9"><a href="1017-multiregression.html#cb255-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb255-10"><a href="1017-multiregression.html#cb255-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -3.6268 -1.2004 -0.2276  1.5389  4.4467 </span></span>
+<span id="cb255-11"><a href="1017-multiregression.html#cb255-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb255-12"><a href="1017-multiregression.html#cb255-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb255-13"><a href="1017-multiregression.html#cb255-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span id="cb255-14"><a href="1017-multiregression.html#cb255-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)   5.9433     2.8286   2.101   0.0473 *</span></span>
+<span id="cb255-15"><a href="1017-multiregression.html#cb255-15" aria-hidden="true" tabindex="-1"></a><span class="do">## cho           0.1424     0.3657   0.390   0.7006  </span></span>
+<span id="cb255-16"><a href="1017-multiregression.html#cb255-16" aria-hidden="true" tabindex="-1"></a><span class="do">## tg            0.3515     0.2042   1.721   0.0993 .</span></span>
+<span id="cb255-17"><a href="1017-multiregression.html#cb255-17" aria-hidden="true" tabindex="-1"></a><span class="do">## ri           -0.2706     0.1214  -2.229   0.0363 *</span></span>
+<span id="cb255-18"><a href="1017-multiregression.html#cb255-18" aria-hidden="true" tabindex="-1"></a><span class="do">## hba           0.6382     0.2433   2.623   0.0155 *</span></span>
+<span id="cb255-19"><a href="1017-multiregression.html#cb255-19" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb255-20"><a href="1017-multiregression.html#cb255-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb255-21"><a href="1017-multiregression.html#cb255-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb255-22"><a href="1017-multiregression.html#cb255-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 2.01 on 22 degrees of freedom</span></span>
+<span id="cb255-23"><a href="1017-multiregression.html#cb255-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.6008, Adjusted R-squared:  0.5282 </span></span>
+<span id="cb255-24"><a href="1017-multiregression.html#cb255-24" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 8.278 on 4 and 22 DF,  p-value: 0.0003121</span></span></code></pre></div>
+<p>这个结果信息很丰富，给出了截距，各自变量的系数以及标准误、t值、P值，最下方给出了决定系数R2，调整后的R2，F值，总体方程的P值等。</p>
+</div>
+<div id="回归诊断" class="section level2 hasAnchor" number="17.2">
+<h2><span class="header-section-number">17.2</span> 回归诊断<a href="1017-multiregression.html#回归诊断" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>判断数据是否满足多元线性回归的条件。</p>
+<div id="可以通过看图来判断" class="section level3 hasAnchor" number="17.2.1">
+<h3><span class="header-section-number">17.2.1</span> 可以通过看图来判断<a href="1017-multiregression.html#可以通过看图来判断" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="1017-multiregression.html#cb256-1" aria-hidden="true" tabindex="-1"></a>opar <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))</span>
+<span id="cb256-2"><a href="1017-multiregression.html#cb256-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb256-3"><a href="1017-multiregression.html#cb256-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(f)</span></code></pre></div>
+<p><img src="1017-multiregression_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="1017-multiregression.html#cb257-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb257-2"><a href="1017-multiregression.html#cb257-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(opar)</span></code></pre></div>
+<ul>
+<li><p>第1幅图（左上）是<strong>残差拟合图</strong>，展示真实残差和拟合残差的关系，判读是否满足<strong>线性</strong>这个条件，如果满足，则应该为一条直线，但是本图明显是一条曲线，说明不是很满足<strong>线性</strong>这个条件，可能需要加二次项。</p></li>
+<li><p>第2幅图（右上）是<strong>正态Q-Q图</strong>，判断是否满足<strong>正态性</strong>这个条件，通过这个图来看，基本满足。</p></li>
+<li><p>第3幅图（左下）是<strong>位置尺度图</strong>，判读是否满足<strong>同方差性</strong>，如果满足，水平线两侧的点应该随机分布，从此图来看基本满足。</p></li>
+<li><p>第4幅图（右下）是<strong>残差杠杆图</strong>，用于识别离群点等。</p></li>
+</ul>
+</div>
+<div id="也可以通过统计方法验证" class="section level3 hasAnchor" number="17.2.2">
+<h3><span class="header-section-number">17.2.2</span> 也可以通过统计方法验证<a href="1017-multiregression.html#也可以通过统计方法验证" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="首先是线性回归模型的综合验证" class="section level4 hasAnchor" number="17.2.2.1">
+<h4><span class="header-section-number">17.2.2.1</span> 首先是线性回归模型的综合验证<a href="1017-multiregression.html#首先是线性回归模型的综合验证" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="1017-multiregression.html#cb258-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gvlma)</span>
+<span id="cb258-2"><a href="1017-multiregression.html#cb258-2" aria-hidden="true" tabindex="-1"></a>gvmodel<span class="ot">&lt;-</span><span class="fu">gvlma</span>(f)</span>
+<span id="cb258-3"><a href="1017-multiregression.html#cb258-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gvmodel)</span>
+<span id="cb258-4"><a href="1017-multiregression.html#cb258-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-5"><a href="1017-multiregression.html#cb258-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb258-6"><a href="1017-multiregression.html#cb258-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = fpg ~ cho + tg + ri + hba, data = df15_1)</span></span>
+<span id="cb258-7"><a href="1017-multiregression.html#cb258-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-8"><a href="1017-multiregression.html#cb258-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals:</span></span>
+<span id="cb258-9"><a href="1017-multiregression.html#cb258-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb258-10"><a href="1017-multiregression.html#cb258-10" aria-hidden="true" tabindex="-1"></a><span class="do">## -3.6268 -1.2004 -0.2276  1.5389  4.4467 </span></span>
+<span id="cb258-11"><a href="1017-multiregression.html#cb258-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-12"><a href="1017-multiregression.html#cb258-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb258-13"><a href="1017-multiregression.html#cb258-13" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span id="cb258-14"><a href="1017-multiregression.html#cb258-14" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)   5.9433     2.8286   2.101   0.0473 *</span></span>
+<span id="cb258-15"><a href="1017-multiregression.html#cb258-15" aria-hidden="true" tabindex="-1"></a><span class="do">## cho           0.1424     0.3657   0.390   0.7006  </span></span>
+<span id="cb258-16"><a href="1017-multiregression.html#cb258-16" aria-hidden="true" tabindex="-1"></a><span class="do">## tg            0.3515     0.2042   1.721   0.0993 .</span></span>
+<span id="cb258-17"><a href="1017-multiregression.html#cb258-17" aria-hidden="true" tabindex="-1"></a><span class="do">## ri           -0.2706     0.1214  -2.229   0.0363 *</span></span>
+<span id="cb258-18"><a href="1017-multiregression.html#cb258-18" aria-hidden="true" tabindex="-1"></a><span class="do">## hba           0.6382     0.2433   2.623   0.0155 *</span></span>
+<span id="cb258-19"><a href="1017-multiregression.html#cb258-19" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb258-20"><a href="1017-multiregression.html#cb258-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb258-21"><a href="1017-multiregression.html#cb258-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-22"><a href="1017-multiregression.html#cb258-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual standard error: 2.01 on 22 degrees of freedom</span></span>
+<span id="cb258-23"><a href="1017-multiregression.html#cb258-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R-squared:  0.6008, Adjusted R-squared:  0.5282 </span></span>
+<span id="cb258-24"><a href="1017-multiregression.html#cb258-24" aria-hidden="true" tabindex="-1"></a><span class="do">## F-statistic: 8.278 on 4 and 22 DF,  p-value: 0.0003121</span></span>
+<span id="cb258-25"><a href="1017-multiregression.html#cb258-25" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-26"><a href="1017-multiregression.html#cb258-26" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-27"><a href="1017-multiregression.html#cb258-27" aria-hidden="true" tabindex="-1"></a><span class="do">## ASSESSMENT OF THE LINEAR MODEL ASSUMPTIONS</span></span>
+<span id="cb258-28"><a href="1017-multiregression.html#cb258-28" aria-hidden="true" tabindex="-1"></a><span class="do">## USING THE GLOBAL </span><span class="al">TEST</span><span class="do"> ON 4 DEGREES-OF-FREEDOM:</span></span>
+<span id="cb258-29"><a href="1017-multiregression.html#cb258-29" aria-hidden="true" tabindex="-1"></a><span class="do">## Level of Significance =  0.05 </span></span>
+<span id="cb258-30"><a href="1017-multiregression.html#cb258-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-31"><a href="1017-multiregression.html#cb258-31" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb258-32"><a href="1017-multiregression.html#cb258-32" aria-hidden="true" tabindex="-1"></a><span class="do">##  gvlma(x = f) </span></span>
+<span id="cb258-33"><a href="1017-multiregression.html#cb258-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb258-34"><a href="1017-multiregression.html#cb258-34" aria-hidden="true" tabindex="-1"></a><span class="do">##                      Value  p-value                   Decision</span></span>
+<span id="cb258-35"><a href="1017-multiregression.html#cb258-35" aria-hidden="true" tabindex="-1"></a><span class="do">## Global Stat        9.68910 0.046003 Assumptions NOT satisfied!</span></span>
+<span id="cb258-36"><a href="1017-multiregression.html#cb258-36" aria-hidden="true" tabindex="-1"></a><span class="do">## Skewness           0.65344 0.418886    Assumptions acceptable.</span></span>
+<span id="cb258-37"><a href="1017-multiregression.html#cb258-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Kurtosis           0.04015 0.841193    Assumptions acceptable.</span></span>
+<span id="cb258-38"><a href="1017-multiregression.html#cb258-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Link Function      7.68064 0.005582 Assumptions NOT satisfied!</span></span>
+<span id="cb258-39"><a href="1017-multiregression.html#cb258-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Heteroscedasticity 1.31487 0.251515    Assumptions acceptable.</span></span></code></pre></div>
+<p>从最后一句话看，我们的数据满足多元线性回归的所有统计假设，如果不满足会有对应输出。</p>
+<p>####回归模型条件挨个验证</p>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="1017-multiregression.html#cb259-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb259-2"><a href="1017-multiregression.html#cb259-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: carData</span></span>
+<span id="cb259-3"><a href="1017-multiregression.html#cb259-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb259-4"><a href="1017-multiregression.html#cb259-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证正态性</span></span>
+<span id="cb259-5"><a href="1017-multiregression.html#cb259-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqPlot</span>(f,<span class="at">labels =</span> <span class="fu">row.names</span>(df15_1), <span class="at">id.method =</span> <span class="st">&quot;identify&quot;</span>,<span class="at">simulate =</span> T,</span>
+<span id="cb259-6"><a href="1017-multiregression.html#cb259-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">&quot;Q-Q plot&quot;</span>)   </span></code></pre></div>
+<p><img src="1017-multiregression_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<pre><code>## [1] 13 26</code></pre>
+<p>从图中可看出正态性基本满足。</p>
+<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="1017-multiregression.html#cb261-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证因变量独立性</span></span>
+<span id="cb261-2"><a href="1017-multiregression.html#cb261-2" aria-hidden="true" tabindex="-1"></a><span class="fu">durbinWatsonTest</span>(f)   </span>
+<span id="cb261-3"><a href="1017-multiregression.html#cb261-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  lag Autocorrelation D-W Statistic p-value</span></span>
+<span id="cb261-4"><a href="1017-multiregression.html#cb261-4" aria-hidden="true" tabindex="-1"></a><span class="do">##    1       0.1778885      1.634654   0.354</span></span>
+<span id="cb261-5"><a href="1017-multiregression.html#cb261-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  Alternative hypothesis: rho != 0</span></span></code></pre></div>
+<p>P值大于0.05，满足条件。</p>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="1017-multiregression.html#cb262-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证线性</span></span>
+<span id="cb262-2"><a href="1017-multiregression.html#cb262-2" aria-hidden="true" tabindex="-1"></a><span class="fu">crPlots</span>(f)</span></code></pre></div>
+<p><img src="1017-multiregression_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+<p>通过观察成分残差图，线性基本满足。</p>
+<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="1017-multiregression.html#cb263-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证方差齐性</span></span>
+<span id="cb263-2"><a href="1017-multiregression.html#cb263-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ncvTest</span>(f)   </span>
+<span id="cb263-3"><a href="1017-multiregression.html#cb263-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Non-constant Variance Score Test </span></span>
+<span id="cb263-4"><a href="1017-multiregression.html#cb263-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Variance formula: ~ fitted.values </span></span>
+<span id="cb263-5"><a href="1017-multiregression.html#cb263-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Chisquare = 0.0004274839, Df = 1, p = 0.9835</span></span></code></pre></div>
+<p>P值大于0.05，方差齐性满足。</p>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="1017-multiregression.html#cb264-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 还是验证方差齐性</span></span>
+<span id="cb264-2"><a href="1017-multiregression.html#cb264-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spreadLevelPlot</span>(f) </span></code></pre></div>
+<p><img src="1017-multiregression_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<pre><code>## 
+## Suggested power transformation:  -0.4993159</code></pre>
+<p>基本满足。</p>
+</div>
+</div>
+<div id="多重共线性的检验" class="section level3 hasAnchor" number="17.2.3">
+<h3><span class="header-section-number">17.2.3</span> 多重共线性的检验<a href="1017-multiregression.html#多重共线性的检验" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>通过计算方差膨胀因子检验</p>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="1017-multiregression.html#cb266-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(f)</span>
+<span id="cb266-2"><a href="1017-multiregression.html#cb266-2" aria-hidden="true" tabindex="-1"></a><span class="do">##      cho       tg       ri      hba </span></span>
+<span id="cb266-3"><a href="1017-multiregression.html#cb266-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.185539 1.779862 1.278364 1.266730</span></span>
+<span id="cb266-4"><a href="1017-multiregression.html#cb266-4" aria-hidden="true" tabindex="-1"></a><span class="fu">vif</span>(f)<span class="sc">&gt;</span><span class="dv">4</span></span>
+<span id="cb266-5"><a href="1017-multiregression.html#cb266-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   cho    tg    ri   hba </span></span>
+<span id="cb266-6"><a href="1017-multiregression.html#cb266-6" aria-hidden="true" tabindex="-1"></a><span class="do">## FALSE FALSE FALSE FALSE</span></span></code></pre></div>
+<p>都小于4（标准有争议），基本不存在多重共线性。</p>
+</div>
+</div>
+<div id="逐步选择法" class="section level2 hasAnchor" number="17.3">
+<h2><span class="header-section-number">17.3</span> 逐步选择法<a href="1017-multiregression.html#逐步选择法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>向后回归：</p>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="1017-multiregression.html#cb267-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb267-2"><a href="1017-multiregression.html#cb267-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stepAIC</span>(f, <span class="at">direction =</span> <span class="st">&quot;backward&quot;</span>)</span>
+<span id="cb267-3"><a href="1017-multiregression.html#cb267-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Start:  AIC=42.16</span></span>
+<span id="cb267-4"><a href="1017-multiregression.html#cb267-4" aria-hidden="true" tabindex="-1"></a><span class="do">## fpg ~ cho + tg + ri + hba</span></span>
+<span id="cb267-5"><a href="1017-multiregression.html#cb267-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb267-6"><a href="1017-multiregression.html#cb267-6" aria-hidden="true" tabindex="-1"></a><span class="do">##        Df Sum of Sq     RSS    AIC</span></span>
+<span id="cb267-7"><a href="1017-multiregression.html#cb267-7" aria-hidden="true" tabindex="-1"></a><span class="do">## - cho   1    0.6129  89.454 40.343</span></span>
+<span id="cb267-8"><a href="1017-multiregression.html#cb267-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &lt;none&gt;               88.841 42.157</span></span>
+<span id="cb267-9"><a href="1017-multiregression.html#cb267-9" aria-hidden="true" tabindex="-1"></a><span class="do">## - tg    1   11.9627 100.804 43.568</span></span>
+<span id="cb267-10"><a href="1017-multiregression.html#cb267-10" aria-hidden="true" tabindex="-1"></a><span class="do">## - ri    1   20.0635 108.905 45.655</span></span>
+<span id="cb267-11"><a href="1017-multiregression.html#cb267-11" aria-hidden="true" tabindex="-1"></a><span class="do">## - hba   1   27.7939 116.635 47.507</span></span>
+<span id="cb267-12"><a href="1017-multiregression.html#cb267-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb267-13"><a href="1017-multiregression.html#cb267-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Step:  AIC=40.34</span></span>
+<span id="cb267-14"><a href="1017-multiregression.html#cb267-14" aria-hidden="true" tabindex="-1"></a><span class="do">## fpg ~ tg + ri + hba</span></span>
+<span id="cb267-15"><a href="1017-multiregression.html#cb267-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb267-16"><a href="1017-multiregression.html#cb267-16" aria-hidden="true" tabindex="-1"></a><span class="do">##        Df Sum of Sq     RSS    AIC</span></span>
+<span id="cb267-17"><a href="1017-multiregression.html#cb267-17" aria-hidden="true" tabindex="-1"></a><span class="do">## &lt;none&gt;               89.454 40.343</span></span>
+<span id="cb267-18"><a href="1017-multiregression.html#cb267-18" aria-hidden="true" tabindex="-1"></a><span class="do">## - ri    1    25.690 115.144 45.159</span></span>
+<span id="cb267-19"><a href="1017-multiregression.html#cb267-19" aria-hidden="true" tabindex="-1"></a><span class="do">## - tg    1    26.530 115.984 45.356</span></span>
+<span id="cb267-20"><a href="1017-multiregression.html#cb267-20" aria-hidden="true" tabindex="-1"></a><span class="do">## - hba   1    32.269 121.723 46.660</span></span>
+<span id="cb267-21"><a href="1017-multiregression.html#cb267-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb267-22"><a href="1017-multiregression.html#cb267-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb267-23"><a href="1017-multiregression.html#cb267-23" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = fpg ~ tg + ri + hba, data = df15_1)</span></span>
+<span id="cb267-24"><a href="1017-multiregression.html#cb267-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb267-25"><a href="1017-multiregression.html#cb267-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb267-26"><a href="1017-multiregression.html#cb267-26" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)           tg           ri          hba  </span></span>
+<span id="cb267-27"><a href="1017-multiregression.html#cb267-27" aria-hidden="true" tabindex="-1"></a><span class="do">##      6.4996       0.4023      -0.2870       0.6632</span></span></code></pre></div>
+<p>向前回归：</p>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="1017-multiregression.html#cb268-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stepAIC</span>(f, <span class="at">direction =</span> <span class="st">&quot;forward&quot;</span>)</span>
+<span id="cb268-2"><a href="1017-multiregression.html#cb268-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Start:  AIC=42.16</span></span>
+<span id="cb268-3"><a href="1017-multiregression.html#cb268-3" aria-hidden="true" tabindex="-1"></a><span class="do">## fpg ~ cho + tg + ri + hba</span></span>
+<span id="cb268-4"><a href="1017-multiregression.html#cb268-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb268-5"><a href="1017-multiregression.html#cb268-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb268-6"><a href="1017-multiregression.html#cb268-6" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = fpg ~ cho + tg + ri + hba, data = df15_1)</span></span>
+<span id="cb268-7"><a href="1017-multiregression.html#cb268-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb268-8"><a href="1017-multiregression.html#cb268-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb268-9"><a href="1017-multiregression.html#cb268-9" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)          cho           tg           ri          hba  </span></span>
+<span id="cb268-10"><a href="1017-multiregression.html#cb268-10" aria-hidden="true" tabindex="-1"></a><span class="do">##      5.9433       0.1424       0.3515      -0.2706       0.6382</span></span></code></pre></div>
+<p>逐步回归：</p>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="1017-multiregression.html#cb269-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stepAIC</span>(f, <span class="at">direction =</span> <span class="st">&quot;both&quot;</span>)</span>
+<span id="cb269-2"><a href="1017-multiregression.html#cb269-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Start:  AIC=42.16</span></span>
+<span id="cb269-3"><a href="1017-multiregression.html#cb269-3" aria-hidden="true" tabindex="-1"></a><span class="do">## fpg ~ cho + tg + ri + hba</span></span>
+<span id="cb269-4"><a href="1017-multiregression.html#cb269-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb269-5"><a href="1017-multiregression.html#cb269-5" aria-hidden="true" tabindex="-1"></a><span class="do">##        Df Sum of Sq     RSS    AIC</span></span>
+<span id="cb269-6"><a href="1017-multiregression.html#cb269-6" aria-hidden="true" tabindex="-1"></a><span class="do">## - cho   1    0.6129  89.454 40.343</span></span>
+<span id="cb269-7"><a href="1017-multiregression.html#cb269-7" aria-hidden="true" tabindex="-1"></a><span class="do">## &lt;none&gt;               88.841 42.157</span></span>
+<span id="cb269-8"><a href="1017-multiregression.html#cb269-8" aria-hidden="true" tabindex="-1"></a><span class="do">## - tg    1   11.9627 100.804 43.568</span></span>
+<span id="cb269-9"><a href="1017-multiregression.html#cb269-9" aria-hidden="true" tabindex="-1"></a><span class="do">## - ri    1   20.0635 108.905 45.655</span></span>
+<span id="cb269-10"><a href="1017-multiregression.html#cb269-10" aria-hidden="true" tabindex="-1"></a><span class="do">## - hba   1   27.7939 116.635 47.507</span></span>
+<span id="cb269-11"><a href="1017-multiregression.html#cb269-11" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb269-12"><a href="1017-multiregression.html#cb269-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Step:  AIC=40.34</span></span>
+<span id="cb269-13"><a href="1017-multiregression.html#cb269-13" aria-hidden="true" tabindex="-1"></a><span class="do">## fpg ~ tg + ri + hba</span></span>
+<span id="cb269-14"><a href="1017-multiregression.html#cb269-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb269-15"><a href="1017-multiregression.html#cb269-15" aria-hidden="true" tabindex="-1"></a><span class="do">##        Df Sum of Sq     RSS    AIC</span></span>
+<span id="cb269-16"><a href="1017-multiregression.html#cb269-16" aria-hidden="true" tabindex="-1"></a><span class="do">## &lt;none&gt;               89.454 40.343</span></span>
+<span id="cb269-17"><a href="1017-multiregression.html#cb269-17" aria-hidden="true" tabindex="-1"></a><span class="do">## + cho   1     0.613  88.841 42.157</span></span>
+<span id="cb269-18"><a href="1017-multiregression.html#cb269-18" aria-hidden="true" tabindex="-1"></a><span class="do">## - ri    1    25.690 115.144 45.159</span></span>
+<span id="cb269-19"><a href="1017-multiregression.html#cb269-19" aria-hidden="true" tabindex="-1"></a><span class="do">## - tg    1    26.530 115.984 45.356</span></span>
+<span id="cb269-20"><a href="1017-multiregression.html#cb269-20" aria-hidden="true" tabindex="-1"></a><span class="do">## - hba   1    32.269 121.723 46.660</span></span>
+<span id="cb269-21"><a href="1017-multiregression.html#cb269-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb269-22"><a href="1017-multiregression.html#cb269-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb269-23"><a href="1017-multiregression.html#cb269-23" aria-hidden="true" tabindex="-1"></a><span class="do">## lm(formula = fpg ~ tg + ri + hba, data = df15_1)</span></span>
+<span id="cb269-24"><a href="1017-multiregression.html#cb269-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb269-25"><a href="1017-multiregression.html#cb269-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb269-26"><a href="1017-multiregression.html#cb269-26" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)           tg           ri          hba  </span></span>
+<span id="cb269-27"><a href="1017-multiregression.html#cb269-27" aria-hidden="true" tabindex="-1"></a><span class="do">##      6.4996       0.4023      -0.2870       0.6632</span></span></code></pre></div>
+</div>
+<div id="全局择优法" class="section level2 hasAnchor" number="17.4">
+<h2><span class="header-section-number">17.4</span> 全局择优法<a href="1017-multiregression.html#全局择优法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>也就是全子集回归法。</p>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="1017-multiregression.html#cb270-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaps)</span>
+<span id="cb270-2"><a href="1017-multiregression.html#cb270-2" aria-hidden="true" tabindex="-1"></a>leaps <span class="ot">&lt;-</span> <span class="fu">regsubsets</span>(fpg <span class="sc">~</span> cho <span class="sc">+</span> tg <span class="sc">+</span> ri <span class="sc">+</span> hba, <span class="at">data =</span> df15_1, <span class="at">nbest=</span><span class="dv">4</span>)</span>
+<span id="cb270-3"><a href="1017-multiregression.html#cb270-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb270-4"><a href="1017-multiregression.html#cb270-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(leaps, <span class="at">scale =</span> <span class="st">&quot;Cp&quot;</span>) <span class="co"># 通过Cp判断</span></span></code></pre></div>
+<p><img src="1017-multiregression_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+<p>Cp是越小越好的，从上面这幅图来看，纳入3个自变量（tg/ri/hba）时最好。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1016-piancorrelation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1018-logistic.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

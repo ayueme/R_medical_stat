@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>21 R语言聚类分析 | R语言实战医学统计</title>
+  <meta name="description" content="21 R语言聚类分析 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="21 R语言聚类分析 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="21 R语言聚类分析 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="21 R语言聚类分析 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="21 R语言聚类分析 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1020-discriminant.html"/>
+<link rel="next" href="1022-pca.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,384 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="lksdjgljdsl" class="section level1 hasAnchor" number="21">
+<h1><span class="header-section-number">21</span> R语言聚类分析<a href="1021-cluster.html#lksdjgljdsl" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>主要介绍使用R语言进行层次聚类、划分聚类（K均值聚类和PAM）。</p>
+<div id="系统聚类层次聚类hierarchical-clustering" class="section level2 hasAnchor" number="21.1">
+<h2><span class="header-section-number">21.1</span> 系统聚类（层次聚类,Hierarchical clustering）<a href="1021-cluster.html#系统聚类层次聚类hierarchical-clustering" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="1021-cluster.html#cb340-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 没安装flexclust包的需要先安装</span></span>
+<span id="cb340-2"><a href="1021-cluster.html#cb340-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(nutrient, <span class="at">package =</span> <span class="st">&quot;flexclust&quot;</span>)</span>
+<span id="cb340-3"><a href="1021-cluster.html#cb340-3" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(nutrient) <span class="ot">&lt;-</span> <span class="fu">tolower</span>(<span class="fu">row.names</span>(nutrient))</span>
+<span id="cb340-4"><a href="1021-cluster.html#cb340-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb340-5"><a href="1021-cluster.html#cb340-5" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(nutrient) <span class="co"># 27行5列</span></span>
+<span id="cb340-6"><a href="1021-cluster.html#cb340-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 27  5</span></span>
+<span id="cb340-7"><a href="1021-cluster.html#cb340-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb340-8"><a href="1021-cluster.html#cb340-8" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(nutrient)</span>
+<span id="cb340-9"><a href="1021-cluster.html#cb340-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                 energy protein fat calcium iron</span></span>
+<span id="cb340-10"><a href="1021-cluster.html#cb340-10" aria-hidden="true" tabindex="-1"></a><span class="do">## beef braised       340      20  28       9  2.6</span></span>
+<span id="cb340-11"><a href="1021-cluster.html#cb340-11" aria-hidden="true" tabindex="-1"></a><span class="do">## hamburger          245      21  17       9  2.7</span></span>
+<span id="cb340-12"><a href="1021-cluster.html#cb340-12" aria-hidden="true" tabindex="-1"></a><span class="do">## beef roast         420      15  39       7    2</span></span>
+<span id="cb340-13"><a href="1021-cluster.html#cb340-13" aria-hidden="true" tabindex="-1"></a><span class="do">## beef steak         375      19  32       9  2.6</span></span>
+<span id="cb340-14"><a href="1021-cluster.html#cb340-14" aria-hidden="true" tabindex="-1"></a><span class="do">## ...                ...     ... ...     ...  ...</span></span>
+<span id="cb340-15"><a href="1021-cluster.html#cb340-15" aria-hidden="true" tabindex="-1"></a><span class="do">## salmon canned      120      17   5     159  0.7</span></span>
+<span id="cb340-16"><a href="1021-cluster.html#cb340-16" aria-hidden="true" tabindex="-1"></a><span class="do">## sardines canned    180      22   9     367  2.5</span></span>
+<span id="cb340-17"><a href="1021-cluster.html#cb340-17" aria-hidden="true" tabindex="-1"></a><span class="do">## tuna canned        170      25   7       7  1.2</span></span>
+<span id="cb340-18"><a href="1021-cluster.html#cb340-18" aria-hidden="true" tabindex="-1"></a><span class="do">## shrimp canned      110      23   1      98  2.6</span></span></code></pre></div>
+<p>层次聚类在R语言中非常简单，通过<code>hclust</code>实现。</p>
+<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="1021-cluster.html#cb341-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 聚类前先进行标准化</span></span>
+<span id="cb341-2"><a href="1021-cluster.html#cb341-2" aria-hidden="true" tabindex="-1"></a>nutrient.scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(nutrient)</span>
+<span id="cb341-3"><a href="1021-cluster.html#cb341-3" aria-hidden="true" tabindex="-1"></a>h.clust <span class="ot">&lt;-</span> <span class="fu">hclust</span>(<span class="fu">dist</span>(nutrient.scaled,<span class="at">method =</span> <span class="st">&quot;euclidean&quot;</span>), <span class="co"># 计算距离有不同方法</span></span>
+<span id="cb341-4"><a href="1021-cluster.html#cb341-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">method =</span> <span class="st">&quot;average&quot;</span> <span class="co"># 层次聚类有不同方法</span></span>
+<span id="cb341-5"><a href="1021-cluster.html#cb341-5" aria-hidden="true" tabindex="-1"></a>                  )</span></code></pre></div>
+<p>下面就是画图，简单点可以直接用<code>plot()</code>。</p>
+<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="1021-cluster.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h.clust,<span class="at">hang =</span> <span class="sc">-</span><span class="dv">1</span>,<span class="at">main =</span> <span class="st">&quot;层次聚类&quot;</span>, <span class="at">sub=</span><span class="st">&quot;&quot;</span>, </span>
+<span id="cb342-2"><a href="1021-cluster.html#cb342-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">&quot;&quot;</span>, <span class="at">cex.lab =</span> <span class="fl">1.0</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>关于更加精细化的细节修改，下面会介绍。或者可以借助其他R包快速绘制好看的聚类分析图形。</p>
+<p>如何选择聚类的个数呢？</p>
+<p>可以通过R包<code>NbClust</code>实现。</p>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="1021-cluster.html#cb343-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(NbClust)</span>
+<span id="cb343-2"><a href="1021-cluster.html#cb343-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb343-3"><a href="1021-cluster.html#cb343-3" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">NbClust</span>(nutrient.scaled, <span class="at">distance =</span> <span class="st">&quot;euclidean&quot;</span>,</span>
+<span id="cb343-4"><a href="1021-cluster.html#cb343-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">min.nc =</span> <span class="dv">2</span>, <span class="co"># 最小聚类数</span></span>
+<span id="cb343-5"><a href="1021-cluster.html#cb343-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">max.nc =</span> <span class="dv">10</span>, <span class="co"># 最大聚类树</span></span>
+<span id="cb343-6"><a href="1021-cluster.html#cb343-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">method =</span> <span class="st">&quot;average&quot;</span></span>
+<span id="cb343-7"><a href="1021-cluster.html#cb343-7" aria-hidden="true" tabindex="-1"></a>              )</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<pre><code>## *** : The Hubert index is a graphical method of determining the number of clusters.
+##                 In the plot of Hubert index, we seek a significant knee that corresponds to a 
+##                 significant increase of the value of the measure i.e the significant peak in Hubert
+##                 index second differences plot. 
+## </code></pre>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-5-2.png" width="90%" /></p>
+<pre><code>## *** : The D index is a graphical method of determining the number of clusters. 
+##                 In the plot of D index, we seek a significant knee (the significant peak in Dindex
+##                 second differences plot) that corresponds to a significant increase of the value of
+##                 the measure. 
+##  
+## ******************************************************************* 
+## * Among all indices:                                                
+## * 5 proposed 2 as the best number of clusters 
+## * 5 proposed 3 as the best number of clusters 
+## * 2 proposed 4 as the best number of clusters 
+## * 4 proposed 5 as the best number of clusters 
+## * 1 proposed 8 as the best number of clusters 
+## * 1 proposed 9 as the best number of clusters 
+## * 5 proposed 10 as the best number of clusters 
+## 
+##                    ***** Conclusion *****                            
+##  
+## * According to the majority rule, the best number of clusters is  2 
+##  
+##  
+## *******************************************************************</code></pre>
+<p>输出日志里给出了评判准则以及最终结果：Hubert index和D index使用图形的方式判断最佳聚类个数，拐点明显的可视作最佳聚类个数。</p>
+<p>它给出的结论是最佳聚类数是2。我们也可以通过条形图查看这些评判准则的具体数量。</p>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="1021-cluster.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">table</span>(nc<span class="sc">$</span>Best.nc[<span class="dv">1</span>,]),</span>
+<span id="cb346-2"><a href="1021-cluster.html#cb346-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">&quot;聚类数目&quot;</span>,</span>
+<span id="cb346-3"><a href="1021-cluster.html#cb346-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">&quot;评判准则个数&quot;</span></span>
+<span id="cb346-4"><a href="1021-cluster.html#cb346-4" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p>从条形图中可以看出，聚类数目为2,3,5,10时，评判准则个数最多，为5个，这里我们可以选择5个。</p>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="1021-cluster.html#cb347-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 把聚类树划分为5类</span></span>
+<span id="cb347-2"><a href="1021-cluster.html#cb347-2" aria-hidden="true" tabindex="-1"></a>cluster <span class="ot">&lt;-</span> <span class="fu">cutree</span>(h.clust, <span class="at">k=</span><span class="dv">5</span>)</span>
+<span id="cb347-3"><a href="1021-cluster.html#cb347-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb347-4"><a href="1021-cluster.html#cb347-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看每一类有多少例</span></span>
+<span id="cb347-5"><a href="1021-cluster.html#cb347-5" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(cluster)</span>
+<span id="cb347-6"><a href="1021-cluster.html#cb347-6" aria-hidden="true" tabindex="-1"></a><span class="do">## cluster</span></span>
+<span id="cb347-7"><a href="1021-cluster.html#cb347-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  1  2  3  4  5 </span></span>
+<span id="cb347-8"><a href="1021-cluster.html#cb347-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  7 16  1  2  1</span></span></code></pre></div>
+<p>把最终结果画出来：</p>
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="1021-cluster.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h.clust, <span class="at">hang =</span> <span class="sc">-</span><span class="dv">1</span>,<span class="at">main =</span> <span class="st">&quot;&quot;</span>,<span class="at">xlab =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb348-2"><a href="1021-cluster.html#cb348-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rect.hclust</span>(h.clust, <span class="at">k=</span><span class="dv">5</span>) <span class="co"># 添加矩形，方便观察</span></span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+</div>
+<div id="聚类分析可视化" class="section level2 hasAnchor" number="21.2">
+<h2><span class="header-section-number">21.2</span> 聚类分析可视化<a href="1021-cluster.html#聚类分析可视化" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>上面使用默认的<code>plot</code>函数进行聚类树的可视化，下面继续扩展聚类树的可视化。</p>
+<p>默认的聚类树可视化函数已经非常好用，有非常多的自定义设置，可以轻松实现好看的聚类树可视化。</p>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="1021-cluster.html#cb349-1" aria-hidden="true" tabindex="-1"></a>op <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">bg =</span> <span class="st">&quot;grey90&quot;</span>)</span>
+<span id="cb349-2"><a href="1021-cluster.html#cb349-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb349-3"><a href="1021-cluster.html#cb349-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(h.clust, <span class="at">main =</span> <span class="st">&quot;层次聚类&quot;</span>, <span class="at">sub=</span><span class="st">&quot;&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb349-4"><a href="1021-cluster.html#cb349-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;#487AA1&quot;</span>, <span class="at">col.main =</span> <span class="st">&quot;#45ADA8&quot;</span>, <span class="at">col.lab =</span> <span class="st">&quot;#7C8071&quot;</span>,</span>
+<span id="cb349-5"><a href="1021-cluster.html#cb349-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col.axis =</span> <span class="st">&quot;#F38630&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">hang =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb349-6"><a href="1021-cluster.html#cb349-6" aria-hidden="true" tabindex="-1"></a><span class="co"># add axis</span></span>
+<span id="cb349-7"><a href="1021-cluster.html#cb349-7" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="at">side =</span> <span class="dv">2</span>, <span class="at">at =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">col =</span> <span class="st">&quot;#F38630&quot;</span>,</span>
+<span id="cb349-8"><a href="1021-cluster.html#cb349-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">labels =</span> <span class="cn">FALSE</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb349-9"><a href="1021-cluster.html#cb349-9" aria-hidden="true" tabindex="-1"></a><span class="co"># add text in margin</span></span>
+<span id="cb349-10"><a href="1021-cluster.html#cb349-10" aria-hidden="true" tabindex="-1"></a><span class="fu">mtext</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">side =</span> <span class="dv">2</span>, <span class="at">at =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb349-11"><a href="1021-cluster.html#cb349-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">line =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;#A38630&quot;</span>, <span class="at">las =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="1021-cluster.html#cb350-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb350-2"><a href="1021-cluster.html#cb350-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(op)</span></code></pre></div>
+<p>如果对默认的可视化效果不满意，可以先用<code>as.dendrogram()</code>转化一下，再画图可以指定更多细节。</p>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="1021-cluster.html#cb351-1" aria-hidden="true" tabindex="-1"></a>dhc <span class="ot">&lt;-</span> <span class="fu">as.dendrogram</span>(h.clust)</span>
+<span id="cb351-2"><a href="1021-cluster.html#cb351-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dhc,<span class="at">type =</span> <span class="st">&quot;triangle&quot;</span>) <span class="co"># 比如换个类型</span></span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-10-1.png" width="90%" /></p>
+<p>可以提取部分树进行查看，使用<code>cut</code>指定某个高度以上或以下的树进行查看。</p>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="1021-cluster.html#cb352-1" aria-hidden="true" tabindex="-1"></a>op <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb352-2"><a href="1021-cluster.html#cb352-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb352-3"><a href="1021-cluster.html#cb352-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 高度在3以上的树</span></span>
+<span id="cb352-4"><a href="1021-cluster.html#cb352-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">cut</span>(dhc, <span class="at">h =</span> <span class="dv">3</span>)<span class="sc">$</span>upper, <span class="at">main =</span> <span class="st">&quot;Upper tree of cut at h=3&quot;</span>)</span>
+<span id="cb352-5"><a href="1021-cluster.html#cb352-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb352-6"><a href="1021-cluster.html#cb352-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 高度在3以下的树</span></span>
+<span id="cb352-7"><a href="1021-cluster.html#cb352-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">cut</span>(dhc, <span class="at">h =</span> <span class="dv">3</span>)<span class="sc">$</span>lower[[<span class="dv">2</span>]],</span>
+<span id="cb352-8"><a href="1021-cluster.html#cb352-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Second branch of lower tree with cut at h=3&quot;</span>)</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="1021-cluster.html#cb353-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb353-2"><a href="1021-cluster.html#cb353-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(op)</span></code></pre></div>
+<p>每一个节点都有不同的属性，比如颜色、形状等，我们可以用函数修改每个节点的属性。</p>
+<p>比如修改标签的颜色。</p>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="1021-cluster.html#cb354-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 按照上面画出来的结果，我们可以分为5类，所以准备好5个颜色</span></span>
+<span id="cb354-2"><a href="1021-cluster.html#cb354-2" aria-hidden="true" tabindex="-1"></a>labelColors <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;#CDB380&quot;</span>, <span class="st">&quot;#036564&quot;</span>, <span class="st">&quot;#EB6841&quot;</span>, <span class="st">&quot;#EDC951&quot;</span>, <span class="st">&quot;#487AA1&quot;</span>)</span>
+<span id="cb354-3"><a href="1021-cluster.html#cb354-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb354-4"><a href="1021-cluster.html#cb354-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 把聚类树分为5个类</span></span>
+<span id="cb354-5"><a href="1021-cluster.html#cb354-5" aria-hidden="true" tabindex="-1"></a>clusMember <span class="ot">&lt;-</span> <span class="fu">cutree</span>(h.clust,<span class="at">k=</span><span class="dv">5</span>)</span>
+<span id="cb354-6"><a href="1021-cluster.html#cb354-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb354-7"><a href="1021-cluster.html#cb354-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 给标签增加不同的颜色</span></span>
+<span id="cb354-8"><a href="1021-cluster.html#cb354-8" aria-hidden="true" tabindex="-1"></a>colLab <span class="ot">&lt;-</span> <span class="cf">function</span>(n) {</span>
+<span id="cb354-9"><a href="1021-cluster.html#cb354-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.leaf</span>(n)) {</span>
+<span id="cb354-10"><a href="1021-cluster.html#cb354-10" aria-hidden="true" tabindex="-1"></a>    a <span class="ot">&lt;-</span> <span class="fu">attributes</span>(n)</span>
+<span id="cb354-11"><a href="1021-cluster.html#cb354-11" aria-hidden="true" tabindex="-1"></a>    labCol <span class="ot">&lt;-</span> labelColors[clusMember[<span class="fu">which</span>(<span class="fu">names</span>(clusMember) <span class="sc">==</span> a<span class="sc">$</span>label)]]</span>
+<span id="cb354-12"><a href="1021-cluster.html#cb354-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">attr</span>(n, <span class="st">&quot;nodePar&quot;</span>) <span class="ot">&lt;-</span> <span class="fu">c</span>(a<span class="sc">$</span>nodePar,</span>
+<span id="cb354-13"><a href="1021-cluster.html#cb354-13" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">list</span>(<span class="at">cex=</span><span class="fl">1.5</span>, <span class="co"># 节点形状大小</span></span>
+<span id="cb354-14"><a href="1021-cluster.html#cb354-14" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">pch=</span><span class="dv">20</span>, <span class="co"># 节点形状</span></span>
+<span id="cb354-15"><a href="1021-cluster.html#cb354-15" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">col=</span>labCol, <span class="co"># 节点颜色</span></span>
+<span id="cb354-16"><a href="1021-cluster.html#cb354-16" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">lab.col=</span>labCol, <span class="co"># 标签颜色</span></span>
+<span id="cb354-17"><a href="1021-cluster.html#cb354-17" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">lab.font=</span><span class="dv">2</span>, <span class="co"># 标签字体，粗体斜体粗斜体</span></span>
+<span id="cb354-18"><a href="1021-cluster.html#cb354-18" aria-hidden="true" tabindex="-1"></a>                                 <span class="at">lab.cex=</span><span class="dv">1</span> <span class="co"># 标签大小</span></span>
+<span id="cb354-19"><a href="1021-cluster.html#cb354-19" aria-hidden="true" tabindex="-1"></a>                                 )</span>
+<span id="cb354-20"><a href="1021-cluster.html#cb354-20" aria-hidden="true" tabindex="-1"></a>                            )</span>
+<span id="cb354-21"><a href="1021-cluster.html#cb354-21" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb354-22"><a href="1021-cluster.html#cb354-22" aria-hidden="true" tabindex="-1"></a>  n</span>
+<span id="cb354-23"><a href="1021-cluster.html#cb354-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb354-24"><a href="1021-cluster.html#cb354-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb354-25"><a href="1021-cluster.html#cb354-25" aria-hidden="true" tabindex="-1"></a><span class="co"># 把自定义标签颜色应用到聚类树中</span></span>
+<span id="cb354-26"><a href="1021-cluster.html#cb354-26" aria-hidden="true" tabindex="-1"></a>diyDendro <span class="ot">=</span> <span class="fu">dendrapply</span>(dhc, colLab)    </span>
+<span id="cb354-27"><a href="1021-cluster.html#cb354-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb354-28"><a href="1021-cluster.html#cb354-28" aria-hidden="true" tabindex="-1"></a><span class="co"># 画图</span></span>
+<span id="cb354-29"><a href="1021-cluster.html#cb354-29" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(diyDendro, <span class="at">main =</span> <span class="st">&quot;DIY Dendrogram&quot;</span>)  </span>
+<span id="cb354-30"><a href="1021-cluster.html#cb354-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb354-31"><a href="1021-cluster.html#cb354-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 加图例</span></span>
+<span id="cb354-32"><a href="1021-cluster.html#cb354-32" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, </span>
+<span id="cb354-33"><a href="1021-cluster.html#cb354-33" aria-hidden="true" tabindex="-1"></a>     <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Cluster 1&quot;</span>,<span class="st">&quot;Cluster 2&quot;</span>,<span class="st">&quot;Cluster 3&quot;</span>,<span class="st">&quot;Cluster 4&quot;</span>,<span class="st">&quot;Cluster 5&quot;</span>), </span>
+<span id="cb354-34"><a href="1021-cluster.html#cb354-34" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;#CDB380&quot;</span>, <span class="st">&quot;#036564&quot;</span>, <span class="st">&quot;#EB6841&quot;</span>, <span class="st">&quot;#EDC951&quot;</span>, <span class="st">&quot;#487AA1&quot;</span>), </span>
+<span id="cb354-35"><a href="1021-cluster.html#cb354-35" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>,<span class="dv">20</span>), <span class="at">bty =</span> <span class="st">&quot;n&quot;</span>, <span class="at">pt.cex =</span> <span class="dv">2</span>, <span class="at">cex =</span> <span class="dv">1</span> , </span>
+<span id="cb354-36"><a href="1021-cluster.html#cb354-36" aria-hidden="true" tabindex="-1"></a>     <span class="at">text.col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">horiz =</span> <span class="cn">FALSE</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>))</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>如果想要更加精美的聚类分析可视化，可以参考之前的几篇推文：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/YPz9pL2fDQ7cFX9_Fyw1yg">又是聚类分析可视化</a></li>
+<li><a href="https://mp.weixin.qq.com/s/6ISVHQD5KdSbTEdZSXrrkA">R语言可视化聚类树</a></li>
+<li><a href="https://mp.weixin.qq.com/s/mKlgE43h5XDz1td71lF-AQ">R语言画好看的聚类树</a></li>
+</ul>
+<p>参考资料：</p>
+<ol style="list-style-type: decimal">
+<li>R帮助文档</li>
+<li><a href="https://r-graph-gallery.com/31-custom-colors-in-dendrogram.html" class="uri">https://r-graph-gallery.com/31-custom-colors-in-dendrogram.html</a></li>
+<li><a href="https://www.gastonsanchez.com/visually-enforced/how-to/2012/10/0/Dendrograms/" class="uri">https://www.gastonsanchez.com/visually-enforced/how-to/2012/10/0/Dendrograms/</a></li>
+</ol>
+</div>
+<div id="快速聚类划分聚类partitioning-clustering" class="section level2 hasAnchor" number="21.3">
+<h2><span class="header-section-number">21.3</span> 快速聚类（划分聚类,partitioning clustering）<a href="1021-cluster.html#快速聚类划分聚类partitioning-clustering" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="k-means聚类" class="section level3 hasAnchor" number="21.3.1">
+<h3><span class="header-section-number">21.3.1</span> K-means聚类<a href="1021-cluster.html#k-means聚类" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>K-means聚类，K均值聚类，是快速聚类的一种。比层次聚类更适合大样本的数据。在R语言中可以通过<code>kmeans()</code>实现K均值聚类。</p>
+<p>使用K均值聚类处理178种葡萄酒中13种化学成分的数据集。</p>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="1021-cluster.html#cb355-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(wine, <span class="at">package =</span> <span class="st">&quot;rattle&quot;</span>)</span>
+<span id="cb355-2"><a href="1021-cluster.html#cb355-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">scale</span>(wine[,<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb355-3"><a href="1021-cluster.html#cb355-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb355-4"><a href="1021-cluster.html#cb355-4" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headTail</span>(df)</span>
+<span id="cb355-5"><a href="1021-cluster.html#cb355-5" aria-hidden="true" tabindex="-1"></a><span class="do">##     Alcohol Malic   Ash Alcalinity Magnesium Phenols Flavanoids Nonflavanoids</span></span>
+<span id="cb355-6"><a href="1021-cluster.html#cb355-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 1      1.51 -0.56  0.23      -1.17      1.91    0.81       1.03         -0.66</span></span>
+<span id="cb355-7"><a href="1021-cluster.html#cb355-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 2      0.25  -0.5 -0.83      -2.48      0.02    0.57       0.73         -0.82</span></span>
+<span id="cb355-8"><a href="1021-cluster.html#cb355-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 3       0.2  0.02  1.11      -0.27      0.09    0.81       1.21          -0.5</span></span>
+<span id="cb355-9"><a href="1021-cluster.html#cb355-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 4      1.69 -0.35  0.49      -0.81      0.93    2.48       1.46         -0.98</span></span>
+<span id="cb355-10"><a href="1021-cluster.html#cb355-10" aria-hidden="true" tabindex="-1"></a><span class="do">## ...     ...   ...   ...        ...       ...     ...        ...           ...</span></span>
+<span id="cb355-11"><a href="1021-cluster.html#cb355-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 175    0.49  1.41  0.41       1.05      0.16   -0.79      -1.28          0.55</span></span>
+<span id="cb355-12"><a href="1021-cluster.html#cb355-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 176    0.33  1.74 -0.39       0.15      1.42   -1.13      -1.34          0.55</span></span>
+<span id="cb355-13"><a href="1021-cluster.html#cb355-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 177    0.21  0.23  0.01       0.15      1.42   -1.03      -1.35          1.35</span></span>
+<span id="cb355-14"><a href="1021-cluster.html#cb355-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 178    1.39  1.58  1.36        1.5     -0.26   -0.39      -1.27          1.59</span></span>
+<span id="cb355-15"><a href="1021-cluster.html#cb355-15" aria-hidden="true" tabindex="-1"></a><span class="do">##     Proanthocyanins Color   Hue Dilution Proline</span></span>
+<span id="cb355-16"><a href="1021-cluster.html#cb355-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 1              1.22  0.25  0.36     1.84    1.01</span></span>
+<span id="cb355-17"><a href="1021-cluster.html#cb355-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 2             -0.54 -0.29   0.4     1.11    0.96</span></span>
+<span id="cb355-18"><a href="1021-cluster.html#cb355-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 3              2.13  0.27  0.32     0.79    1.39</span></span>
+<span id="cb355-19"><a href="1021-cluster.html#cb355-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 4              1.03  1.18 -0.43     1.18    2.33</span></span>
+<span id="cb355-20"><a href="1021-cluster.html#cb355-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ...             ...   ...   ...      ...     ...</span></span>
+<span id="cb355-21"><a href="1021-cluster.html#cb355-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 175           -0.32  0.97 -1.13    -1.48    0.01</span></span>
+<span id="cb355-22"><a href="1021-cluster.html#cb355-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 176           -0.42  2.22 -1.61    -1.48    0.28</span></span>
+<span id="cb355-23"><a href="1021-cluster.html#cb355-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 177           -0.23  1.83 -1.56     -1.4     0.3</span></span>
+<span id="cb355-24"><a href="1021-cluster.html#cb355-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 178           -0.42  1.79 -1.52    -1.42   -0.59</span></span></code></pre></div>
+<p>进行K均值聚类时，需要在一开始就指定聚类的个数，我们也可以通过<code>NbClust</code>包实现这个过程。</p>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="1021-cluster.html#cb356-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(NbClust)</span>
+<span id="cb356-2"><a href="1021-cluster.html#cb356-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb356-3"><a href="1021-cluster.html#cb356-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb356-4"><a href="1021-cluster.html#cb356-4" aria-hidden="true" tabindex="-1"></a>nc <span class="ot">&lt;-</span> <span class="fu">NbClust</span>(df, <span class="at">min.nc =</span> <span class="dv">2</span>, <span class="at">max.nc =</span> <span class="dv">15</span>, <span class="at">method =</span> <span class="st">&quot;kmeans&quot;</span>)<span class="co"># 方法选择kmeans</span></span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-14-1.png" width="90%" /></p>
+<pre><code>## *** : The Hubert index is a graphical method of determining the number of clusters.
+##                 In the plot of Hubert index, we seek a significant knee that corresponds to a 
+##                 significant increase of the value of the measure i.e the significant peak in Hubert
+##                 index second differences plot. 
+## </code></pre>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-14-2.png" width="90%" /></p>
+<pre><code>## *** : The D index is a graphical method of determining the number of clusters. 
+##                 In the plot of D index, we seek a significant knee (the significant peak in Dindex
+##                 second differences plot) that corresponds to a significant increase of the value of
+##                 the measure. 
+##  
+## ******************************************************************* 
+## * Among all indices:                                                
+## * 2 proposed 2 as the best number of clusters 
+## * 19 proposed 3 as the best number of clusters 
+## * 1 proposed 14 as the best number of clusters 
+## * 1 proposed 15 as the best number of clusters 
+## 
+##                    ***** Conclusion *****                            
+##  
+## * According to the majority rule, the best number of clusters is  3 
+##  
+##  
+## *******************************************************************</code></pre>
+<p>结果中给出了划分依据以及最佳的聚类数目为3个，可以画图查看结果：</p>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="1021-cluster.html#cb359-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(nc<span class="sc">$</span>Best.nc[<span class="dv">1</span>,])</span>
+<span id="cb359-2"><a href="1021-cluster.html#cb359-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb359-3"><a href="1021-cluster.html#cb359-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  0  1  2  3 14 15 </span></span>
+<span id="cb359-4"><a href="1021-cluster.html#cb359-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  2  1  2 19  1  1</span></span>
+<span id="cb359-5"><a href="1021-cluster.html#cb359-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb359-6"><a href="1021-cluster.html#cb359-6" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">table</span>(nc<span class="sc">$</span>Best.nc[<span class="dv">1</span>,]),</span>
+<span id="cb359-7"><a href="1021-cluster.html#cb359-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">&quot;聚类数目&quot;</span>,</span>
+<span id="cb359-8"><a href="1021-cluster.html#cb359-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">&quot;评判准则个数&quot;</span></span>
+<span id="cb359-9"><a href="1021-cluster.html#cb359-9" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
+<p>可以看到聚类数目为3是最佳的选择。</p>
+<p>确定最佳聚类个数过程也可以通过非常好用的R包<code>factoextra</code>实现。</p>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="1021-cluster.html#cb360-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
+<span id="cb360-2"><a href="1021-cluster.html#cb360-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: ggplot2</span></span>
+<span id="cb360-3"><a href="1021-cluster.html#cb360-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa</span></span>
+<span id="cb360-4"><a href="1021-cluster.html#cb360-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb360-5"><a href="1021-cluster.html#cb360-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb360-6"><a href="1021-cluster.html#cb360-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_nbclust</span>(df, kmeans, <span class="at">k.max =</span> <span class="dv">15</span>)</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-16-1.png" width="90%" /></p>
+<p>这个结果给出的最佳聚类个数也是3个。</p>
+<p>下面进行K均值聚类，聚类数目设为3.</p>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="1021-cluster.html#cb361-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb361-2"><a href="1021-cluster.html#cb361-2" aria-hidden="true" tabindex="-1"></a>fit.km <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(df, <span class="at">centers =</span> <span class="dv">3</span>, <span class="at">nstart =</span> <span class="dv">25</span>)</span>
+<span id="cb361-3"><a href="1021-cluster.html#cb361-3" aria-hidden="true" tabindex="-1"></a>fit.km</span>
+<span id="cb361-4"><a href="1021-cluster.html#cb361-4" aria-hidden="true" tabindex="-1"></a><span class="do">## K-means clustering with 3 clusters of sizes 51, 62, 65</span></span>
+<span id="cb361-5"><a href="1021-cluster.html#cb361-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb361-6"><a href="1021-cluster.html#cb361-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Cluster means:</span></span>
+<span id="cb361-7"><a href="1021-cluster.html#cb361-7" aria-hidden="true" tabindex="-1"></a><span class="do">##      Alcohol      Malic        Ash Alcalinity   Magnesium     Phenols</span></span>
+<span id="cb361-8"><a href="1021-cluster.html#cb361-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  0.1644436  0.8690954  0.1863726  0.5228924 -0.07526047 -0.97657548</span></span>
+<span id="cb361-9"><a href="1021-cluster.html#cb361-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  0.8328826 -0.3029551  0.3636801 -0.6084749  0.57596208  0.88274724</span></span>
+<span id="cb361-10"><a href="1021-cluster.html#cb361-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -0.9234669 -0.3929331 -0.4931257  0.1701220 -0.49032869 -0.07576891</span></span>
+<span id="cb361-11"><a href="1021-cluster.html#cb361-11" aria-hidden="true" tabindex="-1"></a><span class="do">##    Flavanoids Nonflavanoids Proanthocyanins      Color        Hue   Dilution</span></span>
+<span id="cb361-12"><a href="1021-cluster.html#cb361-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -1.21182921    0.72402116     -0.77751312  0.9388902 -1.1615122 -1.2887761</span></span>
+<span id="cb361-13"><a href="1021-cluster.html#cb361-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  0.97506900   -0.56050853      0.57865427  0.1705823  0.4726504  0.7770551</span></span>
+<span id="cb361-14"><a href="1021-cluster.html#cb361-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  0.02075402   -0.03343924      0.05810161 -0.8993770  0.4605046  0.2700025</span></span>
+<span id="cb361-15"><a href="1021-cluster.html#cb361-15" aria-hidden="true" tabindex="-1"></a><span class="do">##      Proline</span></span>
+<span id="cb361-16"><a href="1021-cluster.html#cb361-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -0.4059428</span></span>
+<span id="cb361-17"><a href="1021-cluster.html#cb361-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  1.1220202</span></span>
+<span id="cb361-18"><a href="1021-cluster.html#cb361-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -0.7517257</span></span>
+<span id="cb361-19"><a href="1021-cluster.html#cb361-19" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb361-20"><a href="1021-cluster.html#cb361-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Clustering vector:</span></span>
+<span id="cb361-21"><a href="1021-cluster.html#cb361-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   [1] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
+<span id="cb361-22"><a href="1021-cluster.html#cb361-22" aria-hidden="true" tabindex="-1"></a><span class="do">##  [38] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 1 3 3 3 3 3 3 3 3 3 3 3 2</span></span>
+<span id="cb361-23"><a href="1021-cluster.html#cb361-23" aria-hidden="true" tabindex="-1"></a><span class="do">##  [75] 3 3 3 3 3 3 3 3 3 1 3 3 3 3 3 3 3 3 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
+<span id="cb361-24"><a href="1021-cluster.html#cb361-24" aria-hidden="true" tabindex="-1"></a><span class="do">## [112] 3 3 3 3 3 3 3 1 3 3 2 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
+<span id="cb361-25"><a href="1021-cluster.html#cb361-25" aria-hidden="true" tabindex="-1"></a><span class="do">## [149] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
+<span id="cb361-26"><a href="1021-cluster.html#cb361-26" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb361-27"><a href="1021-cluster.html#cb361-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Within cluster sum of squares by cluster:</span></span>
+<span id="cb361-28"><a href="1021-cluster.html#cb361-28" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 326.3537 385.6983 558.6971</span></span>
+<span id="cb361-29"><a href="1021-cluster.html#cb361-29" aria-hidden="true" tabindex="-1"></a><span class="do">##  (between_SS / total_SS =  44.8 %)</span></span>
+<span id="cb361-30"><a href="1021-cluster.html#cb361-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb361-31"><a href="1021-cluster.html#cb361-31" aria-hidden="true" tabindex="-1"></a><span class="do">## Available components:</span></span>
+<span id="cb361-32"><a href="1021-cluster.html#cb361-32" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb361-33"><a href="1021-cluster.html#cb361-33" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;cluster&quot;      &quot;centers&quot;      &quot;totss&quot;        &quot;withinss&quot;     &quot;tot.withinss&quot;</span></span>
+<span id="cb361-34"><a href="1021-cluster.html#cb361-34" aria-hidden="true" tabindex="-1"></a><span class="do">## [6] &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;         &quot;ifault&quot;</span></span></code></pre></div>
+<p>结果很详细，K均值聚类聚为3类，每一类数量分别是51,62,65。然后还给出了聚类中心，每一个观测分别属于哪一个类。</p>
+<p>不管是哪一种聚类方法，<code>factoextra</code>配合<code>factomineR</code>都可以给出非常好看的可视化结果。</p>
+<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="1021-cluster.html#cb362-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(fit.km, <span class="at">data =</span> df)</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-18-1.png" width="90%" /></p>
+<p>有非常多的细节可以调整，大家在使用的时候可以自己尝试，和之前推文中介绍的PCA美化一样，也是支持<code>ggplot2</code>语法的。</p>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="1021-cluster.html#cb363-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(fit.km, <span class="at">data =</span> df, </span>
+<span id="cb363-2"><a href="1021-cluster.html#cb363-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ellipse =</span> T, <span class="co"># 增加椭圆</span></span>
+<span id="cb363-3"><a href="1021-cluster.html#cb363-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">ellipse.type =</span> <span class="st">&quot;t&quot;</span>, <span class="co"># 椭圆类型</span></span>
+<span id="cb363-4"><a href="1021-cluster.html#cb363-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">geom =</span> <span class="st">&quot;point&quot;</span>, <span class="co"># 只显示点不要文字</span></span>
+<span id="cb363-5"><a href="1021-cluster.html#cb363-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette =</span> <span class="st">&quot;lancet&quot;</span>, <span class="co"># 支持超多配色方案</span></span>
+<span id="cb363-6"><a href="1021-cluster.html#cb363-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>() <span class="co"># 支持更换主题</span></span>
+<span id="cb363-7"><a href="1021-cluster.html#cb363-7" aria-hidden="true" tabindex="-1"></a>             )</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+</div>
+<div id="围绕中心点的划分pam" class="section level3 hasAnchor" number="21.3.2">
+<h3><span class="header-section-number">21.3.2</span> 围绕中心点的划分PAM<a href="1021-cluster.html#围绕中心点的划分pam" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>K均值聚类是基于均值的，所以对异常值很敏感。一个更稳健的方法是围绕中心点的划分（PAM）。用一个最有代表性的观测值代表这一类(有点类似于主成分)。K均值聚类一般使用欧几里得距离，而PAM可以使用任意的距离来计算。因此，PAM可以容纳混合数据类型，并且不仅限于连续变量。</p>
+<p>我们还是用葡萄酒数据进行演示。PAM聚类可以通过<code>cluster</code>包中的<code>pam()</code>实现。</p>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="1021-cluster.html#cb364-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb364-2"><a href="1021-cluster.html#cb364-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb364-3"><a href="1021-cluster.html#cb364-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb364-4"><a href="1021-cluster.html#cb364-4" aria-hidden="true" tabindex="-1"></a>fit.pam <span class="ot">&lt;-</span> <span class="fu">pam</span>(wine[<span class="sc">-</span><span class="dv">1</span>,], <span class="at">k=</span><span class="dv">3</span> <span class="co"># 聚为3类</span></span>
+<span id="cb364-5"><a href="1021-cluster.html#cb364-5" aria-hidden="true" tabindex="-1"></a>               , <span class="at">stand =</span> T <span class="co"># 聚类前进行标准化</span></span>
+<span id="cb364-6"><a href="1021-cluster.html#cb364-6" aria-hidden="true" tabindex="-1"></a>               )</span>
+<span id="cb364-7"><a href="1021-cluster.html#cb364-7" aria-hidden="true" tabindex="-1"></a>fit.pam</span>
+<span id="cb364-8"><a href="1021-cluster.html#cb364-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Medoids:</span></span>
+<span id="cb364-9"><a href="1021-cluster.html#cb364-9" aria-hidden="true" tabindex="-1"></a><span class="do">##      ID Type Alcohol Malic  Ash Alcalinity Magnesium Phenols Flavanoids</span></span>
+<span id="cb364-10"><a href="1021-cluster.html#cb364-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 36   35    1   13.48  1.81 2.41       20.5       100    2.70       2.98</span></span>
+<span id="cb364-11"><a href="1021-cluster.html#cb364-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 107 106    2   12.25  1.73 2.12       19.0        80    1.65       2.03</span></span>
+<span id="cb364-12"><a href="1021-cluster.html#cb364-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 149 148    3   13.32  3.24 2.38       21.5        92    1.93       0.76</span></span>
+<span id="cb364-13"><a href="1021-cluster.html#cb364-13" aria-hidden="true" tabindex="-1"></a><span class="do">##     Nonflavanoids Proanthocyanins Color  Hue Dilution Proline</span></span>
+<span id="cb364-14"><a href="1021-cluster.html#cb364-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 36           0.26            1.86  5.10 1.04     3.47     920</span></span>
+<span id="cb364-15"><a href="1021-cluster.html#cb364-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 107          0.37            1.63  3.40 1.00     3.17     510</span></span>
+<span id="cb364-16"><a href="1021-cluster.html#cb364-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 149          0.45            1.25  8.42 0.55     1.62     650</span></span>
+<span id="cb364-17"><a href="1021-cluster.html#cb364-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Clustering vector:</span></span>
+<span id="cb364-18"><a href="1021-cluster.html#cb364-18" aria-hidden="true" tabindex="-1"></a><span class="do">##   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21 </span></span>
+<span id="cb364-19"><a href="1021-cluster.html#cb364-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 </span></span>
+<span id="cb364-20"><a href="1021-cluster.html#cb364-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41 </span></span>
+<span id="cb364-21"><a href="1021-cluster.html#cb364-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 </span></span>
+<span id="cb364-22"><a href="1021-cluster.html#cb364-22" aria-hidden="true" tabindex="-1"></a><span class="do">##  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61 </span></span>
+<span id="cb364-23"><a href="1021-cluster.html#cb364-23" aria-hidden="true" tabindex="-1"></a><span class="do">##   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   2   2 </span></span>
+<span id="cb364-24"><a href="1021-cluster.html#cb364-24" aria-hidden="true" tabindex="-1"></a><span class="do">##  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81 </span></span>
+<span id="cb364-25"><a href="1021-cluster.html#cb364-25" aria-hidden="true" tabindex="-1"></a><span class="do">##   2   2   1   2   1   2   2   2   1   2   1   2   1   1   2   2   2   2   1   2 </span></span>
+<span id="cb364-26"><a href="1021-cluster.html#cb364-26" aria-hidden="true" tabindex="-1"></a><span class="do">##  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 </span></span>
+<span id="cb364-27"><a href="1021-cluster.html#cb364-27" aria-hidden="true" tabindex="-1"></a><span class="do">##   2   2   3   2   2   2   2   2   2   2   2   2   2   2   1   1   2   1   2   2 </span></span>
+<span id="cb364-28"><a href="1021-cluster.html#cb364-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 </span></span>
+<span id="cb364-29"><a href="1021-cluster.html#cb364-29" aria-hidden="true" tabindex="-1"></a><span class="do">##   2   2   2   2   2   2   2   2   1   2   2   2   2   2   2   2   2   2   2   2 </span></span>
+<span id="cb364-30"><a href="1021-cluster.html#cb364-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 </span></span>
+<span id="cb364-31"><a href="1021-cluster.html#cb364-31" aria-hidden="true" tabindex="-1"></a><span class="do">##   1   2   2   2   2   2   2   2   2   3   3   3   3   3   3   3   3   3   3   3 </span></span>
+<span id="cb364-32"><a href="1021-cluster.html#cb364-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 </span></span>
+<span id="cb364-33"><a href="1021-cluster.html#cb364-33" aria-hidden="true" tabindex="-1"></a><span class="do">##   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 </span></span>
+<span id="cb364-34"><a href="1021-cluster.html#cb364-34" aria-hidden="true" tabindex="-1"></a><span class="do">## 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 </span></span>
+<span id="cb364-35"><a href="1021-cluster.html#cb364-35" aria-hidden="true" tabindex="-1"></a><span class="do">##   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 </span></span>
+<span id="cb364-36"><a href="1021-cluster.html#cb364-36" aria-hidden="true" tabindex="-1"></a><span class="do">## Objective function:</span></span>
+<span id="cb364-37"><a href="1021-cluster.html#cb364-37" aria-hidden="true" tabindex="-1"></a><span class="do">##    build     swap </span></span>
+<span id="cb364-38"><a href="1021-cluster.html#cb364-38" aria-hidden="true" tabindex="-1"></a><span class="do">## 3.537365 3.504175 </span></span>
+<span id="cb364-39"><a href="1021-cluster.html#cb364-39" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb364-40"><a href="1021-cluster.html#cb364-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Available components:</span></span>
+<span id="cb364-41"><a href="1021-cluster.html#cb364-41" aria-hidden="true" tabindex="-1"></a><span class="do">##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; </span></span>
+<span id="cb364-42"><a href="1021-cluster.html#cb364-42" aria-hidden="true" tabindex="-1"></a><span class="do">##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</span></span></code></pre></div>
+<p><code>Medoids</code>给出了中心点，用第35个观测代表第1类，第107个观测代表第2类，第149个观测代表第3类。<code>Clustering vector</code>给出了每一个观测分别属于哪一个类。结果可以画出来：</p>
+<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="1021-cluster.html#cb365-1" aria-hidden="true" tabindex="-1"></a><span class="fu">clusplot</span>(fit.pam, <span class="at">main =</span> <span class="st">&quot;PAM cluster&quot;</span>)</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+<p>同样也可以用<code>factoextra</code>包实现可视化。</p>
+<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="1021-cluster.html#cb366-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cluster</span>(fit.pam, </span>
+<span id="cb366-2"><a href="1021-cluster.html#cb366-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">ellipse =</span> T, <span class="co"># 增加椭圆</span></span>
+<span id="cb366-3"><a href="1021-cluster.html#cb366-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">ellipse.type =</span> <span class="st">&quot;t&quot;</span>, <span class="co"># 椭圆类型</span></span>
+<span id="cb366-4"><a href="1021-cluster.html#cb366-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">geom =</span> <span class="st">&quot;point&quot;</span>, <span class="co"># 只显示点不要文字</span></span>
+<span id="cb366-5"><a href="1021-cluster.html#cb366-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette =</span> <span class="st">&quot;aaas&quot;</span>, <span class="co"># 支持超多配色方案</span></span>
+<span id="cb366-6"><a href="1021-cluster.html#cb366-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>() <span class="co"># 支持更换主题</span></span>
+<span id="cb366-7"><a href="1021-cluster.html#cb366-7" aria-hidden="true" tabindex="-1"></a>             )</span></code></pre></div>
+<p><img src="1021-cluster_files/figure-html/unnamed-chunk-22-1.png" width="90%" /></p>
+<p>以后会给大家带来<code>factoextra</code>和<code>factomineR</code>包的详细介绍。</p>
+
+</div>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1020-discriminant.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1022-pca.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

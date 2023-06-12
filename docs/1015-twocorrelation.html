@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>15 双变量回归与相关 | R语言实战医学统计</title>
+  <meta name="description" content="15 双变量回归与相关 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="15 双变量回归与相关 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="15 双变量回归与相关 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="15 双变量回归与相关 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="15 双变量回归与相关 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1014-rstatixmanyvariables.html"/>
+<link rel="next" href="1016-piancorrelation.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,57 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="oirjglsj" class="section level1 hasAnchor" number="15">
+<h1><span class="header-section-number">15</span> 双变量回归与相关<a href="1015-twocorrelation.html#oirjglsj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>在R语言里实现非常简单，上文也介绍过使用rstatix进行相关分析。</p>
+<div id="两样本相关" class="section level2 hasAnchor" number="15.1">
+<h2><span class="header-section-number">15.1</span> 两样本相关<a href="1015-twocorrelation.html#两样本相关" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例9-5</strong>的数据。</p>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="1015-twocorrelation.html#cb240-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb240-2"><a href="1015-twocorrelation.html#cb240-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight =</span> <span class="fu">c</span>(<span class="dv">43</span>,<span class="dv">74</span>,<span class="dv">51</span>,<span class="dv">58</span>,<span class="dv">50</span>,<span class="dv">65</span>,<span class="dv">54</span>,<span class="dv">57</span>,<span class="dv">67</span>,<span class="dv">69</span>,<span class="dv">80</span>,<span class="dv">48</span>,<span class="dv">38</span>,<span class="dv">85</span>,<span class="dv">54</span>),</span>
+<span id="cb240-3"><a href="1015-twocorrelation.html#cb240-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">kv =</span> <span class="fu">c</span>(<span class="fl">217.22</span>,<span class="fl">316.18</span>,<span class="fl">231.11</span>,<span class="fl">220.96</span>,<span class="fl">254.70</span>,<span class="fl">293.84</span>,<span class="fl">263.28</span>,<span class="fl">271.73</span>,<span class="fl">263.46</span>,</span>
+<span id="cb240-4"><a href="1015-twocorrelation.html#cb240-4" aria-hidden="true" tabindex="-1"></a>         <span class="fl">276.53</span>,<span class="fl">341.15</span>,<span class="fl">261.00</span>,<span class="fl">213.20</span>,<span class="fl">315.12</span>,<span class="fl">252.08</span>)</span>
+<span id="cb240-5"><a href="1015-twocorrelation.html#cb240-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb240-6"><a href="1015-twocorrelation.html#cb240-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb240-7"><a href="1015-twocorrelation.html#cb240-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb240-8"><a href="1015-twocorrelation.html#cb240-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    15 obs. of  2 variables:</span></span>
+<span id="cb240-9"><a href="1015-twocorrelation.html#cb240-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ weight: num  43 74 51 58 50 65 54 57 67 69 ...</span></span>
+<span id="cb240-10"><a href="1015-twocorrelation.html#cb240-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ kv    : num  217 316 231 221 255 ...</span></span></code></pre></div>
+<p>两变量是否有关联？其方向和密切程度如何？</p>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="1015-twocorrelation.html#cb241-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(<span class="sc">~</span> weight <span class="sc">+</span> kv, <span class="at">data =</span> df)</span>
+<span id="cb241-2"><a href="1015-twocorrelation.html#cb241-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb241-3"><a href="1015-twocorrelation.html#cb241-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pearson&#39;s product-moment correlation</span></span>
+<span id="cb241-4"><a href="1015-twocorrelation.html#cb241-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb241-5"><a href="1015-twocorrelation.html#cb241-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  weight and kv</span></span>
+<span id="cb241-6"><a href="1015-twocorrelation.html#cb241-6" aria-hidden="true" tabindex="-1"></a><span class="do">## t = 6.5304, df = 13, p-value = 1.911e-05</span></span>
+<span id="cb241-7"><a href="1015-twocorrelation.html#cb241-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true correlation is not equal to 0</span></span>
+<span id="cb241-8"><a href="1015-twocorrelation.html#cb241-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb241-9"><a href="1015-twocorrelation.html#cb241-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  0.6584522 0.9580540</span></span>
+<span id="cb241-10"><a href="1015-twocorrelation.html#cb241-10" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb241-11"><a href="1015-twocorrelation.html#cb241-11" aria-hidden="true" tabindex="-1"></a><span class="do">##       cor </span></span>
+<span id="cb241-12"><a href="1015-twocorrelation.html#cb241-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.8754315</span></span></code></pre></div>
+<p>从结果可以看出，两者是正相关，相关系数r = 0.8754，且p痔小于0.05，具有统计学意义！</p>
+<p>可视化结果：</p>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="1015-twocorrelation.html#cb242-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb242-2"><a href="1015-twocorrelation.html#cb242-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</span></span>
+<span id="cb242-3"><a href="1015-twocorrelation.html#cb242-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb242-4"><a href="1015-twocorrelation.html#cb242-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(weight, kv)) <span class="sc">+</span></span>
+<span id="cb242-5"><a href="1015-twocorrelation.html#cb242-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb242-6"><a href="1015-twocorrelation.html#cb242-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">&quot;lm&quot;</span>) <span class="sc">+</span></span>
+<span id="cb242-7"><a href="1015-twocorrelation.html#cb242-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb242-8"><a href="1015-twocorrelation.html#cb242-8" aria-hidden="true" tabindex="-1"></a><span class="do">## `geom_smooth()` using formula = &#39;y ~ x&#39;</span></span></code></pre></div>
+<p><img src="1015-twocorrelation_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>相关性分析的过程比较简单，在选择方法时要注意是使用pearson相关还是秩相关。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1014-rstatixmanyvariables.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1016-piancorrelation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 多样本均数比较的方差分析 | R语言实战医学统计</title>
+  <meta name="description" content="2 多样本均数比较的方差分析 | R语言实战医学统计" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 多样本均数比较的方差分析 | R语言实战医学统计" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="2 多样本均数比较的方差分析 | R语言实战医学统计" />
+  <meta name="github-repo" content="ayueme/ayueme.github.io" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 多样本均数比较的方差分析 | R语言实战医学统计" />
+  
+  <meta name="twitter:description" content="2 多样本均数比较的方差分析 | R语言实战医学统计" />
+  
+
+<meta name="author" content="阿越就是我" />
+
+
+<meta name="date" content="2023-06-12" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="1001-ttest.html"/>
+<link rel="next" href="1003-dysanova.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">R语言实战医学统计</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>前言</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#本书缘起"><i class="fa fa-check"></i>本书缘起</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#作者简介"><i class="fa fa-check"></i>作者简介</a></li>
+</ul></li>
+<li class="part"><span><b>I 基础统计分析</b></span></li>
+<li class="chapter" data-level="1" data-path="1001-ttest.html"><a href="1001-ttest.html"><i class="fa fa-check"></i><b>1</b> t检验</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1001-ttest.html"><a href="1001-ttest.html#单样本t检验"><i class="fa fa-check"></i><b>1.1</b> 单样本t检验</a></li>
+<li class="chapter" data-level="1.2" data-path="1001-ttest.html"><a href="1001-ttest.html#配对样本t检验"><i class="fa fa-check"></i><b>1.2</b> 配对样本t检验</a></li>
+<li class="chapter" data-level="1.3" data-path="1001-ttest.html"><a href="1001-ttest.html#两样本t检验"><i class="fa fa-check"></i><b>1.3</b> 两样本t检验</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="1002-anova.html"><a href="1002-anova.html"><i class="fa fa-check"></i><b>2</b> 多样本均数比较的方差分析</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="1002-anova.html"><a href="1002-anova.html#完全随机设计资料的方差分析"><i class="fa fa-check"></i><b>2.1</b> 完全随机设计资料的方差分析</a></li>
+<li class="chapter" data-level="2.2" data-path="1002-anova.html"><a href="1002-anova.html#随机区组设计资料的方差分析"><i class="fa fa-check"></i><b>2.2</b> 随机区组设计资料的方差分析</a></li>
+<li class="chapter" data-level="2.3" data-path="1002-anova.html"><a href="1002-anova.html#拉丁方设计方差分析"><i class="fa fa-check"></i><b>2.3</b> 拉丁方设计方差分析</a></li>
+<li class="chapter" data-level="2.4" data-path="1002-anova.html"><a href="1002-anova.html#两阶段交叉设计资料方差分析"><i class="fa fa-check"></i><b>2.4</b> 两阶段交叉设计资料方差分析</a></li>
+<li class="chapter" data-level="2.5" data-path="1002-anova.html"><a href="1002-anova.html#多个样本均数间的多重比较"><i class="fa fa-check"></i><b>2.5</b> 多个样本均数间的多重比较</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="1002-anova.html"><a href="1002-anova.html#lsd-t检验"><i class="fa fa-check"></i><b>2.5.1</b> LSD-t检验</a></li>
+<li class="chapter" data-level="2.5.2" data-path="1002-anova.html"><a href="1002-anova.html#tukeyhsd"><i class="fa fa-check"></i><b>2.5.2</b> TukeyHSD</a></li>
+<li class="chapter" data-level="2.5.3" data-path="1002-anova.html"><a href="1002-anova.html#dunnett-t检验"><i class="fa fa-check"></i><b>2.5.3</b> Dunnett-t检验</a></li>
+<li class="chapter" data-level="2.5.4" data-path="1002-anova.html"><a href="1002-anova.html#snk-q检验"><i class="fa fa-check"></i><b>2.5.4</b> SNK-q检验</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="1002-anova.html"><a href="1002-anova.html#多样本方差比较的bartlett检验和levene检验"><i class="fa fa-check"></i><b>2.6</b> 多样本方差比较的Bartlett检验和Levene检验</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="1002-anova.html"><a href="1002-anova.html#多样本方差比较的bartlett检验"><i class="fa fa-check"></i><b>2.6.1</b> 多样本方差比较的Bartlett检验</a></li>
+<li class="chapter" data-level="2.6.2" data-path="1002-anova.html"><a href="1002-anova.html#多样本方差比较的levene检验"><i class="fa fa-check"></i><b>2.6.2</b> 多样本方差比较的Levene检验</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="1003-dysanova.html"><a href="1003-dysanova.html"><i class="fa fa-check"></i><b>3</b> 多因素方差分析</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="1003-dysanova.html"><a href="1003-dysanova.html#x-2-两因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.1</b> 2 x 2 两因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.2" data-path="1003-dysanova.html"><a href="1003-dysanova.html#i-x-j-两因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.2</b> I x J 两因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.3" data-path="1003-dysanova.html"><a href="1003-dysanova.html#i-x-j-x-k-三因素析因设计资料的方差分析"><i class="fa fa-check"></i><b>3.3</b> I x J x K 三因素析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.4" data-path="1003-dysanova.html"><a href="1003-dysanova.html#正交设计资料的方差分析"><i class="fa fa-check"></i><b>3.4</b> 正交设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.5" data-path="1003-dysanova.html"><a href="1003-dysanova.html#嵌套设计资料的方差分析"><i class="fa fa-check"></i><b>3.5</b> 嵌套设计资料的方差分析</a></li>
+<li class="chapter" data-level="3.6" data-path="1003-dysanova.html"><a href="1003-dysanova.html#裂区设计资料的方差分析"><i class="fa fa-check"></i><b>3.6</b> 裂区设计资料的方差分析</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html"><i class="fa fa-check"></i><b>4</b> 重复测量方差分析</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html#重复测量数据两因素两水平的方差分析"><i class="fa fa-check"></i><b>4.1</b> 重复测量数据两因素两水平的方差分析</a></li>
+<li class="chapter" data-level="4.2" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html#重复测量数据两因素多水平的分析"><i class="fa fa-check"></i><b>4.2</b> 重复测量数据两因素多水平的分析</a></li>
+<li class="chapter" data-level="4.3" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html#重复测量数据的多重比较"><i class="fa fa-check"></i><b>4.3</b> 重复测量数据的多重比较</a>
+<ul>
+<li class="chapter" data-level="4.3.1" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html#组间差别多重比较"><i class="fa fa-check"></i><b>4.3.1</b> 组间差别多重比较</a></li>
+<li class="chapter" data-level="4.3.2" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html#时间趋势比较"><i class="fa fa-check"></i><b>4.3.2</b> 时间趋势比较</a></li>
+<li class="chapter" data-level="4.3.3" data-path="1004-repeatedmeaanova.html"><a href="1004-repeatedmeaanova.html#时间点比较"><i class="fa fa-check"></i><b>4.3.3</b> 时间点比较</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="1005-ancova.html"><a href="1005-ancova.html"><i class="fa fa-check"></i><b>5</b> 协方差分析</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="1005-ancova.html"><a href="1005-ancova.html#完全随机设计资料的协方差分析"><i class="fa fa-check"></i><b>5.1</b> 完全随机设计资料的协方差分析</a></li>
+<li class="chapter" data-level="5.2" data-path="1005-ancova.html"><a href="1005-ancova.html#使用rstatix进行优雅的协方差分析"><i class="fa fa-check"></i><b>5.2</b> 使用rstatix进行优雅的协方差分析</a></li>
+<li class="chapter" data-level="5.3" data-path="1005-ancova.html"><a href="1005-ancova.html#随机区组设计资料的协方差分析"><i class="fa fa-check"></i><b>5.3</b> 随机区组设计资料的协方差分析</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="1006-chisq.html"><a href="1006-chisq.html"><i class="fa fa-check"></i><b>6</b> 卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="1006-chisq.html"><a href="1006-chisq.html#不同类型卡方检验的选择"><i class="fa fa-check"></i><b>6.1</b> 不同类型卡方检验的选择</a></li>
+<li class="chapter" data-level="6.2" data-path="1006-chisq.html"><a href="1006-chisq.html#四格表资料的卡方检验"><i class="fa fa-check"></i><b>6.2</b> 四格表资料的卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="1006-chisq.html"><a href="1006-chisq.html#方法1"><i class="fa fa-check"></i><b>6.2.1</b> 方法1</a></li>
+<li class="chapter" data-level="6.2.2" data-path="1006-chisq.html"><a href="1006-chisq.html#方法2"><i class="fa fa-check"></i><b>6.2.2</b> 方法2</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="1006-chisq.html"><a href="1006-chisq.html#配对四格表资料的卡方检验"><i class="fa fa-check"></i><b>6.3</b> 配对四格表资料的卡方检验</a></li>
+<li class="chapter" data-level="6.4" data-path="1006-chisq.html"><a href="1006-chisq.html#四格表资料的-fisher-确切概率法"><i class="fa fa-check"></i><b>6.4</b> 四格表资料的 Fisher 确切概率法</a></li>
+<li class="chapter" data-level="6.5" data-path="1006-chisq.html"><a href="1006-chisq.html#行-x-列表资料的卡方检验"><i class="fa fa-check"></i><b>6.5</b> 行 x 列表资料的卡方检验</a>
+<ul>
+<li class="chapter" data-level="6.5.1" data-path="1006-chisq.html"><a href="1006-chisq.html#多个样本率的比较"><i class="fa fa-check"></i><b>6.5.1</b> 多个样本率的比较</a></li>
+<li class="chapter" data-level="6.5.2" data-path="1006-chisq.html"><a href="1006-chisq.html#样本构成比的比较"><i class="fa fa-check"></i><b>6.5.2</b> 样本构成比的比较</a></li>
+<li class="chapter" data-level="6.5.3" data-path="1006-chisq.html"><a href="1006-chisq.html#双向无序分类资料的关联性检验"><i class="fa fa-check"></i><b>6.5.3</b> 双向无序分类资料的关联性检验</a></li>
+<li class="chapter" data-level="6.5.4" data-path="1006-chisq.html"><a href="1006-chisq.html#双向有序分组资料的线性趋势检验"><i class="fa fa-check"></i><b>6.5.4</b> 双向有序分组资料的线性趋势检验</a></li>
+</ul></li>
+<li class="chapter" data-level="6.6" data-path="1006-chisq.html"><a href="1006-chisq.html#多个样本率间的多重比较"><i class="fa fa-check"></i><b>6.6</b> 多个样本率间的多重比较</a></li>
+<li class="chapter" data-level="6.7" data-path="1006-chisq.html"><a href="1006-chisq.html#cochran-mantel-haenszel-卡方统计量检验"><i class="fa fa-check"></i><b>6.7</b> Cochran-Mantel-Haenszel 卡方统计量检验</a></li>
+<li class="chapter" data-level="6.8" data-path="1006-chisq.html"><a href="1006-chisq.html#频数分布拟合优度卡方检验"><i class="fa fa-check"></i><b>6.8</b> 频数分布拟合优度卡方检验</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html"><i class="fa fa-check"></i><b>7</b> 秩和检验</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#配对样本比较的wilcoxon符号秩检验"><i class="fa fa-check"></i><b>7.1</b> 配对样本比较的Wilcoxon符号秩检验</a></li>
+<li class="chapter" data-level="7.2" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#两独立样本比较的wilcoxon符号秩检验"><i class="fa fa-check"></i><b>7.2</b> 两独立样本比较的Wilcoxon符号秩检验</a></li>
+<li class="chapter" data-level="7.3" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#完全随机设计多个样本比较的-kruskal-wallis-h-检验"><i class="fa fa-check"></i><b>7.3</b> 完全随机设计多个样本比较的 Kruskal-Wallis H 检验</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#多样本比较的kruskal-wallis-h检验"><i class="fa fa-check"></i><b>7.3.1</b> 多样本比较的kruskal-wallis H检验</a></li>
+<li class="chapter" data-level="7.3.2" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#kruskal-wallis-h检验后的多重比较"><i class="fa fa-check"></i><b>7.3.2</b> kruskal-Wallis H检验后的多重比较</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#随记区组设计多个样本比较的-friedman-m-检验"><i class="fa fa-check"></i><b>7.4</b> 随记区组设计多个样本比较的 Friedman M 检验</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#多个相关样本比较的friedman-m检验"><i class="fa fa-check"></i><b>7.4.1</b> 多个相关样本比较的Friedman M检验</a></li>
+<li class="chapter" data-level="7.4.2" data-path="1007-wilcoxn.html"><a href="1007-wilcoxn.html#多个相关样本两两比较的q检验"><i class="fa fa-check"></i><b>7.4.2</b> 多个相关样本两两比较的q检验</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="1008-mauchlytest.html"><a href="1008-mauchlytest.html"><i class="fa fa-check"></i><b>8</b> 球对称检验</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="1008-mauchlytest.html"><a href="1008-mauchlytest.html#球对称检验"><i class="fa fa-check"></i><b>8.1</b> 球对称检验</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="1008-mauchlytest.html"><a href="1008-mauchlytest.html#使用课本表12-3的数据"><i class="fa fa-check"></i><b>8.1.1</b> 使用课本<strong>表12-3</strong>的数据</a></li>
+<li class="chapter" data-level="8.1.2" data-path="1008-mauchlytest.html"><a href="1008-mauchlytest.html#使用课本例12-3的数据"><i class="fa fa-check"></i><b>8.1.2</b> 使用课本<strong>例12-3</strong>的数据</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="1009-cochranarmitage.html"><a href="1009-cochranarmitage.html"><i class="fa fa-check"></i><b>9</b> R语言Cochran Armitage检验</a></li>
+<li class="chapter" data-level="10" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html"><i class="fa fa-check"></i><b>10</b> R语言方差分析注意事项</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html#均衡设计和非均衡设计"><i class="fa fa-check"></i><b>10.1</b> 均衡设计和非均衡设计</a></li>
+<li class="chapter" data-level="10.2" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html#方差分析的3种类型"><i class="fa fa-check"></i><b>10.2</b> 方差分析的3种类型</a></li>
+<li class="chapter" data-level="10.3" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html#示例"><i class="fa fa-check"></i><b>10.3</b> 示例</a>
+<ul>
+<li class="chapter" data-level="10.3.1" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html#one-way-anova"><i class="fa fa-check"></i><b>10.3.1</b> one-way anova</a></li>
+<li class="chapter" data-level="10.3.2" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html#two-way-anova"><i class="fa fa-check"></i><b>10.3.2</b> two-way anova</a></li>
+<li class="chapter" data-level="10.3.3" data-path="1010-anovaattention.html"><a href="1010-anovaattention.html#协方差分析"><i class="fa fa-check"></i><b>10.3.3</b> 协方差分析</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="1011-samplesize.html"><a href="1011-samplesize.html"><i class="fa fa-check"></i><b>11</b> 样本量计算</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="1011-samplesize.html"><a href="1011-samplesize.html#t检验的样本量计算"><i class="fa fa-check"></i><b>11.1</b> t检验的样本量计算</a>
+<ul>
+<li class="chapter" data-level="11.1.1" data-path="1011-samplesize.html"><a href="1011-samplesize.html#单样本t检验样本均数和已知总体均数比较"><i class="fa fa-check"></i><b>11.1.1</b> 单样本t检验（样本均数和已知总体均数比较）</a></li>
+<li class="chapter" data-level="11.1.2" data-path="1011-samplesize.html"><a href="1011-samplesize.html#两样本t检验两样本均数比较"><i class="fa fa-check"></i><b>11.1.2</b> 两样本t检验（两样本均数比较）</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="1011-samplesize.html"><a href="1011-samplesize.html#多样本均数比较"><i class="fa fa-check"></i><b>11.2</b> 多样本均数比较</a></li>
+<li class="chapter" data-level="11.3" data-path="1011-samplesize.html"><a href="1011-samplesize.html#样本率和已知总体率的比较"><i class="fa fa-check"></i><b>11.3</b> 样本率和已知总体率的比较</a></li>
+<li class="chapter" data-level="11.4" data-path="1011-samplesize.html"><a href="1011-samplesize.html#两独立样本率的比较"><i class="fa fa-check"></i><b>11.4</b> 两独立样本率的比较</a></li>
+<li class="chapter" data-level="11.5" data-path="1011-samplesize.html"><a href="1011-samplesize.html#多样本率的比较"><i class="fa fa-check"></i><b>11.5</b> 多样本率的比较</a></li>
+<li class="chapter" data-level="11.6" data-path="1011-samplesize.html"><a href="1011-samplesize.html#直线相关分析"><i class="fa fa-check"></i><b>11.6</b> 直线相关分析</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="1012-randomgroup.html"><a href="1012-randomgroup.html"><i class="fa fa-check"></i><b>12</b> 随机分组</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="1012-randomgroup.html"><a href="1012-randomgroup.html#简单随机"><i class="fa fa-check"></i><b>12.1</b> 简单随机</a></li>
+<li class="chapter" data-level="12.2" data-path="1012-randomgroup.html"><a href="1012-randomgroup.html#区组随机"><i class="fa fa-check"></i><b>12.2</b> 区组随机</a></li>
+<li class="chapter" data-level="12.3" data-path="1012-randomgroup.html"><a href="1012-randomgroup.html#分层随机"><i class="fa fa-check"></i><b>12.3</b> 分层随机</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="1013-rstastix.html"><a href="1013-rstastix.html"><i class="fa fa-check"></i><b>13</b> R语言tidy风格医学统计学</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="1013-rstastix.html"><a href="1013-rstastix.html#主要函数"><i class="fa fa-check"></i><b>13.1</b> 主要函数</a>
+<ul>
+<li class="chapter" data-level="13.1.1" data-path="1013-rstastix.html"><a href="1013-rstastix.html#描述性统计"><i class="fa fa-check"></i><b>13.1.1</b> 描述性统计</a></li>
+<li class="chapter" data-level="13.1.2" data-path="1013-rstastix.html"><a href="1013-rstastix.html#比较均值"><i class="fa fa-check"></i><b>13.1.2</b> 比较均值</a></li>
+<li class="chapter" data-level="13.1.3" data-path="1013-rstastix.html"><a href="1013-rstastix.html#增强r中的anova"><i class="fa fa-check"></i><b>13.1.3</b> 增强R中的ANOVA</a></li>
+<li class="chapter" data-level="13.1.4" data-path="1013-rstastix.html"><a href="1013-rstastix.html#事后检验post-hoc"><i class="fa fa-check"></i><b>13.1.4</b> 事后检验（post-hoc）</a></li>
+<li class="chapter" data-level="13.1.5" data-path="1013-rstastix.html"><a href="1013-rstastix.html#比较比例"><i class="fa fa-check"></i><b>13.1.5</b> 比较比例</a></li>
+<li class="chapter" data-level="13.1.6" data-path="1013-rstastix.html"><a href="1013-rstastix.html#比较方差"><i class="fa fa-check"></i><b>13.1.6</b> 比较方差</a></li>
+<li class="chapter" data-level="13.1.7" data-path="1013-rstastix.html"><a href="1013-rstastix.html#计算效应量"><i class="fa fa-check"></i><b>13.1.7</b> 计算效应量</a></li>
+<li class="chapter" data-level="13.1.8" data-path="1013-rstastix.html"><a href="1013-rstastix.html#相关性分析"><i class="fa fa-check"></i><b>13.1.8</b> 相关性分析</a></li>
+<li class="chapter" data-level="13.1.9" data-path="1013-rstastix.html"><a href="1013-rstastix.html#添加p值和显著性标记"><i class="fa fa-check"></i><b>13.1.9</b> 添加P值和显著性标记</a></li>
+<li class="chapter" data-level="13.1.10" data-path="1013-rstastix.html"><a href="1013-rstastix.html#提取统计信息"><i class="fa fa-check"></i><b>13.1.10</b> 提取统计信息</a></li>
+<li class="chapter" data-level="13.1.11" data-path="1013-rstastix.html"><a href="1013-rstastix.html#数据处理辅助函数"><i class="fa fa-check"></i><b>13.1.11</b> 数据处理辅助函数</a></li>
+<li class="chapter" data-level="13.1.12" data-path="1013-rstastix.html"><a href="1013-rstastix.html#其他"><i class="fa fa-check"></i><b>13.1.12</b> 其他</a></li>
+</ul></li>
+<li class="chapter" data-level="13.2" data-path="1013-rstastix.html"><a href="1013-rstastix.html#安装和加载"><i class="fa fa-check"></i><b>13.2</b> 安装和加载</a></li>
+<li class="chapter" data-level="13.3" data-path="1013-rstastix.html"><a href="1013-rstastix.html#描述性统计-1"><i class="fa fa-check"></i><b>13.3</b> 描述性统计</a></li>
+<li class="chapter" data-level="13.4" data-path="1013-rstastix.html"><a href="1013-rstastix.html#t检验"><i class="fa fa-check"></i><b>13.4</b> t检验</a>
+<ul>
+<li class="chapter" data-level="13.4.1" data-path="1013-rstastix.html"><a href="1013-rstastix.html#单样本t检验-1"><i class="fa fa-check"></i><b>13.4.1</b> 单样本t检验</a></li>
+<li class="chapter" data-level="13.4.2" data-path="1013-rstastix.html"><a href="1013-rstastix.html#配对t检验"><i class="fa fa-check"></i><b>13.4.2</b> 配对t检验</a></li>
+<li class="chapter" data-level="13.4.3" data-path="1013-rstastix.html"><a href="1013-rstastix.html#两样本t检验-1"><i class="fa fa-check"></i><b>13.4.3</b> 两样本t检验</a></li>
+<li class="chapter" data-level="13.4.4" data-path="1013-rstastix.html"><a href="1013-rstastix.html#分组后进行比较"><i class="fa fa-check"></i><b>13.4.4</b> 分组后进行比较</a></li>
+<li class="chapter" data-level="13.4.5" data-path="1013-rstastix.html"><a href="1013-rstastix.html#多组间的两两比较"><i class="fa fa-check"></i><b>13.4.5</b> 多组间的两两比较</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="1013-rstastix.html"><a href="1013-rstastix.html#方差分析"><i class="fa fa-check"></i><b>13.5</b> 方差分析</a>
+<ul>
+<li class="chapter" data-level="13.5.1" data-path="1013-rstastix.html"><a href="1013-rstastix.html#完全随机设计方差分析"><i class="fa fa-check"></i><b>13.5.1</b> 完全随机设计方差分析</a></li>
+<li class="chapter" data-level="13.5.2" data-path="1013-rstastix.html"><a href="1013-rstastix.html#随机区组设计资料的方差分析-1"><i class="fa fa-check"></i><b>13.5.2</b> 随机区组设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.3" data-path="1013-rstastix.html"><a href="1013-rstastix.html#拉丁方设计方差分析-1"><i class="fa fa-check"></i><b>13.5.3</b> 拉丁方设计方差分析</a></li>
+<li class="chapter" data-level="13.5.4" data-path="1013-rstastix.html"><a href="1013-rstastix.html#两阶段交叉设计资料方差分析-1"><i class="fa fa-check"></i><b>13.5.4</b> 两阶段交叉设计资料方差分析</a></li>
+<li class="chapter" data-level="13.5.5" data-path="1013-rstastix.html"><a href="1013-rstastix.html#析因设计资料的方差分析"><i class="fa fa-check"></i><b>13.5.5</b> 析因设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.6" data-path="1013-rstastix.html"><a href="1013-rstastix.html#正交设计资料的方差分析-1"><i class="fa fa-check"></i><b>13.5.6</b> 正交设计资料的方差分析</a></li>
+<li class="chapter" data-level="13.5.7" data-path="1013-rstastix.html"><a href="1013-rstastix.html#重复测量数据两因素两水平的方差分析-1"><i class="fa fa-check"></i><b>13.5.7</b> 重复测量数据两因素两水平的方差分析</a></li>
+<li class="chapter" data-level="13.5.8" data-path="1013-rstastix.html"><a href="1013-rstastix.html#重复测量数据两因素多水平的分析-1"><i class="fa fa-check"></i><b>13.5.8</b> 重复测量数据两因素多水平的分析</a></li>
+</ul></li>
+<li class="chapter" data-level="13.6" data-path="1013-rstastix.html"><a href="1013-rstastix.html#相关分析"><i class="fa fa-check"></i><b>13.6</b> 相关分析</a>
+<ul>
+<li class="chapter" data-level="13.6.1" data-path="1013-rstastix.html"><a href="1013-rstastix.html#两个变量"><i class="fa fa-check"></i><b>13.6.1</b> 两个变量</a></li>
+<li class="chapter" data-level="13.6.2" data-path="1013-rstastix.html"><a href="1013-rstastix.html#一个变量和其他所有变量"><i class="fa fa-check"></i><b>13.6.2</b> 一个变量和其他所有变量</a></li>
+<li class="chapter" data-level="13.6.3" data-path="1013-rstastix.html"><a href="1013-rstastix.html#所有变量间两两相关性"><i class="fa fa-check"></i><b>13.6.3</b> 所有变量间两两相关性</a></li>
+<li class="chapter" data-level="13.6.4" data-path="1013-rstastix.html"><a href="1013-rstastix.html#相关矩阵"><i class="fa fa-check"></i><b>13.6.4</b> 相关矩阵</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="1014-rstatixmanyvariables.html"><a href="1014-rstatixmanyvariables.html"><i class="fa fa-check"></i><b>14</b> R语言多个变量同时进行t检验</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="1014-rstatixmanyvariables.html"><a href="1014-rstatixmanyvariables.html#简介"><i class="fa fa-check"></i><b>14.1</b> 简介</a></li>
+<li class="chapter" data-level="14.2" data-path="1014-rstatixmanyvariables.html"><a href="1014-rstatixmanyvariables.html#实战"><i class="fa fa-check"></i><b>14.2</b> 实战</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="1015-twocorrelation.html"><a href="1015-twocorrelation.html"><i class="fa fa-check"></i><b>15</b> 双变量回归与相关</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="1015-twocorrelation.html"><a href="1015-twocorrelation.html#两样本相关"><i class="fa fa-check"></i><b>15.1</b> 两样本相关</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="1016-piancorrelation.html"><a href="1016-piancorrelation.html"><i class="fa fa-check"></i><b>16</b> 偏相关和典型相关</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="1016-piancorrelation.html"><a href="1016-piancorrelation.html#偏相关partial-correlation"><i class="fa fa-check"></i><b>16.1</b> 偏相关（partial correlation）</a>
+<ul>
+<li class="chapter" data-level="16.1.1" data-path="1016-piancorrelation.html"><a href="1016-piancorrelation.html#偏相关散点图"><i class="fa fa-check"></i><b>16.1.1</b> 偏相关散点图</a></li>
+</ul></li>
+<li class="chapter" data-level="16.2" data-path="1016-piancorrelation.html"><a href="1016-piancorrelation.html#典型相关canonical-correlation"><i class="fa fa-check"></i><b>16.2</b> 典型相关（Canonical Correlation）</a></li>
+</ul></li>
+<li class="part"><span><b>II 高级统计分析</b></span></li>
+<li class="chapter" data-level="17" data-path="1017-multiregression.html"><a href="1017-multiregression.html"><i class="fa fa-check"></i><b>17</b> 多元线性回归</a>
+<ul>
+<li class="chapter" data-level="17.1" data-path="1017-multiregression.html"><a href="1017-multiregression.html#多元线性回归"><i class="fa fa-check"></i><b>17.1</b> 多元线性回归</a></li>
+<li class="chapter" data-level="17.2" data-path="1017-multiregression.html"><a href="1017-multiregression.html#回归诊断"><i class="fa fa-check"></i><b>17.2</b> 回归诊断</a>
+<ul>
+<li class="chapter" data-level="17.2.1" data-path="1017-multiregression.html"><a href="1017-multiregression.html#可以通过看图来判断"><i class="fa fa-check"></i><b>17.2.1</b> 可以通过看图来判断</a></li>
+<li class="chapter" data-level="17.2.2" data-path="1017-multiregression.html"><a href="1017-multiregression.html#也可以通过统计方法验证"><i class="fa fa-check"></i><b>17.2.2</b> 也可以通过统计方法验证</a></li>
+<li class="chapter" data-level="17.2.3" data-path="1017-multiregression.html"><a href="1017-multiregression.html#多重共线性的检验"><i class="fa fa-check"></i><b>17.2.3</b> 多重共线性的检验</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="1017-multiregression.html"><a href="1017-multiregression.html#逐步选择法"><i class="fa fa-check"></i><b>17.3</b> 逐步选择法</a></li>
+<li class="chapter" data-level="17.4" data-path="1017-multiregression.html"><a href="1017-multiregression.html#全局择优法"><i class="fa fa-check"></i><b>17.4</b> 全局择优法</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="1018-logistic.html"><a href="1018-logistic.html"><i class="fa fa-check"></i><b>18</b> Logistic回归</a>
+<ul>
+<li class="chapter" data-level="18.1" data-path="1018-logistic.html"><a href="1018-logistic.html#二项logistic回归"><i class="fa fa-check"></i><b>18.1</b> 二项logistic回归</a></li>
+<li class="chapter" data-level="18.2" data-path="1018-logistic.html"><a href="1018-logistic.html#多项逻辑回归"><i class="fa fa-check"></i><b>18.2</b> 多项逻辑回归</a></li>
+<li class="chapter" data-level="18.3" data-path="1018-logistic.html"><a href="1018-logistic.html#有序逻辑回归"><i class="fa fa-check"></i><b>18.3</b> 有序逻辑回归</a></li>
+<li class="chapter" data-level="18.4" data-path="1018-logistic.html"><a href="1018-logistic.html#条件逻辑回归"><i class="fa fa-check"></i><b>18.4</b> 条件逻辑回归</a></li>
+<li class="chapter" data-level="18.5" data-path="1018-logistic.html"><a href="1018-logistic.html#参考资料"><i class="fa fa-check"></i><b>18.5</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html"><i class="fa fa-check"></i><b>19</b> 分类变量进行回归分析时的编码方案</a>
+<ul>
+<li class="chapter" data-level="19.1" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#演示数据"><i class="fa fa-check"></i><b>19.1</b> 演示数据</a></li>
+<li class="chapter" data-level="19.2" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#dummy-coding"><i class="fa fa-check"></i><b>19.2</b> Dummy Coding</a></li>
+<li class="chapter" data-level="19.3" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#simple-coding"><i class="fa fa-check"></i><b>19.3</b> simple coding</a></li>
+<li class="chapter" data-level="19.4" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#deviation-coding"><i class="fa fa-check"></i><b>19.4</b> Deviation coding</a></li>
+<li class="chapter" data-level="19.5" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#orthogonal-polynomial-coding"><i class="fa fa-check"></i><b>19.5</b> Orthogonal Polynomial Coding</a></li>
+<li class="chapter" data-level="19.6" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#helmert-coding"><i class="fa fa-check"></i><b>19.6</b> Helmert Coding</a></li>
+<li class="chapter" data-level="19.7" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#reverse-helmert-coding"><i class="fa fa-check"></i><b>19.7</b> Reverse Helmert Coding</a></li>
+<li class="chapter" data-level="19.8" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#forward-difference-coding"><i class="fa fa-check"></i><b>19.8</b> Forward Difference Coding</a></li>
+<li class="chapter" data-level="19.9" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#backward-difference-coding"><i class="fa fa-check"></i><b>19.9</b> Backward Difference Coding</a></li>
+<li class="chapter" data-level="19.10" data-path="1019-rcodecheme.html"><a href="1019-rcodecheme.html#参考资料-1"><i class="fa fa-check"></i><b>19.10</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="1020-discriminant.html"><a href="1020-discriminant.html"><i class="fa fa-check"></i><b>20</b> R语言判别分析</a>
+<ul>
+<li class="chapter" data-level="20.1" data-path="1020-discriminant.html"><a href="1020-discriminant.html#fisher判别分析"><i class="fa fa-check"></i><b>20.1</b> Fisher判别分析</a></li>
+<li class="chapter" data-level="20.2" data-path="1020-discriminant.html"><a href="1020-discriminant.html#bayes判别分析"><i class="fa fa-check"></i><b>20.2</b> Bayes判别分析</a></li>
+</ul></li>
+<li class="chapter" data-level="21" data-path="1021-cluster.html"><a href="1021-cluster.html"><i class="fa fa-check"></i><b>21</b> R语言聚类分析</a>
+<ul>
+<li class="chapter" data-level="21.1" data-path="1021-cluster.html"><a href="1021-cluster.html#系统聚类层次聚类hierarchical-clustering"><i class="fa fa-check"></i><b>21.1</b> 系统聚类（层次聚类,Hierarchical clustering）</a></li>
+<li class="chapter" data-level="21.2" data-path="1021-cluster.html"><a href="1021-cluster.html#聚类分析可视化"><i class="fa fa-check"></i><b>21.2</b> 聚类分析可视化</a></li>
+<li class="chapter" data-level="21.3" data-path="1021-cluster.html"><a href="1021-cluster.html#快速聚类划分聚类partitioning-clustering"><i class="fa fa-check"></i><b>21.3</b> 快速聚类（划分聚类,partitioning clustering）</a>
+<ul>
+<li class="chapter" data-level="21.3.1" data-path="1021-cluster.html"><a href="1021-cluster.html#k-means聚类"><i class="fa fa-check"></i><b>21.3.1</b> K-means聚类</a></li>
+<li class="chapter" data-level="21.3.2" data-path="1021-cluster.html"><a href="1021-cluster.html#围绕中心点的划分pam"><i class="fa fa-check"></i><b>21.3.2</b> 围绕中心点的划分PAM</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="22" data-path="1022-pca.html"><a href="1022-pca.html"><i class="fa fa-check"></i><b>22</b> R语言主成分分析</a>
+<ul>
+<li class="chapter" data-level="22.1" data-path="1022-pca.html"><a href="1022-pca.html#加载数据"><i class="fa fa-check"></i><b>22.1</b> 加载数据</a></li>
+<li class="chapter" data-level="22.2" data-path="1022-pca.html"><a href="1022-pca.html#相关性检验"><i class="fa fa-check"></i><b>22.2</b> 相关性检验</a></li>
+<li class="chapter" data-level="22.3" data-path="1022-pca.html"><a href="1022-pca.html#kmo和bartlett球形检验"><i class="fa fa-check"></i><b>22.3</b> KMO和Bartlett球形检验</a></li>
+<li class="chapter" data-level="22.4" data-path="1022-pca.html"><a href="1022-pca.html#r自带的pca"><i class="fa fa-check"></i><b>22.4</b> R自带的PCA</a></li>
+<li class="chapter" data-level="22.5" data-path="1022-pca.html"><a href="1022-pca.html#结果可视化"><i class="fa fa-check"></i><b>22.5</b> 结果可视化</a></li>
+<li class="chapter" data-level="22.6" data-path="1022-pca.html"><a href="1022-pca.html#主成分分析可视化超详细"><i class="fa fa-check"></i><b>22.6</b> 主成分分析可视化(超详细)</a>
+<ul>
+<li class="chapter" data-level="22.6.1" data-path="1022-pca.html"><a href="1022-pca.html#进行pca分析"><i class="fa fa-check"></i><b>22.6.1</b> 进行PCA分析</a></li>
+<li class="chapter" data-level="22.6.2" data-path="1022-pca.html"><a href="1022-pca.html#特征值可视化"><i class="fa fa-check"></i><b>22.6.2</b> 特征值可视化</a></li>
+<li class="chapter" data-level="22.6.3" data-path="1022-pca.html"><a href="1022-pca.html#提取变量结果"><i class="fa fa-check"></i><b>22.6.3</b> 提取变量结果</a></li>
+<li class="chapter" data-level="22.6.4" data-path="1022-pca.html"><a href="1022-pca.html#变量结果可视化"><i class="fa fa-check"></i><b>22.6.4</b> 变量结果可视化</a></li>
+<li class="chapter" data-level="22.6.5" data-path="1022-pca.html"><a href="1022-pca.html#dimension-description"><i class="fa fa-check"></i><b>22.6.5</b> Dimension description</a></li>
+<li class="chapter" data-level="22.6.6" data-path="1022-pca.html"><a href="1022-pca.html#提取样本结果"><i class="fa fa-check"></i><b>22.6.6</b> 提取样本结果</a></li>
+<li class="chapter" data-level="22.6.7" data-path="1022-pca.html"><a href="1022-pca.html#样本结果可视化"><i class="fa fa-check"></i><b>22.6.7</b> 样本结果可视化</a></li>
+<li class="chapter" data-level="22.6.8" data-path="1022-pca.html"><a href="1022-pca.html#biplot"><i class="fa fa-check"></i><b>22.6.8</b> biplot</a></li>
+</ul></li>
+<li class="chapter" data-level="22.7" data-path="1022-pca.html"><a href="1022-pca.html#主成分分析可视化3d版"><i class="fa fa-check"></i><b>22.7</b> 主成分分析可视化3d版</a>
+<ul>
+<li class="chapter" data-level="22.7.1" data-path="1022-pca.html"><a href="1022-pca.html#提取数据"><i class="fa fa-check"></i><b>22.7.1</b> 提取数据</a></li>
+<li class="chapter" data-level="22.7.2" data-path="1022-pca.html"><a href="1022-pca.html#d版"><i class="fa fa-check"></i><b>22.7.2</b> 3d版</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="1023-factoranalysis.html"><a href="1023-factoranalysis.html"><i class="fa fa-check"></i><b>23</b> R语言因子分析</a>
+<ul>
+<li class="chapter" data-level="23.1" data-path="1023-factoranalysis.html"><a href="1023-factoranalysis.html#演示数据-1"><i class="fa fa-check"></i><b>23.1</b> 演示数据</a></li>
+<li class="chapter" data-level="23.2" data-path="1023-factoranalysis.html"><a href="1023-factoranalysis.html#判断需要提取的因子个数"><i class="fa fa-check"></i><b>23.2</b> 判断需要提取的因子个数</a></li>
+<li class="chapter" data-level="23.3" data-path="1023-factoranalysis.html"><a href="1023-factoranalysis.html#进行因子分析"><i class="fa fa-check"></i><b>23.3</b> 进行因子分析</a></li>
+<li class="chapter" data-level="23.4" data-path="1023-factoranalysis.html"><a href="1023-factoranalysis.html#因子旋转"><i class="fa fa-check"></i><b>23.4</b> 因子旋转</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="1024-rocbinomial.html"><a href="1024-rocbinomial.html"><i class="fa fa-check"></i><b>24</b> 二分类资料ROC曲线绘制</a>
+<ul>
+<li class="chapter" data-level="24.1" data-path="1024-rocbinomial.html"><a href="1024-rocbinomial.html#方法1-1"><i class="fa fa-check"></i><b>24.1</b> 方法1</a></li>
+<li class="chapter" data-level="24.2" data-path="1024-rocbinomial.html"><a href="1024-rocbinomial.html#方法2-1"><i class="fa fa-check"></i><b>24.2</b> 方法2</a></li>
+<li class="chapter" data-level="24.3" data-path="1024-rocbinomial.html"><a href="1024-rocbinomial.html#方法3"><i class="fa fa-check"></i><b>24.3</b> 方法3</a></li>
+</ul></li>
+<li class="chapter" data-level="25" data-path="1025-rocsurvival.html"><a href="1025-rocsurvival.html"><i class="fa fa-check"></i><b>25</b> 生存资料ROC曲线绘制</a>
+<ul>
+<li class="chapter" data-level="25.1" data-path="1025-rocsurvival.html"><a href="1025-rocsurvival.html#加载r包和数据"><i class="fa fa-check"></i><b>25.1</b> 加载R包和数据</a></li>
+<li class="chapter" data-level="25.2" data-path="1025-rocsurvival.html"><a href="1025-rocsurvival.html#多个时间点roc"><i class="fa fa-check"></i><b>25.2</b> 多个时间点ROC</a></li>
+<li class="chapter" data-level="25.3" data-path="1025-rocsurvival.html"><a href="1025-rocsurvival.html#多指标roc"><i class="fa fa-check"></i><b>25.3</b> 多指标ROC</a></li>
+</ul></li>
+<li class="chapter" data-level="26" data-path="1026-rocsurvsmooth.html"><a href="1026-rocsurvsmooth.html"><i class="fa fa-check"></i><b>26</b> 生存资料ROC曲线的最佳截点和平滑曲线</a>
+<ul>
+<li class="chapter" data-level="26.1" data-path="1026-rocsurvsmooth.html"><a href="1026-rocsurvsmooth.html#平滑曲线"><i class="fa fa-check"></i><b>26.1</b> 平滑曲线</a>
+<ul>
+<li class="chapter" data-level="26.1.1" data-path="1026-rocsurvsmooth.html"><a href="1026-rocsurvsmooth.html#加载r包和数据-1"><i class="fa fa-check"></i><b>26.1.1</b> 加载R包和数据</a></li>
+<li class="chapter" data-level="26.1.2" data-path="1026-rocsurvsmooth.html"><a href="1026-rocsurvsmooth.html#多个时间点roc-1"><i class="fa fa-check"></i><b>26.1.2</b> 多个时间点ROC</a></li>
+<li class="chapter" data-level="26.1.3" data-path="1026-rocsurvsmooth.html"><a href="1026-rocsurvsmooth.html#画平滑曲线"><i class="fa fa-check"></i><b>26.1.3</b> 画平滑曲线</a></li>
+</ul></li>
+<li class="chapter" data-level="26.2" data-path="1026-rocsurvsmooth.html"><a href="1026-rocsurvsmooth.html#找最佳截点"><i class="fa fa-check"></i><b>26.2</b> 找最佳截点</a></li>
+</ul></li>
+<li class="chapter" data-level="27" data-path="1027-roccompare.html"><a href="1027-roccompare.html"><i class="fa fa-check"></i><b>27</b> ROC曲线的显著性检验</a>
+<ul>
+<li class="chapter" data-level="27.1" data-path="1027-roccompare.html"><a href="1027-roccompare.html#二分类资料的roc比较"><i class="fa fa-check"></i><b>27.1</b> 二分类资料的ROC比较</a></li>
+<li class="chapter" data-level="27.2" data-path="1027-roccompare.html"><a href="1027-roccompare.html#生存资料roc的比较"><i class="fa fa-check"></i><b>27.2</b> 生存资料ROC的比较</a></li>
+</ul></li>
+<li class="chapter" data-level="28" data-path="1028-rocdirection.html"><a href="1028-rocdirection.html"><i class="fa fa-check"></i><b>28</b> ROC阴性结果还是阳性结果</a>
+<ul>
+<li class="chapter" data-level="28.1" data-path="1028-rocdirection.html"><a href="1028-rocdirection.html#探索roc曲线"><i class="fa fa-check"></i><b>28.1</b> 探索ROC曲线</a></li>
+<li class="chapter" data-level="28.2" data-path="1028-rocdirection.html"><a href="1028-rocdirection.html#反过来可以吗"><i class="fa fa-check"></i><b>28.2</b> 反过来可以吗？</a></li>
+</ul></li>
+<li class="chapter" data-level="29" data-path="1029-rocggplot.html"><a href="1029-rocggplot.html"><i class="fa fa-check"></i><b>29</b> ROC曲线ggplot2绘制</a>
+<ul>
+<li class="chapter" data-level="29.1" data-path="1029-rocggplot.html"><a href="1029-rocggplot.html#准备数据"><i class="fa fa-check"></i><b>29.1</b> 准备数据</a></li>
+<li class="chapter" data-level="29.2" data-path="1029-rocggplot.html"><a href="1029-rocggplot.html#计算"><i class="fa fa-check"></i><b>29.2</b> 计算</a></li>
+<li class="chapter" data-level="29.3" data-path="1029-rocggplot.html"><a href="1029-rocggplot.html#画图"><i class="fa fa-check"></i><b>29.3</b> 画图</a></li>
+</ul></li>
+<li class="chapter" data-level="30" data-path="1030-rocattention.html"><a href="1030-rocattention.html"><i class="fa fa-check"></i><b>30</b> R语言计算AUC(ROC)注意事项</a>
+<ul>
+<li class="chapter" data-level="30.1" data-path="1030-rocattention.html"><a href="1030-rocattention.html#准备数据-1"><i class="fa fa-check"></i><b>30.1</b> 准备数据</a></li>
+<li class="chapter" data-level="30.2" data-path="1030-rocattention.html"><a href="1030-rocattention.html#rocr"><i class="fa fa-check"></i><b>30.2</b> ROCR</a></li>
+<li class="chapter" data-level="30.3" data-path="1030-rocattention.html"><a href="1030-rocattention.html#proc"><i class="fa fa-check"></i><b>30.3</b> pROC</a></li>
+<li class="chapter" data-level="30.4" data-path="1030-rocattention.html"><a href="1030-rocattention.html#yardstick"><i class="fa fa-check"></i><b>30.4</b> yardstick</a></li>
+</ul></li>
+<li class="chapter" data-level="31" data-path="1031-rocmany.html"><a href="1031-rocmany.html"><i class="fa fa-check"></i><b>31</b> 多指标联合诊断的ROC曲线</a>
+<ul>
+<li class="chapter" data-level="31.1" data-path="1031-rocmany.html"><a href="1031-rocmany.html#准备数据-2"><i class="fa fa-check"></i><b>31.1</b> 准备数据</a></li>
+<li class="chapter" data-level="31.2" data-path="1031-rocmany.html"><a href="1031-rocmany.html#多指标联合诊断的roc"><i class="fa fa-check"></i><b>31.2</b> 多指标联合诊断的ROC</a></li>
+<li class="chapter" data-level="31.3" data-path="1031-rocmany.html"><a href="1031-rocmany.html#测试集怎么办"><i class="fa fa-check"></i><b>31.3</b> 测试集怎么办？</a></li>
+</ul></li>
+<li class="chapter" data-level="32" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html"><i class="fa fa-check"></i><b>32</b> R语言生存分析</a>
+<ul>
+<li class="chapter" data-level="32.1" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#生存过程的描述"><i class="fa fa-check"></i><b>32.1</b> 生存过程的描述</a></li>
+<li class="chapter" data-level="32.2" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#生存过程的比较"><i class="fa fa-check"></i><b>32.2</b> 生存过程的比较</a></li>
+<li class="chapter" data-level="32.3" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#cox回归"><i class="fa fa-check"></i><b>32.3</b> Cox回归</a></li>
+<li class="chapter" data-level="32.4" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#时间依存协变量的cox回归和时间依存系数cox回归"><i class="fa fa-check"></i><b>32.4</b> 时间依存协变量的Cox回归和时间依存系数Cox回归</a>
+<ul>
+<li class="chapter" data-level="32.4.1" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#对时间分层"><i class="fa fa-check"></i><b>32.4.1</b> 对时间分层</a></li>
+<li class="chapter" data-level="32.4.2" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#连续性时依系数变换"><i class="fa fa-check"></i><b>32.4.2</b> 连续性时依系数变换</a></li>
+</ul></li>
+<li class="chapter" data-level="32.5" data-path="1032-survivalanalysis.html"><a href="1032-survivalanalysis.html#参考资料-2"><i class="fa fa-check"></i><b>32.5</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="33" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html"><i class="fa fa-check"></i><b>33</b> R语言超详细的生存曲线可视化</a>
+<ul>
+<li class="chapter" data-level="33.1" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#演示数据-2"><i class="fa fa-check"></i><b>33.1</b> 演示数据</a></li>
+<li class="chapter" data-level="33.2" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#基本的生存曲线"><i class="fa fa-check"></i><b>33.2</b> 基本的生存曲线</a></li>
+<li class="chapter" data-level="33.3" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#增加-risk-table"><i class="fa fa-check"></i><b>33.3</b> 增加 risk table</a></li>
+<li class="chapter" data-level="33.4" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#增加删失时间表ncensor-plot"><i class="fa fa-check"></i><b>33.4</b> 增加删失时间表ncensor plot</a></li>
+<li class="chapter" data-level="33.5" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#超级无敌精细化自定设置"><i class="fa fa-check"></i><b>33.5</b> 超级无敌精细化自定设置</a></li>
+<li class="chapter" data-level="33.6" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#多个组的生存曲线"><i class="fa fa-check"></i><b>33.6</b> 多个组的生存曲线</a></li>
+<li class="chapter" data-level="33.7" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#多个分类变量分面绘制"><i class="fa fa-check"></i><b>33.7</b> 多个分类变量分面绘制</a></li>
+<li class="chapter" data-level="33.8" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#同时绘制多个生存函数"><i class="fa fa-check"></i><b>33.8</b> 同时绘制多个生存函数</a></li>
+<li class="chapter" data-level="33.9" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#根据某一个变量分组绘制"><i class="fa fa-check"></i><b>33.9</b> 根据某一个变量分组绘制</a></li>
+<li class="chapter" data-level="33.10" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#在原有生存曲线的基础上增加"><i class="fa fa-check"></i><b>33.10</b> 在原有生存曲线的基础上增加</a></li>
+<li class="chapter" data-level="33.11" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#多个生存函数画在一起"><i class="fa fa-check"></i><b>33.11</b> 多个生存函数画在一起</a></li>
+<li class="chapter" data-level="33.12" data-path="1033-survivalvisiualization.html"><a href="1033-survivalvisiualization.html#参考资料-3"><i class="fa fa-check"></i><b>33.12</b> 参考资料</a></li>
+</ul></li>
+<li class="part"><span><b>III 文献中常用的统计方法</b></span></li>
+<li class="chapter" data-level="34" data-path="1034-finygray.html"><a href="1034-finygray.html"><i class="fa fa-check"></i><b>34</b> Fine-Gray检验、竞争风险模型列线图绘制</a>
+<ul>
+<li class="chapter" data-level="34.1" data-path="1034-finygray.html"><a href="1034-finygray.html#加载数据和r包"><i class="fa fa-check"></i><b>34.1</b> 加载数据和R包</a></li>
+<li class="chapter" data-level="34.2" data-path="1034-finygray.html"><a href="1034-finygray.html#fine-gray检验单因素分析"><i class="fa fa-check"></i><b>34.2</b> Fine-Gray检验（单因素分析）</a>
+<ul>
+<li class="chapter" data-level="34.2.1" data-path="1034-finygray.html"><a href="1034-finygray.html#图形展示结果"><i class="fa fa-check"></i><b>34.2.1</b> 图形展示结果</a></li>
+<li class="chapter" data-level="34.2.2" data-path="1034-finygray.html"><a href="1034-finygray.html#ggplot2"><i class="fa fa-check"></i><b>34.2.2</b> ggplot2</a></li>
+</ul></li>
+<li class="chapter" data-level="34.3" data-path="1034-finygray.html"><a href="1034-finygray.html#竞争风险模型多因素分析"><i class="fa fa-check"></i><b>34.3</b> 竞争风险模型（多因素分析）</a></li>
+<li class="chapter" data-level="34.4" data-path="1034-finygray.html"><a href="1034-finygray.html#列线图"><i class="fa fa-check"></i><b>34.4</b> 列线图</a></li>
+</ul></li>
+<li class="chapter" data-level="35" data-path="1035-psm.html"><a href="1035-psm.html"><i class="fa fa-check"></i><b>35</b> R语言倾向性评分：匹配</a>
+<ul>
+<li class="chapter" data-level="35.1" data-path="1035-psm.html"><a href="1035-psm.html#准备数据-3"><i class="fa fa-check"></i><b>35.1</b> 准备数据</a></li>
+<li class="chapter" data-level="35.2" data-path="1035-psm.html"><a href="1035-psm.html#matchit包进行psm"><i class="fa fa-check"></i><b>35.2</b> matchIt包进行PSM</a>
+<ul>
+<li class="chapter" data-level="35.2.1" data-path="1035-psm.html"><a href="1035-psm.html#使用随机森林计算ps"><i class="fa fa-check"></i><b>35.2.1</b> 使用随机森林计算PS</a></li>
+</ul></li>
+<li class="chapter" data-level="35.3" data-path="1035-psm.html"><a href="1035-psm.html#主要匹配方法选择"><i class="fa fa-check"></i><b>35.3</b> 主要匹配方法选择</a></li>
+<li class="chapter" data-level="35.4" data-path="1035-psm.html"><a href="1035-psm.html#匹配后数据的平衡性检验"><i class="fa fa-check"></i><b>35.4</b> 匹配后数据的平衡性检验</a>
+<ul>
+<li class="chapter" data-level="35.4.1" data-path="1035-psm.html"><a href="1035-psm.html#cobalt包"><i class="fa fa-check"></i><b>35.4.1</b> cobalt包</a></li>
+<li class="chapter" data-level="35.4.2" data-path="1035-psm.html"><a href="1035-psm.html#统计检验衡量均衡性"><i class="fa fa-check"></i><b>35.4.2</b> 统计检验衡量均衡性</a></li>
+</ul></li>
+<li class="chapter" data-level="35.5" data-path="1035-psm.html"><a href="1035-psm.html#结果可视化-1"><i class="fa fa-check"></i><b>35.5</b> 结果可视化</a></li>
+<li class="chapter" data-level="35.6" data-path="1035-psm.html"><a href="1035-psm.html#不平衡怎么办"><i class="fa fa-check"></i><b>35.6</b> 不平衡怎么办？</a></li>
+<li class="chapter" data-level="35.7" data-path="1035-psm.html"><a href="1035-psm.html#其他问题"><i class="fa fa-check"></i><b>35.7</b> 其他问题</a></li>
+<li class="chapter" data-level="35.8" data-path="1035-psm.html"><a href="1035-psm.html#参考资料-4"><i class="fa fa-check"></i><b>35.8</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="36" data-path="1036-pssc.html"><a href="1036-pssc.html"><i class="fa fa-check"></i><b>36</b> R语言倾向性评分：回归和分层</a>
+<ul>
+<li class="chapter" data-level="36.1" data-path="1036-pssc.html"><a href="1036-pssc.html#演示数据-3"><i class="fa fa-check"></i><b>36.1</b> 演示数据</a></li>
+<li class="chapter" data-level="36.2" data-path="1036-pssc.html"><a href="1036-pssc.html#原始数据的概况"><i class="fa fa-check"></i><b>36.2</b> 原始数据的概况</a></li>
+<li class="chapter" data-level="36.3" data-path="1036-pssc.html"><a href="1036-pssc.html#计算倾向性评分"><i class="fa fa-check"></i><b>36.3</b> 计算倾向性评分</a></li>
+<li class="chapter" data-level="36.4" data-path="1036-pssc.html"><a href="1036-pssc.html#倾向性评分回归"><i class="fa fa-check"></i><b>36.4</b> 倾向性评分回归</a></li>
+<li class="chapter" data-level="36.5" data-path="1036-pssc.html"><a href="1036-pssc.html#倾向性评分分层"><i class="fa fa-check"></i><b>36.5</b> 倾向性评分分层</a></li>
+<li class="chapter" data-level="36.6" data-path="1036-pssc.html"><a href="1036-pssc.html#分层后的数据"><i class="fa fa-check"></i><b>36.6</b> 分层后的数据</a></li>
+<li class="chapter" data-level="36.7" data-path="1036-pssc.html"><a href="1036-pssc.html#总结"><i class="fa fa-check"></i><b>36.7</b> 总结</a></li>
+<li class="chapter" data-level="36.8" data-path="1036-pssc.html"><a href="1036-pssc.html#参考资料-5"><i class="fa fa-check"></i><b>36.8</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="37" data-path="1037-psw.html"><a href="1037-psw.html"><i class="fa fa-check"></i><b>37</b> R语言倾向性评分：加权</a>
+<ul>
+<li class="chapter" data-level="37.1" data-path="1037-psw.html"><a href="1037-psw.html#演示数据-4"><i class="fa fa-check"></i><b>37.1</b> 演示数据</a></li>
+<li class="chapter" data-level="37.2" data-path="1037-psw.html"><a href="1037-psw.html#iptw"><i class="fa fa-check"></i><b>37.2</b> IPTW</a></li>
+<li class="chapter" data-level="37.3" data-path="1037-psw.html"><a href="1037-psw.html#重叠加权"><i class="fa fa-check"></i><b>37.3</b> 重叠加权</a></li>
+<li class="chapter" data-level="37.4" data-path="1037-psw.html"><a href="1037-psw.html#参考资料-6"><i class="fa fa-check"></i><b>37.4</b> 参考资料</a></li>
+</ul></li>
+<li class="chapter" data-level="38" data-path="1038-p4trend.html"><a href="1038-p4trend.html"><i class="fa fa-check"></i><b>38</b> p for trend/ p for interaction/ per 1 sd 的R语言实现</a>
+<ul>
+<li class="chapter" data-level="38.1" data-path="1038-p4trend.html"><a href="1038-p4trend.html#p-for-trend"><i class="fa fa-check"></i><b>38.1</b> P for trend</a></li>
+<li class="chapter" data-level="38.2" data-path="1038-p4trend.html"><a href="1038-p4trend.html#p-for-interaction"><i class="fa fa-check"></i><b>38.2</b> p for interaction</a>
+<ul>
+<li class="chapter" data-level="38.2.1" data-path="1038-p4trend.html"><a href="1038-p4trend.html#方法1-2"><i class="fa fa-check"></i><b>38.2.1</b> 方法1</a></li>
+<li class="chapter" data-level="38.2.2" data-path="1038-p4trend.html"><a href="1038-p4trend.html#方法2-2"><i class="fa fa-check"></i><b>38.2.2</b> 方法2</a></li>
+</ul></li>
+<li class="chapter" data-level="38.3" data-path="1038-p4trend.html"><a href="1038-p4trend.html#per-1-sd"><i class="fa fa-check"></i><b>38.3</b> per 1 sd</a></li>
+</ul></li>
+<li class="chapter" data-level="39" data-path="1039-nonlinearfit.html"><a href="1039-nonlinearfit.html"><i class="fa fa-check"></i><b>39</b> R语言多项式拟合及样条回归</a>
+<ul>
+<li class="chapter" data-level="39.1" data-path="1039-nonlinearfit.html"><a href="1039-nonlinearfit.html#多项式拟合"><i class="fa fa-check"></i><b>39.1</b> 多项式拟合</a></li>
+<li class="chapter" data-level="39.2" data-path="1039-nonlinearfit.html"><a href="1039-nonlinearfit.html#样条回归"><i class="fa fa-check"></i><b>39.2</b> 样条回归</a>
+<ul>
+<li class="chapter" data-level="39.2.1" data-path="1039-nonlinearfit.html"><a href="1039-nonlinearfit.html#线性的立方样条"><i class="fa fa-check"></i><b>39.2.1</b> 线性的立方样条</a></li>
+<li class="chapter" data-level="39.2.2" data-path="1039-nonlinearfit.html"><a href="1039-nonlinearfit.html#逻辑回归的立方样条"><i class="fa fa-check"></i><b>39.2.2</b> 逻辑回归的立方样条</a></li>
+<li class="chapter" data-level="39.2.3" data-path="1039-nonlinearfit.html"><a href="1039-nonlinearfit.html#cox回归的立方样条"><i class="fa fa-check"></i><b>39.2.3</b> cox回归的立方样条</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV 附录</b></span></li>
+<li class="chapter" data-level="40" data-path="1040-appendix.html"><a href="1040-appendix.html"><i class="fa fa-check"></i><b>40</b> R语言和R包安装</a>
+<ul>
+<li class="chapter" data-level="40.1" data-path="1040-appendix.html"><a href="1040-appendix.html#r语言rtoolsrstudio的安装"><i class="fa fa-check"></i><b>40.1</b> R语言、Rtools、Rstudio的安装</a></li>
+<li class="chapter" data-level="40.2" data-path="1040-appendix.html"><a href="1040-appendix.html#r包安装"><i class="fa fa-check"></i><b>40.2</b> R包安装</a></li>
+<li class="chapter" data-level="40.3" data-path="1040-appendix.html"><a href="1040-appendix.html#pass软件链接"><i class="fa fa-check"></i><b>40.3</b> PASS软件链接</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">本书由bookdown强力驱动</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">R语言实战医学统计</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="xnclg" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> 多样本均数比较的方差分析<a href="1002-anova.html#xnclg" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="完全随机设计资料的方差分析" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> 完全随机设计资料的方差分析<a href="1002-anova.html#完全随机设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例4-2</strong>的数据。</p>
+<p>首先是构造数据，本次数据自己从书上摘录。。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="1002-anova.html#cb9-1" aria-hidden="true" tabindex="-1"></a>trt<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;group1&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group2&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group3&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group4&quot;</span>,<span class="dv">30</span>))</span>
+<span id="cb9-2"><a href="1002-anova.html#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="1002-anova.html#cb9-3" aria-hidden="true" tabindex="-1"></a>weight<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">3.53</span>,<span class="fl">4.59</span>,<span class="fl">4.34</span>,<span class="fl">2.66</span>,<span class="fl">3.59</span>,<span class="fl">3.13</span>,<span class="fl">3.30</span>,<span class="fl">4.04</span>,<span class="fl">3.53</span>,<span class="fl">3.56</span>,<span class="fl">3.85</span>,<span class="fl">4.07</span>,<span class="fl">1.37</span>,</span>
+<span id="cb9-4"><a href="1002-anova.html#cb9-4" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.93</span>,<span class="fl">2.33</span>,<span class="fl">2.98</span>,<span class="fl">4.00</span>,<span class="fl">3.55</span>,<span class="fl">2.64</span>,<span class="fl">2.56</span>,<span class="fl">3.50</span>,<span class="fl">3.25</span>,<span class="fl">2.96</span>,<span class="fl">4.30</span>,<span class="fl">3.52</span>,<span class="fl">3.93</span>,</span>
+<span id="cb9-5"><a href="1002-anova.html#cb9-5" aria-hidden="true" tabindex="-1"></a>          <span class="fl">4.19</span>,<span class="fl">2.96</span>,<span class="fl">4.16</span>,<span class="fl">2.59</span>,<span class="fl">2.42</span>,<span class="fl">3.36</span>,<span class="fl">4.32</span>,<span class="fl">2.34</span>,<span class="fl">2.68</span>,<span class="fl">2.95</span>,<span class="fl">2.36</span>,<span class="fl">2.56</span>,<span class="fl">2.52</span>,</span>
+<span id="cb9-6"><a href="1002-anova.html#cb9-6" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.27</span>,<span class="fl">2.98</span>,<span class="fl">3.72</span>,<span class="fl">2.65</span>,<span class="fl">2.22</span>,<span class="fl">2.90</span>,<span class="fl">1.98</span>,<span class="fl">2.63</span>,<span class="fl">2.86</span>,<span class="fl">2.93</span>,<span class="fl">2.17</span>,<span class="fl">2.72</span>,<span class="fl">1.56</span>,</span>
+<span id="cb9-7"><a href="1002-anova.html#cb9-7" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.11</span>,<span class="fl">1.81</span>,<span class="fl">1.77</span>,<span class="fl">2.80</span>,<span class="fl">3.57</span>,<span class="fl">2.97</span>,<span class="fl">4.02</span>,<span class="fl">2.31</span>,<span class="fl">2.86</span>,<span class="fl">2.28</span>,<span class="fl">2.39</span>,<span class="fl">2.28</span>,<span class="fl">2.48</span>,</span>
+<span id="cb9-8"><a href="1002-anova.html#cb9-8" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.28</span>,<span class="fl">3.48</span>,<span class="fl">2.42</span>,<span class="fl">2.41</span>,<span class="fl">2.66</span>,<span class="fl">3.29</span>,<span class="fl">2.70</span>,<span class="fl">2.66</span>,<span class="fl">3.68</span>,<span class="fl">2.65</span>,<span class="fl">2.66</span>,<span class="fl">2.32</span>,<span class="fl">2.61</span>,</span>
+<span id="cb9-9"><a href="1002-anova.html#cb9-9" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.64</span>,<span class="fl">2.58</span>,<span class="fl">3.65</span>,<span class="fl">3.21</span>,<span class="fl">2.23</span>,<span class="fl">2.32</span>,<span class="fl">2.68</span>,<span class="fl">3.04</span>,<span class="fl">2.81</span>,<span class="fl">3.02</span>,<span class="fl">1.97</span>,<span class="fl">1.68</span>,<span class="fl">0.89</span>,</span>
+<span id="cb9-10"><a href="1002-anova.html#cb9-10" aria-hidden="true" tabindex="-1"></a>          <span class="fl">1.06</span>,<span class="fl">1.08</span>,<span class="fl">1.27</span>,<span class="fl">1.63</span>,<span class="fl">1.89</span>,<span class="fl">1.31</span>,<span class="fl">2.51</span>,<span class="fl">1.88</span>,<span class="fl">1.41</span>,<span class="fl">3.19</span>,<span class="fl">1.92</span>,<span class="fl">0.94</span>,<span class="fl">2.11</span>,</span>
+<span id="cb9-11"><a href="1002-anova.html#cb9-11" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.81</span>,<span class="fl">1.98</span>,<span class="fl">1.74</span>,<span class="fl">2.16</span>,<span class="fl">3.37</span>,<span class="fl">2.97</span>,<span class="fl">1.69</span>,<span class="fl">1.19</span>,<span class="fl">2.17</span>,<span class="fl">2.28</span>,<span class="fl">1.72</span>,<span class="fl">2.47</span>,<span class="fl">1.02</span>,</span>
+<span id="cb9-12"><a href="1002-anova.html#cb9-12" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.52</span>,<span class="fl">2.10</span>,<span class="fl">3.71</span>)</span>
+<span id="cb9-13"><a href="1002-anova.html#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="1002-anova.html#cb9-14" aria-hidden="true" tabindex="-1"></a>data1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(trt,weight)</span>
+<span id="cb9-15"><a href="1002-anova.html#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="1002-anova.html#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data1)</span>
+<span id="cb9-17"><a href="1002-anova.html#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="do">##      trt weight</span></span>
+<span id="cb9-18"><a href="1002-anova.html#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 group1   3.53</span></span>
+<span id="cb9-19"><a href="1002-anova.html#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 group1   4.59</span></span>
+<span id="cb9-20"><a href="1002-anova.html#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 group1   4.34</span></span>
+<span id="cb9-21"><a href="1002-anova.html#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 group1   2.66</span></span>
+<span id="cb9-22"><a href="1002-anova.html#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 group1   3.59</span></span>
+<span id="cb9-23"><a href="1002-anova.html#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 group1   3.13</span></span></code></pre></div>
+<p>数据一共两列，第一列是分组（一共四组），第二列是低密度脂蛋白测量值</p>
+<p>先简单看下数据分布：</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="1002-anova.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(weight <span class="sc">~</span> trt, <span class="at">data =</span> data1)</span></code></pre></div>
+<p><img src="1002-anova_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<p>进行完全随机设计资料的方差分析（one-way anova）：</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="1002-anova.html#cb11-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">aov</span>(weight <span class="sc">~</span> trt, <span class="at">data =</span> data1)</span>
+<span id="cb11-2"><a href="1002-anova.html#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb11-3"><a href="1002-anova.html#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="do">##              Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span id="cb11-4"><a href="1002-anova.html#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="do">## trt           3  32.16  10.719   24.88 1.67e-12 ***</span></span>
+<span id="cb11-5"><a href="1002-anova.html#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals   116  49.97   0.431                     </span></span>
+<span id="cb11-6"><a href="1002-anova.html#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb11-7"><a href="1002-anova.html#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果显示组间自由度为3，组内自由度为116，组间离均差平方和为32.16，组内离均差平方和为49.97，组间均方为10.719，组内均方为0.431，F值=24.88，p=1.67e-12，和课本一致。</p>
+<p>再简单介绍一下可视化的平均数和可信区间的方法：</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="1002-anova.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gplots)</span>
+<span id="cb12-2"><a href="1002-anova.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb12-3"><a href="1002-anova.html#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;gplots&#39;</span></span>
+<span id="cb12-4"><a href="1002-anova.html#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb12-5"><a href="1002-anova.html#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb12-6"><a href="1002-anova.html#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     lowess</span></span>
+<span id="cb12-7"><a href="1002-anova.html#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plotmeans</span>(weight<span class="sc">~</span>trt,<span class="at">xlab =</span> <span class="st">&quot;treatment&quot;</span>,<span class="at">ylab =</span> <span class="st">&quot;weight&quot;</span>,</span>
+<span id="cb12-8"><a href="1002-anova.html#cb12-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">main=</span><span class="st">&quot;mean plot</span><span class="sc">\n</span><span class="st">with95% CI&quot;</span>)</span></code></pre></div>
+<p><img src="1002-anova_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+</div>
+<div id="随机区组设计资料的方差分析" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> 随机区组设计资料的方差分析<a href="1002-anova.html#随机区组设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<strong>例4-3</strong>的数据。</p>
+<p>首先是构造数据，本次数据自己从书上摘录。。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="1002-anova.html#cb13-1" aria-hidden="true" tabindex="-1"></a>weight <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.82</span>,<span class="fl">0.65</span>,<span class="fl">0.51</span>,<span class="fl">0.73</span>,<span class="fl">0.54</span>,<span class="fl">0.23</span>,<span class="fl">0.43</span>,<span class="fl">0.34</span>,<span class="fl">0.28</span>,<span class="fl">0.41</span>,<span class="fl">0.21</span>,</span>
+<span id="cb13-2"><a href="1002-anova.html#cb13-2" aria-hidden="true" tabindex="-1"></a>            <span class="fl">0.31</span>,<span class="fl">0.68</span>,<span class="fl">0.43</span>,<span class="fl">0.24</span>)</span>
+<span id="cb13-3"><a href="1002-anova.html#cb13-3" aria-hidden="true" tabindex="-1"></a>block <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>,<span class="st">&quot;4&quot;</span>,<span class="st">&quot;5&quot;</span>),<span class="at">each=</span><span class="dv">3</span>))</span>
+<span id="cb13-4"><a href="1002-anova.html#cb13-4" aria-hidden="true" tabindex="-1"></a>group <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>),<span class="dv">5</span>))</span>
+<span id="cb13-5"><a href="1002-anova.html#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="1002-anova.html#cb13-6" aria-hidden="true" tabindex="-1"></a>data4_4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(weight,block,group)</span>
+<span id="cb13-7"><a href="1002-anova.html#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="1002-anova.html#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data4_4)</span>
+<span id="cb13-9"><a href="1002-anova.html#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="do">##   weight block group</span></span>
+<span id="cb13-10"><a href="1002-anova.html#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   0.82     1     A</span></span>
+<span id="cb13-11"><a href="1002-anova.html#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   0.65     1     B</span></span>
+<span id="cb13-12"><a href="1002-anova.html#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 3   0.51     1     C</span></span>
+<span id="cb13-13"><a href="1002-anova.html#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 4   0.73     2     A</span></span>
+<span id="cb13-14"><a href="1002-anova.html#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 5   0.54     2     B</span></span>
+<span id="cb13-15"><a href="1002-anova.html#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 6   0.23     2     C</span></span></code></pre></div>
+<p>数据一共3列，第一列是小白鼠肉瘤重量，第二列是区组因素（5个区组），第三列是分组（一共3组）</p>
+<p>进行随机区组设计资料的方差分析（two-way anova）：</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="1002-anova.html#cb14-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">aov</span>(weight <span class="sc">~</span> block <span class="sc">+</span> group,<span class="at">data =</span> data4_4)<span class="co">#随机区组设计方差分析，注意顺序</span></span>
+<span id="cb14-2"><a href="1002-anova.html#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb14-3"><a href="1002-anova.html#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq F value  Pr(&gt;F)   </span></span>
+<span id="cb14-4"><a href="1002-anova.html#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="do">## block        4 0.2284 0.05709   5.978 0.01579 * </span></span>
+<span id="cb14-5"><a href="1002-anova.html#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="do">## group        2 0.2280 0.11400  11.937 0.00397 **</span></span>
+<span id="cb14-6"><a href="1002-anova.html#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals    8 0.0764 0.00955                   </span></span>
+<span id="cb14-7"><a href="1002-anova.html#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb14-8"><a href="1002-anova.html#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果显示区组间自由度为4，分组间自由度为2，组内自由度为8，区组间离均差平方和为0.2284，分组间离均差平方和为0.2280，组内离均差平方和为0.0764，区组间均方为0.05709，分组间均方为0.1140，组内均方为0.00955，区组间F值=5.798，p=0.01579，分组间F值=11.937，p=0.00397，和课本一致。</p>
+</div>
+<div id="拉丁方设计方差分析" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> 拉丁方设计方差分析<a href="1002-anova.html#拉丁方设计方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例4-5</strong>的数据。</p>
+<p>首先是构造数据，本次数据自己从书上摘录。</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="1002-anova.html#cb15-1" aria-hidden="true" tabindex="-1"></a>psize <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">87</span>,<span class="dv">75</span>,<span class="dv">81</span>,<span class="dv">75</span>,<span class="dv">84</span>,<span class="dv">66</span>,<span class="dv">73</span>,<span class="dv">81</span>,<span class="dv">87</span>,<span class="dv">85</span>,<span class="dv">64</span>,<span class="dv">79</span>,<span class="dv">73</span>,<span class="dv">73</span>,<span class="dv">74</span>,<span class="dv">78</span>,<span class="dv">73</span>,<span class="dv">77</span>,<span class="dv">77</span>,<span class="dv">68</span>,<span class="dv">69</span>,<span class="dv">74</span>,<span class="dv">76</span>,<span class="dv">73</span>,</span>
+<span id="cb15-2"><a href="1002-anova.html#cb15-2" aria-hidden="true" tabindex="-1"></a>           <span class="dv">64</span>,<span class="dv">64</span>,<span class="dv">72</span>,<span class="dv">76</span>,<span class="dv">70</span>,<span class="dv">81</span>,<span class="dv">75</span>,<span class="dv">77</span>,<span class="dv">82</span>,<span class="dv">61</span>,<span class="dv">82</span>,<span class="dv">61</span>)</span>
+<span id="cb15-3"><a href="1002-anova.html#cb15-3" aria-hidden="true" tabindex="-1"></a>drug <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;C&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;C&quot;</span>,</span>
+<span id="cb15-4"><a href="1002-anova.html#cb15-4" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;A&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;E&quot;</span>,<span class="st">&quot;D&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;F&quot;</span>,<span class="st">&quot;C&quot;</span>,<span class="st">&quot;B&quot;</span>)</span>
+<span id="cb15-5"><a href="1002-anova.html#cb15-5" aria-hidden="true" tabindex="-1"></a>col_block <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="dv">6</span>))</span>
+<span id="cb15-6"><a href="1002-anova.html#cb15-6" aria-hidden="true" tabindex="-1"></a>row_block <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,<span class="at">each=</span><span class="dv">6</span>))</span>
+<span id="cb15-7"><a href="1002-anova.html#cb15-7" aria-hidden="true" tabindex="-1"></a>mydata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(psize,drug,col_block,row_block)</span>
+<span id="cb15-8"><a href="1002-anova.html#cb15-8" aria-hidden="true" tabindex="-1"></a>mydata<span class="sc">$</span>col_block <span class="ot">&lt;-</span> <span class="fu">factor</span>(mydata<span class="sc">$</span>col_block)</span>
+<span id="cb15-9"><a href="1002-anova.html#cb15-9" aria-hidden="true" tabindex="-1"></a>mydata<span class="sc">$</span>row_block <span class="ot">&lt;-</span> <span class="fu">factor</span>(mydata<span class="sc">$</span>row_block)</span>
+<span id="cb15-10"><a href="1002-anova.html#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(mydata)</span>
+<span id="cb15-11"><a href="1002-anova.html#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    36 obs. of  4 variables:</span></span>
+<span id="cb15-12"><a href="1002-anova.html#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ psize    : num  87 75 81 75 84 66 73 81 87 85 ...</span></span>
+<span id="cb15-13"><a href="1002-anova.html#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ drug     : chr  &quot;C&quot; &quot;B&quot; &quot;E&quot; &quot;D&quot; ...</span></span>
+<span id="cb15-14"><a href="1002-anova.html#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ col_block: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 1 2 3 4 ...</span></span>
+<span id="cb15-15"><a href="1002-anova.html#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ row_block: Factor w/ 6 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 1 1 1 2 2 2 2 ...</span></span></code></pre></div>
+<p>数据一共4列，第一列是皮肤疱疹大小，第二列是不同药物（处理因素，共5种），第三列是列区组因素，第四列是行区组因素。</p>
+<p>进行拉丁方设计的方差分析（two-way anova）：</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="1002-anova.html#cb16-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">aov</span>(psize <span class="sc">~</span> drug <span class="sc">+</span> row_block <span class="sc">+</span> col_block, <span class="at">data =</span> mydata)</span>
+<span id="cb16-2"><a href="1002-anova.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb16-3"><a href="1002-anova.html#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
+<span id="cb16-4"><a href="1002-anova.html#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="do">## drug         5  667.1  133.43   3.906 0.0124 *</span></span>
+<span id="cb16-5"><a href="1002-anova.html#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="do">## row_block    5  250.5   50.09   1.466 0.2447  </span></span>
+<span id="cb16-6"><a href="1002-anova.html#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="do">## col_block    5   85.5   17.09   0.500 0.7723  </span></span>
+<span id="cb16-7"><a href="1002-anova.html#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals   20  683.2   34.16                 </span></span>
+<span id="cb16-8"><a href="1002-anova.html#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb16-9"><a href="1002-anova.html#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果显示行区组间自由度为5，列区组间自由度为5，分组（处理因素）间自由度为5，组内自由度为20；
+行区组间离均差平方和为250.5，列区组间离均差平方和为85.5，分组间离均差平方和为667.1，组内离均差平方和为0.0683.2；
+行区组间均方为50.09，列区组间均方为17.09，分组间均方为133.43，组内均方为34.16，
+行区组间F值=1.466，p=0.2447，列区组间F值=0.5，p=0.7723，分组间F值=3.906，p=0.0124，和课本一致。</p>
+</div>
+<div id="两阶段交叉设计资料方差分析" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> 两阶段交叉设计资料方差分析<a href="1002-anova.html#两阶段交叉设计资料方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例4-6</strong>的数据。</p>
+<p>首先是构造数据，本次数据自己从书上摘录。。</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="1002-anova.html#cb17-1" aria-hidden="true" tabindex="-1"></a>contain <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">760</span>,<span class="dv">770</span>,<span class="dv">860</span>,<span class="dv">855</span>,<span class="dv">568</span>,<span class="dv">602</span>,<span class="dv">780</span>,<span class="dv">800</span>,<span class="dv">960</span>,<span class="dv">958</span>,<span class="dv">940</span>,<span class="dv">952</span>,<span class="dv">635</span>,<span class="dv">650</span>,<span class="dv">440</span>,<span class="dv">450</span>,</span>
+<span id="cb17-2"><a href="1002-anova.html#cb17-2" aria-hidden="true" tabindex="-1"></a>             <span class="dv">528</span>,<span class="dv">530</span>,<span class="dv">800</span>,<span class="dv">803</span>)</span>
+<span id="cb17-3"><a href="1002-anova.html#cb17-3" aria-hidden="true" tabindex="-1"></a>phase <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;phase_1&quot;</span>,<span class="st">&quot;phase_2&quot;</span>),<span class="dv">10</span>)</span>
+<span id="cb17-4"><a href="1002-anova.html#cb17-4" aria-hidden="true" tabindex="-1"></a>type <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>,</span>
+<span id="cb17-5"><a href="1002-anova.html#cb17-5" aria-hidden="true" tabindex="-1"></a>          <span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;A&quot;</span>)</span>
+<span id="cb17-6"><a href="1002-anova.html#cb17-6" aria-hidden="true" tabindex="-1"></a>testid <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">each=</span><span class="dv">2</span>)</span>
+<span id="cb17-7"><a href="1002-anova.html#cb17-7" aria-hidden="true" tabindex="-1"></a>mydata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(testid,phase,type,contain)</span>
+<span id="cb17-8"><a href="1002-anova.html#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="1002-anova.html#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(mydata)</span>
+<span id="cb17-10"><a href="1002-anova.html#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    20 obs. of  4 variables:</span></span>
+<span id="cb17-11"><a href="1002-anova.html#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ testid : int  1 1 2 2 3 3 4 4 5 5 ...</span></span>
+<span id="cb17-12"><a href="1002-anova.html#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ phase  : chr  &quot;phase_1&quot; &quot;phase_2&quot; &quot;phase_1&quot; &quot;phase_2&quot; ...</span></span>
+<span id="cb17-13"><a href="1002-anova.html#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ type   : chr  &quot;A&quot; &quot;B&quot; &quot;B&quot; &quot;A&quot; ...</span></span>
+<span id="cb17-14"><a href="1002-anova.html#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ contain: num  760 770 860 855 568 602 780 800 960 958 ...</span></span>
+<span id="cb17-15"><a href="1002-anova.html#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="1002-anova.html#cb17-16" aria-hidden="true" tabindex="-1"></a>mydata<span class="sc">$</span>testid <span class="ot">&lt;-</span> <span class="fu">factor</span>(mydata<span class="sc">$</span>testid)</span></code></pre></div>
+<p>数据一共4列，第一列是受试者id，第二列是不同阶段，第三列是测定方法，第四列是测量值。</p>
+<p>简单看下2个阶段情况：</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="1002-anova.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(mydata<span class="sc">$</span>phase,mydata<span class="sc">$</span>type)</span>
+<span id="cb18-2"><a href="1002-anova.html#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="do">##          </span></span>
+<span id="cb18-3"><a href="1002-anova.html#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="do">##           A B</span></span>
+<span id="cb18-4"><a href="1002-anova.html#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   phase_1 5 5</span></span>
+<span id="cb18-5"><a href="1002-anova.html#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   phase_2 5 5</span></span></code></pre></div>
+<p>进行两阶段交叉设计资料方差分析（two-way anova）：</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="1002-anova.html#cb19-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">aov</span>(contain<span class="sc">~</span>phase<span class="sc">+</span>type<span class="sc">+</span>testid,mydata)</span>
+<span id="cb19-2"><a href="1002-anova.html#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb19-3"><a href="1002-anova.html#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq  F value   Pr(&gt;F)    </span></span>
+<span id="cb19-4"><a href="1002-anova.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="do">## phase        1    490     490    9.925   0.0136 *  </span></span>
+<span id="cb19-5"><a href="1002-anova.html#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="do">## type         1    198     198    4.019   0.0799 .  </span></span>
+<span id="cb19-6"><a href="1002-anova.html#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="do">## testid       9 551111   61235 1240.195 1.32e-11 ***</span></span>
+<span id="cb19-7"><a href="1002-anova.html#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals    8    395      49                      </span></span>
+<span id="cb19-8"><a href="1002-anova.html#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb19-9"><a href="1002-anova.html#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果和课本一致！</p>
+</div>
+<div id="多个样本均数间的多重比较" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> 多个样本均数间的多重比较<a href="1002-anova.html#多个样本均数间的多重比较" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例4-2</strong>的数据。</p>
+<p>首先是构造数据，本次数据自己从书上摘录。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="1002-anova.html#cb20-1" aria-hidden="true" tabindex="-1"></a>trt<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;group1&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group2&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group3&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group4&quot;</span>,<span class="dv">30</span>))</span>
+<span id="cb20-2"><a href="1002-anova.html#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="1002-anova.html#cb20-3" aria-hidden="true" tabindex="-1"></a>weight<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">3.53</span>,<span class="fl">4.59</span>,<span class="fl">4.34</span>,<span class="fl">2.66</span>,<span class="fl">3.59</span>,<span class="fl">3.13</span>,<span class="fl">3.30</span>,<span class="fl">4.04</span>,<span class="fl">3.53</span>,<span class="fl">3.56</span>,<span class="fl">3.85</span>,<span class="fl">4.07</span>,<span class="fl">1.37</span>,</span>
+<span id="cb20-4"><a href="1002-anova.html#cb20-4" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.93</span>,<span class="fl">2.33</span>,<span class="fl">2.98</span>,<span class="fl">4.00</span>,<span class="fl">3.55</span>,<span class="fl">2.64</span>,<span class="fl">2.56</span>,<span class="fl">3.50</span>,<span class="fl">3.25</span>,<span class="fl">2.96</span>,<span class="fl">4.30</span>,<span class="fl">3.52</span>,<span class="fl">3.93</span>,</span>
+<span id="cb20-5"><a href="1002-anova.html#cb20-5" aria-hidden="true" tabindex="-1"></a>          <span class="fl">4.19</span>,<span class="fl">2.96</span>,<span class="fl">4.16</span>,<span class="fl">2.59</span>,<span class="fl">2.42</span>,<span class="fl">3.36</span>,<span class="fl">4.32</span>,<span class="fl">2.34</span>,<span class="fl">2.68</span>,<span class="fl">2.95</span>,<span class="fl">2.36</span>,<span class="fl">2.56</span>,<span class="fl">2.52</span>,</span>
+<span id="cb20-6"><a href="1002-anova.html#cb20-6" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.27</span>,<span class="fl">2.98</span>,<span class="fl">3.72</span>,<span class="fl">2.65</span>,<span class="fl">2.22</span>,<span class="fl">2.90</span>,<span class="fl">1.98</span>,<span class="fl">2.63</span>,<span class="fl">2.86</span>,<span class="fl">2.93</span>,<span class="fl">2.17</span>,<span class="fl">2.72</span>,<span class="fl">1.56</span>,</span>
+<span id="cb20-7"><a href="1002-anova.html#cb20-7" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.11</span>,<span class="fl">1.81</span>,<span class="fl">1.77</span>,<span class="fl">2.80</span>,<span class="fl">3.57</span>,<span class="fl">2.97</span>,<span class="fl">4.02</span>,<span class="fl">2.31</span>,<span class="fl">2.86</span>,<span class="fl">2.28</span>,<span class="fl">2.39</span>,<span class="fl">2.28</span>,<span class="fl">2.48</span>,</span>
+<span id="cb20-8"><a href="1002-anova.html#cb20-8" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.28</span>,<span class="fl">3.48</span>,<span class="fl">2.42</span>,<span class="fl">2.41</span>,<span class="fl">2.66</span>,<span class="fl">3.29</span>,<span class="fl">2.70</span>,<span class="fl">2.66</span>,<span class="fl">3.68</span>,<span class="fl">2.65</span>,<span class="fl">2.66</span>,<span class="fl">2.32</span>,<span class="fl">2.61</span>,</span>
+<span id="cb20-9"><a href="1002-anova.html#cb20-9" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.64</span>,<span class="fl">2.58</span>,<span class="fl">3.65</span>,<span class="fl">3.21</span>,<span class="fl">2.23</span>,<span class="fl">2.32</span>,<span class="fl">2.68</span>,<span class="fl">3.04</span>,<span class="fl">2.81</span>,<span class="fl">3.02</span>,<span class="fl">1.97</span>,<span class="fl">1.68</span>,<span class="fl">0.89</span>,</span>
+<span id="cb20-10"><a href="1002-anova.html#cb20-10" aria-hidden="true" tabindex="-1"></a>          <span class="fl">1.06</span>,<span class="fl">1.08</span>,<span class="fl">1.27</span>,<span class="fl">1.63</span>,<span class="fl">1.89</span>,<span class="fl">1.31</span>,<span class="fl">2.51</span>,<span class="fl">1.88</span>,<span class="fl">1.41</span>,<span class="fl">3.19</span>,<span class="fl">1.92</span>,<span class="fl">0.94</span>,<span class="fl">2.11</span>,</span>
+<span id="cb20-11"><a href="1002-anova.html#cb20-11" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.81</span>,<span class="fl">1.98</span>,<span class="fl">1.74</span>,<span class="fl">2.16</span>,<span class="fl">3.37</span>,<span class="fl">2.97</span>,<span class="fl">1.69</span>,<span class="fl">1.19</span>,<span class="fl">2.17</span>,<span class="fl">2.28</span>,<span class="fl">1.72</span>,<span class="fl">2.47</span>,<span class="fl">1.02</span>,</span>
+<span id="cb20-12"><a href="1002-anova.html#cb20-12" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.52</span>,<span class="fl">2.10</span>,<span class="fl">3.71</span>)</span>
+<span id="cb20-13"><a href="1002-anova.html#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="1002-anova.html#cb20-14" aria-hidden="true" tabindex="-1"></a>data1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(trt,weight)</span>
+<span id="cb20-15"><a href="1002-anova.html#cb20-15" aria-hidden="true" tabindex="-1"></a>data1<span class="sc">$</span>trt <span class="ot">&lt;-</span> <span class="fu">factor</span>(data1<span class="sc">$</span>trt)</span>
+<span id="cb20-16"><a href="1002-anova.html#cb20-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-17"><a href="1002-anova.html#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data1)</span>
+<span id="cb20-18"><a href="1002-anova.html#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    120 obs. of  2 variables:</span></span>
+<span id="cb20-19"><a href="1002-anova.html#cb20-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ trt   : Factor w/ 4 levels &quot;group1&quot;,&quot;group2&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb20-20"><a href="1002-anova.html#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ weight: num  3.53 4.59 4.34 2.66 3.59 3.13 3.3 4.04 3.53 3.56 ...</span></span></code></pre></div>
+<p>数据一共两列，第一列是分组（一共四组），第二列是低密度脂蛋白测量值</p>
+<p>进行完全随机设计资料的方差分析：</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="1002-anova.html#cb21-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">aov</span>(weight <span class="sc">~</span> trt, <span class="at">data =</span> data1)</span>
+<span id="cb21-2"><a href="1002-anova.html#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit)</span>
+<span id="cb21-3"><a href="1002-anova.html#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">##              Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span id="cb21-4"><a href="1002-anova.html#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="do">## trt           3  32.16  10.719   24.88 1.67e-12 ***</span></span>
+<span id="cb21-5"><a href="1002-anova.html#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals   116  49.97   0.431                     </span></span>
+<span id="cb21-6"><a href="1002-anova.html#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb21-7"><a href="1002-anova.html#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div id="lsd-t检验" class="section level3 hasAnchor" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> LSD-t检验<a href="1002-anova.html#lsd-t检验" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>使用超级全能的<code>PMCMRplus</code>包实现，需要自己安装。</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="1002-anova.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PMCMRplus)</span>
+<span id="cb22-2"><a href="1002-anova.html#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="1002-anova.html#cb22-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">lsdTest</span>(fit)</span>
+<span id="cb22-4"><a href="1002-anova.html#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># lsdTest(weight ~ trt, data = data1) 也可以</span></span>
+<span id="cb22-5"><a href="1002-anova.html#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="1002-anova.html#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb22-7"><a href="1002-anova.html#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb22-8"><a href="1002-anova.html#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pairwise comparisons using Least Significant Difference Test</span></span>
+<span id="cb22-9"><a href="1002-anova.html#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="do">## data: weight by trt</span></span>
+<span id="cb22-10"><a href="1002-anova.html#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: two.sided</span></span>
+<span id="cb22-11"><a href="1002-anova.html#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="do">## P value adjustment method: none</span></span>
+<span id="cb22-12"><a href="1002-anova.html#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="do">## H0</span></span>
+<span id="cb22-13"><a href="1002-anova.html#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="do">##                      t value   Pr(&gt;|t|)    </span></span>
+<span id="cb22-14"><a href="1002-anova.html#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="do">## group2 - group1 == 0  -4.219 4.8872e-05 ***</span></span>
+<span id="cb22-15"><a href="1002-anova.html#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="do">## group3 - group1 == 0  -4.322 3.2889e-05 ***</span></span>
+<span id="cb22-16"><a href="1002-anova.html#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group1 == 0  -8.639 3.5772e-14 ***</span></span>
+<span id="cb22-17"><a href="1002-anova.html#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="do">## group3 - group2 == 0  -0.102    0.91871    </span></span>
+<span id="cb22-18"><a href="1002-anova.html#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group2 == 0  -4.420 2.2345e-05 ***</span></span>
+<span id="cb22-19"><a href="1002-anova.html#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group3 == 0  -4.318 3.3397e-05 ***</span></span>
+<span id="cb22-20"><a href="1002-anova.html#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb22-21"><a href="1002-anova.html#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果比SPSS的结果更加直接，给出了统计量和P值，可以非常直观的看出哪两个组之间有差别。</p>
+<p>所以<code>group2</code>和 <code>group3</code>是没差别的，和另外两组有差别。</p>
+<p>还可以可视化结果：</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="1002-anova.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code></pre></div>
+<p><img src="1002-anova_files/figure-html/unnamed-chunk-15-1.png" width="90%" /></p>
+</div>
+<div id="tukeyhsd" class="section level3 hasAnchor" number="2.5.2">
+<h3><span class="header-section-number">2.5.2</span> TukeyHSD<a href="1002-anova.html#tukeyhsd" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>这里介绍一种 <code>TukeyHSD</code>方法：</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="1002-anova.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(fit) <span class="do">### 每个组之间进行比较,多重比较</span></span>
+<span id="cb24-2"><a href="1002-anova.html#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   Tukey multiple comparisons of means</span></span>
+<span id="cb24-3"><a href="1002-anova.html#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     95% family-wise confidence level</span></span>
+<span id="cb24-4"><a href="1002-anova.html#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb24-5"><a href="1002-anova.html#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit: aov(formula = weight ~ trt, data = data1)</span></span>
+<span id="cb24-6"><a href="1002-anova.html#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb24-7"><a href="1002-anova.html#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="do">## $trt</span></span>
+<span id="cb24-8"><a href="1002-anova.html#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="do">##                      diff        lwr        upr     p adj</span></span>
+<span id="cb24-9"><a href="1002-anova.html#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="do">## group2-group1 -0.71500000 -1.1567253 -0.2732747 0.0002825</span></span>
+<span id="cb24-10"><a href="1002-anova.html#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="do">## group3-group1 -0.73233333 -1.1740587 -0.2906080 0.0001909</span></span>
+<span id="cb24-11"><a href="1002-anova.html#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="do">## group4-group1 -1.46400000 -1.9057253 -1.0222747 0.0000000</span></span>
+<span id="cb24-12"><a href="1002-anova.html#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="do">## group3-group2 -0.01733333 -0.4590587  0.4243920 0.9996147</span></span>
+<span id="cb24-13"><a href="1002-anova.html#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="do">## group4-group2 -0.74900000 -1.1907253 -0.3072747 0.0001302</span></span>
+<span id="cb24-14"><a href="1002-anova.html#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="do">## group4-group3 -0.73166667 -1.1733920 -0.2899413 0.0001938</span></span></code></pre></div>
+<p>这个结果更直观，可以直接看到每个组之间的比较，后面给出了P值。</p>
+<p>可视化结果：</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="1002-anova.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">TukeyHSD</span>(fit))</span></code></pre></div>
+<p><img src="1002-anova_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+</div>
+<div id="dunnett-t检验" class="section level3 hasAnchor" number="2.5.3">
+<h3><span class="header-section-number">2.5.3</span> Dunnett-t检验<a href="1002-anova.html#dunnett-t检验" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>使用超级全能的<code>PMCMRplus</code>包实现</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="1002-anova.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PMCMRplus)</span>
+<span id="cb26-2"><a href="1002-anova.html#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="1002-anova.html#cb26-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">dunnettTest</span>(fit)</span>
+<span id="cb26-4"><a href="1002-anova.html#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 或者 dunnettTest(weight ~ trt, data = data1)</span></span>
+<span id="cb26-5"><a href="1002-anova.html#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="1002-anova.html#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb26-7"><a href="1002-anova.html#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb26-8"><a href="1002-anova.html#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pairwise comparisons using Dunnett&#39;s-test for multiple  </span></span>
+<span id="cb26-9"><a href="1002-anova.html#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                          comparisons with one control</span></span>
+<span id="cb26-10"><a href="1002-anova.html#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="do">## data: weight by trt</span></span>
+<span id="cb26-11"><a href="1002-anova.html#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: two.sided</span></span>
+<span id="cb26-12"><a href="1002-anova.html#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="do">## P value adjustment method: single-step</span></span>
+<span id="cb26-13"><a href="1002-anova.html#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="do">## H0</span></span>
+<span id="cb26-14"><a href="1002-anova.html#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="do">##                      t value   Pr(&gt;|t|)    </span></span>
+<span id="cb26-15"><a href="1002-anova.html#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="do">## group2 - group1 == 0  -4.219 0.00015351 ***</span></span>
+<span id="cb26-16"><a href="1002-anova.html#cb26-16" aria-hidden="true" tabindex="-1"></a><span class="do">## group3 - group1 == 0  -4.322 0.00013480 ***</span></span>
+<span id="cb26-17"><a href="1002-anova.html#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group1 == 0  -8.639 1.8208e-14 ***</span></span>
+<span id="cb26-18"><a href="1002-anova.html#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb26-19"><a href="1002-anova.html#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果也是非常明显，所有组和安慰剂组相比都有意义。</p>
+<p>可视化结果：</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="1002-anova.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code></pre></div>
+<p><img src="1002-anova_files/figure-html/unnamed-chunk-19-1.png" width="90%" /></p>
+</div>
+<div id="snk-q检验" class="section level3 hasAnchor" number="2.5.4">
+<h3><span class="header-section-number">2.5.4</span> SNK-q检验<a href="1002-anova.html#snk-q检验" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>还是使用超级全能的<code>PMCMRplus</code>包实现。</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="1002-anova.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(PMCMRplus)</span>
+<span id="cb28-2"><a href="1002-anova.html#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="1002-anova.html#cb28-3" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">snkTest</span>(fit)</span>
+<span id="cb28-4"><a href="1002-anova.html#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 或者 snkTest(weight ~ trt, data = data1)</span></span>
+<span id="cb28-5"><a href="1002-anova.html#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="1002-anova.html#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span>
+<span id="cb28-7"><a href="1002-anova.html#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb28-8"><a href="1002-anova.html#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pairwise comparisons using SNK test</span></span>
+<span id="cb28-9"><a href="1002-anova.html#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="do">## data: weight by trt</span></span>
+<span id="cb28-10"><a href="1002-anova.html#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: two.sided</span></span>
+<span id="cb28-11"><a href="1002-anova.html#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="do">## P value adjustment method: step down</span></span>
+<span id="cb28-12"><a href="1002-anova.html#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="do">## H0</span></span>
+<span id="cb28-13"><a href="1002-anova.html#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="do">##                      q value   Pr(&gt;|q|)    </span></span>
+<span id="cb28-14"><a href="1002-anova.html#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="do">## group2 - group1 == 0  -5.967 4.8872e-05 ***</span></span>
+<span id="cb28-15"><a href="1002-anova.html#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="do">## group3 - group1 == 0  -6.112 9.7010e-05 ***</span></span>
+<span id="cb28-16"><a href="1002-anova.html#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group1 == 0 -12.218 2.5524e-13 ***</span></span>
+<span id="cb28-17"><a href="1002-anova.html#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="do">## group3 - group2 == 0  -0.145    0.91871    </span></span>
+<span id="cb28-18"><a href="1002-anova.html#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group2 == 0  -6.251 6.6031e-05 ***</span></span>
+<span id="cb28-19"><a href="1002-anova.html#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="do">## group4 - group3 == 0  -6.106 3.3397e-05 ***</span></span>
+<span id="cb28-20"><a href="1002-anova.html#cb28-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb28-21"><a href="1002-anova.html#cb28-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>这个结果也很直观，可以直接看到每个组之间的比较，后面给出了P值。</p>
+<p>可视化结果：</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="1002-anova.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res)</span></code></pre></div>
+<p><img src="1002-anova_files/figure-html/unnamed-chunk-21-1.png" width="90%" /></p>
+</div>
+</div>
+<div id="多样本方差比较的bartlett检验和levene检验" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> 多样本方差比较的Bartlett检验和Levene检验<a href="1002-anova.html#多样本方差比较的bartlett检验和levene检验" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="多样本方差比较的bartlett检验" class="section level3 hasAnchor" number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> 多样本方差比较的Bartlett检验<a href="1002-anova.html#多样本方差比较的bartlett检验" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>使用课本<strong>例4-2</strong>的数据。</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="1002-anova.html#cb30-1" aria-hidden="true" tabindex="-1"></a>trt<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;group1&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group2&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group3&quot;</span>,<span class="dv">30</span>),<span class="fu">rep</span>(<span class="st">&quot;group4&quot;</span>,<span class="dv">30</span>))</span>
+<span id="cb30-2"><a href="1002-anova.html#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="1002-anova.html#cb30-3" aria-hidden="true" tabindex="-1"></a>weight<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">3.53</span>,<span class="fl">4.59</span>,<span class="fl">4.34</span>,<span class="fl">2.66</span>,<span class="fl">3.59</span>,<span class="fl">3.13</span>,<span class="fl">3.30</span>,<span class="fl">4.04</span>,<span class="fl">3.53</span>,<span class="fl">3.56</span>,<span class="fl">3.85</span>,<span class="fl">4.07</span>,<span class="fl">1.37</span>,</span>
+<span id="cb30-4"><a href="1002-anova.html#cb30-4" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.93</span>,<span class="fl">2.33</span>,<span class="fl">2.98</span>,<span class="fl">4.00</span>,<span class="fl">3.55</span>,<span class="fl">2.64</span>,<span class="fl">2.56</span>,<span class="fl">3.50</span>,<span class="fl">3.25</span>,<span class="fl">2.96</span>,<span class="fl">4.30</span>,<span class="fl">3.52</span>,<span class="fl">3.93</span>,</span>
+<span id="cb30-5"><a href="1002-anova.html#cb30-5" aria-hidden="true" tabindex="-1"></a>          <span class="fl">4.19</span>,<span class="fl">2.96</span>,<span class="fl">4.16</span>,<span class="fl">2.59</span>,<span class="fl">2.42</span>,<span class="fl">3.36</span>,<span class="fl">4.32</span>,<span class="fl">2.34</span>,<span class="fl">2.68</span>,<span class="fl">2.95</span>,<span class="fl">2.36</span>,<span class="fl">2.56</span>,<span class="fl">2.52</span>,</span>
+<span id="cb30-6"><a href="1002-anova.html#cb30-6" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.27</span>,<span class="fl">2.98</span>,<span class="fl">3.72</span>,<span class="fl">2.65</span>,<span class="fl">2.22</span>,<span class="fl">2.90</span>,<span class="fl">1.98</span>,<span class="fl">2.63</span>,<span class="fl">2.86</span>,<span class="fl">2.93</span>,<span class="fl">2.17</span>,<span class="fl">2.72</span>,<span class="fl">1.56</span>,</span>
+<span id="cb30-7"><a href="1002-anova.html#cb30-7" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.11</span>,<span class="fl">1.81</span>,<span class="fl">1.77</span>,<span class="fl">2.80</span>,<span class="fl">3.57</span>,<span class="fl">2.97</span>,<span class="fl">4.02</span>,<span class="fl">2.31</span>,<span class="fl">2.86</span>,<span class="fl">2.28</span>,<span class="fl">2.39</span>,<span class="fl">2.28</span>,<span class="fl">2.48</span>,</span>
+<span id="cb30-8"><a href="1002-anova.html#cb30-8" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.28</span>,<span class="fl">3.48</span>,<span class="fl">2.42</span>,<span class="fl">2.41</span>,<span class="fl">2.66</span>,<span class="fl">3.29</span>,<span class="fl">2.70</span>,<span class="fl">2.66</span>,<span class="fl">3.68</span>,<span class="fl">2.65</span>,<span class="fl">2.66</span>,<span class="fl">2.32</span>,<span class="fl">2.61</span>,</span>
+<span id="cb30-9"><a href="1002-anova.html#cb30-9" aria-hidden="true" tabindex="-1"></a>          <span class="fl">3.64</span>,<span class="fl">2.58</span>,<span class="fl">3.65</span>,<span class="fl">3.21</span>,<span class="fl">2.23</span>,<span class="fl">2.32</span>,<span class="fl">2.68</span>,<span class="fl">3.04</span>,<span class="fl">2.81</span>,<span class="fl">3.02</span>,<span class="fl">1.97</span>,<span class="fl">1.68</span>,<span class="fl">0.89</span>,</span>
+<span id="cb30-10"><a href="1002-anova.html#cb30-10" aria-hidden="true" tabindex="-1"></a>          <span class="fl">1.06</span>,<span class="fl">1.08</span>,<span class="fl">1.27</span>,<span class="fl">1.63</span>,<span class="fl">1.89</span>,<span class="fl">1.31</span>,<span class="fl">2.51</span>,<span class="fl">1.88</span>,<span class="fl">1.41</span>,<span class="fl">3.19</span>,<span class="fl">1.92</span>,<span class="fl">0.94</span>,<span class="fl">2.11</span>,</span>
+<span id="cb30-11"><a href="1002-anova.html#cb30-11" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.81</span>,<span class="fl">1.98</span>,<span class="fl">1.74</span>,<span class="fl">2.16</span>,<span class="fl">3.37</span>,<span class="fl">2.97</span>,<span class="fl">1.69</span>,<span class="fl">1.19</span>,<span class="fl">2.17</span>,<span class="fl">2.28</span>,<span class="fl">1.72</span>,<span class="fl">2.47</span>,<span class="fl">1.02</span>,</span>
+<span id="cb30-12"><a href="1002-anova.html#cb30-12" aria-hidden="true" tabindex="-1"></a>          <span class="fl">2.52</span>,<span class="fl">2.10</span>,<span class="fl">3.71</span>)</span>
+<span id="cb30-13"><a href="1002-anova.html#cb30-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-14"><a href="1002-anova.html#cb30-14" aria-hidden="true" tabindex="-1"></a>data1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(trt,weight)</span>
+<span id="cb30-15"><a href="1002-anova.html#cb30-15" aria-hidden="true" tabindex="-1"></a>data1<span class="sc">$</span>trt <span class="ot">&lt;-</span> <span class="fu">factor</span>(data1<span class="sc">$</span>trt)</span>
+<span id="cb30-16"><a href="1002-anova.html#cb30-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-17"><a href="1002-anova.html#cb30-17" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(data1)</span>
+<span id="cb30-18"><a href="1002-anova.html#cb30-18" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    120 obs. of  2 variables:</span></span>
+<span id="cb30-19"><a href="1002-anova.html#cb30-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ trt   : Factor w/ 4 levels &quot;group1&quot;,&quot;group2&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb30-20"><a href="1002-anova.html#cb30-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ weight: num  3.53 4.59 4.34 2.66 3.59 3.13 3.3 4.04 3.53 3.56 ...</span></span></code></pre></div>
+<p>进行Bartlett检验：</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="1002-anova.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(weight <span class="sc">~</span> trt, <span class="at">data =</span> data1)</span>
+<span id="cb31-2"><a href="1002-anova.html#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb31-3"><a href="1002-anova.html#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Bartlett test of homogeneity of variances</span></span>
+<span id="cb31-4"><a href="1002-anova.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb31-5"><a href="1002-anova.html#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  weight by trt</span></span>
+<span id="cb31-6"><a href="1002-anova.html#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Bartlett&#39;s K-squared = 5.2192, df = 3, p-value = 0.1564</span></span></code></pre></div>
+<p>由结果可知，P值为0.1564，不拒绝H0，不能认为不满足方差齐性！</p>
+</div>
+<div id="多样本方差比较的levene检验" class="section level3 hasAnchor" number="2.6.2">
+<h3><span class="header-section-number">2.6.2</span> 多样本方差比较的Levene检验<a href="1002-anova.html#多样本方差比较的levene检验" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>使用<code>car</code>包实现。</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="1002-anova.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb32-2"><a href="1002-anova.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: carData</span></span>
+<span id="cb32-3"><a href="1002-anova.html#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="1002-anova.html#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(weight <span class="sc">~</span> trt, <span class="at">data =</span> data1)</span>
+<span id="cb32-5"><a href="1002-anova.html#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Levene&#39;s Test for Homogeneity of Variance (center = median)</span></span>
+<span id="cb32-6"><a href="1002-anova.html#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="do">##        Df F value Pr(&gt;F)</span></span>
+<span id="cb32-7"><a href="1002-anova.html#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="do">## group   3   1.493 0.2201</span></span>
+<span id="cb32-8"><a href="1002-anova.html#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="do">##       116</span></span></code></pre></div>
+<p>由结果可知，不能认为不满足方差齐性！</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="1001-ttest.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1003-dysanova.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+</body>
+
+</html>

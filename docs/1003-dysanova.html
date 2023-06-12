@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>3 多因素方差分析 | R语言实战医学统计</title>
+  <meta name="description" content="3 多因素方差分析 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="3 多因素方差分析 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="3 多因素方差分析 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="3 多因素方差分析 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="3 多因素方差分析 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1002-anova.html"/>
+<link rel="next" href="1004-repeatedmeaanova.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,296 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="njlkga" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">3</span> 多因素方差分析<a href="1003-dysanova.html#njlkga" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="x-2-两因素析因设计资料的方差分析" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> 2 x 2 两因素析因设计资料的方差分析<a href="1003-dysanova.html#x-2-两因素析因设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例11-1</strong>的数据，自己手动摘录：</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="1003-dysanova.html#cb33-1" aria-hidden="true" tabindex="-1"></a>df11_1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb33-2"><a href="1003-dysanova.html#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x1 =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;外膜缝合&quot;</span>,<span class="st">&quot;束膜缝合&quot;</span>), <span class="at">each =</span> <span class="dv">10</span>),</span>
+<span id="cb33-3"><a href="1003-dysanova.html#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x2 =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;缝合1个月&quot;</span>,<span class="st">&quot;缝合2个月&quot;</span>), <span class="at">each =</span> <span class="dv">5</span>),</span>
+<span id="cb33-4"><a href="1003-dysanova.html#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">10</span>,<span class="dv">40</span>,<span class="dv">50</span>,<span class="dv">10</span>,<span class="dv">30</span>,<span class="dv">30</span>,<span class="dv">70</span>,<span class="dv">60</span>,<span class="dv">30</span>,<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">50</span>,<span class="dv">70</span>,<span class="dv">60</span>,<span class="dv">30</span>)</span>
+<span id="cb33-5"><a href="1003-dysanova.html#cb33-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-6"><a href="1003-dysanova.html#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="1003-dysanova.html#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df11_1)</span>
+<span id="cb33-8"><a href="1003-dysanova.html#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    20 obs. of  3 variables:</span></span>
+<span id="cb33-9"><a href="1003-dysanova.html#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x1: chr  &quot;外膜缝合&quot; &quot;外膜缝合&quot; &quot;外膜缝合&quot; &quot;外膜缝合&quot; ...</span></span>
+<span id="cb33-10"><a href="1003-dysanova.html#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x2: chr  &quot;缝合1个月&quot; &quot;缝合1个月&quot; &quot;缝合1个月&quot; &quot;缝合1个月&quot; ...</span></span>
+<span id="cb33-11"><a href="1003-dysanova.html#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ y : num  10 10 40 50 10 30 30 70 60 30 ...</span></span></code></pre></div>
+<p>数据一共3列，第1列是缝合方法，第2列是时间，第3列是轴突通过率。</p>
+<p>进行析因设计资料的方差分析：</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="1003-dysanova.html#cb34-1" aria-hidden="true" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="fu">aov</span>(y <span class="sc">~</span> x1 <span class="sc">*</span> x2, <span class="at">data =</span> df11_1)</span>
+<span id="cb34-2"><a href="1003-dysanova.html#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="1003-dysanova.html#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f1)</span>
+<span id="cb34-4"><a href="1003-dysanova.html#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
+<span id="cb34-5"><a href="1003-dysanova.html#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="do">## x1           1    180     180   0.600 0.4499  </span></span>
+<span id="cb34-6"><a href="1003-dysanova.html#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="do">## x2           1   2420    2420   8.067 0.0118 *</span></span>
+<span id="cb34-7"><a href="1003-dysanova.html#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="do">## x1:x2        1     20      20   0.067 0.7995  </span></span>
+<span id="cb34-8"><a href="1003-dysanova.html#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals   16   4800     300                 </span></span>
+<span id="cb34-9"><a href="1003-dysanova.html#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb34-10"><a href="1003-dysanova.html#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果显示了A因素主效应、B因素主效应、AB交互作用的自由度、离均差平方和、均方误差、F值、P值等，可以看到结果和课本是一致的！</p>
+<p>简单介绍一下可视化两因素析因设计的方法：</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="1003-dysanova.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interaction.plot</span>(df11_1<span class="sc">$</span>x2, df11_1<span class="sc">$</span>x1, df11_1<span class="sc">$</span>y, <span class="at">type =</span> <span class="st">&quot;b&quot;</span>, </span>
+<span id="cb35-2"><a href="1003-dysanova.html#cb35-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>,<span class="st">&quot;blue&quot;</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">15</span>),</span>
+<span id="cb35-3"><a href="1003-dysanova.html#cb35-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">xlab =</span> <span class="st">&quot;缝合时间&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;轴突通过率&quot;</span>)</span></code></pre></div>
+<p><img src="1003-dysanova_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+<p>另外一种可视化方法：</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="1003-dysanova.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gplots)</span>
+<span id="cb36-2"><a href="1003-dysanova.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb36-3"><a href="1003-dysanova.html#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;gplots&#39;</span></span>
+<span id="cb36-4"><a href="1003-dysanova.html#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb36-5"><a href="1003-dysanova.html#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb36-6"><a href="1003-dysanova.html#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     lowess</span></span>
+<span id="cb36-7"><a href="1003-dysanova.html#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="1003-dysanova.html#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(df11_1)</span>
+<span id="cb36-9"><a href="1003-dysanova.html#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="1003-dysanova.html#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plotmeans</span>(y <span class="sc">~</span> <span class="fu">interaction</span>(x1,x2),</span>
+<span id="cb36-11"><a href="1003-dysanova.html#cb36-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">connect =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">3</span>), <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>)),</span>
+<span id="cb36-12"><a href="1003-dysanova.html#cb36-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>,<span class="st">&quot;darkgreen&quot;</span>),</span>
+<span id="cb36-13"><a href="1003-dysanova.html#cb36-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">&quot;两因素析因设计&quot;</span>,</span>
+<span id="cb36-14"><a href="1003-dysanova.html#cb36-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">xlab =</span> <span class="st">&quot;时间和方法的交互&quot;</span>)</span></code></pre></div>
+<p><img src="1003-dysanova_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>再介绍一种方法：</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="1003-dysanova.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(HH)</span>
+<span id="cb37-2"><a href="1003-dysanova.html#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: lattice</span></span>
+<span id="cb37-3"><a href="1003-dysanova.html#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: grid</span></span>
+<span id="cb37-4"><a href="1003-dysanova.html#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: latticeExtra</span></span>
+<span id="cb37-5"><a href="1003-dysanova.html#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: multcomp</span></span>
+<span id="cb37-6"><a href="1003-dysanova.html#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: mvtnorm</span></span>
+<span id="cb37-7"><a href="1003-dysanova.html#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: survival</span></span>
+<span id="cb37-8"><a href="1003-dysanova.html#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: TH.data</span></span>
+<span id="cb37-9"><a href="1003-dysanova.html#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: MASS</span></span>
+<span id="cb37-10"><a href="1003-dysanova.html#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb37-11"><a href="1003-dysanova.html#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;TH.data&#39;</span></span>
+<span id="cb37-12"><a href="1003-dysanova.html#cb37-12" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from &#39;package:MASS&#39;:</span></span>
+<span id="cb37-13"><a href="1003-dysanova.html#cb37-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb37-14"><a href="1003-dysanova.html#cb37-14" aria-hidden="true" tabindex="-1"></a><span class="do">##     geyser</span></span>
+<span id="cb37-15"><a href="1003-dysanova.html#cb37-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: gridExtra</span></span>
+<span id="cb37-16"><a href="1003-dysanova.html#cb37-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb37-17"><a href="1003-dysanova.html#cb37-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;HH&#39;</span></span>
+<span id="cb37-18"><a href="1003-dysanova.html#cb37-18" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from &#39;package:gplots&#39;:</span></span>
+<span id="cb37-19"><a href="1003-dysanova.html#cb37-19" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb37-20"><a href="1003-dysanova.html#cb37-20" aria-hidden="true" tabindex="-1"></a><span class="do">##     residplot</span></span>
+<span id="cb37-21"><a href="1003-dysanova.html#cb37-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-22"><a href="1003-dysanova.html#cb37-22" aria-hidden="true" tabindex="-1"></a><span class="fu">interaction2wt</span>(y <span class="sc">~</span> x1 <span class="sc">*</span> x2)</span></code></pre></div>
+<p><img src="1003-dysanova_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="1003-dysanova.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">detach</span>(df11_1)</span></code></pre></div>
+</div>
+<div id="i-x-j-两因素析因设计资料的方差分析" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> I x J 两因素析因设计资料的方差分析<a href="1003-dysanova.html#i-x-j-两因素析因设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例11-2</strong>的数据，自己手动摘录：</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="1003-dysanova.html#cb39-1" aria-hidden="true" tabindex="-1"></a>df11_2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb39-2"><a href="1003-dysanova.html#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">druga =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;1mg&quot;</span>,<span class="st">&quot;2.5mg&quot;</span>,<span class="st">&quot;5mg&quot;</span>), <span class="at">each =</span> <span class="dv">3</span>),</span>
+<span id="cb39-3"><a href="1003-dysanova.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">drugb =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;5微克&quot;</span>,<span class="st">&quot;15微克&quot;</span>,<span class="st">&quot;30微克&quot;</span>),<span class="at">each =</span> <span class="dv">9</span>),</span>
+<span id="cb39-4"><a href="1003-dysanova.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">105</span>,<span class="dv">80</span>,<span class="dv">65</span>,<span class="dv">75</span>,<span class="dv">115</span>,<span class="dv">80</span>,<span class="dv">85</span>,<span class="dv">120</span>,<span class="dv">125</span>,<span class="dv">115</span>,<span class="dv">105</span>,<span class="dv">80</span>,<span class="dv">125</span>,<span class="dv">130</span>,<span class="dv">90</span>,<span class="dv">65</span>,</span>
+<span id="cb39-5"><a href="1003-dysanova.html#cb39-5" aria-hidden="true" tabindex="-1"></a>        <span class="dv">120</span>,<span class="dv">100</span>,<span class="dv">75</span>,<span class="dv">95</span>,<span class="dv">85</span>,<span class="dv">135</span>,<span class="dv">120</span>,<span class="dv">150</span>,<span class="dv">180</span>,<span class="dv">190</span>,<span class="dv">160</span>)</span>
+<span id="cb39-6"><a href="1003-dysanova.html#cb39-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-7"><a href="1003-dysanova.html#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="1003-dysanova.html#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df11_2)</span>
+<span id="cb39-9"><a href="1003-dysanova.html#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    27 obs. of  3 variables:</span></span>
+<span id="cb39-10"><a href="1003-dysanova.html#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ druga: chr  &quot;1mg&quot; &quot;1mg&quot; &quot;1mg&quot; &quot;2.5mg&quot; ...</span></span>
+<span id="cb39-11"><a href="1003-dysanova.html#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ drugb: chr  &quot;5微克&quot; &quot;5微克&quot; &quot;5微克&quot; &quot;5微克&quot; ...</span></span>
+<span id="cb39-12"><a href="1003-dysanova.html#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ y    : num  105 80 65 75 115 80 85 120 125 115 ...</span></span></code></pre></div>
+<p>数据一共3列，第1列是a药物的剂量（3种剂量，代表3个水平），第2列是b药物的剂量（3种剂量），第3列是镇痛时间。</p>
+<p>进行两因素三水平的析因设计资料方差分析：</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="1003-dysanova.html#cb40-1" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">aov</span>(y <span class="sc">~</span> druga <span class="sc">*</span> drugb, <span class="at">data =</span> df11_2)</span>
+<span id="cb40-2"><a href="1003-dysanova.html#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="1003-dysanova.html#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f2)</span>
+<span id="cb40-4"><a href="1003-dysanova.html#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq F value  Pr(&gt;F)   </span></span>
+<span id="cb40-5"><a href="1003-dysanova.html#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="do">## druga        2   6572    3286   8.470 0.00256 **</span></span>
+<span id="cb40-6"><a href="1003-dysanova.html#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="do">## drugb        2   7022    3511   9.050 0.00190 **</span></span>
+<span id="cb40-7"><a href="1003-dysanova.html#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="do">## druga:drugb  4   7872    1968   5.073 0.00647 **</span></span>
+<span id="cb40-8"><a href="1003-dysanova.html#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals   18   6983     388                   </span></span>
+<span id="cb40-9"><a href="1003-dysanova.html#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb40-10"><a href="1003-dysanova.html#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果和课本也是一模一样的哦！</p>
+</div>
+<div id="i-x-j-x-k-三因素析因设计资料的方差分析" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> I x J x K 三因素析因设计资料的方差分析<a href="1003-dysanova.html#i-x-j-x-k-三因素析因设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例11-3</strong>的数据，</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="1003-dysanova.html#cb41-1" aria-hidden="true" tabindex="-1"></a>df11_3 <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="st">&quot;datasets/例11-03-5种军装热感觉5-2-2.sav&quot;</span>, </span>
+<span id="cb41-2"><a href="1003-dysanova.html#cb41-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">to.data.frame =</span> T,<span class="at">reencode=</span><span class="st">&quot;UTF-8&quot;</span>)</span>
+<span id="cb41-3"><a href="1003-dysanova.html#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="do">## re-encoding from UTF-8</span></span>
+<span id="cb41-4"><a href="1003-dysanova.html#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="1003-dysanova.html#cb41-5" aria-hidden="true" tabindex="-1"></a>df11_3<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">factor</span>(df11_3<span class="sc">$</span>a)</span>
+<span id="cb41-6"><a href="1003-dysanova.html#cb41-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-7"><a href="1003-dysanova.html#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df11_3)</span>
+<span id="cb41-8"><a href="1003-dysanova.html#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    100 obs. of  4 variables:</span></span>
+<span id="cb41-9"><a href="1003-dysanova.html#cb41-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ b: Factor w/ 2 levels &quot;干燥&quot;,&quot;潮湿&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb41-10"><a href="1003-dysanova.html#cb41-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ c: Factor w/ 2 levels &quot;静坐&quot;,&quot;活动&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb41-11"><a href="1003-dysanova.html#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ a: Factor w/ 5 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span id="cb41-12"><a href="1003-dysanova.html#cb41-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x: num  0.25 -0.25 1.25 -0.75 0.4 ...</span></span>
+<span id="cb41-13"><a href="1003-dysanova.html#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;variable.labels&quot;)= Named chr [1:4] &quot;活动环境&quot; &quot;活动状态&quot; &quot;军装类型&quot; &quot;主观热感觉&quot;</span></span>
+<span id="cb41-14"><a href="1003-dysanova.html#cb41-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   ..- attr(*, &quot;names&quot;)= chr [1:4] &quot;b&quot; &quot;c&quot; &quot;a&quot; &quot;x&quot;</span></span>
+<span id="cb41-15"><a href="1003-dysanova.html#cb41-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;codepage&quot;)= int 65001</span></span></code></pre></div>
+<p>进行3因素吸引设计资料的方差分析：</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="1003-dysanova.html#cb42-1" aria-hidden="true" tabindex="-1"></a>f3 <span class="ot">&lt;-</span> <span class="fu">aov</span>(x <span class="sc">~</span> b <span class="sc">*</span> c <span class="sc">*</span> a, <span class="at">data =</span> df11_3)</span>
+<span id="cb42-2"><a href="1003-dysanova.html#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="1003-dysanova.html#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f3)</span>
+<span id="cb42-4"><a href="1003-dysanova.html#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span id="cb42-5"><a href="1003-dysanova.html#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="do">## b            1   9.94    9.94  23.138 6.98e-06 ***</span></span>
+<span id="cb42-6"><a href="1003-dysanova.html#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="do">## c            1 283.35  283.35 659.485  &lt; 2e-16 ***</span></span>
+<span id="cb42-7"><a href="1003-dysanova.html#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="do">## a            4   5.20    1.30   3.024   0.0224 *  </span></span>
+<span id="cb42-8"><a href="1003-dysanova.html#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="do">## b:c          1  12.68   12.68  29.514 5.82e-07 ***</span></span>
+<span id="cb42-9"><a href="1003-dysanova.html#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="do">## b:a          4   1.94    0.48   1.128   0.3491    </span></span>
+<span id="cb42-10"><a href="1003-dysanova.html#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="do">## c:a          4   1.48    0.37   0.862   0.4905    </span></span>
+<span id="cb42-11"><a href="1003-dysanova.html#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="do">## b:c:a        4   1.61    0.40   0.937   0.4472    </span></span>
+<span id="cb42-12"><a href="1003-dysanova.html#cb42-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals   80  34.37    0.43                     </span></span>
+<span id="cb42-13"><a href="1003-dysanova.html#cb42-13" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb42-14"><a href="1003-dysanova.html#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果也是和课本一模一样。</p>
+</div>
+<div id="正交设计资料的方差分析" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> 正交设计资料的方差分析<a href="1003-dysanova.html#正交设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例11-4</strong>的数据</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="1003-dysanova.html#cb43-1" aria-hidden="true" tabindex="-1"></a>df11_4 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb43-2"><a href="1003-dysanova.html#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;5度&quot;</span>,<span class="st">&quot;25度&quot;</span>),<span class="at">each =</span> <span class="dv">4</span>),</span>
+<span id="cb43-3"><a href="1003-dysanova.html#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">5.0</span>), <span class="at">each =</span> <span class="dv">2</span>),</span>
+<span id="cb43-4"><a href="1003-dysanova.html#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">c =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">30</span>),</span>
+<span id="cb43-5"><a href="1003-dysanova.html#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">d =</span> <span class="fu">c</span>(<span class="fl">6.0</span>, <span class="fl">8.0</span>,<span class="fl">8.0</span>,<span class="fl">6.0</span>,<span class="fl">8.0</span>,<span class="fl">6.0</span>,<span class="fl">6.0</span>,<span class="fl">8.0</span>),</span>
+<span id="cb43-6"><a href="1003-dysanova.html#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">86</span>,<span class="dv">95</span>,<span class="dv">91</span>,<span class="dv">94</span>,<span class="dv">91</span>,<span class="dv">96</span>,<span class="dv">83</span>,<span class="dv">88</span>)</span>
+<span id="cb43-7"><a href="1003-dysanova.html#cb43-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-8"><a href="1003-dysanova.html#cb43-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-9"><a href="1003-dysanova.html#cb43-9" aria-hidden="true" tabindex="-1"></a>df11_4<span class="sc">$</span>a <span class="ot">&lt;-</span> <span class="fu">factor</span>(df11_4<span class="sc">$</span>a)</span>
+<span id="cb43-10"><a href="1003-dysanova.html#cb43-10" aria-hidden="true" tabindex="-1"></a>df11_4<span class="sc">$</span>b <span class="ot">&lt;-</span> <span class="fu">factor</span>(df11_4<span class="sc">$</span>b)</span>
+<span id="cb43-11"><a href="1003-dysanova.html#cb43-11" aria-hidden="true" tabindex="-1"></a>df11_4<span class="sc">$</span>c <span class="ot">&lt;-</span> <span class="fu">factor</span>(df11_4<span class="sc">$</span>c)</span>
+<span id="cb43-12"><a href="1003-dysanova.html#cb43-12" aria-hidden="true" tabindex="-1"></a>df11_4<span class="sc">$</span>d <span class="ot">&lt;-</span> <span class="fu">factor</span>(df11_4<span class="sc">$</span>d)</span>
+<span id="cb43-13"><a href="1003-dysanova.html#cb43-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-14"><a href="1003-dysanova.html#cb43-14" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df11_4)</span>
+<span id="cb43-15"><a href="1003-dysanova.html#cb43-15" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    8 obs. of  5 variables:</span></span>
+<span id="cb43-16"><a href="1003-dysanova.html#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ a: Factor w/ 2 levels &quot;25度&quot;,&quot;5度&quot;: 2 2 2 2 1 1 1 1</span></span>
+<span id="cb43-17"><a href="1003-dysanova.html#cb43-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ b: Factor w/ 2 levels &quot;0.5&quot;,&quot;5&quot;: 1 1 2 2 1 1 2 2</span></span>
+<span id="cb43-18"><a href="1003-dysanova.html#cb43-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ c: Factor w/ 2 levels &quot;10&quot;,&quot;30&quot;: 1 2 1 2 1 2 1 2</span></span>
+<span id="cb43-19"><a href="1003-dysanova.html#cb43-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ d: Factor w/ 2 levels &quot;6&quot;,&quot;8&quot;: 1 2 2 1 2 1 1 2</span></span>
+<span id="cb43-20"><a href="1003-dysanova.html#cb43-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x: num  86 95 91 94 91 96 83 88</span></span></code></pre></div>
+<p>进行正交设计资料的方差分析：</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="1003-dysanova.html#cb44-1" aria-hidden="true" tabindex="-1"></a>f4 <span class="ot">&lt;-</span> <span class="fu">aov</span>(x <span class="sc">~</span> a <span class="sc">+</span> b <span class="sc">+</span> c <span class="sc">+</span> d <span class="sc">+</span> a<span class="sc">*</span>b, <span class="at">data =</span> df11_4)</span>
+<span id="cb44-2"><a href="1003-dysanova.html#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="1003-dysanova.html#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f4)</span>
+<span id="cb44-4"><a href="1003-dysanova.html#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="do">##             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
+<span id="cb44-5"><a href="1003-dysanova.html#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="do">## a            1    8.0     8.0     3.2 0.2155  </span></span>
+<span id="cb44-6"><a href="1003-dysanova.html#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="do">## b            1   18.0    18.0     7.2 0.1153  </span></span>
+<span id="cb44-7"><a href="1003-dysanova.html#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="do">## c            1   60.5    60.5    24.2 0.0389 *</span></span>
+<span id="cb44-8"><a href="1003-dysanova.html#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="do">## d            1    4.5     4.5     1.8 0.3118  </span></span>
+<span id="cb44-9"><a href="1003-dysanova.html#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="do">## a:b          1   50.0    50.0    20.0 0.0465 *</span></span>
+<span id="cb44-10"><a href="1003-dysanova.html#cb44-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals    2    5.0     2.5                 </span></span>
+<span id="cb44-11"><a href="1003-dysanova.html#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb44-12"><a href="1003-dysanova.html#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果和课本一模一样，用R语言进行方差分析真是太简单了！！！！</p>
+</div>
+<div id="嵌套设计资料的方差分析" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> 嵌套设计资料的方差分析<a href="1003-dysanova.html#嵌套设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例11-6</strong>的数据。</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="1003-dysanova.html#cb45-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">factor1 =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;A&quot;</span>,<span class="st">&quot;B&quot;</span>,<span class="st">&quot;C&quot;</span>),<span class="at">each=</span><span class="dv">6</span>)),</span>
+<span id="cb45-2"><a href="1003-dysanova.html#cb45-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">factor2 =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">70</span>,<span class="dv">80</span>,<span class="dv">90</span>,<span class="dv">55</span>,<span class="dv">65</span>,<span class="dv">75</span>,<span class="dv">90</span>,<span class="dv">95</span>,<span class="dv">100</span>),<span class="at">each=</span><span class="dv">2</span>)),</span>
+<span id="cb45-3"><a href="1003-dysanova.html#cb45-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">82</span>,<span class="dv">84</span>,<span class="dv">91</span>,<span class="dv">88</span>,<span class="dv">85</span>,<span class="dv">83</span>,<span class="dv">65</span>,<span class="dv">61</span>,<span class="dv">62</span>,<span class="dv">59</span>,<span class="dv">56</span>,<span class="dv">60</span>,<span class="dv">71</span>,<span class="dv">67</span>,<span class="dv">75</span>,<span class="dv">78</span>,<span class="dv">85</span>,<span class="dv">89</span>)</span>
+<span id="cb45-4"><a href="1003-dysanova.html#cb45-4" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb45-5"><a href="1003-dysanova.html#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb45-6"><a href="1003-dysanova.html#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    18 obs. of  3 variables:</span></span>
+<span id="cb45-7"><a href="1003-dysanova.html#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ factor1: Factor w/ 3 levels &quot;A&quot;,&quot;B&quot;,&quot;C&quot;: 1 1 1 1 1 1 2 2 2 2 ...</span></span>
+<span id="cb45-8"><a href="1003-dysanova.html#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ factor2: Factor w/ 8 levels &quot;55&quot;,&quot;65&quot;,&quot;70&quot;,..: 3 3 5 5 6 6 1 1 2 2 ...</span></span>
+<span id="cb45-9"><a href="1003-dysanova.html#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ y      : num  82 84 91 88 85 83 65 61 62 59 ...</span></span>
+<span id="cb45-10"><a href="1003-dysanova.html#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="1003-dysanova.html#cb45-11" aria-hidden="true" tabindex="-1"></a>df</span>
+<span id="cb45-12"><a href="1003-dysanova.html#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="do">##    factor1 factor2  y</span></span>
+<span id="cb45-13"><a href="1003-dysanova.html#cb45-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 1        A      70 82</span></span>
+<span id="cb45-14"><a href="1003-dysanova.html#cb45-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 2        A      70 84</span></span>
+<span id="cb45-15"><a href="1003-dysanova.html#cb45-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 3        A      80 91</span></span>
+<span id="cb45-16"><a href="1003-dysanova.html#cb45-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 4        A      80 88</span></span>
+<span id="cb45-17"><a href="1003-dysanova.html#cb45-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 5        A      90 85</span></span>
+<span id="cb45-18"><a href="1003-dysanova.html#cb45-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 6        A      90 83</span></span>
+<span id="cb45-19"><a href="1003-dysanova.html#cb45-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 7        B      55 65</span></span>
+<span id="cb45-20"><a href="1003-dysanova.html#cb45-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 8        B      55 61</span></span>
+<span id="cb45-21"><a href="1003-dysanova.html#cb45-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 9        B      65 62</span></span>
+<span id="cb45-22"><a href="1003-dysanova.html#cb45-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 10       B      65 59</span></span>
+<span id="cb45-23"><a href="1003-dysanova.html#cb45-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 11       B      75 56</span></span>
+<span id="cb45-24"><a href="1003-dysanova.html#cb45-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 12       B      75 60</span></span>
+<span id="cb45-25"><a href="1003-dysanova.html#cb45-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 13       C      90 71</span></span>
+<span id="cb45-26"><a href="1003-dysanova.html#cb45-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 14       C      90 67</span></span>
+<span id="cb45-27"><a href="1003-dysanova.html#cb45-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 15       C      95 75</span></span>
+<span id="cb45-28"><a href="1003-dysanova.html#cb45-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 16       C      95 78</span></span>
+<span id="cb45-29"><a href="1003-dysanova.html#cb45-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 17       C     100 85</span></span>
+<span id="cb45-30"><a href="1003-dysanova.html#cb45-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 18       C     100 89</span></span></code></pre></div>
+<p><code>factor1</code>是一级实验因素（不同的催化剂）， <code>factor2</code>是二级实验因素（不同的温度），<code>y</code>是因变量。</p>
+<p>进行嵌套实验设计的方差分析：</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="1003-dysanova.html#cb46-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">aov</span>(y <span class="sc">~</span> factor1<span class="sc">/</span>factor2, <span class="at">data =</span> df)</span>
+<span id="cb46-2"><a href="1003-dysanova.html#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f)</span>
+<span id="cb46-3"><a href="1003-dysanova.html#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span id="cb46-4"><a href="1003-dysanova.html#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="do">## factor1          2 1956.0   978.0  177.82 5.83e-08 ***</span></span>
+<span id="cb46-5"><a href="1003-dysanova.html#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="do">## factor1:factor2  6  401.0    66.8   12.15 0.000716 ***</span></span>
+<span id="cb46-6"><a href="1003-dysanova.html#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals        9   49.5     5.5                     </span></span>
+<span id="cb46-7"><a href="1003-dysanova.html#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb46-8"><a href="1003-dysanova.html#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果和课本相同。</p>
+</div>
+<div id="裂区设计资料的方差分析" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> 裂区设计资料的方差分析<a href="1003-dysanova.html#裂区设计资料的方差分析" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用课本<strong>例11-7</strong>的数据。这是一个完全随机的2*2裂区设计。</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="1003-dysanova.html#cb47-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">factorA =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;a1&quot;</span>,<span class="st">&quot;a2&quot;</span>),<span class="at">each=</span><span class="dv">10</span>)),</span>
+<span id="cb47-2"><a href="1003-dysanova.html#cb47-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">factorB =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;b1&quot;</span>,<span class="st">&quot;b2&quot;</span>),<span class="dv">10</span>)),</span>
+<span id="cb47-3"><a href="1003-dysanova.html#cb47-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">id =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>),<span class="at">each=</span><span class="dv">2</span>)),</span>
+<span id="cb47-4"><a href="1003-dysanova.html#cb47-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y =</span> <span class="fu">c</span>(<span class="fl">15.75</span>,<span class="fl">19.00</span>,<span class="fl">15.50</span>,<span class="fl">20.75</span>,<span class="fl">15.50</span>,<span class="fl">18.50</span>,<span class="fl">17.00</span>,<span class="fl">20.50</span>,<span class="fl">16.50</span>,<span class="fl">20.00</span>,</span>
+<span id="cb47-5"><a href="1003-dysanova.html#cb47-5" aria-hidden="true" tabindex="-1"></a>                       <span class="fl">18.25</span>,<span class="fl">22.25</span>,<span class="fl">18.50</span>,<span class="fl">21.50</span>,<span class="fl">19.75</span>,<span class="fl">23.50</span>,<span class="fl">21.50</span>,<span class="fl">24.75</span>,<span class="fl">20.75</span>,<span class="fl">23.75</span>)</span>
+<span id="cb47-6"><a href="1003-dysanova.html#cb47-6" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb47-7"><a href="1003-dysanova.html#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb47-8"><a href="1003-dysanova.html#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    20 obs. of  4 variables:</span></span>
+<span id="cb47-9"><a href="1003-dysanova.html#cb47-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ factorA: Factor w/ 2 levels &quot;a1&quot;,&quot;a2&quot;: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb47-10"><a href="1003-dysanova.html#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ factorB: Factor w/ 2 levels &quot;b1&quot;,&quot;b2&quot;: 1 2 1 2 1 2 1 2 1 2 ...</span></span>
+<span id="cb47-11"><a href="1003-dysanova.html#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ id     : Factor w/ 10 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 2 2 3 3 4 4 5 5 ...</span></span>
+<span id="cb47-12"><a href="1003-dysanova.html#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ y      : num  15.8 19 15.5 20.8 15.5 ...</span></span>
+<span id="cb47-13"><a href="1003-dysanova.html#cb47-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-14"><a href="1003-dysanova.html#cb47-14" aria-hidden="true" tabindex="-1"></a>df</span>
+<span id="cb47-15"><a href="1003-dysanova.html#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="do">##    factorA factorB id     y</span></span>
+<span id="cb47-16"><a href="1003-dysanova.html#cb47-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 1       a1      b1  1 15.75</span></span>
+<span id="cb47-17"><a href="1003-dysanova.html#cb47-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 2       a1      b2  1 19.00</span></span>
+<span id="cb47-18"><a href="1003-dysanova.html#cb47-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 3       a1      b1  2 15.50</span></span>
+<span id="cb47-19"><a href="1003-dysanova.html#cb47-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 4       a1      b2  2 20.75</span></span>
+<span id="cb47-20"><a href="1003-dysanova.html#cb47-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 5       a1      b1  3 15.50</span></span>
+<span id="cb47-21"><a href="1003-dysanova.html#cb47-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 6       a1      b2  3 18.50</span></span>
+<span id="cb47-22"><a href="1003-dysanova.html#cb47-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 7       a1      b1  4 17.00</span></span>
+<span id="cb47-23"><a href="1003-dysanova.html#cb47-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 8       a1      b2  4 20.50</span></span>
+<span id="cb47-24"><a href="1003-dysanova.html#cb47-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 9       a1      b1  5 16.50</span></span>
+<span id="cb47-25"><a href="1003-dysanova.html#cb47-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 10      a1      b2  5 20.00</span></span>
+<span id="cb47-26"><a href="1003-dysanova.html#cb47-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 11      a2      b1  6 18.25</span></span>
+<span id="cb47-27"><a href="1003-dysanova.html#cb47-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 12      a2      b2  6 22.25</span></span>
+<span id="cb47-28"><a href="1003-dysanova.html#cb47-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 13      a2      b1  7 18.50</span></span>
+<span id="cb47-29"><a href="1003-dysanova.html#cb47-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 14      a2      b2  7 21.50</span></span>
+<span id="cb47-30"><a href="1003-dysanova.html#cb47-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 15      a2      b1  8 19.75</span></span>
+<span id="cb47-31"><a href="1003-dysanova.html#cb47-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 16      a2      b2  8 23.50</span></span>
+<span id="cb47-32"><a href="1003-dysanova.html#cb47-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 17      a2      b1  9 21.50</span></span>
+<span id="cb47-33"><a href="1003-dysanova.html#cb47-33" aria-hidden="true" tabindex="-1"></a><span class="do">## 18      a2      b2  9 24.75</span></span>
+<span id="cb47-34"><a href="1003-dysanova.html#cb47-34" aria-hidden="true" tabindex="-1"></a><span class="do">## 19      a2      b1 10 20.75</span></span>
+<span id="cb47-35"><a href="1003-dysanova.html#cb47-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 20      a2      b2 10 23.75</span></span></code></pre></div>
+<p>进行裂区设计的方差分析：</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="1003-dysanova.html#cb48-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">aov</span>(y <span class="sc">~</span> factorA <span class="sc">*</span> factorB <span class="sc">+</span> <span class="fu">Error</span>(id<span class="sc">/</span>factorB), <span class="at">data =</span> df)</span>
+<span id="cb48-2"><a href="1003-dysanova.html#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f)</span>
+<span id="cb48-3"><a href="1003-dysanova.html#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb48-4"><a href="1003-dysanova.html#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Error: id</span></span>
+<span id="cb48-5"><a href="1003-dysanova.html#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="do">##           Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span id="cb48-6"><a href="1003-dysanova.html#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="do">## factorA    1  63.01   63.01   28.01 0.000735 ***</span></span>
+<span id="cb48-7"><a href="1003-dysanova.html#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals  8  18.00    2.25                     </span></span>
+<span id="cb48-8"><a href="1003-dysanova.html#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb48-9"><a href="1003-dysanova.html#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb48-10"><a href="1003-dysanova.html#cb48-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb48-11"><a href="1003-dysanova.html#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Error: id:factorB</span></span>
+<span id="cb48-12"><a href="1003-dysanova.html#cb48-12" aria-hidden="true" tabindex="-1"></a><span class="do">##                 Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span id="cb48-13"><a href="1003-dysanova.html#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="do">## factorB          1  63.01   63.01  252.05 2.48e-07 ***</span></span>
+<span id="cb48-14"><a href="1003-dysanova.html#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="do">## factorA:factorB  1   0.11    0.11    0.45    0.521    </span></span>
+<span id="cb48-15"><a href="1003-dysanova.html#cb48-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Residuals        8   2.00    0.25                     </span></span>
+<span id="cb48-16"><a href="1003-dysanova.html#cb48-16" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb48-17"><a href="1003-dysanova.html#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>结果同课本相同。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1002-anova.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1004-repeatedmeaanova.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

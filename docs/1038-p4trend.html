@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>38 p for trend/ p for interaction/ per 1 sd 的R语言实现 | R语言实战医学统计</title>
+  <meta name="description" content="38 p for trend/ p for interaction/ per 1 sd 的R语言实现 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="38 p for trend/ p for interaction/ per 1 sd 的R语言实现 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="38 p for trend/ p for interaction/ per 1 sd 的R语言实现 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="38 p for trend/ p for interaction/ per 1 sd 的R语言实现 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="38 p for trend/ p for interaction/ per 1 sd 的R语言实现 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1037-psw.html"/>
+<link rel="next" href="1039-nonlinearfit.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,214 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="qdkjfgj" class="section level1 hasAnchor" number="38">
+<h1><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现<a href="1038-p4trend.html#qdkjfgj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>本篇主要介绍<code>P for trend</code>、<code>p for interaction</code>、<code>per 1 sd</code>的R语言实现，关于每一项的具体含义，可参考文中给出的链接，或者自己搜索学习。</p>
+<p>这几个概念在统计学课本是找不到的，但是在临床研究的SCI论文中经常见到，所以有必要学习它，了解它，实现它！</p>
+<div id="p-for-trend" class="section level2 hasAnchor" number="38.1">
+<h2><span class="header-section-number">38.1</span> P for trend<a href="1038-p4trend.html#p-for-trend" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><code>P for trend</code>是线性趋势检验的P值，用于反映自变量和因变量是否存在线性趋势关系。线性趋势检验，之前介绍过<code>Cochran Armitage</code>检验，不过是针对分类变量的。</p>
+<p>今天要介绍的<code>P for trend</code>主要是针对连续型变量的。</p>
+<p>关于<code>p for trend</code>具体含义和数值型变量分箱的方法，大家可以参考医咖会的文章：<a href="https://mp.weixin.qq.com/s/VreSa49wjuOw3gGnFApmZw">p for trend是个啥</a></p>
+<p>把连续性变量转换为分类变量(在R里转变为因子)，设置哑变量，进行回归分析，即可得到OR值及95%的可信区间；把转换好的分类变量当做数值型，进行回归分析，即可得到<code>P for trend</code></p>
+<p>使用之前逻辑回归的例子演示，来自<strong>孙振球版医学统计学第4版</strong>，电子版和配套数据均放在QQ群文件中，需要的加群下载即可。</p>
+<div class="sourceCode" id="cb617"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb617-1"><a href="1038-p4trend.html#cb617-1" aria-hidden="true" tabindex="-1"></a>df16_2 <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="st">&quot;datasets/例16-02.sav&quot;</span>, </span>
+<span id="cb617-2"><a href="1038-p4trend.html#cb617-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">to.data.frame =</span> T,</span>
+<span id="cb617-3"><a href="1038-p4trend.html#cb617-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">use.value.labels =</span> F,</span>
+<span id="cb617-4"><a href="1038-p4trend.html#cb617-4" aria-hidden="true" tabindex="-1"></a>                             <span class="at">reencode  =</span> <span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb617-5"><a href="1038-p4trend.html#cb617-5" aria-hidden="true" tabindex="-1"></a><span class="do">## re-encoding from utf-8</span></span>
+<span id="cb617-6"><a href="1038-p4trend.html#cb617-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb617-7"><a href="1038-p4trend.html#cb617-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df16_2)</span>
+<span id="cb617-8"><a href="1038-p4trend.html#cb617-8" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    54 obs. of  11 variables:</span></span>
+<span id="cb617-9"><a href="1038-p4trend.html#cb617-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ .... : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb617-10"><a href="1038-p4trend.html#cb617-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x1   : num  3 2 2 2 3 3 2 3 2 1 ...</span></span>
+<span id="cb617-11"><a href="1038-p4trend.html#cb617-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x2   : num  1 0 1 0 0 0 0 0 0 0 ...</span></span>
+<span id="cb617-12"><a href="1038-p4trend.html#cb617-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x3   : num  0 1 0 0 0 1 1 1 0 0 ...</span></span>
+<span id="cb617-13"><a href="1038-p4trend.html#cb617-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x4   : num  1 1 1 1 1 1 0 1 0 1 ...</span></span>
+<span id="cb617-14"><a href="1038-p4trend.html#cb617-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x5   : num  0 0 0 0 0 0 0 1 0 0 ...</span></span>
+<span id="cb617-15"><a href="1038-p4trend.html#cb617-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x6   : num  0 0 0 0 1 0 0 0 0 0 ...</span></span>
+<span id="cb617-16"><a href="1038-p4trend.html#cb617-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x7   : num  1 1 1 1 1 2 1 1 1 1 ...</span></span>
+<span id="cb617-17"><a href="1038-p4trend.html#cb617-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x8   : num  1 0 0 0 1 1 0 0 1 0 ...</span></span>
+<span id="cb617-18"><a href="1038-p4trend.html#cb617-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ y    : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span id="cb617-19"><a href="1038-p4trend.html#cb617-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ PGR_1: num  1 0 0 0 1 1 0 0 0 0 ...</span></span>
+<span id="cb617-20"><a href="1038-p4trend.html#cb617-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;variable.labels&quot;)= Named chr [1:11] &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...</span></span>
+<span id="cb617-21"><a href="1038-p4trend.html#cb617-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   ..- attr(*, &quot;names&quot;)= chr [1:11] &quot;....&quot; &quot;x1&quot; &quot;x2&quot; &quot;x3&quot; ...</span></span></code></pre></div>
+<p>数据一共11列，第1列是编号，第2-9列是自变量，第10列是因变量。</p>
+<p>具体说明：
+- x1：年龄，小于45岁是1,45-55是2,55-65是3,65以上是4；
+- x2：高血压病史，1代表有，0代表无；
+- x3：高血压家族史，1代表有，0代表无；
+- x4：吸烟，1代表吸烟，0代表不吸烟；
+- x5：高血脂病史，1代表有，0代表无；
+- x6：动物脂肪摄入，0表示低，1表示高
+- x7：BMI，小于24是1,24-26是2，大于26是3；
+- x8：A型性格，1代表是，0代表否；
+- y：是否是冠心病，1代表是，0代表否</p>
+<p>这里的<code>x1~y</code>虽然是数值型，但并不是真的代表数字大小，只是为了方便标识，</p>
+<p><strong>年龄<code>x1</code>应该是数值型的，但是为了方便解释逻辑回归的意义，我们对它进行了分箱处理，也就是把它转换为了分类变量。数值型变量进行分箱，是回归分析中计算p for trend的第一步</strong></p>
+<p><strong>此时<code>x1</code>是数值型，我们直接进行逻辑回归，得到的P值就是 p for trend</strong></p>
+<div class="sourceCode" id="cb618"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb618-1"><a href="1038-p4trend.html#cb618-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x2, </span>
+<span id="cb618-2"><a href="1038-p4trend.html#cb618-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> df16_2, </span>
+<span id="cb618-3"><a href="1038-p4trend.html#cb618-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">family =</span> <span class="fu">binomial</span>())</span>
+<span id="cb618-4"><a href="1038-p4trend.html#cb618-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb618-5"><a href="1038-p4trend.html#cb618-5" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(f)</span>
+<span id="cb618-6"><a href="1038-p4trend.html#cb618-6" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 3 × 5</span></span>
+<span id="cb618-7"><a href="1038-p4trend.html#cb618-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   term        estimate std.error statistic p.value</span></span>
+<span id="cb618-8"><a href="1038-p4trend.html#cb618-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb618-9"><a href="1038-p4trend.html#cb618-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 (Intercept)   -2.22      1.03      -2.15  0.0313</span></span>
+<span id="cb618-10"><a href="1038-p4trend.html#cb618-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 x1             0.712     0.423      1.68  0.0928</span></span>
+<span id="cb618-11"><a href="1038-p4trend.html#cb618-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 x2             1.08      0.625      1.73  0.0840</span></span></code></pre></div>
+<p><code>0.09279918</code>就是<code>x1</code>的<code>p for trend</code>，而且还是校正了<code>x2</code>这个变量之后的<code>p for trend</code>，是不是很简单？</p>
+<p>此时如果我们把<code>x1</code>变成因子型，那在进行回归分析时会自动进行哑变量编码，就可以得到几个组的OR值和95%的可信区间，关于R语言中分类变量进行回归分析时常用的一些编码方法，强烈你看一下这篇推文：R语言分类变量进行回归分析的编码方案。</p>
+<div class="sourceCode" id="cb619"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb619-1"><a href="1038-p4trend.html#cb619-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 变为因子型</span></span>
+<span id="cb619-2"><a href="1038-p4trend.html#cb619-2" aria-hidden="true" tabindex="-1"></a>df16_2<span class="sc">$</span>x1.f <span class="ot">&lt;-</span> <span class="fu">factor</span>(df16_2<span class="sc">$</span>x1)</span>
+<span id="cb619-3"><a href="1038-p4trend.html#cb619-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb619-4"><a href="1038-p4trend.html#cb619-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 把因子放入自变量</span></span>
+<span id="cb619-5"><a href="1038-p4trend.html#cb619-5" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1.f <span class="sc">+</span> x2, </span>
+<span id="cb619-6"><a href="1038-p4trend.html#cb619-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> df16_2, </span>
+<span id="cb619-7"><a href="1038-p4trend.html#cb619-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">family =</span> <span class="fu">binomial</span>())</span>
+<span id="cb619-8"><a href="1038-p4trend.html#cb619-8" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(f,<span class="at">conf.int=</span>T,<span class="at">exponentiate=</span>T)</span>
+<span id="cb619-9"><a href="1038-p4trend.html#cb619-9" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 5 × 7</span></span>
+<span id="cb619-10"><a href="1038-p4trend.html#cb619-10" aria-hidden="true" tabindex="-1"></a><span class="do">##   term        estimate std.error statistic p.value conf.low conf.high</span></span>
+<span id="cb619-11"><a href="1038-p4trend.html#cb619-11" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb619-12"><a href="1038-p4trend.html#cb619-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 (Intercept)    0.200     1.10     -1.47   0.142    0.0104      1.24</span></span>
+<span id="cb619-13"><a href="1038-p4trend.html#cb619-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 x1.f2          2.32      1.19      0.704  0.481    0.289      49.3 </span></span>
+<span id="cb619-14"><a href="1038-p4trend.html#cb619-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 x1.f3          4.48      1.26      1.19   0.233    0.485     102.  </span></span>
+<span id="cb619-15"><a href="1038-p4trend.html#cb619-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 x1.f4          9.42      1.63      1.38   0.169    0.508     438.  </span></span>
+<span id="cb619-16"><a href="1038-p4trend.html#cb619-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 x2             2.94      0.639     1.69   0.0918   0.854      10.7</span></span></code></pre></div>
+<p>这样就得到了<code>x1.f</code>中4/3/2分别和1进行比较的OR值和95%的可信区间。当然你写函数提取也行：</p>
+<div class="sourceCode" id="cb620"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb620-1"><a href="1038-p4trend.html#cb620-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OR值</span></span>
+<span id="cb620-2"><a href="1038-p4trend.html#cb620-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(f))</span>
+<span id="cb620-3"><a href="1038-p4trend.html#cb620-3" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)       x1.f2       x1.f3       x1.f4          x2 </span></span>
+<span id="cb620-4"><a href="1038-p4trend.html#cb620-4" aria-hidden="true" tabindex="-1"></a><span class="do">##    0.200000    2.319343    4.476753    9.415697    2.936212</span></span>
+<span id="cb620-5"><a href="1038-p4trend.html#cb620-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb620-6"><a href="1038-p4trend.html#cb620-6" aria-hidden="true" tabindex="-1"></a><span class="co"># OR值的95%的可信区间</span></span>
+<span id="cb620-7"><a href="1038-p4trend.html#cb620-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">confint</span>(f))</span>
+<span id="cb620-8"><a href="1038-p4trend.html#cb620-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Waiting for profiling to be done...</span></span>
+<span id="cb620-9"><a href="1038-p4trend.html#cb620-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                  2.5 %     97.5 %</span></span>
+<span id="cb620-10"><a href="1038-p4trend.html#cb620-10" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept) 0.01043892   1.240092</span></span>
+<span id="cb620-11"><a href="1038-p4trend.html#cb620-11" aria-hidden="true" tabindex="-1"></a><span class="do">## x1.f2       0.28932733  49.284803</span></span>
+<span id="cb620-12"><a href="1038-p4trend.html#cb620-12" aria-hidden="true" tabindex="-1"></a><span class="do">## x1.f3       0.48497992 102.335996</span></span>
+<span id="cb620-13"><a href="1038-p4trend.html#cb620-13" aria-hidden="true" tabindex="-1"></a><span class="do">## x1.f4       0.50766137 437.541812</span></span>
+<span id="cb620-14"><a href="1038-p4trend.html#cb620-14" aria-hidden="true" tabindex="-1"></a><span class="do">## x2          0.85353009  10.723068</span></span></code></pre></div>
+<p>这样就得到了每个组的OR值和95%的可信区间，可以看到没有第1组的，因为第一组是参考，所有组都是和第一组进行比较。</p>
+</div>
+<div id="p-for-interaction" class="section level2 hasAnchor" number="38.2">
+<h2><span class="header-section-number">38.2</span> p for interaction<a href="1038-p4trend.html#p-for-interaction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><code>p for interaction</code>是交互作用的P值，关于其含义可以参考松哥统计的这篇文章：<a href="https://mp.weixin.qq.com/s/iwC_7rBcMaQu16C8yhMHtQ">p for interaction是什么</a></p>
+<blockquote>
+<p>目前计算P for interaction两种方法：
+1. 对于数值与等级或二分类，可以直接模型中增加相乘项【如x1×X2】，然后看交互项有无意义。
+2. 而对于多项分类【如血型】，产生哑变量后，相乘则会产生多个交互项，此时不能整体判断交互作用是否有意义。我们可以先构建一个无交互作用项的模型，再构建一个有交互作用项的模型。然后采用似然比检验（likelihood ratio test）进行比较有个模型差异，则可以判定交互项整体是否有意义。</p>
+</blockquote>
+<div id="方法1-2" class="section level3 hasAnchor" number="38.2.1">
+<h3><span class="header-section-number">38.2.1</span> 方法1<a href="1038-p4trend.html#方法1-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>假如探索年龄(x1)和BMI(x7)之间对因变量y有没有交互作用，我们首先新建一列相乘列，然后进行回归分析。</p>
+<div class="sourceCode" id="cb621"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb621-1"><a href="1038-p4trend.html#cb621-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 新建1列</span></span>
+<span id="cb621-2"><a href="1038-p4trend.html#cb621-2" aria-hidden="true" tabindex="-1"></a>df16_2<span class="sc">$</span>x17 <span class="ot">&lt;-</span> df16_2<span class="sc">$</span>x1 <span class="sc">*</span> df16_2<span class="sc">$</span>x7</span>
+<span id="cb621-3"><a href="1038-p4trend.html#cb621-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df16_2)</span>
+<span id="cb621-4"><a href="1038-p4trend.html#cb621-4" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    54 obs. of  13 variables:</span></span>
+<span id="cb621-5"><a href="1038-p4trend.html#cb621-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ .... : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb621-6"><a href="1038-p4trend.html#cb621-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x1   : num  3 2 2 2 3 3 2 3 2 1 ...</span></span>
+<span id="cb621-7"><a href="1038-p4trend.html#cb621-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x2   : num  1 0 1 0 0 0 0 0 0 0 ...</span></span>
+<span id="cb621-8"><a href="1038-p4trend.html#cb621-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x3   : num  0 1 0 0 0 1 1 1 0 0 ...</span></span>
+<span id="cb621-9"><a href="1038-p4trend.html#cb621-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x4   : num  1 1 1 1 1 1 0 1 0 1 ...</span></span>
+<span id="cb621-10"><a href="1038-p4trend.html#cb621-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x5   : num  0 0 0 0 0 0 0 1 0 0 ...</span></span>
+<span id="cb621-11"><a href="1038-p4trend.html#cb621-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x6   : num  0 0 0 0 1 0 0 0 0 0 ...</span></span>
+<span id="cb621-12"><a href="1038-p4trend.html#cb621-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x7   : num  1 1 1 1 1 2 1 1 1 1 ...</span></span>
+<span id="cb621-13"><a href="1038-p4trend.html#cb621-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x8   : num  1 0 0 0 1 1 0 0 1 0 ...</span></span>
+<span id="cb621-14"><a href="1038-p4trend.html#cb621-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ y    : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span id="cb621-15"><a href="1038-p4trend.html#cb621-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ PGR_1: num  1 0 0 0 1 1 0 0 0 0 ...</span></span>
+<span id="cb621-16"><a href="1038-p4trend.html#cb621-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x1.f : Factor w/ 4 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;: 3 2 2 2 3 3 2 3 2 1 ...</span></span>
+<span id="cb621-17"><a href="1038-p4trend.html#cb621-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ x17  : num  3 2 2 2 3 6 2 3 2 1 ...</span></span>
+<span id="cb621-18"><a href="1038-p4trend.html#cb621-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  - attr(*, &quot;variable.labels&quot;)= Named chr [1:11] &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...</span></span>
+<span id="cb621-19"><a href="1038-p4trend.html#cb621-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   ..- attr(*, &quot;names&quot;)= chr [1:11] &quot;....&quot; &quot;x1&quot; &quot;x2&quot; &quot;x3&quot; ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb622"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb622-1"><a href="1038-p4trend.html#cb622-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行逻辑回归</span></span>
+<span id="cb622-2"><a href="1038-p4trend.html#cb622-2" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x7 <span class="sc">+</span> x17, </span>
+<span id="cb622-3"><a href="1038-p4trend.html#cb622-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb622-4"><a href="1038-p4trend.html#cb622-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> df16_2</span>
+<span id="cb622-5"><a href="1038-p4trend.html#cb622-5" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb622-6"><a href="1038-p4trend.html#cb622-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(f)</span>
+<span id="cb622-7"><a href="1038-p4trend.html#cb622-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb622-8"><a href="1038-p4trend.html#cb622-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb622-9"><a href="1038-p4trend.html#cb622-9" aria-hidden="true" tabindex="-1"></a><span class="do">## glm(formula = y ~ x1 + x7 + x17, family = binomial(), data = df16_2)</span></span>
+<span id="cb622-10"><a href="1038-p4trend.html#cb622-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb622-11"><a href="1038-p4trend.html#cb622-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Deviance Residuals: </span></span>
+<span id="cb622-12"><a href="1038-p4trend.html#cb622-12" aria-hidden="true" tabindex="-1"></a><span class="do">##     Min       1Q   Median       3Q      Max  </span></span>
+<span id="cb622-13"><a href="1038-p4trend.html#cb622-13" aria-hidden="true" tabindex="-1"></a><span class="do">## -1.7967  -0.9092  -0.6507   1.1651   1.7708  </span></span>
+<span id="cb622-14"><a href="1038-p4trend.html#cb622-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb622-15"><a href="1038-p4trend.html#cb622-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb622-16"><a href="1038-p4trend.html#cb622-16" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error z value Pr(&gt;|z|)</span></span>
+<span id="cb622-17"><a href="1038-p4trend.html#cb622-17" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  -0.3953     2.6477  -0.149    0.881</span></span>
+<span id="cb622-18"><a href="1038-p4trend.html#cb622-18" aria-hidden="true" tabindex="-1"></a><span class="do">## x1           -0.4867     1.1142  -0.437    0.662</span></span>
+<span id="cb622-19"><a href="1038-p4trend.html#cb622-19" aria-hidden="true" tabindex="-1"></a><span class="do">## x7           -1.1509     1.7095  -0.673    0.501</span></span>
+<span id="cb622-20"><a href="1038-p4trend.html#cb622-20" aria-hidden="true" tabindex="-1"></a><span class="do">## x17           0.9249     0.7489   1.235    0.217</span></span>
+<span id="cb622-21"><a href="1038-p4trend.html#cb622-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb622-22"><a href="1038-p4trend.html#cb622-22" aria-hidden="true" tabindex="-1"></a><span class="do">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span id="cb622-23"><a href="1038-p4trend.html#cb622-23" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb622-24"><a href="1038-p4trend.html#cb622-24" aria-hidden="true" tabindex="-1"></a><span class="do">##     Null deviance: 74.786  on 53  degrees of freedom</span></span>
+<span id="cb622-25"><a href="1038-p4trend.html#cb622-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Residual deviance: 62.508  on 50  degrees of freedom</span></span>
+<span id="cb622-26"><a href="1038-p4trend.html#cb622-26" aria-hidden="true" tabindex="-1"></a><span class="do">## AIC: 70.508</span></span>
+<span id="cb622-27"><a href="1038-p4trend.html#cb622-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb622-28"><a href="1038-p4trend.html#cb622-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Fisher Scoring iterations: 5</span></span></code></pre></div>
+<p>结果中显示<code>x17</code>的P值(p for interaction)是：0.217，交互作用项是没有统计学意义的。</p>
+</div>
+<div id="方法2-2" class="section level3 hasAnchor" number="38.2.2">
+<h3><span class="header-section-number">38.2.2</span> 方法2<a href="1038-p4trend.html#方法2-2" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb623"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb623-1"><a href="1038-p4trend.html#cb623-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 先构建一个没有交互项的逻辑回归模型</span></span>
+<span id="cb623-2"><a href="1038-p4trend.html#cb623-2" aria-hidden="true" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x7, </span>
+<span id="cb623-3"><a href="1038-p4trend.html#cb623-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb623-4"><a href="1038-p4trend.html#cb623-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> df16_2)</span>
+<span id="cb623-5"><a href="1038-p4trend.html#cb623-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb623-6"><a href="1038-p4trend.html#cb623-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 再构建一个有交互作用的逻辑回归模型</span></span>
+<span id="cb623-7"><a href="1038-p4trend.html#cb623-7" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> x1 <span class="sc">+</span> x7 <span class="sc">+</span> x17, </span>
+<span id="cb623-8"><a href="1038-p4trend.html#cb623-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb623-9"><a href="1038-p4trend.html#cb623-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">data =</span> df16_2)</span>
+<span id="cb623-10"><a href="1038-p4trend.html#cb623-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb623-11"><a href="1038-p4trend.html#cb623-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 似然比检验</span></span>
+<span id="cb623-12"><a href="1038-p4trend.html#cb623-12" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">lrtest</span>(f1,f2)</span>
+<span id="cb623-13"><a href="1038-p4trend.html#cb623-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Likelihood ratio test</span></span>
+<span id="cb623-14"><a href="1038-p4trend.html#cb623-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb623-15"><a href="1038-p4trend.html#cb623-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Model 1: y ~ x1 + x7</span></span>
+<span id="cb623-16"><a href="1038-p4trend.html#cb623-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Model 2: y ~ x1 + x7 + x17</span></span>
+<span id="cb623-17"><a href="1038-p4trend.html#cb623-17" aria-hidden="true" tabindex="-1"></a><span class="do">##   #Df  LogLik Df  Chisq Pr(&gt;Chisq)</span></span>
+<span id="cb623-18"><a href="1038-p4trend.html#cb623-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   3 -32.216                     </span></span>
+<span id="cb623-19"><a href="1038-p4trend.html#cb623-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   4 -31.254  1 1.9238     0.1654</span></span></code></pre></div>
+<p>结果显示P(p for interaction)=0.1654，也就是交互作用项没有统计学意义。</p>
+</div>
+</div>
+<div id="per-1-sd" class="section level2 hasAnchor" number="38.3">
+<h2><span class="header-section-number">38.3</span> per 1 sd<a href="1038-p4trend.html#per-1-sd" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>关于什么是<code>per 1 sd</code>，可以参考松哥统计的这篇文章：<a href="https://mp.weixin.qq.com/s/hYGzW36AW26NDkARNNWgog">per 1 sd</a></p>
+<blockquote>
+<p>Per 1 sd的实现，其实就是把原始数据进行标准化，另存为一个新的变量X，新变量X因为是被标准化后的数据，因此其均数和标准差为0和1。然后让x进入模型进行分析。请问大家此时x每增加1个单位，效应量增加的风险为HR。因为标准差为1，此时x增加1个单位，就是Per 1 sd。1=Per 1 sd。就是自变量每增加1个标准差。</p>
+</blockquote>
+<p>为了方便演示，我们新建一列数据<code>weight</code>，然后进行标准化，再进行逻辑回归。</p>
+<div class="sourceCode" id="cb624"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb624-1"><a href="1038-p4trend.html#cb624-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 新建一列weight</span></span>
+<span id="cb624-2"><a href="1038-p4trend.html#cb624-2" aria-hidden="true" tabindex="-1"></a>df16_2<span class="sc">$</span>weight <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">54</span>, <span class="dv">70</span>,<span class="dv">11</span>)</span>
+<span id="cb624-3"><a href="1038-p4trend.html#cb624-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb624-4"><a href="1038-p4trend.html#cb624-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行标准化</span></span>
+<span id="cb624-5"><a href="1038-p4trend.html#cb624-5" aria-hidden="true" tabindex="-1"></a>df16_2<span class="sc">$</span>weight.scaled <span class="ot">&lt;-</span> <span class="fu">scale</span>(df16_2<span class="sc">$</span>weight)</span>
+<span id="cb624-6"><a href="1038-p4trend.html#cb624-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb624-7"><a href="1038-p4trend.html#cb624-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行逻辑回归</span></span>
+<span id="cb624-8"><a href="1038-p4trend.html#cb624-8" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> weight.scaled, <span class="at">data =</span> df16_2)</span>
+<span id="cb624-9"><a href="1038-p4trend.html#cb624-9" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(f,<span class="at">conf.int=</span>T,<span class="at">exponentiate=</span>T)</span>
+<span id="cb624-10"><a href="1038-p4trend.html#cb624-10" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 2 × 7</span></span>
+<span id="cb624-11"><a href="1038-p4trend.html#cb624-11" aria-hidden="true" tabindex="-1"></a><span class="do">##   term          estimate std.error statistic       p.value conf.low conf.high</span></span>
+<span id="cb624-12"><a href="1038-p4trend.html#cb624-12" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb624-13"><a href="1038-p4trend.html#cb624-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 (Intercept)       1.62    0.0692     6.96  0.00000000582    1.41       1.85</span></span>
+<span id="cb624-14"><a href="1038-p4trend.html#cb624-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 weight.scaled     1.02    0.0699     0.329 0.743            0.892      1.17</span></span></code></pre></div>
+<p>结果给出了P值，OR值以及95%的可信区间。</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1037-psw.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1039-nonlinearfit.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

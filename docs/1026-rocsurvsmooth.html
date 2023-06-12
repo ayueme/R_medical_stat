@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>26 生存资料ROC曲线的最佳截点和平滑曲线 | R语言实战医学统计</title>
+  <meta name="description" content="26 生存资料ROC曲线的最佳截点和平滑曲线 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="26 生存资料ROC曲线的最佳截点和平滑曲线 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="26 生存资料ROC曲线的最佳截点和平滑曲线 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="26 生存资料ROC曲线的最佳截点和平滑曲线 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="26 生存资料ROC曲线的最佳截点和平滑曲线 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1025-rocsurvival.html"/>
+<link rel="next" href="1027-roccompare.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,132 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="lsjdglj" class="section level1 hasAnchor" number="26">
+<h1><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线<a href="1026-rocsurvsmooth.html#lsjdglj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>二分类变量的最佳截点直接使用<code>pROC</code>包就可以直接得到，前面也介绍过，今天主要说一下生存资料ROC曲线的最佳截点，以及生存资料的ROC曲线如何变得<strong>平滑</strong>。</p>
+<div id="平滑曲线" class="section level2 hasAnchor" number="26.1">
+<h2><span class="header-section-number">26.1</span> 平滑曲线<a href="1026-rocsurvsmooth.html#平滑曲线" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>不考虑时间因素的ROC曲线可以使用<code>pROC</code>包中的<code>smooth</code>参数实现平滑版的曲线。time dependent ROC目前还没发现比较好的方法可以直接实现，只能使用<code>ggplot2</code>曲线救国了。</p>
+<div id="加载r包和数据-1" class="section level3 hasAnchor" number="26.1.1">
+<h3><span class="header-section-number">26.1.1</span> 加载R包和数据<a href="1026-rocsurvsmooth.html#加载r包和数据-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="1026-rocsurvsmooth.html#cb438-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb438-2"><a href="1026-rocsurvsmooth.html#cb438-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timeROC)</span>
+<span id="cb438-3"><a href="1026-rocsurvsmooth.html#cb438-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb438-4"><a href="1026-rocsurvsmooth.html#cb438-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb438-5"><a href="1026-rocsurvsmooth.html#cb438-5" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">&quot;datasets/timeROC.RData&quot;</span>)</span></code></pre></div>
+</div>
+<div id="多个时间点roc-1" class="section level3 hasAnchor" number="26.1.2">
+<h3><span class="header-section-number">26.1.2</span> 多个时间点ROC<a href="1026-rocsurvsmooth.html#多个时间点roc-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>首先看一下数据结构，对于多个时间点的ROC，需要3列数据：time, event, marker(比如你计算得到的risk score)</p>
+<div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb439-1"><a href="1026-rocsurvsmooth.html#cb439-1" aria-hidden="true" tabindex="-1"></a>ROC <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T =</span> df<span class="sc">$</span>futime,   </span>
+<span id="cb439-2"><a href="1026-rocsurvsmooth.html#cb439-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">delta =</span> df<span class="sc">$</span>event,   </span>
+<span id="cb439-3"><a href="1026-rocsurvsmooth.html#cb439-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">marker =</span> df<span class="sc">$</span>riskScore,   </span>
+<span id="cb439-4"><a href="1026-rocsurvsmooth.html#cb439-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">cause =</span> <span class="dv">1</span>,                </span>
+<span id="cb439-5"><a href="1026-rocsurvsmooth.html#cb439-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">weighting =</span> <span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb439-6"><a href="1026-rocsurvsmooth.html#cb439-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),       </span>
+<span id="cb439-7"><a href="1026-rocsurvsmooth.html#cb439-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">iid =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb439-8"><a href="1026-rocsurvsmooth.html#cb439-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb439-9"><a href="1026-rocsurvsmooth.html#cb439-9" aria-hidden="true" tabindex="-1"></a>ROC   <span class="co">#查看模型变量信息</span></span>
+<span id="cb439-10"><a href="1026-rocsurvsmooth.html#cb439-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Time-dependent-Roc curve estimated using IPCW  (n=297, without competing risks). </span></span>
+<span id="cb439-11"><a href="1026-rocsurvsmooth.html#cb439-11" aria-hidden="true" tabindex="-1"></a><span class="do">##     Cases Survivors Censored AUC (%)   se</span></span>
+<span id="cb439-12"><a href="1026-rocsurvsmooth.html#cb439-12" aria-hidden="true" tabindex="-1"></a><span class="do">## t=1    57       203       37   71.02 3.68</span></span>
+<span id="cb439-13"><a href="1026-rocsurvsmooth.html#cb439-13" aria-hidden="true" tabindex="-1"></a><span class="do">## t=2    66       106      125   69.23 3.94</span></span>
+<span id="cb439-14"><a href="1026-rocsurvsmooth.html#cb439-14" aria-hidden="true" tabindex="-1"></a><span class="do">## t=3    68        74      155   65.53 4.85</span></span>
+<span id="cb439-15"><a href="1026-rocsurvsmooth.html#cb439-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb439-16"><a href="1026-rocsurvsmooth.html#cb439-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Method used for estimating IPCW:marginal </span></span>
+<span id="cb439-17"><a href="1026-rocsurvsmooth.html#cb439-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb439-18"><a href="1026-rocsurvsmooth.html#cb439-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Total computation time : 0.08  secs.</span></span></code></pre></div>
+<p>默认的画出来也还可以，但是就是觉得可以更好看一点。</p>
+<div class="sourceCode" id="cb440"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb440-1"><a href="1026-rocsurvsmooth.html#cb440-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC, </span>
+<span id="cb440-2"><a href="1026-rocsurvsmooth.html#cb440-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">time=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">title =</span> <span class="st">&quot;&quot;</span>)   <span class="co">#time是时间点，col是线条颜色</span></span>
+<span id="cb440-3"><a href="1026-rocsurvsmooth.html#cb440-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC,</span>
+<span id="cb440-4"><a href="1026-rocsurvsmooth.html#cb440-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">time=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>, <span class="at">lwd=</span><span class="dv">2</span>)    <span class="co">#add指是否添加在上一张图中</span></span>
+<span id="cb440-5"><a href="1026-rocsurvsmooth.html#cb440-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC,</span>
+<span id="cb440-6"><a href="1026-rocsurvsmooth.html#cb440-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">time=</span><span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb440-7"><a href="1026-rocsurvsmooth.html#cb440-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb440-8"><a href="1026-rocsurvsmooth.html#cb440-8" aria-hidden="true" tabindex="-1"></a><span class="co">#添加标签信息</span></span>
+<span id="cb440-9"><a href="1026-rocsurvsmooth.html#cb440-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>,</span>
+<span id="cb440-10"><a href="1026-rocsurvsmooth.html#cb440-10" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">&quot;AUC at 1 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">1</span>],<span class="dv">2</span>)), </span>
+<span id="cb440-11"><a href="1026-rocsurvsmooth.html#cb440-11" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;AUC at 2 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)), </span>
+<span id="cb440-12"><a href="1026-rocsurvsmooth.html#cb440-12" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;AUC at 3 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">3</span>],<span class="dv">2</span>))),</span>
+<span id="cb440-13"><a href="1026-rocsurvsmooth.html#cb440-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb440-14"><a href="1026-rocsurvsmooth.html#cb440-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>,<span class="at">bty =</span> <span class="st">&quot;n&quot;</span>)   </span></code></pre></div>
+<p><img src="1026-rocsurvsmooth_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<p>下面使用<code>ggplot2</code>画图。</p>
+<p>首先是提取数据，这个提取数据比起<code>lasso</code>的真的是很简单了，不过现在提取lasso的数据也很简单。</p>
+<div class="sourceCode" id="cb441"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb441-1"><a href="1026-rocsurvsmooth.html#cb441-1" aria-hidden="true" tabindex="-1"></a>df_plot <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">tpr =</span> <span class="fu">as.numeric</span>(ROC<span class="sc">$</span>TP),</span>
+<span id="cb441-2"><a href="1026-rocsurvsmooth.html#cb441-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fpr =</span> <span class="fu">as.numeric</span>(ROC<span class="sc">$</span>FP),</span>
+<span id="cb441-3"><a href="1026-rocsurvsmooth.html#cb441-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">year =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;1-year&quot;</span>,<span class="st">&quot;2-year&quot;</span>,<span class="st">&quot;3-year&quot;</span>),<span class="at">each =</span> <span class="fu">nrow</span>(ROC<span class="sc">$</span>TP)))</span>
+<span id="cb441-4"><a href="1026-rocsurvsmooth.html#cb441-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb441-5"><a href="1026-rocsurvsmooth.html#cb441-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_plot)</span>
+<span id="cb441-6"><a href="1026-rocsurvsmooth.html#cb441-6" aria-hidden="true" tabindex="-1"></a><span class="do">##          tpr         fpr   year</span></span>
+<span id="cb441-7"><a href="1026-rocsurvsmooth.html#cb441-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 0.00000000 0.000000000 1-year</span></span>
+<span id="cb441-8"><a href="1026-rocsurvsmooth.html#cb441-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 0.00000000 0.004926108 1-year</span></span>
+<span id="cb441-9"><a href="1026-rocsurvsmooth.html#cb441-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 0.01809868 0.004926108 1-year</span></span>
+<span id="cb441-10"><a href="1026-rocsurvsmooth.html#cb441-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 0.03681243 0.004926108 1-year</span></span>
+<span id="cb441-11"><a href="1026-rocsurvsmooth.html#cb441-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 0.03681243 0.009852217 1-year</span></span>
+<span id="cb441-12"><a href="1026-rocsurvsmooth.html#cb441-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 0.05425138 0.009852217 1-year</span></span></code></pre></div>
+</div>
+<div id="画平滑曲线" class="section level3 hasAnchor" number="26.1.3">
+<h3><span class="header-section-number">26.1.3</span> 画平滑曲线<a href="1026-rocsurvsmooth.html#画平滑曲线" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>下面是画图代码，平滑曲线，说简单确实简单，如果对<code>ggplot2</code>不熟悉，确实也很难想到：</p>
+<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb442-1"><a href="1026-rocsurvsmooth.html#cb442-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb442-2"><a href="1026-rocsurvsmooth.html#cb442-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</span></span>
+<span id="cb442-3"><a href="1026-rocsurvsmooth.html#cb442-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb442-4"><a href="1026-rocsurvsmooth.html#cb442-4" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(df_plot, <span class="fu">aes</span>(fpr, tpr, <span class="at">color =</span> year)) <span class="sc">+</span></span>
+<span id="cb442-5"><a href="1026-rocsurvsmooth.html#cb442-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">size=</span><span class="fl">1.2</span>)<span class="sc">+</span> <span class="co"># 这就是平滑曲线的关键</span></span>
+<span id="cb442-6"><a href="1026-rocsurvsmooth.html#cb442-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">&quot;grey10&quot;</span>,<span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb442-7"><a href="1026-rocsurvsmooth.html#cb442-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#E41A1C&quot;</span>,<span class="st">&quot;#377EB8&quot;</span>,<span class="st">&quot;#4DAF4A&quot;</span>),</span>
+<span id="cb442-8"><a href="1026-rocsurvsmooth.html#cb442-8" aria-hidden="true" tabindex="-1"></a>                     <span class="at">name =</span> <span class="cn">NULL</span>, </span>
+<span id="cb442-9"><a href="1026-rocsurvsmooth.html#cb442-9" aria-hidden="true" tabindex="-1"></a>                     <span class="at">labels =</span> <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">&quot;AUC at 1 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">1</span>],<span class="dv">2</span>)), </span>
+<span id="cb442-10"><a href="1026-rocsurvsmooth.html#cb442-10" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">paste0</span>(<span class="st">&quot;AUC at 2 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)), </span>
+<span id="cb442-11"><a href="1026-rocsurvsmooth.html#cb442-11" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">paste0</span>(<span class="st">&quot;AUC at 3 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">3</span>],<span class="dv">2</span>)))</span>
+<span id="cb442-12"><a href="1026-rocsurvsmooth.html#cb442-12" aria-hidden="true" tabindex="-1"></a>                     ) <span class="sc">+</span> </span>
+<span id="cb442-13"><a href="1026-rocsurvsmooth.html#cb442-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_fixed</span>(<span class="at">ratio =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb442-14"><a href="1026-rocsurvsmooth.html#cb442-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;1 - Specificity&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Sensitivity&quot;</span>) <span class="sc">+</span></span>
+<span id="cb442-15"><a href="1026-rocsurvsmooth.html#cb442-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>, <span class="at">base_family =</span> <span class="st">&quot;sans&quot;</span>) <span class="sc">+</span></span>
+<span id="cb442-16"><a href="1026-rocsurvsmooth.html#cb442-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="fl">0.7</span>,<span class="fl">0.15</span>), </span>
+<span id="cb442-17"><a href="1026-rocsurvsmooth.html#cb442-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="cn">NA</span>),</span>
+<span id="cb442-18"><a href="1026-rocsurvsmooth.html#cb442-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">&quot;black&quot;</span>))</span>
+<span id="cb442-19"><a href="1026-rocsurvsmooth.html#cb442-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
+<span id="cb442-20"><a href="1026-rocsurvsmooth.html#cb442-20" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ Please use `linewidth` instead.</span></span>
+<span id="cb442-21"><a href="1026-rocsurvsmooth.html#cb442-21" aria-hidden="true" tabindex="-1"></a><span class="do">## This warning is displayed once every 8 hours.</span></span>
+<span id="cb442-22"><a href="1026-rocsurvsmooth.html#cb442-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span>
+<span id="cb442-23"><a href="1026-rocsurvsmooth.html#cb442-23" aria-hidden="true" tabindex="-1"></a><span class="do">## generated.</span></span>
+<span id="cb442-24"><a href="1026-rocsurvsmooth.html#cb442-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb442-25"><a href="1026-rocsurvsmooth.html#cb442-25" aria-hidden="true" tabindex="-1"></a>p</span>
+<span id="cb442-26"><a href="1026-rocsurvsmooth.html#cb442-26" aria-hidden="true" tabindex="-1"></a><span class="do">## `geom_smooth()` using method = &#39;loess&#39; and formula = &#39;y ~ x&#39;</span></span></code></pre></div>
+<p><img src="1026-rocsurvsmooth_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>这一刻，我觉得我很强！</p>
+</div>
+</div>
+<div id="找最佳截点" class="section level2 hasAnchor" number="26.2">
+<h2><span class="header-section-number">26.2</span> 找最佳截点<a href="1026-rocsurvsmooth.html#找最佳截点" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>找了好久也没发现一个R包可以完成time-dependent ROC的所有分析，<code>timeROC</code>是比较全能的了，但是不能计算最佳截点，<code>survavalROC</code>可以计算最佳截点，但是又不能同时计算多个时间点的ROC曲线。</p>
+<p>所以最佳截点我们可以通过<code>survivalROC</code>包实现。</p>
+<div class="sourceCode" id="cb443"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb443-1"><a href="1026-rocsurvsmooth.html#cb443-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survivalROC)</span>
+<span id="cb443-2"><a href="1026-rocsurvsmooth.html#cb443-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb443-3"><a href="1026-rocsurvsmooth.html#cb443-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1年的最佳截点</span></span>
+<span id="cb443-4"><a href="1026-rocsurvsmooth.html#cb443-4" aria-hidden="true" tabindex="-1"></a>roc1 <span class="ot">&lt;-</span> <span class="fu">survivalROC</span>(<span class="at">Stime =</span> df<span class="sc">$</span>futime,</span>
+<span id="cb443-5"><a href="1026-rocsurvsmooth.html#cb443-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">status =</span> df<span class="sc">$</span>event,</span>
+<span id="cb443-6"><a href="1026-rocsurvsmooth.html#cb443-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">marker =</span> df<span class="sc">$</span>riskScore,</span>
+<span id="cb443-7"><a href="1026-rocsurvsmooth.html#cb443-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">method =</span> <span class="st">&quot;KM&quot;</span>,</span>
+<span id="cb443-8"><a href="1026-rocsurvsmooth.html#cb443-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">predict.time =</span> <span class="dv">1</span> <span class="co"># 时间选1年</span></span>
+<span id="cb443-9"><a href="1026-rocsurvsmooth.html#cb443-9" aria-hidden="true" tabindex="-1"></a>                   )</span>
+<span id="cb443-10"><a href="1026-rocsurvsmooth.html#cb443-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb443-11"><a href="1026-rocsurvsmooth.html#cb443-11" aria-hidden="true" tabindex="-1"></a>roc1<span class="sc">$</span>cut.values[<span class="fu">which.max</span>(roc1<span class="sc">$</span>TP <span class="sc">-</span> roc1<span class="sc">$</span>FP)] <span class="co"># 最佳截点的值，基于约登指数计算出来</span></span>
+<span id="cb443-12"><a href="1026-rocsurvsmooth.html#cb443-12" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] -0.07986499</span></span></code></pre></div>
+<p>就是这么简单！</p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1025-rocsurvival.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1027-roccompare.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

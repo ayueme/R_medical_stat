@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>24 二分类资料ROC曲线绘制 | R语言实战医学统计</title>
+  <meta name="description" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1023-factoranalysis.html"/>
+<link rel="next" href="1025-rocsurvival.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,220 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="ljhgjsj" class="section level1 hasAnchor" number="24">
+<h1><span class="header-section-number">24</span> 二分类资料ROC曲线绘制<a href="1024-rocbinomial.html#ljhgjsj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>ROC曲线是评价模型的重要工具，曲线下面积AUC可能是大家最常见的模型评价指标之一，无论是在临床预测模型，还是在机器学习/医学统计中，都是非常重要的内容。</p>
+<p>如果你还不太了解关于ROC曲线中的各种指标，请看下面这两张图，有你需要的一切（建议保存）：</p>
+<p>首先是混淆矩阵以及由混下矩阵计算的各种指标：</p>
+<p><img src="figs/Snipaste_2023-04-01_18-19-50.png" width="90%" style="display: block; margin: auto;" /></p>
+<p>然后是各种常见指标的计算方法：</p>
+<p><img src="figs/Snipaste_2023-04-01_18-20-16.png" width="90%" style="display: block; margin: auto;" /></p>
+<p>R语言中有非常多的方法可以实现ROC曲线，但是基本上都是至少需要2列数据，一列是真实结果，另一列是预测值，有了这两列数据，就可以轻松使用各种方法画出ROC曲线并计算AUC。</p>
+<p>这篇文章带大家介绍最常见的并且好用的二分类变量的ROC曲线画法。</p>
+<div id="方法1-1" class="section level2 hasAnchor" number="24.1">
+<h2><span class="header-section-number">24.1</span> 方法1<a href="1024-rocbinomial.html#方法1-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<code>pROC</code>包，不过使用这个包需要注意，一定要指定<em>direction</em>，否则可能会得出错误的结果。</p>
+<p>这个R包计算AUC是基于中位数的，哪一组的中位数大就计算哪一组的AUC，在计算时千万要注意！</p>
+<p>使用<code>pROC</code>包的<code>aSAH</code>数据，其中<code>outcome</code>列是结果变量，1代表Good，2代表Poor。</p>
+<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="1024-rocbinomial.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pROC)</span>
+<span id="cb415-2"><a href="1024-rocbinomial.html#cb415-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.</span></span>
+<span id="cb415-3"><a href="1024-rocbinomial.html#cb415-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb415-4"><a href="1024-rocbinomial.html#cb415-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: &#39;pROC&#39;</span></span>
+<span id="cb415-5"><a href="1024-rocbinomial.html#cb415-5" aria-hidden="true" tabindex="-1"></a><span class="do">## The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb415-6"><a href="1024-rocbinomial.html#cb415-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb415-7"><a href="1024-rocbinomial.html#cb415-7" aria-hidden="true" tabindex="-1"></a><span class="do">##     cov, smooth, var</span></span>
+<span id="cb415-8"><a href="1024-rocbinomial.html#cb415-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb415-9"><a href="1024-rocbinomial.html#cb415-9" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(aSAH)</span>
+<span id="cb415-10"><a href="1024-rocbinomial.html#cb415-10" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(aSAH)</span>
+<span id="cb415-11"><a href="1024-rocbinomial.html#cb415-11" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 113   7</span></span>
+<span id="cb415-12"><a href="1024-rocbinomial.html#cb415-12" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(aSAH)</span>
+<span id="cb415-13"><a href="1024-rocbinomial.html#cb415-13" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    113 obs. of  7 variables:</span></span>
+<span id="cb415-14"><a href="1024-rocbinomial.html#cb415-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ gos6   : Ord.factor w/ 5 levels &quot;1&quot;&lt;&quot;2&quot;&lt;&quot;3&quot;&lt;&quot;4&quot;&lt;..: 5 5 5 5 1 1 4 1 5 4 ...</span></span>
+<span id="cb415-15"><a href="1024-rocbinomial.html#cb415-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ outcome: Factor w/ 2 levels &quot;Good&quot;,&quot;Poor&quot;: 1 1 1 1 2 2 1 2 1 1 ...</span></span>
+<span id="cb415-16"><a href="1024-rocbinomial.html#cb415-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ gender : Factor w/ 2 levels &quot;Male&quot;,&quot;Female&quot;: 2 2 2 2 2 1 1 1 2 2 ...</span></span>
+<span id="cb415-17"><a href="1024-rocbinomial.html#cb415-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age    : int  42 37 42 27 42 48 57 41 49 75 ...</span></span>
+<span id="cb415-18"><a href="1024-rocbinomial.html#cb415-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ wfns   : Ord.factor w/ 5 levels &quot;1&quot;&lt;&quot;2&quot;&lt;&quot;3&quot;&lt;&quot;4&quot;&lt;..: 1 1 1 1 3 2 5 4 1 2 ...</span></span>
+<span id="cb415-19"><a href="1024-rocbinomial.html#cb415-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ s100b  : num  0.13 0.14 0.1 0.04 0.13 0.1 0.47 0.16 0.18 0.1 ...</span></span>
+<span id="cb415-20"><a href="1024-rocbinomial.html#cb415-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ndka   : num  3.01 8.54 8.09 10.42 17.4 ...</span></span></code></pre></div>
+<p>计算AUC及可信区间：</p>
+<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="1024-rocbinomial.html#cb416-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">roc</span>(aSAH<span class="sc">$</span>outcome,aSAH<span class="sc">$</span>s100b,<span class="at">ci=</span>T,<span class="at">auc=</span>T)</span>
+<span id="cb416-2"><a href="1024-rocbinomial.html#cb416-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb416-3"><a href="1024-rocbinomial.html#cb416-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb416-4"><a href="1024-rocbinomial.html#cb416-4" aria-hidden="true" tabindex="-1"></a>res</span>
+<span id="cb416-5"><a href="1024-rocbinomial.html#cb416-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb416-6"><a href="1024-rocbinomial.html#cb416-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb416-7"><a href="1024-rocbinomial.html#cb416-7" aria-hidden="true" tabindex="-1"></a><span class="do">## roc.default(response = aSAH$outcome, predictor = aSAH$s100b,     auc = T, ci = T)</span></span>
+<span id="cb416-8"><a href="1024-rocbinomial.html#cb416-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb416-9"><a href="1024-rocbinomial.html#cb416-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Data: aSAH$s100b in 72 controls (aSAH$outcome Good) &lt; 41 cases (aSAH$outcome Poor).</span></span>
+<span id="cb416-10"><a href="1024-rocbinomial.html#cb416-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Area under the curve: 0.7314</span></span>
+<span id="cb416-11"><a href="1024-rocbinomial.html#cb416-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 95% CI: 0.6301-0.8326 (DeLong)</span></span></code></pre></div>
+<div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="1024-rocbinomial.html#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res,<span class="at">legacy.axes =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>可以显示最佳截点，比如AUC最大的点：</p>
+<div class="sourceCode" id="cb418"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb418-1"><a href="1024-rocbinomial.html#cb418-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res,</span>
+<span id="cb418-2"><a href="1024-rocbinomial.html#cb418-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">legacy.axes =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb418-3"><a href="1024-rocbinomial.html#cb418-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">thresholds=</span><span class="st">&quot;best&quot;</span>, <span class="co"># AUC最大的点</span></span>
+<span id="cb418-4"><a href="1024-rocbinomial.html#cb418-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">print.thres=</span><span class="st">&quot;best&quot;</span>) </span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p>可以显示AUC的可信区间：</p>
+<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="1024-rocbinomial.html#cb419-1" aria-hidden="true" tabindex="-1"></a>rocobj <span class="ot">&lt;-</span> <span class="fu">plot.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>s100b,</span>
+<span id="cb419-2"><a href="1024-rocbinomial.html#cb419-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">main=</span><span class="st">&quot;Confidence intervals&quot;</span>, </span>
+<span id="cb419-3"><a href="1024-rocbinomial.html#cb419-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">percent=</span><span class="cn">TRUE</span>,<span class="at">ci=</span><span class="cn">TRUE</span>, </span>
+<span id="cb419-4"><a href="1024-rocbinomial.html#cb419-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">print.auc=</span><span class="cn">TRUE</span></span>
+<span id="cb419-5"><a href="1024-rocbinomial.html#cb419-5" aria-hidden="true" tabindex="-1"></a>                   ) </span>
+<span id="cb419-6"><a href="1024-rocbinomial.html#cb419-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb419-7"><a href="1024-rocbinomial.html#cb419-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb419-8"><a href="1024-rocbinomial.html#cb419-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb419-9"><a href="1024-rocbinomial.html#cb419-9" aria-hidden="true" tabindex="-1"></a>ciobj <span class="ot">&lt;-</span> <span class="fu">ci.se</span>(rocobj,</span>
+<span id="cb419-10"><a href="1024-rocbinomial.html#cb419-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">specificities=</span><span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">5</span>)</span>
+<span id="cb419-11"><a href="1024-rocbinomial.html#cb419-11" aria-hidden="true" tabindex="-1"></a>               )</span>
+<span id="cb419-12"><a href="1024-rocbinomial.html#cb419-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb419-13"><a href="1024-rocbinomial.html#cb419-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ciobj, <span class="at">type=</span><span class="st">&quot;shape&quot;</span>, <span class="at">col=</span><span class="st">&quot;#1c61b6AA&quot;</span>)</span>
+<span id="cb419-14"><a href="1024-rocbinomial.html#cb419-14" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">ci</span>(rocobj, <span class="at">of=</span><span class="st">&quot;thresholds&quot;</span>, <span class="at">thresholds=</span><span class="st">&quot;best&quot;</span>)) </span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+<p>多条ROC曲线画在一起：</p>
+<div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="1024-rocbinomial.html#cb420-1" aria-hidden="true" tabindex="-1"></a>rocobj1 <span class="ot">&lt;-</span> <span class="fu">plot.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>s100,<span class="at">percent=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">&quot;#1c61b6&quot;</span>)</span>
+<span id="cb420-2"><a href="1024-rocbinomial.html#cb420-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb420-3"><a href="1024-rocbinomial.html#cb420-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb420-4"><a href="1024-rocbinomial.html#cb420-4" aria-hidden="true" tabindex="-1"></a>rocobj2 <span class="ot">&lt;-</span> <span class="fu">lines.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>ndka, <span class="at">percent=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">&quot;#008600&quot;</span>)</span>
+<span id="cb420-5"><a href="1024-rocbinomial.html#cb420-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb420-6"><a href="1024-rocbinomial.html#cb420-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb420-7"><a href="1024-rocbinomial.html#cb420-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb420-8"><a href="1024-rocbinomial.html#cb420-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;S100B&quot;</span>, <span class="st">&quot;NDKA&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;#1c61b6&quot;</span>, <span class="st">&quot;#008600&quot;</span>), <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-8-1.png" width="90%" /></p>
+<p>两条ROC曲线的比较，可以添加P值：</p>
+<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="1024-rocbinomial.html#cb421-1" aria-hidden="true" tabindex="-1"></a>rocobj1 <span class="ot">&lt;-</span> <span class="fu">plot.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>s100,<span class="at">percent=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">&quot;#1c61b6&quot;</span>)</span>
+<span id="cb421-2"><a href="1024-rocbinomial.html#cb421-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb421-3"><a href="1024-rocbinomial.html#cb421-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb421-4"><a href="1024-rocbinomial.html#cb421-4" aria-hidden="true" tabindex="-1"></a>rocobj2 <span class="ot">&lt;-</span> <span class="fu">lines.roc</span>(aSAH<span class="sc">$</span>outcome, aSAH<span class="sc">$</span>ndka, <span class="at">percent=</span><span class="cn">TRUE</span>, <span class="at">col=</span><span class="st">&quot;#008600&quot;</span>)</span>
+<span id="cb421-5"><a href="1024-rocbinomial.html#cb421-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting levels: control = Good, case = Poor</span></span>
+<span id="cb421-6"><a href="1024-rocbinomial.html#cb421-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Setting direction: controls &lt; cases</span></span>
+<span id="cb421-7"><a href="1024-rocbinomial.html#cb421-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-8"><a href="1024-rocbinomial.html#cb421-8" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;S100B&quot;</span>, <span class="st">&quot;NDKA&quot;</span>), <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;#1c61b6&quot;</span>, <span class="st">&quot;#008600&quot;</span>), <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb421-9"><a href="1024-rocbinomial.html#cb421-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-10"><a href="1024-rocbinomial.html#cb421-10" aria-hidden="true" tabindex="-1"></a>testobj <span class="ot">&lt;-</span> <span class="fu">roc.test</span>(rocobj1, rocobj2)</span>
+<span id="cb421-11"><a href="1024-rocbinomial.html#cb421-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-12"><a href="1024-rocbinomial.html#cb421-12" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">50</span>, <span class="dv">50</span>, <span class="at">labels=</span><span class="fu">paste</span>(<span class="st">&quot;p-value =&quot;</span>, <span class="fu">format.pval</span>(testobj<span class="sc">$</span>p.value)), <span class="at">adj=</span><span class="fu">c</span>(<span class="dv">0</span>, .<span class="dv">5</span>))</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-9-1.png" width="90%" /></p>
+</div>
+<div id="方法2-1" class="section level2 hasAnchor" number="24.2">
+<h2><span class="header-section-number">24.2</span> 方法2<a href="1024-rocbinomial.html#方法2-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<code>ROCR</code>，如果你只是为了画一条ROC曲线，这是我最推荐的方法了，美观又简单！</p>
+<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="1024-rocbinomial.html#cb422-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ROCR)</span></code></pre></div>
+<p>使用非常简单，3句代码，其中第2句是关键，可以更改各种参数，然后就可以画出各种不同的图形：</p>
+<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="1024-rocbinomial.html#cb423-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">prediction</span>(aSAH<span class="sc">$</span>s100b,aSAH<span class="sc">$</span>outcome)</span>
+<span id="cb423-2"><a href="1024-rocbinomial.html#cb423-2" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span> <span class="fu">performance</span>(pred, <span class="st">&quot;tpr&quot;</span>,<span class="st">&quot;fpr&quot;</span>)</span>
+<span id="cb423-3"><a href="1024-rocbinomial.html#cb423-3" aria-hidden="true" tabindex="-1"></a>auc <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">performance</span>(pred, <span class="st">&quot;auc&quot;</span>)<span class="sc">@</span>y.values[[<span class="dv">1</span>]],<span class="at">digits =</span> <span class="dv">4</span>)</span>
+<span id="cb423-4"><a href="1024-rocbinomial.html#cb423-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb423-5"><a href="1024-rocbinomial.html#cb423-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(perf,<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">col=</span><span class="st">&quot;tomato&quot;</span>)</span>
+<span id="cb423-6"><a href="1024-rocbinomial.html#cb423-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb423-7"><a href="1024-rocbinomial.html#cb423-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>, <span class="at">legend=</span><span class="st">&quot;AUC of s100b: 0.7314&quot;</span>, <span class="at">col=</span><span class="st">&quot;tomato&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>,<span class="at">bty =</span> <span class="st">&quot;n&quot;</span>)</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-11-1.png" width="90%" /></p>
+<p>添加箱线图：</p>
+<div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="1024-rocbinomial.html#cb424-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span> <span class="fu">performance</span>(pred, <span class="st">&quot;tpr&quot;</span>, <span class="st">&quot;fpr&quot;</span>)</span>
+<span id="cb424-2"><a href="1024-rocbinomial.html#cb424-2" aria-hidden="true" tabindex="-1"></a>perf</span>
+<span id="cb424-3"><a href="1024-rocbinomial.html#cb424-3" aria-hidden="true" tabindex="-1"></a><span class="do">## A performance instance</span></span>
+<span id="cb424-4"><a href="1024-rocbinomial.html#cb424-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   &#39;False positive rate&#39; vs. &#39;True positive rate&#39; (alpha: &#39;Cutoff&#39;)</span></span>
+<span id="cb424-5"><a href="1024-rocbinomial.html#cb424-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   with 51 data points</span></span>
+<span id="cb424-6"><a href="1024-rocbinomial.html#cb424-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb424-7"><a href="1024-rocbinomial.html#cb424-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(perf,</span>
+<span id="cb424-8"><a href="1024-rocbinomial.html#cb424-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">avg=</span><span class="st">&quot;threshold&quot;</span>,</span>
+<span id="cb424-9"><a href="1024-rocbinomial.html#cb424-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">spread.estimate=</span><span class="st">&quot;boxplot&quot;</span>)</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-12-1.png" width="90%" /></p>
+<p>还可以绘制PR曲线，召回率recall为横坐标，精确率precision 为纵坐标：</p>
+<div class="sourceCode" id="cb425"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb425-1"><a href="1024-rocbinomial.html#cb425-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span> <span class="fu">performance</span>(pred, <span class="st">&quot;prec&quot;</span>, <span class="st">&quot;rec&quot;</span>)</span>
+<span id="cb425-2"><a href="1024-rocbinomial.html#cb425-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(perf,</span>
+<span id="cb425-3"><a href="1024-rocbinomial.html#cb425-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">avg=</span> <span class="st">&quot;threshold&quot;</span>,</span>
+<span id="cb425-4"><a href="1024-rocbinomial.html#cb425-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">colorize=</span><span class="cn">TRUE</span>,</span>
+<span id="cb425-5"><a href="1024-rocbinomial.html#cb425-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd=</span> <span class="dv">3</span>,</span>
+<span id="cb425-6"><a href="1024-rocbinomial.html#cb425-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span> <span class="st">&quot;Precision-Recall plot&quot;</span>)</span>
+<span id="cb425-7"><a href="1024-rocbinomial.html#cb425-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(perf,</span>
+<span id="cb425-8"><a href="1024-rocbinomial.html#cb425-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">lty=</span><span class="dv">3</span>,</span>
+<span id="cb425-9"><a href="1024-rocbinomial.html#cb425-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="st">&quot;grey78&quot;</span>,</span>
+<span id="cb425-10"><a href="1024-rocbinomial.html#cb425-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-13-1.png" width="90%" /></p>
+<p>还可以把特异度为横坐标，灵敏度为纵坐标：</p>
+<div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="1024-rocbinomial.html#cb426-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span> <span class="fu">performance</span>(pred, <span class="st">&quot;sens&quot;</span>, <span class="st">&quot;spec&quot;</span>)</span>
+<span id="cb426-2"><a href="1024-rocbinomial.html#cb426-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(perf,</span>
+<span id="cb426-3"><a href="1024-rocbinomial.html#cb426-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">avg=</span> <span class="st">&quot;threshold&quot;</span>,</span>
+<span id="cb426-4"><a href="1024-rocbinomial.html#cb426-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">colorize=</span><span class="cn">TRUE</span>,</span>
+<span id="cb426-5"><a href="1024-rocbinomial.html#cb426-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd=</span> <span class="dv">3</span>,</span>
+<span id="cb426-6"><a href="1024-rocbinomial.html#cb426-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">&quot;Sensitivity/Specificity plots&quot;</span>)</span>
+<span id="cb426-7"><a href="1024-rocbinomial.html#cb426-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(perf,</span>
+<span id="cb426-8"><a href="1024-rocbinomial.html#cb426-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">lty=</span><span class="dv">3</span>,</span>
+<span id="cb426-9"><a href="1024-rocbinomial.html#cb426-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">col=</span><span class="st">&quot;grey78&quot;</span>,</span>
+<span id="cb426-10"><a href="1024-rocbinomial.html#cb426-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">add=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-14-1.png" width="90%" /></p>
+<p>这个包还可以计算非常多其他的指标，各种图都能画，大家可以自己探索。</p>
+</div>
+<div id="方法3" class="section level2 hasAnchor" number="24.3">
+<h2><span class="header-section-number">24.3</span> 方法3<a href="1024-rocbinomial.html#方法3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用<code>tidymodels</code>。这个包很有来头，它是R中专门做机器学习的，可以到公众号：医学和生信笔记中查看更多关于它的教程，它也是目前R语言机器学习领域两大当红辣子鸡之一！另一个是<code>mlr3</code>。</p>
+<div class="sourceCode" id="cb427"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb427-1"><a href="1024-rocbinomial.html#cb427-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(tidymodels))</span>
+<span id="cb427-2"><a href="1024-rocbinomial.html#cb427-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;tidymodels&#39; was built under R version 4.2.3</span></span>
+<span id="cb427-3"><a href="1024-rocbinomial.html#cb427-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;dplyr&#39; was built under R version 4.2.3</span></span>
+<span id="cb427-4"><a href="1024-rocbinomial.html#cb427-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;ggplot2&#39; was built under R version 4.2.3</span></span>
+<span id="cb427-5"><a href="1024-rocbinomial.html#cb427-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;tibble&#39; was built under R version 4.2.3</span></span>
+<span id="cb427-6"><a href="1024-rocbinomial.html#cb427-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;yardstick&#39; was built under R version 4.2.3</span></span></code></pre></div>
+<p>它很优雅，如果你要计算AUC，那么就是<code>roc_auc()</code>函数：</p>
+<div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="1024-rocbinomial.html#cb428-1" aria-hidden="true" tabindex="-1"></a>aSAH <span class="sc">%&gt;%</span> <span class="fu">roc_auc</span>(outcome, s100b,<span class="at">event_level=</span><span class="st">&quot;second&quot;</span>)</span>
+<span id="cb428-2"><a href="1024-rocbinomial.html#cb428-2" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 1 × 3</span></span>
+<span id="cb428-3"><a href="1024-rocbinomial.html#cb428-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   .metric .estimator .estimate</span></span>
+<span id="cb428-4"><a href="1024-rocbinomial.html#cb428-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span id="cb428-5"><a href="1024-rocbinomial.html#cb428-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 roc_auc binary         0.731</span></span></code></pre></div>
+<p>如果你是要画ROC曲线，那么就是<code>roc_curve()</code>函数：</p>
+<div class="sourceCode" id="cb429"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb429-1"><a href="1024-rocbinomial.html#cb429-1" aria-hidden="true" tabindex="-1"></a>aSAH <span class="sc">%&gt;%</span> <span class="fu">roc_curve</span>(outcome, s100b,<span class="at">event_level=</span><span class="st">&quot;second&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb429-2"><a href="1024-rocbinomial.html#cb429-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="dv">1</span> <span class="sc">-</span> specificity, <span class="at">y =</span> sensitivity)) <span class="sc">+</span></span>
+<span id="cb429-3"><a href="1024-rocbinomial.html#cb429-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="at">size=</span><span class="fl">1.2</span>,<span class="at">color=</span><span class="st">&quot;firebrick&quot;</span>) <span class="sc">+</span></span>
+<span id="cb429-4"><a href="1024-rocbinomial.html#cb429-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">lty =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb429-5"><a href="1024-rocbinomial.html#cb429-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb429-6"><a href="1024-rocbinomial.html#cb429-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-17-1.png" width="90%" /></p>
+<p>还有太多方法可以画ROC了，不过<code>pROC</code>和<code>ROCR</code>基本上技能解决99%的问题了。</p>
+<p>最后，给大家看看cran中比较常见的画ROC曲线的包，大家有兴趣可以自己探索：</p>
+<div class="sourceCode" id="cb430"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb430-1"><a href="1024-rocbinomial.html#cb430-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pkgsearch) </span>
+<span id="cb430-2"><a href="1024-rocbinomial.html#cb430-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package &#39;pkgsearch&#39; was built under R version 4.2.3</span></span>
+<span id="cb430-3"><a href="1024-rocbinomial.html#cb430-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb430-4"><a href="1024-rocbinomial.html#cb430-4" aria-hidden="true" tabindex="-1"></a>rocPkg <span class="ot">&lt;-</span>  <span class="fu">pkg_search</span>(<span class="at">query=</span><span class="st">&quot;ROC&quot;</span>,<span class="at">size=</span><span class="dv">200</span>)</span>
+<span id="cb430-5"><a href="1024-rocbinomial.html#cb430-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb430-6"><a href="1024-rocbinomial.html#cb430-6" aria-hidden="true" tabindex="-1"></a>rocPkgShort <span class="ot">&lt;-</span> rocPkg <span class="sc">%&gt;%</span> </span>
+<span id="cb430-7"><a href="1024-rocbinomial.html#cb430-7" aria-hidden="true" tabindex="-1"></a>               <span class="fu">filter</span>(maintainer_name <span class="sc">!=</span> <span class="st">&quot;ORPHANED&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb430-8"><a href="1024-rocbinomial.html#cb430-8" aria-hidden="true" tabindex="-1"></a>               <span class="fu">select</span>(score, package, downloads_last_month) <span class="sc">%&gt;%</span></span>
+<span id="cb430-9"><a href="1024-rocbinomial.html#cb430-9" aria-hidden="true" tabindex="-1"></a>               <span class="fu">arrange</span>(<span class="fu">desc</span>(downloads_last_month))</span>
+<span id="cb430-10"><a href="1024-rocbinomial.html#cb430-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(rocPkgShort,<span class="dv">20</span>)</span>
+<span id="cb430-11"><a href="1024-rocbinomial.html#cb430-11" aria-hidden="true" tabindex="-1"></a><span class="do">## # A data frame: 20 × 3</span></span>
+<span id="cb430-12"><a href="1024-rocbinomial.html#cb430-12" aria-hidden="true" tabindex="-1"></a><span class="do">##     score package         downloads_last_month</span></span>
+<span id="cb430-13"><a href="1024-rocbinomial.html#cb430-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  *  &lt;dbl&gt; &lt;chr&gt;                          &lt;int&gt;</span></span>
+<span id="cb430-14"><a href="1024-rocbinomial.html#cb430-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  1 4310.  pROC                          151328</span></span>
+<span id="cb430-15"><a href="1024-rocbinomial.html#cb430-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  2 2856.  caTools                       108066</span></span>
+<span id="cb430-16"><a href="1024-rocbinomial.html#cb430-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  3  666.  ROCR                           53296</span></span>
+<span id="cb430-17"><a href="1024-rocbinomial.html#cb430-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  4  798.  PRROC                          31863</span></span>
+<span id="cb430-18"><a href="1024-rocbinomial.html#cb430-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  5  163.  riskRegression                  7440</span></span>
+<span id="cb430-19"><a href="1024-rocbinomial.html#cb430-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  6  804.  cvAUC                           3307</span></span>
+<span id="cb430-20"><a href="1024-rocbinomial.html#cb430-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  7  223.  PresenceAbsence                 2905</span></span>
+<span id="cb430-21"><a href="1024-rocbinomial.html#cb430-21" aria-hidden="true" tabindex="-1"></a><span class="do">##  8  751.  plotROC                         2814</span></span>
+<span id="cb430-22"><a href="1024-rocbinomial.html#cb430-22" aria-hidden="true" tabindex="-1"></a><span class="do">##  9 1313.  survivalROC                     2747</span></span>
+<span id="cb430-23"><a href="1024-rocbinomial.html#cb430-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 10  794.  timeROC                         2133</span></span>
+<span id="cb430-24"><a href="1024-rocbinomial.html#cb430-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 11  234.  logcondens                      2009</span></span>
+<span id="cb430-25"><a href="1024-rocbinomial.html#cb430-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 12  115.  RcmdrPlugin.EZR                 1969</span></span>
+<span id="cb430-26"><a href="1024-rocbinomial.html#cb430-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 13  180.  WVPlots                         1963</span></span>
+<span id="cb430-27"><a href="1024-rocbinomial.html#cb430-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 14  176.  mlr3viz                         1738</span></span>
+<span id="cb430-28"><a href="1024-rocbinomial.html#cb430-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 15  721.  precrec                         1687</span></span>
+<span id="cb430-29"><a href="1024-rocbinomial.html#cb430-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 16  228.  ROCit                           1247</span></span>
+<span id="cb430-30"><a href="1024-rocbinomial.html#cb430-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 17   51.5 wrProteo                        1097</span></span>
+<span id="cb430-31"><a href="1024-rocbinomial.html#cb430-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 18  155.  PredictABEL                     1000</span></span>
+<span id="cb430-32"><a href="1024-rocbinomial.html#cb430-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 19  153.  MLeval                           690</span></span>
+<span id="cb430-33"><a href="1024-rocbinomial.html#cb430-33" aria-hidden="true" tabindex="-1"></a><span class="do">## 20   89.9 psfmi                            669</span></span></code></pre></div>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1023-factoranalysis.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1025-rocsurvival.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

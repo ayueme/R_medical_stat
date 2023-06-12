@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>16 偏相关和典型相关 | R语言实战医学统计</title>
+  <meta name="description" content="16 偏相关和典型相关 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="16 偏相关和典型相关 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="16 偏相关和典型相关 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="16 偏相关和典型相关 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="16 偏相关和典型相关 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1015-twocorrelation.html"/>
+<link rel="next" href="1017-multiregression.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,228 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="jhgkjahdj" class="section level1 hasAnchor" number="16">
+<h1><span class="header-section-number">16</span> 偏相关和典型相关<a href="1016-piancorrelation.html#jhgkjahdj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>使用R语言实现偏相关分析和典型相关分析，并画出偏相关的散点图。</p>
+<p>关于偏相关和典型相关的具体含义和适用范围大家自己学习。</p>
+<div id="偏相关partial-correlation" class="section level2 hasAnchor" number="16.1">
+<h2><span class="header-section-number">16.1</span> 偏相关（partial correlation）<a href="1016-piancorrelation.html#偏相关partial-correlation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>使用R包<code>ppcor</code>实现。</p>
+<p>首先是加载数据和R包。</p>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="1016-piancorrelation.html#cb243-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ppcor)</span>
+<span id="cb243-2"><a href="1016-piancorrelation.html#cb243-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: MASS</span></span>
+<span id="cb243-3"><a href="1016-piancorrelation.html#cb243-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb243-4"><a href="1016-piancorrelation.html#cb243-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_sav</span>(<span class="st">&quot;datasets/data01.sav&quot;</span>)</span>
+<span id="cb243-5"><a href="1016-piancorrelation.html#cb243-5" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">&lt;-</span> df[,<span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb243-6"><a href="1016-piancorrelation.html#cb243-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;height&quot;</span>,<span class="st">&quot;weight&quot;</span>,<span class="st">&quot;vc&quot;</span>)</span>
+<span id="cb243-7"><a href="1016-piancorrelation.html#cb243-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df1)</span>
+<span id="cb243-8"><a href="1016-piancorrelation.html#cb243-8" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 6 × 3</span></span>
+<span id="cb243-9"><a href="1016-piancorrelation.html#cb243-9" aria-hidden="true" tabindex="-1"></a><span class="do">##   height weight    vc</span></span>
+<span id="cb243-10"><a href="1016-piancorrelation.html#cb243-10" aria-hidden="true" tabindex="-1"></a><span class="do">##    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb243-11"><a href="1016-piancorrelation.html#cb243-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 1   139.   30.4  2   </span></span>
+<span id="cb243-12"><a href="1016-piancorrelation.html#cb243-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 2   164.   46.2  2.75</span></span>
+<span id="cb243-13"><a href="1016-piancorrelation.html#cb243-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 3   156.   37.1  2.75</span></span>
+<span id="cb243-14"><a href="1016-piancorrelation.html#cb243-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 4   156.   35.5  2   </span></span>
+<span id="cb243-15"><a href="1016-piancorrelation.html#cb243-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 5   150.   31    1.5 </span></span>
+<span id="cb243-16"><a href="1016-piancorrelation.html#cb243-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 6   145    33    2.5</span></span></code></pre></div>
+<p>这个数据有3列，现在我们要探索身高（height）和体重（weight）的关系，其中<code>vc</code>是需要控制的因素。</p>
+<p>首先进行<code>pearson偏相关分析</code>：</p>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="1016-piancorrelation.html#cb244-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">pcor</span>(df1,<span class="at">method =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb244-2"><a href="1016-piancorrelation.html#cb244-2" aria-hidden="true" tabindex="-1"></a>p1</span>
+<span id="cb244-3"><a href="1016-piancorrelation.html#cb244-3" aria-hidden="true" tabindex="-1"></a><span class="do">## $estimate</span></span>
+<span id="cb244-4"><a href="1016-piancorrelation.html#cb244-4" aria-hidden="true" tabindex="-1"></a><span class="do">##            height    weight         vc</span></span>
+<span id="cb244-5"><a href="1016-piancorrelation.html#cb244-5" aria-hidden="true" tabindex="-1"></a><span class="do">## height  1.0000000 0.7941292 -0.2022408</span></span>
+<span id="cb244-6"><a href="1016-piancorrelation.html#cb244-6" aria-hidden="true" tabindex="-1"></a><span class="do">## weight  0.7941292 1.0000000  0.6166786</span></span>
+<span id="cb244-7"><a href="1016-piancorrelation.html#cb244-7" aria-hidden="true" tabindex="-1"></a><span class="do">## vc     -0.2022408 0.6166786  1.0000000</span></span>
+<span id="cb244-8"><a href="1016-piancorrelation.html#cb244-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb244-9"><a href="1016-piancorrelation.html#cb244-9" aria-hidden="true" tabindex="-1"></a><span class="do">## $p.value</span></span>
+<span id="cb244-10"><a href="1016-piancorrelation.html#cb244-10" aria-hidden="true" tabindex="-1"></a><span class="do">##              height       weight          vc</span></span>
+<span id="cb244-11"><a href="1016-piancorrelation.html#cb244-11" aria-hidden="true" tabindex="-1"></a><span class="do">## height 0.0000000000 0.0000491115 0.406351395</span></span>
+<span id="cb244-12"><a href="1016-piancorrelation.html#cb244-12" aria-hidden="true" tabindex="-1"></a><span class="do">## weight 0.0000491115 0.0000000000 0.004920346</span></span>
+<span id="cb244-13"><a href="1016-piancorrelation.html#cb244-13" aria-hidden="true" tabindex="-1"></a><span class="do">## vc     0.4063513954 0.0049203462 0.000000000</span></span>
+<span id="cb244-14"><a href="1016-piancorrelation.html#cb244-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb244-15"><a href="1016-piancorrelation.html#cb244-15" aria-hidden="true" tabindex="-1"></a><span class="do">## $statistic</span></span>
+<span id="cb244-16"><a href="1016-piancorrelation.html#cb244-16" aria-hidden="true" tabindex="-1"></a><span class="do">##            height   weight         vc</span></span>
+<span id="cb244-17"><a href="1016-piancorrelation.html#cb244-17" aria-hidden="true" tabindex="-1"></a><span class="do">## height  0.0000000 5.387551 -0.8514549</span></span>
+<span id="cb244-18"><a href="1016-piancorrelation.html#cb244-18" aria-hidden="true" tabindex="-1"></a><span class="do">## weight  5.3875507 0.000000  3.2299064</span></span>
+<span id="cb244-19"><a href="1016-piancorrelation.html#cb244-19" aria-hidden="true" tabindex="-1"></a><span class="do">## vc     -0.8514549 3.229906  0.0000000</span></span>
+<span id="cb244-20"><a href="1016-piancorrelation.html#cb244-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb244-21"><a href="1016-piancorrelation.html#cb244-21" aria-hidden="true" tabindex="-1"></a><span class="do">## $n</span></span>
+<span id="cb244-22"><a href="1016-piancorrelation.html#cb244-22" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 20</span></span>
+<span id="cb244-23"><a href="1016-piancorrelation.html#cb244-23" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb244-24"><a href="1016-piancorrelation.html#cb244-24" aria-hidden="true" tabindex="-1"></a><span class="do">## $gp</span></span>
+<span id="cb244-25"><a href="1016-piancorrelation.html#cb244-25" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1</span></span>
+<span id="cb244-26"><a href="1016-piancorrelation.html#cb244-26" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb244-27"><a href="1016-piancorrelation.html#cb244-27" aria-hidden="true" tabindex="-1"></a><span class="do">## $method</span></span>
+<span id="cb244-28"><a href="1016-piancorrelation.html#cb244-28" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;pearson&quot;</span></span></code></pre></div>
+<p>结果中<code>$estimate</code>给出了偏相关系数，可以看到在控制了<code>vc</code>后，<code>height</code>和<code>weight</code>的偏相关系数是0.7941292；<code>$p.value</code>给出了相应的P值，<code>$statistic</code>给出了检验统计量。</p>
+<p>上面演示的是<code>pearson偏相关分析</code>，下面展示一个<code>spearman偏相关分析</code>。</p>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="1016-piancorrelation.html#cb245-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 加载数据</span></span>
+<span id="cb245-2"><a href="1016-piancorrelation.html#cb245-2" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_sav</span>(<span class="st">&quot;datasets/data02.sav&quot;</span>)</span>
+<span id="cb245-3"><a href="1016-piancorrelation.html#cb245-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(df2) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>,<span class="st">&quot;x&quot;</span>,<span class="st">&quot;y&quot;</span>,<span class="st">&quot;z&quot;</span>)</span>
+<span id="cb245-4"><a href="1016-piancorrelation.html#cb245-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb245-5"><a href="1016-piancorrelation.html#cb245-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df2)</span>
+<span id="cb245-6"><a href="1016-piancorrelation.html#cb245-6" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 6 × 4</span></span>
+<span id="cb245-7"><a href="1016-piancorrelation.html#cb245-7" aria-hidden="true" tabindex="-1"></a><span class="do">##      id x         y             z</span></span>
+<span id="cb245-8"><a href="1016-piancorrelation.html#cb245-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;dbl&gt; &lt;dbl+lbl&gt; &lt;dbl+lbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb245-9"><a href="1016-piancorrelation.html#cb245-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     7 1 [矮]    1 [轻]     1.25</span></span>
+<span id="cb245-10"><a href="1016-piancorrelation.html#cb245-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 2    17 1 [矮]    1 [轻]     1.25</span></span>
+<span id="cb245-11"><a href="1016-piancorrelation.html#cb245-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     1 1 [矮]    1 [轻]     2   </span></span>
+<span id="cb245-12"><a href="1016-piancorrelation.html#cb245-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 4    11 1 [矮]    1 [轻]     2   </span></span>
+<span id="cb245-13"><a href="1016-piancorrelation.html#cb245-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 5     5 2 [中]    1 [轻]     1.5 </span></span>
+<span id="cb245-14"><a href="1016-piancorrelation.html#cb245-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 6    15 2 [中]    1 [轻]     1.5</span></span></code></pre></div>
+<p>现在我们要计算<code>x</code>和<code>y</code>的相关性，<code>z</code>是要控制的因素，由于这两个变量是分类变量，所以要用<code>spearman偏相关分析</code>。</p>
+<p>其实用法是一样的，就是改个参数而已：</p>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="1016-piancorrelation.html#cb246-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pcor</span>(df2[,<span class="sc">-</span><span class="dv">1</span>],<span class="at">method =</span> <span class="st">&quot;spearman&quot;</span>)</span>
+<span id="cb246-2"><a href="1016-piancorrelation.html#cb246-2" aria-hidden="true" tabindex="-1"></a><span class="do">## $estimate</span></span>
+<span id="cb246-3"><a href="1016-piancorrelation.html#cb246-3" aria-hidden="true" tabindex="-1"></a><span class="do">##            x         y          z</span></span>
+<span id="cb246-4"><a href="1016-piancorrelation.html#cb246-4" aria-hidden="true" tabindex="-1"></a><span class="do">## x  1.0000000 0.6985577 -0.4212568</span></span>
+<span id="cb246-5"><a href="1016-piancorrelation.html#cb246-5" aria-hidden="true" tabindex="-1"></a><span class="do">## y  0.6985577 1.0000000  0.8486095</span></span>
+<span id="cb246-6"><a href="1016-piancorrelation.html#cb246-6" aria-hidden="true" tabindex="-1"></a><span class="do">## z -0.4212568 0.8486095  1.0000000</span></span>
+<span id="cb246-7"><a href="1016-piancorrelation.html#cb246-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb246-8"><a href="1016-piancorrelation.html#cb246-8" aria-hidden="true" tabindex="-1"></a><span class="do">## $p.value</span></span>
+<span id="cb246-9"><a href="1016-piancorrelation.html#cb246-9" aria-hidden="true" tabindex="-1"></a><span class="do">##              x            y            z</span></span>
+<span id="cb246-10"><a href="1016-piancorrelation.html#cb246-10" aria-hidden="true" tabindex="-1"></a><span class="do">## x 0.0000000000 8.779998e-04 7.245901e-02</span></span>
+<span id="cb246-11"><a href="1016-piancorrelation.html#cb246-11" aria-hidden="true" tabindex="-1"></a><span class="do">## y 0.0008779998 0.000000e+00 4.386687e-06</span></span>
+<span id="cb246-12"><a href="1016-piancorrelation.html#cb246-12" aria-hidden="true" tabindex="-1"></a><span class="do">## z 0.0724590110 4.386687e-06 0.000000e+00</span></span>
+<span id="cb246-13"><a href="1016-piancorrelation.html#cb246-13" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb246-14"><a href="1016-piancorrelation.html#cb246-14" aria-hidden="true" tabindex="-1"></a><span class="do">## $statistic</span></span>
+<span id="cb246-15"><a href="1016-piancorrelation.html#cb246-15" aria-hidden="true" tabindex="-1"></a><span class="do">##           x        y         z</span></span>
+<span id="cb246-16"><a href="1016-piancorrelation.html#cb246-16" aria-hidden="true" tabindex="-1"></a><span class="do">## x  0.000000 4.025172 -1.915103</span></span>
+<span id="cb246-17"><a href="1016-piancorrelation.html#cb246-17" aria-hidden="true" tabindex="-1"></a><span class="do">## y  4.025172 0.000000  6.613943</span></span>
+<span id="cb246-18"><a href="1016-piancorrelation.html#cb246-18" aria-hidden="true" tabindex="-1"></a><span class="do">## z -1.915103 6.613943  0.000000</span></span>
+<span id="cb246-19"><a href="1016-piancorrelation.html#cb246-19" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb246-20"><a href="1016-piancorrelation.html#cb246-20" aria-hidden="true" tabindex="-1"></a><span class="do">## $n</span></span>
+<span id="cb246-21"><a href="1016-piancorrelation.html#cb246-21" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 20</span></span>
+<span id="cb246-22"><a href="1016-piancorrelation.html#cb246-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb246-23"><a href="1016-piancorrelation.html#cb246-23" aria-hidden="true" tabindex="-1"></a><span class="do">## $gp</span></span>
+<span id="cb246-24"><a href="1016-piancorrelation.html#cb246-24" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1</span></span>
+<span id="cb246-25"><a href="1016-piancorrelation.html#cb246-25" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb246-26"><a href="1016-piancorrelation.html#cb246-26" aria-hidden="true" tabindex="-1"></a><span class="do">## $method</span></span>
+<span id="cb246-27"><a href="1016-piancorrelation.html#cb246-27" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;spearman&quot;</span></span></code></pre></div>
+<p>结果解读同上。</p>
+<div id="偏相关散点图" class="section level3 hasAnchor" number="16.1.1">
+<h3><span class="header-section-number">16.1.1</span> 偏相关散点图<a href="1016-piancorrelation.html#偏相关散点图" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>还是用<code>df1</code>的数据作为演示，现在是研究weight对height的影响，vc是需要控制的变量。</p>
+<p>所以我们可以分别计算残差，用残差的散点图代表偏相关的散点图。</p>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="1016-piancorrelation.html#cb247-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 首先计算height为因变量，vc是自变量的残差</span></span>
+<span id="cb247-2"><a href="1016-piancorrelation.html#cb247-2" aria-hidden="true" tabindex="-1"></a>residX <span class="ot">&lt;-</span> <span class="fu">resid</span>(<span class="fu">lm</span>(height<span class="sc">~</span>vc,<span class="at">data =</span> df1))</span>
+<span id="cb247-3"><a href="1016-piancorrelation.html#cb247-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb247-4"><a href="1016-piancorrelation.html#cb247-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 再计算weight为因变量，vc是自变量的残差</span></span>
+<span id="cb247-5"><a href="1016-piancorrelation.html#cb247-5" aria-hidden="true" tabindex="-1"></a>residY <span class="ot">&lt;-</span> <span class="fu">resid</span>(<span class="fu">lm</span>(weight<span class="sc">~</span>vc, <span class="at">data =</span> df1))</span>
+<span id="cb247-6"><a href="1016-piancorrelation.html#cb247-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb247-7"><a href="1016-piancorrelation.html#cb247-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 两个残差的相关系数就是weight和height的偏相关系数！</span></span>
+<span id="cb247-8"><a href="1016-piancorrelation.html#cb247-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(residX, residY, <span class="at">method =</span> <span class="st">&quot;pearson&quot;</span>)</span>
+<span id="cb247-9"><a href="1016-piancorrelation.html#cb247-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.7941292</span></span>
+<span id="cb247-10"><a href="1016-piancorrelation.html#cb247-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb247-11"><a href="1016-piancorrelation.html#cb247-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 画图即可</span></span>
+<span id="cb247-12"><a href="1016-piancorrelation.html#cb247-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(residX, residY)</span></code></pre></div>
+<p><img src="1016-piancorrelation_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p>但是这个图的横纵坐标取值范围对实际来说是不能解释的，所以我们可以分别加上它们各自的平均值，然后再画散点图，方法借鉴了这篇<a href="https://cloud.tencent.com/developer/news/368310">文章</a>：</p>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="1016-piancorrelation.html#cb248-1" aria-hidden="true" tabindex="-1"></a>residX1 <span class="ot">&lt;-</span> residX <span class="sc">+</span> <span class="fu">mean</span>(df1<span class="sc">$</span>height)</span>
+<span id="cb248-2"><a href="1016-piancorrelation.html#cb248-2" aria-hidden="true" tabindex="-1"></a>residY1 <span class="ot">&lt;-</span> residY <span class="sc">+</span> <span class="fu">mean</span>(df1<span class="sc">$</span>weight)</span>
+<span id="cb248-3"><a href="1016-piancorrelation.html#cb248-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb248-4"><a href="1016-piancorrelation.html#cb248-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(residX1, residY1,<span class="at">xlab =</span> <span class="st">&quot;身高&quot;</span>,<span class="at">ylab =</span> <span class="st">&quot;体重&quot;</span>)</span></code></pre></div>
+<p><img src="1016-piancorrelation_files/figure-html/unnamed-chunk-6-1.png" width="90%" /></p>
+<p>这个就是偏相关散点图了！</p>
 </div>
+</div>
+<div id="典型相关canonical-correlation" class="section level2 hasAnchor" number="16.2">
+<h2><span class="header-section-number">16.2</span> 典型相关（Canonical Correlation）<a href="1016-piancorrelation.html#典型相关canonical-correlation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>这个数据来自孙振球《医学统计学》第四版的例23-1，探讨小学生的生长发育指标（肺活量、身高、体重、胸围）和身体素质（短跑、跳高、跳远、实心球）的相互关系。</p>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="1016-piancorrelation.html#cb249-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;datasets/例23-1.csv&quot;</span>,<span class="at">header =</span> T)</span>
+<span id="cb249-2"><a href="1016-piancorrelation.html#cb249-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">headtail</span>(df)</span>
+<span id="cb249-3"><a href="1016-piancorrelation.html#cb249-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: headtail is deprecated.  Please use the headTail function</span></span>
+<span id="cb249-4"><a href="1016-piancorrelation.html#cb249-4" aria-hidden="true" tabindex="-1"></a><span class="do">##     肺活量  身高 体重 胸围 短跑 跳高 跳远 实心球</span></span>
+<span id="cb249-5"><a href="1016-piancorrelation.html#cb249-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     1210 120.1 23.8   61 10.2 66.3 2.01   2.73</span></span>
+<span id="cb249-6"><a href="1016-piancorrelation.html#cb249-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     1210 120.7 23.4 59.8 11.3 67.6 1.92   2.71</span></span>
+<span id="cb249-7"><a href="1016-piancorrelation.html#cb249-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     1040 121.2 22.9   59 10.1 66.5 1.92    2.6</span></span>
+<span id="cb249-8"><a href="1016-piancorrelation.html#cb249-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     1620 121.5 24.6 59.5  9.5 67.8 1.95   2.64</span></span>
+<span id="cb249-9"><a href="1016-piancorrelation.html#cb249-9" aria-hidden="true" tabindex="-1"></a><span class="do">## ...    ...   ...  ...  ...  ...  ...  ...    ...</span></span>
+<span id="cb249-10"><a href="1016-piancorrelation.html#cb249-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 81    1310 129.7 24.7 61.7 10.1 69.4 2.03    2.8</span></span>
+<span id="cb249-11"><a href="1016-piancorrelation.html#cb249-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 82    2280 143.6 37.6   70  9.7 88.8 2.17   4.18</span></span>
+<span id="cb249-12"><a href="1016-piancorrelation.html#cb249-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 83    1580 136.6 32.3 67.2 10.3 87.1 2.66   4.04</span></span>
+<span id="cb249-13"><a href="1016-piancorrelation.html#cb249-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 84    2370 147.4 38.8   73 10.8 90.7 2.82   4.38</span></span></code></pre></div>
+<p>典型相关分析R语言自带了<code>cancor()</code>函数，无需借助第三方R包：</p>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="1016-piancorrelation.html#cb250-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 前4个变量和后4个变量做相关性，直接提供2个数据框也可以</span></span>
+<span id="cb250-2"><a href="1016-piancorrelation.html#cb250-2" aria-hidden="true" tabindex="-1"></a>cc1 <span class="ot">&lt;-</span> <span class="fu">cancor</span>(df[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>],df[,<span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>])</span>
+<span id="cb250-3"><a href="1016-piancorrelation.html#cb250-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb250-4"><a href="1016-piancorrelation.html#cb250-4" aria-hidden="true" tabindex="-1"></a>cc1</span>
+<span id="cb250-5"><a href="1016-piancorrelation.html#cb250-5" aria-hidden="true" tabindex="-1"></a><span class="do">## $cor</span></span>
+<span id="cb250-6"><a href="1016-piancorrelation.html#cb250-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.8858445 0.2791523 0.1940486 0.0379654</span></span>
+<span id="cb250-7"><a href="1016-piancorrelation.html#cb250-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb250-8"><a href="1016-piancorrelation.html#cb250-8" aria-hidden="true" tabindex="-1"></a><span class="do">## $xcoef</span></span>
+<span id="cb250-9"><a href="1016-piancorrelation.html#cb250-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                 [,1]          [,2]         [,3]          [,4]</span></span>
+<span id="cb250-10"><a href="1016-piancorrelation.html#cb250-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 肺活量 -5.267493e-05 -0.0001955795 -0.000407694  0.0002971469</span></span>
+<span id="cb250-11"><a href="1016-piancorrelation.html#cb250-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 身高   -7.754975e-03 -0.0086910713  0.021599065  0.0079782016</span></span>
+<span id="cb250-12"><a href="1016-piancorrelation.html#cb250-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 体重   -3.471120e-03 -0.0180620718 -0.015626841 -0.0522321990</span></span>
+<span id="cb250-13"><a href="1016-piancorrelation.html#cb250-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 胸围   -1.552353e-02  0.0464952778  0.004886088  0.0178728641</span></span>
+<span id="cb250-14"><a href="1016-piancorrelation.html#cb250-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb250-15"><a href="1016-piancorrelation.html#cb250-15" aria-hidden="true" tabindex="-1"></a><span class="do">## $ycoef</span></span>
+<span id="cb250-16"><a href="1016-piancorrelation.html#cb250-16" aria-hidden="true" tabindex="-1"></a><span class="do">##               [,1]        [,2]        [,3]        [,4]</span></span>
+<span id="cb250-17"><a href="1016-piancorrelation.html#cb250-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 短跑    0.02340474 -0.08458262  0.07017709 -0.13566387</span></span>
+<span id="cb250-18"><a href="1016-piancorrelation.html#cb250-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 跳高   -0.01068107 -0.02440377  0.01443519  0.01626168</span></span>
+<span id="cb250-19"><a href="1016-piancorrelation.html#cb250-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 跳远   -0.02867642  0.92500098  0.23862503 -0.29882238</span></span>
+<span id="cb250-20"><a href="1016-piancorrelation.html#cb250-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 实心球 -0.06884355 -0.07825414 -0.29442851 -0.19118769</span></span>
+<span id="cb250-21"><a href="1016-piancorrelation.html#cb250-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb250-22"><a href="1016-piancorrelation.html#cb250-22" aria-hidden="true" tabindex="-1"></a><span class="do">## $xcenter</span></span>
+<span id="cb250-23"><a href="1016-piancorrelation.html#cb250-23" aria-hidden="true" tabindex="-1"></a><span class="do">##     肺活量       身高       体重       胸围 </span></span>
+<span id="cb250-24"><a href="1016-piancorrelation.html#cb250-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 1490.47619  131.52024   26.44405   61.51190 </span></span>
+<span id="cb250-25"><a href="1016-piancorrelation.html#cb250-25" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb250-26"><a href="1016-piancorrelation.html#cb250-26" aria-hidden="true" tabindex="-1"></a><span class="do">## $ycenter</span></span>
+<span id="cb250-27"><a href="1016-piancorrelation.html#cb250-27" aria-hidden="true" tabindex="-1"></a><span class="do">##      短跑      跳高      跳远    实心球 </span></span>
+<span id="cb250-28"><a href="1016-piancorrelation.html#cb250-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 10.271429 72.805952  2.109048  2.978929</span></span></code></pre></div>
+<p><code>$cor</code>给出了两组数据之间的典型相关系数，<code>$xcoef</code>是第一组的典型相关系数，可以看到计算出了4个虚拟变量，<code>$ycoef</code>是第二组的典型相关系数。</p>
+<p>下面进行典型相关的显著性检验，使用R包<code>CCP</code>实现。</p>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="1016-piancorrelation.html#cb251-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CCP)</span>
+<span id="cb251-2"><a href="1016-piancorrelation.html#cb251-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb251-3"><a href="1016-piancorrelation.html#cb251-3" aria-hidden="true" tabindex="-1"></a>rho <span class="ot">&lt;-</span> cc1<span class="sc">$</span>cor</span>
+<span id="cb251-4"><a href="1016-piancorrelation.html#cb251-4" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">dim</span>(df[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])[<span class="dv">1</span>]</span>
+<span id="cb251-5"><a href="1016-piancorrelation.html#cb251-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">length</span>(df[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb251-6"><a href="1016-piancorrelation.html#cb251-6" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> <span class="fu">length</span>(df[,<span class="dv">5</span><span class="sc">:</span><span class="dv">8</span>])</span></code></pre></div>
+<p><code>p.asym()</code>函数实现典型相关的显著性检验。需要典型相关系数、观测个数、第一组的变量个数、第二组的变量个数。</p>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="1016-piancorrelation.html#cb252-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4种典型相关的结果</span></span>
+<span id="cb252-2"><a href="1016-piancorrelation.html#cb252-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p.asym</span>(rho,n,p,q, <span class="at">tstat =</span> <span class="st">&quot;Wilks&quot;</span>)</span>
+<span id="cb252-3"><a href="1016-piancorrelation.html#cb252-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Wilks&#39; Lambda, using F-approximation (Rao&#39;s F):</span></span>
+<span id="cb252-4"><a href="1016-piancorrelation.html#cb252-4" aria-hidden="true" tabindex="-1"></a><span class="do">##               stat     approx df1      df2   p.value</span></span>
+<span id="cb252-5"><a href="1016-piancorrelation.html#cb252-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 to 4:  0.1907537 10.4765088  16 232.8215 0.0000000</span></span>
+<span id="cb252-6"><a href="1016-piancorrelation.html#cb252-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 to 4:  0.8860745  1.0618303   9 187.5484 0.3930330</span></span>
+<span id="cb252-7"><a href="1016-piancorrelation.html#cb252-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 to 4:  0.9609581  0.7843615   4 156.0000 0.5369444</span></span>
+<span id="cb252-8"><a href="1016-piancorrelation.html#cb252-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 to 4:  0.9985586  0.1140327   1  79.0000 0.7364945</span></span>
+<span id="cb252-9"><a href="1016-piancorrelation.html#cb252-9" aria-hidden="true" tabindex="-1"></a><span class="fu">p.asym</span>(rho,n,p,q, <span class="at">tstat =</span> <span class="st">&quot;Hotelling&quot;</span>)</span>
+<span id="cb252-10"><a href="1016-piancorrelation.html#cb252-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  Hotelling-Lawley Trace, using F-approximation:</span></span>
+<span id="cb252-11"><a href="1016-piancorrelation.html#cb252-11" aria-hidden="true" tabindex="-1"></a><span class="do">##                 stat     approx df1 df2   p.value</span></span>
+<span id="cb252-12"><a href="1016-piancorrelation.html#cb252-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 to 4:  3.770206950 17.5550261  16 298 0.0000000</span></span>
+<span id="cb252-13"><a href="1016-piancorrelation.html#cb252-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 to 4:  0.125083307  1.0632081   9 306 0.3898996</span></span>
+<span id="cb252-14"><a href="1016-piancorrelation.html#cb252-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 to 4:  0.040571670  0.7962190   4 314 0.5283457</span></span>
+<span id="cb252-15"><a href="1016-piancorrelation.html#cb252-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 to 4:  0.001443452  0.1161979   1 322 0.7334177</span></span>
+<span id="cb252-16"><a href="1016-piancorrelation.html#cb252-16" aria-hidden="true" tabindex="-1"></a><span class="fu">p.asym</span>(rho,n,p,q, <span class="at">tstat =</span> <span class="st">&quot;Pillai&quot;</span>)</span>
+<span id="cb252-17"><a href="1016-piancorrelation.html#cb252-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pillai-Bartlett Trace, using F-approximation:</span></span>
+<span id="cb252-18"><a href="1016-piancorrelation.html#cb252-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                 stat    approx df1 df2      p.value</span></span>
+<span id="cb252-19"><a href="1016-piancorrelation.html#cb252-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 to 4:  0.901742684 5.7482049  16 316 5.963363e-11</span></span>
+<span id="cb252-20"><a href="1016-piancorrelation.html#cb252-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 to 4:  0.117022206 1.0849404   9 324 3.733220e-01</span></span>
+<span id="cb252-21"><a href="1016-piancorrelation.html#cb252-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 to 4:  0.039096223 0.8192541   4 332 5.135803e-01</span></span>
+<span id="cb252-22"><a href="1016-piancorrelation.html#cb252-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 to 4:  0.001441371 0.1225607   1 340 7.264904e-01</span></span>
+<span id="cb252-23"><a href="1016-piancorrelation.html#cb252-23" aria-hidden="true" tabindex="-1"></a><span class="fu">p.asym</span>(rho,n,p,q, <span class="at">tstat =</span> <span class="st">&quot;Roy&quot;</span>)</span>
+<span id="cb252-24"><a href="1016-piancorrelation.html#cb252-24" aria-hidden="true" tabindex="-1"></a><span class="do">##  Roy&#39;s Largest Root, using F-approximation:</span></span>
+<span id="cb252-25"><a href="1016-piancorrelation.html#cb252-25" aria-hidden="true" tabindex="-1"></a><span class="do">##               stat   approx df1 df2 p.value</span></span>
+<span id="cb252-26"><a href="1016-piancorrelation.html#cb252-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 to 1:  0.7847205 71.99119   4  79       0</span></span>
+<span id="cb252-27"><a href="1016-piancorrelation.html#cb252-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb252-28"><a href="1016-piancorrelation.html#cb252-28" aria-hidden="true" tabindex="-1"></a><span class="do">##  F statistic for Roy&#39;s Greatest Root is an upper bound.</span></span></code></pre></div>
+<p>我们就看下<code>Wilks</code>结果，可以看到只有第一个典型相关系数是有意义的，后面3个都没有显著性。</p>
+
+</div>
+</div>
+
+
+
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1015-twocorrelation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1017-multiregression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

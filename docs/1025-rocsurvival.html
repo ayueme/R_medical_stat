@@ -4,20 +4,20 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | R语言实战医学统计</title>
-  <meta name="description" content="Page not found | R语言实战医学统计" />
+  <title>25 生存资料ROC曲线绘制 | R语言实战医学统计</title>
+  <meta name="description" content="25 生存资料ROC曲线绘制 | R语言实战医学统计" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | R语言实战医学统计" />
+  <meta property="og:title" content="25 生存资料ROC曲线绘制 | R语言实战医学统计" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="Page not found | R语言实战医学统计" />
+  <meta property="og:description" content="25 生存资料ROC曲线绘制 | R语言实战医学统计" />
   <meta name="github-repo" content="ayueme/ayueme.github.io" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:title" content="25 生存资料ROC曲线绘制 | R语言实战医学统计" />
   
-  <meta name="twitter:description" content="Page not found | R语言实战医学统计" />
+  <meta name="twitter:description" content="25 生存资料ROC曲线绘制 | R语言实战医学统计" />
   
 
 <meta name="author" content="阿越就是我" />
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="1024-rocbinomial.html"/>
+<link rel="next" href="1026-rocsurvsmooth.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -583,19 +583,165 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="xlkjgj" class="section level1 hasAnchor" number="25">
+<h1><span class="header-section-number">25</span> 生存资料ROC曲线绘制<a href="1025-rocsurvival.html#xlkjgj" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>生存资料的ROC曲线考虑了时间因素，在画ROC时，需要指定是哪个时间点的ROC。</p>
+<p>生存资料的ROC曲线绘制，最常见的那肯定是<code>timeROC</code>和<code>survivalROC</code>了，这两个包非常像，我比较喜欢用<code>timeROC</code>。</p>
+<div id="加载r包和数据" class="section level2 hasAnchor" number="25.1">
+<h2><span class="header-section-number">25.1</span> 加载R包和数据<a href="1025-rocsurvival.html#加载r包和数据" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb431"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb431-1"><a href="1025-rocsurvival.html#cb431-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb431-2"><a href="1025-rocsurvival.html#cb431-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(timeROC)</span>
+<span id="cb431-3"><a href="1025-rocsurvival.html#cb431-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb431-4"><a href="1025-rocsurvival.html#cb431-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb431-5"><a href="1025-rocsurvival.html#cb431-5" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">&quot;datasets/timeROC.RData&quot;</span>)</span></code></pre></div>
+</div>
+<div id="多个时间点roc" class="section level2 hasAnchor" number="25.2">
+<h2><span class="header-section-number">25.2</span> 多个时间点ROC<a href="1025-rocsurvival.html#多个时间点roc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>首先看一下数据结构，对于多个时间点的ROC，需要3列数据：time, event, marker(比如你计算得到的risk score)。</p>
+<p>看一下画图所需的数据长什么样子，event这一列，0代表living，1代表dead，futime这一列单位是年，也可以改成其他的。</p>
+<div class="sourceCode" id="cb432"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb432-1"><a href="1025-rocsurvival.html#cb432-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb432-2"><a href="1025-rocsurvival.html#cb432-2" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    297 obs. of  3 variables:</span></span>
+<span id="cb432-3"><a href="1025-rocsurvival.html#cb432-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ event    : num  0 0 1 0 0 1 0 0 0 0 ...</span></span>
+<span id="cb432-4"><a href="1025-rocsurvival.html#cb432-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ riskScore: num  -0.249 -0.511 -0.211 -0.427 0.279 ...</span></span>
+<span id="cb432-5"><a href="1025-rocsurvival.html#cb432-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ futime   : num  3.03 1.16 1.82 1.52 1.34 ...</span></span></code></pre></div>
+<div class="sourceCode" id="cb433"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb433-1"><a href="1025-rocsurvival.html#cb433-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建timeroc</span></span>
+<span id="cb433-2"><a href="1025-rocsurvival.html#cb433-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb433-3"><a href="1025-rocsurvival.html#cb433-3" aria-hidden="true" tabindex="-1"></a>ROC <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df<span class="sc">$</span>futime,   </span>
+<span id="cb433-4"><a href="1025-rocsurvival.html#cb433-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">delta=</span>df<span class="sc">$</span>event,   </span>
+<span id="cb433-5"><a href="1025-rocsurvival.html#cb433-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">marker=</span>df<span class="sc">$</span>riskScore,   </span>
+<span id="cb433-6"><a href="1025-rocsurvival.html#cb433-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">cause=</span><span class="dv">1</span>,                <span class="co">#阳性结局指标数值</span></span>
+<span id="cb433-7"><a href="1025-rocsurvival.html#cb433-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   <span class="co">#计算方法，默认为marginal</span></span>
+<span id="cb433-8"><a href="1025-rocsurvival.html#cb433-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">times=</span><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),       <span class="co">#时间点，选取1年，3年和5年的生存率</span></span>
+<span id="cb433-9"><a href="1025-rocsurvival.html#cb433-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb433-10"><a href="1025-rocsurvival.html#cb433-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb433-11"><a href="1025-rocsurvival.html#cb433-11" aria-hidden="true" tabindex="-1"></a>ROC   <span class="co">#查看模型变量信息</span></span>
+<span id="cb433-12"><a href="1025-rocsurvival.html#cb433-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Time-dependent-Roc curve estimated using IPCW  (n=297, without competing risks). </span></span>
+<span id="cb433-13"><a href="1025-rocsurvival.html#cb433-13" aria-hidden="true" tabindex="-1"></a><span class="do">##     Cases Survivors Censored AUC (%)   se</span></span>
+<span id="cb433-14"><a href="1025-rocsurvival.html#cb433-14" aria-hidden="true" tabindex="-1"></a><span class="do">## t=1    57       203       37   71.02 3.68</span></span>
+<span id="cb433-15"><a href="1025-rocsurvival.html#cb433-15" aria-hidden="true" tabindex="-1"></a><span class="do">## t=2    66       106      125   69.23 3.94</span></span>
+<span id="cb433-16"><a href="1025-rocsurvival.html#cb433-16" aria-hidden="true" tabindex="-1"></a><span class="do">## t=3    68        74      155   65.53 4.85</span></span>
+<span id="cb433-17"><a href="1025-rocsurvival.html#cb433-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb433-18"><a href="1025-rocsurvival.html#cb433-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Method used for estimating IPCW:marginal </span></span>
+<span id="cb433-19"><a href="1025-rocsurvival.html#cb433-19" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb433-20"><a href="1025-rocsurvival.html#cb433-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Total computation time : 0.08  secs.</span></span></code></pre></div>
+<p>画图很简单：</p>
+<div class="sourceCode" id="cb434"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb434-1"><a href="1025-rocsurvival.html#cb434-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC, </span>
+<span id="cb434-2"><a href="1025-rocsurvival.html#cb434-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">time=</span><span class="dv">1</span>, <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">title =</span> <span class="st">&quot;&quot;</span>)   <span class="co">#time是时间点，col是线条颜色</span></span>
+<span id="cb434-3"><a href="1025-rocsurvival.html#cb434-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC,</span>
+<span id="cb434-4"><a href="1025-rocsurvival.html#cb434-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">time=</span><span class="dv">2</span>, <span class="at">col=</span><span class="st">&quot;blue&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>, <span class="at">lwd=</span><span class="dv">2</span>)    <span class="co">#add指是否添加在上一张图中</span></span>
+<span id="cb434-5"><a href="1025-rocsurvival.html#cb434-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC,</span>
+<span id="cb434-6"><a href="1025-rocsurvival.html#cb434-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">time=</span><span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;orange&quot;</span>, <span class="at">add=</span><span class="cn">TRUE</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb434-7"><a href="1025-rocsurvival.html#cb434-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb434-8"><a href="1025-rocsurvival.html#cb434-8" aria-hidden="true" tabindex="-1"></a><span class="co">#添加标签信息</span></span>
+<span id="cb434-9"><a href="1025-rocsurvival.html#cb434-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>,</span>
+<span id="cb434-10"><a href="1025-rocsurvival.html#cb434-10" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">&quot;AUC at 1 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">1</span>],<span class="dv">2</span>)), </span>
+<span id="cb434-11"><a href="1025-rocsurvival.html#cb434-11" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;AUC at 2 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)), </span>
+<span id="cb434-12"><a href="1025-rocsurvival.html#cb434-12" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;AUC at 3 year: &quot;</span>,<span class="fu">round</span>(ROC[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">3</span>],<span class="dv">2</span>))),</span>
+<span id="cb434-13"><a href="1025-rocsurvival.html#cb434-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;orange&quot;</span>),</span>
+<span id="cb434-14"><a href="1025-rocsurvival.html#cb434-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>,<span class="at">bty =</span> <span class="st">&quot;n&quot;</span>) </span></code></pre></div>
+<p><img src="1025-rocsurvival_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+</div>
+<div id="多指标roc" class="section level2 hasAnchor" number="25.3">
+<h2><span class="header-section-number">25.3</span> 多指标ROC<a href="1025-rocsurvival.html#多指标roc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>首先也是看一下所需要的数据结构，其中futime和event是必须的，另外的几列是你想要用来画ROC曲线图的指标，可以自己添加，在这里我使用了riskScore, gender, TNM分期。
+在gender这一列，1是female，2是male，t,n,m这3列，数字代表不同的分期</p>
+<div class="sourceCode" id="cb435"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb435-1"><a href="1025-rocsurvival.html#cb435-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df2)</span>
+<span id="cb435-2"><a href="1025-rocsurvival.html#cb435-2" aria-hidden="true" tabindex="-1"></a><span class="do">## &#39;data.frame&#39;:    297 obs. of  8 variables:</span></span>
+<span id="cb435-3"><a href="1025-rocsurvival.html#cb435-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ event    : num  0 0 1 0 0 1 0 0 0 0 ...</span></span>
+<span id="cb435-4"><a href="1025-rocsurvival.html#cb435-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age      : int  59 63 65 73 59 66 56 42 61 48 ...</span></span>
+<span id="cb435-5"><a href="1025-rocsurvival.html#cb435-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ riskScore: num  -0.249 -0.511 -0.211 -0.427 0.279 ...</span></span>
+<span id="cb435-6"><a href="1025-rocsurvival.html#cb435-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ futime   : num  3.03 1.16 1.82 1.52 1.34 ...</span></span>
+<span id="cb435-7"><a href="1025-rocsurvival.html#cb435-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ gender   : num  2 2 2 1 2 2 1 2 2 2 ...</span></span>
+<span id="cb435-8"><a href="1025-rocsurvival.html#cb435-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ t        : num  4 4 4 3 3 3 5 3 NA 4 ...</span></span>
+<span id="cb435-9"><a href="1025-rocsurvival.html#cb435-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ n        : num  1 5 1 1 1 1 3 1 NA 1 ...</span></span>
+<span id="cb435-10"><a href="1025-rocsurvival.html#cb435-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ m        : num  1 1 1 1 1 3 1 1 3 3 ...</span></span></code></pre></div>
+<p>多指标的ROC曲线非常简单，就是构建多个ROC，依次添加即可：</p>
+<div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="1025-rocsurvival.html#cb436-1" aria-hidden="true" tabindex="-1"></a><span class="co"># riskScore的ROC曲线</span></span>
+<span id="cb436-2"><a href="1025-rocsurvival.html#cb436-2" aria-hidden="true" tabindex="-1"></a>ROC.risk <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,</span>
+<span id="cb436-3"><a href="1025-rocsurvival.html#cb436-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb436-4"><a href="1025-rocsurvival.html#cb436-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">marker=</span>df2<span class="sc">$</span>riskScore,   </span>
+<span id="cb436-5"><a href="1025-rocsurvival.html#cb436-5" aria-hidden="true" tabindex="-1"></a>                    <span class="at">cause=</span><span class="dv">1</span>,                </span>
+<span id="cb436-6"><a href="1025-rocsurvival.html#cb436-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb436-7"><a href="1025-rocsurvival.html#cb436-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">times=</span><span class="dv">3</span>,   </span>
+<span id="cb436-8"><a href="1025-rocsurvival.html#cb436-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb436-9"><a href="1025-rocsurvival.html#cb436-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-10"><a href="1025-rocsurvival.html#cb436-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-11"><a href="1025-rocsurvival.html#cb436-11" aria-hidden="true" tabindex="-1"></a><span class="co"># gender的ROC曲线</span></span>
+<span id="cb436-12"><a href="1025-rocsurvival.html#cb436-12" aria-hidden="true" tabindex="-1"></a>ROC.gender <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,   </span>
+<span id="cb436-13"><a href="1025-rocsurvival.html#cb436-13" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb436-14"><a href="1025-rocsurvival.html#cb436-14" aria-hidden="true" tabindex="-1"></a>                      <span class="at">marker=</span>df2<span class="sc">$</span>gender,   </span>
+<span id="cb436-15"><a href="1025-rocsurvival.html#cb436-15" aria-hidden="true" tabindex="-1"></a>                      <span class="at">cause=</span><span class="dv">1</span>,   </span>
+<span id="cb436-16"><a href="1025-rocsurvival.html#cb436-16" aria-hidden="true" tabindex="-1"></a>                      <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb436-17"><a href="1025-rocsurvival.html#cb436-17" aria-hidden="true" tabindex="-1"></a>                      <span class="at">times=</span><span class="dv">3</span>,   </span>
+<span id="cb436-18"><a href="1025-rocsurvival.html#cb436-18" aria-hidden="true" tabindex="-1"></a>                      <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb436-19"><a href="1025-rocsurvival.html#cb436-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-20"><a href="1025-rocsurvival.html#cb436-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-21"><a href="1025-rocsurvival.html#cb436-21" aria-hidden="true" tabindex="-1"></a><span class="co"># age的ROC曲线</span></span>
+<span id="cb436-22"><a href="1025-rocsurvival.html#cb436-22" aria-hidden="true" tabindex="-1"></a>ROC.age <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,   </span>
+<span id="cb436-23"><a href="1025-rocsurvival.html#cb436-23" aria-hidden="true" tabindex="-1"></a>                   <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb436-24"><a href="1025-rocsurvival.html#cb436-24" aria-hidden="true" tabindex="-1"></a>                   <span class="at">marker=</span>df2<span class="sc">$</span>age,   </span>
+<span id="cb436-25"><a href="1025-rocsurvival.html#cb436-25" aria-hidden="true" tabindex="-1"></a>                   <span class="at">cause=</span><span class="dv">1</span>,   </span>
+<span id="cb436-26"><a href="1025-rocsurvival.html#cb436-26" aria-hidden="true" tabindex="-1"></a>                   <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb436-27"><a href="1025-rocsurvival.html#cb436-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">times=</span><span class="dv">3</span>,   </span>
+<span id="cb436-28"><a href="1025-rocsurvival.html#cb436-28" aria-hidden="true" tabindex="-1"></a>                   <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb436-29"><a href="1025-rocsurvival.html#cb436-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-30"><a href="1025-rocsurvival.html#cb436-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-31"><a href="1025-rocsurvival.html#cb436-31" aria-hidden="true" tabindex="-1"></a><span class="co"># T分期的ROC曲线</span></span>
+<span id="cb436-32"><a href="1025-rocsurvival.html#cb436-32" aria-hidden="true" tabindex="-1"></a>ROC.T <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,</span>
+<span id="cb436-33"><a href="1025-rocsurvival.html#cb436-33" aria-hidden="true" tabindex="-1"></a>                 <span class="at">delta=</span>df2<span class="sc">$</span>event,  </span>
+<span id="cb436-34"><a href="1025-rocsurvival.html#cb436-34" aria-hidden="true" tabindex="-1"></a>                 <span class="at">marker=</span>df2<span class="sc">$</span>t,   </span>
+<span id="cb436-35"><a href="1025-rocsurvival.html#cb436-35" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cause=</span><span class="dv">1</span>, </span>
+<span id="cb436-36"><a href="1025-rocsurvival.html#cb436-36" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>, </span>
+<span id="cb436-37"><a href="1025-rocsurvival.html#cb436-37" aria-hidden="true" tabindex="-1"></a>                 <span class="at">times=</span><span class="dv">3</span>, </span>
+<span id="cb436-38"><a href="1025-rocsurvival.html#cb436-38" aria-hidden="true" tabindex="-1"></a>                 <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb436-39"><a href="1025-rocsurvival.html#cb436-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-40"><a href="1025-rocsurvival.html#cb436-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-41"><a href="1025-rocsurvival.html#cb436-41" aria-hidden="true" tabindex="-1"></a><span class="co"># N分期的ROC曲线</span></span>
+<span id="cb436-42"><a href="1025-rocsurvival.html#cb436-42" aria-hidden="true" tabindex="-1"></a>ROC.N <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,   </span>
+<span id="cb436-43"><a href="1025-rocsurvival.html#cb436-43" aria-hidden="true" tabindex="-1"></a>                 <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb436-44"><a href="1025-rocsurvival.html#cb436-44" aria-hidden="true" tabindex="-1"></a>                 <span class="at">marker=</span>df2<span class="sc">$</span>n,   </span>
+<span id="cb436-45"><a href="1025-rocsurvival.html#cb436-45" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cause=</span><span class="dv">1</span>,   </span>
+<span id="cb436-46"><a href="1025-rocsurvival.html#cb436-46" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb436-47"><a href="1025-rocsurvival.html#cb436-47" aria-hidden="true" tabindex="-1"></a>                 <span class="at">times=</span><span class="dv">3</span>,   </span>
+<span id="cb436-48"><a href="1025-rocsurvival.html#cb436-48" aria-hidden="true" tabindex="-1"></a>                 <span class="at">iid=</span><span class="cn">TRUE</span>)</span>
+<span id="cb436-49"><a href="1025-rocsurvival.html#cb436-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-50"><a href="1025-rocsurvival.html#cb436-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-51"><a href="1025-rocsurvival.html#cb436-51" aria-hidden="true" tabindex="-1"></a><span class="co"># M分期的ROC曲线</span></span>
+<span id="cb436-52"><a href="1025-rocsurvival.html#cb436-52" aria-hidden="true" tabindex="-1"></a>ROC.M <span class="ot">&lt;-</span> <span class="fu">timeROC</span>(<span class="at">T=</span>df2<span class="sc">$</span>futime,   </span>
+<span id="cb436-53"><a href="1025-rocsurvival.html#cb436-53" aria-hidden="true" tabindex="-1"></a>                 <span class="at">delta=</span>df2<span class="sc">$</span>event,   </span>
+<span id="cb436-54"><a href="1025-rocsurvival.html#cb436-54" aria-hidden="true" tabindex="-1"></a>                 <span class="at">marker=</span>df2<span class="sc">$</span>m,   </span>
+<span id="cb436-55"><a href="1025-rocsurvival.html#cb436-55" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cause=</span><span class="dv">1</span>,   </span>
+<span id="cb436-56"><a href="1025-rocsurvival.html#cb436-56" aria-hidden="true" tabindex="-1"></a>                 <span class="at">weighting=</span><span class="st">&quot;marginal&quot;</span>,   </span>
+<span id="cb436-57"><a href="1025-rocsurvival.html#cb436-57" aria-hidden="true" tabindex="-1"></a>                 <span class="at">times=</span><span class="dv">3</span>,   </span>
+<span id="cb436-58"><a href="1025-rocsurvival.html#cb436-58" aria-hidden="true" tabindex="-1"></a>                 <span class="at">iid=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>把每个曲线拼在一起即可，添加一个图例：</p>
+<div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb437-1"><a href="1025-rocsurvival.html#cb437-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC.risk, <span class="at">time =</span> <span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;#E41A1C&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">title =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb437-2"><a href="1025-rocsurvival.html#cb437-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC.gender, <span class="at">time =</span> <span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;#A65628&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">add =</span> T)</span>
+<span id="cb437-3"><a href="1025-rocsurvival.html#cb437-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC.age, <span class="at">time =</span> <span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;#4DAF4A&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">add =</span> T)</span>
+<span id="cb437-4"><a href="1025-rocsurvival.html#cb437-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC.T, <span class="at">time =</span> <span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;#377EB8&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">add =</span> T)</span>
+<span id="cb437-5"><a href="1025-rocsurvival.html#cb437-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC.N, <span class="at">time =</span> <span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;#984EA3&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">add =</span> T)</span>
+<span id="cb437-6"><a href="1025-rocsurvival.html#cb437-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ROC.M, <span class="at">time =</span> <span class="dv">3</span>, <span class="at">col=</span><span class="st">&quot;#FFFF33&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">add =</span> T)</span>
+<span id="cb437-7"><a href="1025-rocsurvival.html#cb437-7" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomright&quot;</span>,</span>
+<span id="cb437-8"><a href="1025-rocsurvival.html#cb437-8" aria-hidden="true" tabindex="-1"></a>       <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">&quot;Risk score: &quot;</span>,<span class="fu">round</span>(ROC.risk[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)), </span>
+<span id="cb437-9"><a href="1025-rocsurvival.html#cb437-9" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;gender: &quot;</span>,<span class="fu">round</span>(ROC.gender[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)), </span>
+<span id="cb437-10"><a href="1025-rocsurvival.html#cb437-10" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;age: &quot;</span>,<span class="fu">round</span>(ROC.age[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)),</span>
+<span id="cb437-11"><a href="1025-rocsurvival.html#cb437-11" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;T: &quot;</span>,<span class="fu">round</span>(ROC.T[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)),</span>
+<span id="cb437-12"><a href="1025-rocsurvival.html#cb437-12" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;N: &quot;</span>,<span class="fu">round</span>(ROC.N[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>)),</span>
+<span id="cb437-13"><a href="1025-rocsurvival.html#cb437-13" aria-hidden="true" tabindex="-1"></a>         <span class="fu">paste0</span>(<span class="st">&quot;M: &quot;</span>,<span class="fu">round</span>(ROC.M[[<span class="st">&quot;AUC&quot;</span>]][<span class="dv">2</span>],<span class="dv">2</span>))</span>
+<span id="cb437-14"><a href="1025-rocsurvival.html#cb437-14" aria-hidden="true" tabindex="-1"></a>         ),</span>
+<span id="cb437-15"><a href="1025-rocsurvival.html#cb437-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">col=</span><span class="fu">c</span>(<span class="st">&quot;#E41A1C&quot;</span>, <span class="st">&quot;#A65628&quot;</span>, <span class="st">&quot;#4DAF4A&quot;</span>,<span class="st">&quot;#377EB8&quot;</span>,<span class="st">&quot;#984EA3&quot;</span>,<span class="st">&quot;#FFFF33&quot;</span>),</span>
+<span id="cb437-16"><a href="1025-rocsurvival.html#cb437-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty=</span><span class="dv">1</span>, <span class="at">lwd=</span><span class="dv">2</span>,<span class="at">bty =</span> <span class="st">&quot;n&quot;</span>)  </span></code></pre></div>
+<p><img src="1025-rocsurvival_files/figure-html/unnamed-chunk-7-1.png" width="90%" /></p>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="1024-rocbinomial.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="1026-rocsurvsmooth.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>41 亚组分析1行代码实现 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="前面演示了如何使用purrr进行回归模型的亚组分析及森林图绘制，本来找了好久没找到可以实现这个功能的R包，都打算自己写个包了，没想到这几天找到了！ 完美实现COX回归和logistic回归的亚组分析，除此之外，还支持svyglm、svycoxph的结果，并且数据结果可直接用于绘制森林图，连NA和各种空行都给你准备好了！...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="41 亚组分析1行代码实现 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="前面演示了如何使用purrr进行回归模型的亚组分析及森林图绘制，本来找了好久没找到可以实现这个功能的R包，都打算自己写个包了，没想到这几天找到了！ 完美实现COX回归和logistic回归的亚组分析，除此之外，还支持svyglm、svycoxph的结果，并且数据结果可直接用于绘制森林图，连NA和各种空行都给你准备好了！...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="41 亚组分析1行代码实现 | R语言实战医学统计">
+<meta name="twitter:description" content="前面演示了如何使用purrr进行回归模型的亚组分析及森林图绘制，本来找了好久没找到可以实现这个功能的R包，都打算自己写个包了，没想到这几天找到了！ 完美实现COX回归和logistic回归的亚组分析，除此之外，还支持svyglm、svycoxph的结果，并且数据结果可直接用于绘制森林图，连NA和各种空行都给你准备好了！...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li><a class="active" href="subgrouponecode.html"><span class="header-section-number">41</span> 亚组分析1行代码实现</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装及其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="subgrouponecode" class="section level1" number="41">
+<h1>
+<span class="header-section-number">41</span> 亚组分析1行代码实现<a class="anchor" aria-label="anchor" href="#subgrouponecode"><i class="fas fa-link"></i></a>
+</h1>
+<p>前面演示了如何使用<code>purrr</code>进行回归模型的亚组分析及森林图绘制，本来找了好久没找到可以实现这个功能的R包，都打算自己写个包了，没想到这几天找到了！</p>
+<p>完美实现COX回归和logistic回归的亚组分析，除此之外，还支持<code>svyglm</code>、<code>svycoxph</code>的结果，并且数据结果可直接用于绘制森林图，连<code>NA</code>和各种空行都给你准备好了！</p>
+<p>包的名字叫<code>jstable</code>，直达网址：<a href="https://jinseob2kim.github.io/jstable/" class="uri">https://jinseob2kim.github.io/jstable/</a></p>
+<p>这个包除了亚组分析外，还有其他很多函数，大家自己探索即可，我这里就演示下如何进行亚组分析！</p>
+<div id="安装" class="section level2" number="41.1">
+<h2>
+<span class="header-section-number">41.1</span> 安装<a class="anchor" aria-label="anchor" href="#%E5%AE%89%E8%A3%85"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb691"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"jstable"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## From github: latest version</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jinseob2kim/jstable'</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jinseob2kim/jstable">jstable</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="准备数据-5" class="section level2" number="41.2">
+<h2>
+<span class="header-section-number">41.2</span> 准备数据<a class="anchor" aria-label="anchor" href="#%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE-5"><i class="fas fa-link"></i></a>
+</h2>
+<p>还是使用之前演示的数据。</p>
+<p>使用<code>survival</code>包中的<code>colon</code>数据集用于演示，这是一份关于结肠癌患者的生存数据，共有1858行，16列，共分为3个组，1个观察组+2个治疗组，观察他们发生终点事件的差异。</p>
+<p>各变量的解释如下：</p>
+<p>id：患者id
+study：没啥用，所有患者都是1
+rx：治疗方法，共3种，Obs(观察组), Lev(左旋咪唑), Lev+5FU(左旋咪唑+5-FU)
+sex：性别，1是男性
+age：年龄
+obstruct：肠梗阻，1是有
+perfor：肠穿孔，1是有
+adhere：和附近器官粘连，1是有
+nodes：转移的淋巴结数量
+status：生存状态，0代表删失，1代表发生终点事件
+differ：肿瘤分化程度，1-well,2-moderate,3-poor
+extent：局部扩散情况，1-submucosa，2-muscle，3-serosa，4-contiguous structures
+surg：手术后多久了，1-long,2-short
+node4：是否有超过4个阳性淋巴结，1代表是
+time：生存时间
+etype：终点事件类型，1-复发，2-死亡</p>
+<div class="sourceCode" id="cb692"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">colon</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    1858 obs. of  16 variables:</span></span>
+<span><span class="co">##  $ id      : num  1 1 2 2 3 3 4 4 5 5 ...</span></span>
+<span><span class="co">##  $ study   : num  1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ rx      : Factor w/ 3 levels "Obs","Lev","Lev+5FU": 3 3 3 3 1 1 3 3 1 1 ...</span></span>
+<span><span class="co">##  $ sex     : num  1 1 1 1 0 0 0 0 1 1 ...</span></span>
+<span><span class="co">##  $ age     : num  43 43 63 63 71 71 66 66 69 69 ...</span></span>
+<span><span class="co">##  $ obstruct: num  0 0 0 0 0 0 1 1 0 0 ...</span></span>
+<span><span class="co">##  $ perfor  : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ adhere  : num  0 0 0 0 1 1 0 0 0 0 ...</span></span>
+<span><span class="co">##  $ nodes   : num  5 5 1 1 7 7 6 6 22 22 ...</span></span>
+<span><span class="co">##  $ status  : num  1 1 0 0 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ differ  : num  2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ extent  : num  3 3 3 3 2 2 3 3 3 3 ...</span></span>
+<span><span class="co">##  $ surg    : num  0 0 0 0 0 0 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ node4   : num  1 1 0 0 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ time    : num  1521 968 3087 3087 963 ...</span></span>
+<span><span class="co">##  $ etype   : num  2 1 2 1 2 1 2 1 2 1 ...</span></span></code></pre></div>
+<p>可以使用cox回归探索危险因素。分类变量需要变为因子型，这样在进行回归时会自动进行哑变量设置。</p>
+<p>为了演示，我们只选择<code>Obs</code>组和<code>Lev+5FU</code>组的患者，所有的分类变量都变为factor，把年龄也变为分类变量并变成factor。</p>
+<div class="sourceCode" id="cb693"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## Warning: package 'ggplot2' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'tibble' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'dplyr' was built under R version 4.2.3</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">colon</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>rx<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">rx</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">etype</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">!</span><span class="va">rx</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  <span class="co">#rx %in% c("Obs","Lev+5FU"), </span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span>,<span class="va">rx</span>, <span class="va">sex</span>, <span class="va">age</span>,<span class="va">obstruct</span>,<span class="va">perfor</span>,<span class="va">adhere</span>,<span class="va">differ</span>,<span class="va">extent</span>,<span class="va">surg</span>,<span class="va">node4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>sex<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">sex</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"female"</span>,<span class="st">"male"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         age<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">age</span> <span class="op">&gt;</span><span class="fl">65</span>,<span class="st">"&gt;65"</span>,<span class="st">"&lt;=65"</span><span class="op">)</span>,</span>
+<span>         age<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">age</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"&gt;65"</span>,<span class="st">"&lt;=65"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         obstruct<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">obstruct</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"No"</span>,<span class="st">"Yes"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         perfor<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">perfor</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"No"</span>,<span class="st">"Yes"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         adhere<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">adhere</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"No"</span>,<span class="st">"Yes"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         differ<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">differ</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"well"</span>,<span class="st">"moderate"</span>,<span class="st">"poor"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         extent<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">extent</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span><span class="op">)</span>,</span>
+<span>                       labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"submucosa"</span>,<span class="st">"muscle"</span>,<span class="st">"serosa"</span>,<span class="st">"contiguous"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         surg<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">surg</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"short"</span>,<span class="st">"long"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         node4<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">node4</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"No"</span>,<span class="st">"Yes"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>         rx<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">rx</span><span class="op">==</span><span class="fl">3</span>,<span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>,</span>
+<span>         rx<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">rx</span>,levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>         <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    619 obs. of  12 variables:</span></span>
+<span><span class="co">##  $ time    : num  968 3087 542 245 523 ...</span></span>
+<span><span class="co">##  $ status  : num  1 0 1 1 1 1 0 0 0 1 ...</span></span>
+<span><span class="co">##  $ rx      : Factor w/ 2 levels "0","1": 1 1 2 1 2 1 2 1 1 2 ...</span></span>
+<span><span class="co">##  $ sex     : Factor w/ 2 levels "female","male": 2 2 1 1 2 1 2 1 2 2 ...</span></span>
+<span><span class="co">##  $ age     : Factor w/ 2 levels "&gt;65","&lt;=65": 2 2 1 1 1 2 2 1 2 2 ...</span></span>
+<span><span class="co">##  $ obstruct: Factor w/ 2 levels "No","Yes": 1 1 1 2 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ perfor  : Factor w/ 2 levels "No","Yes": 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ adhere  : Factor w/ 2 levels "No","Yes": 1 1 2 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ differ  : Factor w/ 3 levels "well","moderate",..: 2 2 2 2 2 2 2 2 3 2 ...</span></span>
+<span><span class="co">##  $ extent  : Factor w/ 4 levels "submucosa","muscle",..: 3 3 2 3 3 3 3 3 3 3 ...</span></span>
+<span><span class="co">##  $ surg    : Factor w/ 2 levels "short","long": 1 1 1 2 2 1 1 2 2 1 ...</span></span>
+<span><span class="co">##  $ node4   : Factor w/ 2 levels "No","Yes": 2 1 2 2 2 2 1 1 1 1 ...</span></span></code></pre></div>
+</div>
+<div id="亚组分析-1" class="section level2" number="41.3">
+<h2>
+<span class="header-section-number">41.3</span> 亚组分析<a class="anchor" aria-label="anchor" href="#%E4%BA%9A%E7%BB%84%E5%88%86%E6%9E%90-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<code>jstable</code>，只要1行代码即可！！！</p>
+<div class="sourceCode" id="cb694"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jinseob2kim/jstable">jstable</a></span><span class="op">)</span></span>
+<span><span class="co">## Warning: package 'jstable' was built under R version 4.2.3</span></span>
+<span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/jstable/man/TableSubgroupMultiCox.html">TableSubgroupMultiCox</a></span><span class="op">(</span></span>
+<span>  </span>
+<span>  <span class="co"># 指定公式</span></span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">rx</span>, </span>
+<span>  </span>
+<span>  <span class="co"># 指定哪些变量有亚组</span></span>
+<span>  var_subgroups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"sex"</span>,<span class="st">"age"</span>,<span class="st">"obstruct"</span>,<span class="st">"perfor"</span>,<span class="st">"adhere"</span>,</span>
+<span>                    <span class="st">"differ"</span>,<span class="st">"extent"</span>,<span class="st">"surg"</span>,<span class="st">"node4"</span><span class="op">)</span>, </span>
+<span>  data <span class="op">=</span> <span class="va">df</span> <span class="co">#指定你的数据</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">## Warning in coxph.fit(X, Y, istrat, offset, init, control, weights = weights, :</span></span>
+<span><span class="co">## Loglik converged before variable 1 ; coefficient may be infinite.</span></span>
+<span><span class="co">## Warning in coxph.fit(X, Y, istrat, offset, init, control, weights = weights, :</span></span>
+<span><span class="co">## Loglik converged before variable 1,5,6,7 ; coefficient may be infinite.</span></span>
+<span><span class="va">res</span></span>
+<span><span class="co">##                 Variable Count Percent Point Estimate Lower Upper    0    1</span></span>
+<span><span class="co">## rx1              Overall   619     100           1.67  1.32  2.11 34.4 48.9</span></span>
+<span><span class="co">## 1...1                sex  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## female            female   312    50.4           1.32  0.96   1.8 41.1 47.8</span></span>
+<span><span class="co">## male                male   307    49.6           2.29   1.6  3.26 26.6 50.1</span></span>
+<span><span class="co">## 1...4                age  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## &gt;65                  &gt;65   224    36.2           1.97  1.33  2.93 29.8 50.6</span></span>
+<span><span class="co">## &lt;=65                &lt;=65   395    63.8           1.52  1.14  2.03   37 48.1</span></span>
+<span><span class="co">## 1...7           obstruct  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...8                No   502    81.1           1.65  1.27  2.13 34.4 46.8</span></span>
+<span><span class="co">## Yes...9              Yes   117    18.9           1.73  1.01  2.95 34.2 57.6</span></span>
+<span><span class="co">## 1...10            perfor  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...11               No   602    97.3           1.64   1.3  2.08 34.3 48.1</span></span>
+<span><span class="co">## Yes...12             Yes    17     2.7           2.87  0.74 11.21 37.5 77.8</span></span>
+<span><span class="co">## 1...13            adhere  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...14               No   533    86.1           1.69  1.31  2.18 32.9 47.4</span></span>
+<span><span class="co">## Yes...15             Yes    86    13.9            1.5  0.84  2.67 44.4 57.9</span></span>
+<span><span class="co">## 1...16            differ  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## well                well    56     9.2           2.68  1.19  6.02 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## moderate        moderate   444    73.3           1.67  1.26  2.21 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## poor                poor   106    17.5           1.32   0.8  2.19 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## 1...20            extent  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## submucosa      submucosa    18     2.9              0     0   Inf &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## muscle            muscle    70    11.3           2.41  0.93  6.22 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## serosa            serosa   500    80.8           1.68  1.31  2.16 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## contiguous    contiguous    31       5           1.44  0.55  3.75 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## 1...25              surg  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## short              short   452      73           1.82  1.37   2.4 31.5 48.9</span></span>
+<span><span class="co">## long                long   167      27           1.31  0.86  1.99 43.2 49.1</span></span>
+<span><span class="co">## 1...28             node4  &lt;NA&gt;    &lt;NA&gt;           &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...29               No   453    73.2           1.85  1.37  2.49 27.7 41.5</span></span>
+<span><span class="co">## Yes...30             Yes   166    26.8           1.41  0.97  2.05 53.2 68.7</span></span>
+<span><span class="co">##            P value P for interaction</span></span>
+<span><span class="co">## rx1         &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...1         &lt;NA&gt;             0.029</span></span>
+<span><span class="co">## female       0.088              &lt;NA&gt;</span></span>
+<span><span class="co">## male        &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...4         &lt;NA&gt;             0.316</span></span>
+<span><span class="co">## &gt;65          0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## &lt;=65         0.004              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...7         &lt;NA&gt;             0.752</span></span>
+<span><span class="co">## No...8      &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...9      0.046              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...10        &lt;NA&gt;             0.442</span></span>
+<span><span class="co">## No...11     &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...12     0.129              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...13        &lt;NA&gt;             0.756</span></span>
+<span><span class="co">## No...14     &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...15     0.173              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...16        &lt;NA&gt;             0.402</span></span>
+<span><span class="co">## well         0.017              &lt;NA&gt;</span></span>
+<span><span class="co">## moderate    &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## poor         0.277              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...20        &lt;NA&gt;               0.1</span></span>
+<span><span class="co">## submucosa    0.999              &lt;NA&gt;</span></span>
+<span><span class="co">## muscle       0.069              &lt;NA&gt;</span></span>
+<span><span class="co">## serosa      &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## contiguous   0.459              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...25        &lt;NA&gt;             0.183</span></span>
+<span><span class="co">## short       &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## long         0.208              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...28        &lt;NA&gt;             0.338</span></span>
+<span><span class="co">## No...29     &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...30     0.074              &lt;NA&gt;</span></span></code></pre></div>
+<p>直接就得出了结果！除了亚组分析的各种结果，还给出了交互作用的P值！</p>
+</div>
+<div id="画森林图-1" class="section level2" number="41.4">
+<h2>
+<span class="header-section-number">41.4</span> 画森林图<a class="anchor" aria-label="anchor" href="#%E7%94%BB%E6%A3%AE%E6%9E%97%E5%9B%BE-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>这个结果不需要另存为csv也能直接使用（除非你是细节控，需要修改各种大小写等信息），当然如果你需要<code>HR(95%CI)</code>这种信息，还是需要自己添加一下的。</p>
+<p>我们添加个空列用于显示可信区间，并把不想显示的<code>NA</code>去掉即可，还需要把P值，可信区间这些列变为数值型。</p>
+<div class="sourceCode" id="cb695"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plot_df</span> <span class="op">&lt;-</span> <span class="va">res</span></span>
+<span><span class="va">plot_df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">9</span><span class="op">)</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">plot_df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">9</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">" "</span></span>
+<span><span class="va">plot_df</span><span class="op">$</span><span class="va">` `</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">" "</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">plot_df</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span>
+<span><span class="va">plot_df</span><span class="op">[</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">plot_df</span><span class="op">[</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>,<span class="fl">2</span>,<span class="va">as.numeric</span><span class="op">)</span></span>
+<span><span class="va">plot_df</span></span>
+<span><span class="co">##                 Variable Count Percent Point Estimate Lower Upper    0    1</span></span>
+<span><span class="co">## rx1              Overall   619     100           1.67  1.32  2.11 34.4 48.9</span></span>
+<span><span class="co">## 1...1                sex                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## female            female   312    50.4           1.32  0.96  1.80 41.1 47.8</span></span>
+<span><span class="co">## male                male   307    49.6           2.29  1.60  3.26 26.6 50.1</span></span>
+<span><span class="co">## 1...4                age                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## &gt;65                  &gt;65   224    36.2           1.97  1.33  2.93 29.8 50.6</span></span>
+<span><span class="co">## &lt;=65                &lt;=65   395    63.8           1.52  1.14  2.03   37 48.1</span></span>
+<span><span class="co">## 1...7           obstruct                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...8                No   502    81.1           1.65  1.27  2.13 34.4 46.8</span></span>
+<span><span class="co">## Yes...9              Yes   117    18.9           1.73  1.01  2.95 34.2 57.6</span></span>
+<span><span class="co">## 1...10            perfor                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...11               No   602    97.3           1.64  1.30  2.08 34.3 48.1</span></span>
+<span><span class="co">## Yes...12             Yes    17     2.7           2.87  0.74 11.21 37.5 77.8</span></span>
+<span><span class="co">## 1...13            adhere                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...14               No   533    86.1           1.69  1.31  2.18 32.9 47.4</span></span>
+<span><span class="co">## Yes...15             Yes    86    13.9           1.50  0.84  2.67 44.4 57.9</span></span>
+<span><span class="co">## 1...16            differ                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## well                well    56     9.2           2.68  1.19  6.02 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## moderate        moderate   444    73.3           1.67  1.26  2.21 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## poor                poor   106    17.5           1.32  0.80  2.19 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## 1...20            extent                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## submucosa      submucosa    18     2.9           0.00  0.00   Inf &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## muscle            muscle    70    11.3           2.41  0.93  6.22 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## serosa            serosa   500    80.8           1.68  1.31  2.16 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## contiguous    contiguous    31       5           1.44  0.55  3.75 &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## 1...25              surg                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## short              short   452      73           1.82  1.37  2.40 31.5 48.9</span></span>
+<span><span class="co">## long                long   167      27           1.31  0.86  1.99 43.2 49.1</span></span>
+<span><span class="co">## 1...28             node4                           NA    NA    NA &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">## No...29               No   453    73.2           1.85  1.37  2.49 27.7 41.5</span></span>
+<span><span class="co">## Yes...30             Yes   166    26.8           1.41  0.97  2.05 53.2 68.7</span></span>
+<span><span class="co">##            P value P for interaction</span></span>
+<span><span class="co">## rx1         &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...1                          0.029</span></span>
+<span><span class="co">## female       0.088              &lt;NA&gt;</span></span>
+<span><span class="co">## male        &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...4                          0.316</span></span>
+<span><span class="co">## &gt;65          0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## &lt;=65         0.004              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...7                          0.752</span></span>
+<span><span class="co">## No...8      &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...9      0.046              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...10                         0.442</span></span>
+<span><span class="co">## No...11     &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...12     0.129              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...13                         0.756</span></span>
+<span><span class="co">## No...14     &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...15     0.173              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...16                         0.402</span></span>
+<span><span class="co">## well         0.017              &lt;NA&gt;</span></span>
+<span><span class="co">## moderate    &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## poor         0.277              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...20                           0.1</span></span>
+<span><span class="co">## submucosa    0.999              &lt;NA&gt;</span></span>
+<span><span class="co">## muscle       0.069              &lt;NA&gt;</span></span>
+<span><span class="co">## serosa      &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## contiguous   0.459              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...25                         0.183</span></span>
+<span><span class="co">## short       &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## long         0.208              &lt;NA&gt;</span></span>
+<span><span class="co">## 1...28                         0.338</span></span>
+<span><span class="co">## No...29     &lt;0.001              &lt;NA&gt;</span></span>
+<span><span class="co">## Yes...30     0.074              &lt;NA&gt;</span></span>
+<span><span class="co">##                                                                         </span></span>
+<span><span class="co">## rx1                                                                     </span></span>
+<span><span class="co">## 1...1                                                                   </span></span>
+<span><span class="co">## female                                                                  </span></span>
+<span><span class="co">## male                                                                    </span></span>
+<span><span class="co">## 1...4                                                                   </span></span>
+<span><span class="co">## &gt;65                                                                     </span></span>
+<span><span class="co">## &lt;=65                                                                    </span></span>
+<span><span class="co">## 1...7                                                                   </span></span>
+<span><span class="co">## No...8                                                                  </span></span>
+<span><span class="co">## Yes...9                                                                 </span></span>
+<span><span class="co">## 1...10                                                                  </span></span>
+<span><span class="co">## No...11                                                                 </span></span>
+<span><span class="co">## Yes...12                                                                </span></span>
+<span><span class="co">## 1...13                                                                  </span></span>
+<span><span class="co">## No...14                                                                 </span></span>
+<span><span class="co">## Yes...15                                                                </span></span>
+<span><span class="co">## 1...16                                                                  </span></span>
+<span><span class="co">## well                                                                    </span></span>
+<span><span class="co">## moderate                                                                </span></span>
+<span><span class="co">## poor                                                                    </span></span>
+<span><span class="co">## 1...20                                                                  </span></span>
+<span><span class="co">## submucosa                                                               </span></span>
+<span><span class="co">## muscle                                                                  </span></span>
+<span><span class="co">## serosa                                                                  </span></span>
+<span><span class="co">## contiguous                                                              </span></span>
+<span><span class="co">## 1...25                                                                  </span></span>
+<span><span class="co">## short                                                                   </span></span>
+<span><span class="co">## long                                                                    </span></span>
+<span><span class="co">## 1...28                                                                  </span></span>
+<span><span class="co">## No...29                                                                 </span></span>
+<span><span class="co">## Yes...30</span></span></code></pre></div>
+<p>画图就非常简单！</p>
+<div class="sourceCode" id="cb696"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/adayim/forestploter">forestploter</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">grid</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/forestploter/man/forest.html">forest</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">plot_df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">11</span>,<span class="fl">9</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  lower <span class="op">=</span> <span class="va">plot_df</span><span class="op">$</span><span class="va">Lower</span>,</span>
+<span>  upper <span class="op">=</span> <span class="va">plot_df</span><span class="op">$</span><span class="va">Upper</span>,</span>
+<span>  est <span class="op">=</span> <span class="va">plot_df</span><span class="op">$</span><span class="va">`Point Estimate`</span>,</span>
+<span>  ci_column <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  <span class="co">#sizes = (plot_df$estimate+0.001)*0.3, </span></span>
+<span>  ref_line <span class="op">=</span> <span class="fl">1</span>, </span>
+<span>  xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">4</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
+<p>这样就搞定了，真的是非常简单了，省去了大量的步骤。</p>
+
+</div>
+</div>
+
+
+
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></div>
+<div class="next"><a href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装及其他合集</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#subgrouponecode"><span class="header-section-number">41</span> 亚组分析1行代码实现</a></li>
+<li><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="header-section-number">41.1</span> 安装</a></li>
+<li><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE-5"><span class="header-section-number">41.2</span> 准备数据</a></li>
+<li><a class="nav-link" href="#%E4%BA%9A%E7%BB%84%E5%88%86%E6%9E%90-1"><span class="header-section-number">41.3</span> 亚组分析</a></li>
+<li><a class="nav-link" href="#%E7%94%BB%E6%A3%AE%E6%9E%97%E5%9B%BE-1"><span class="header-section-number">41.4</span> 画森林图</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1041-subgrouponecode.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1041-subgrouponecode.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

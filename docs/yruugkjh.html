@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>8 球对称检验 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="8.1 球对称检验 如何使用R语言进行球形检验？ 球形检验是非常重要的内容，在进行重复测量方差分析之前，都应该先进行球形假设检验！ R语言作为专为统计而生的语言，球形检验的函数就内置在stats包中，就是mauchly.test()，但是用法却和其他常见统计检验函数很不一样。 下面我将会为大家讲解如何使用R语言进行球形检验！  8.1.1 使用课本表12-3的数据 这是一个只有1组的！...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="8 球对称检验 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="8.1 球对称检验 如何使用R语言进行球形检验？ 球形检验是非常重要的内容，在进行重复测量方差分析之前，都应该先进行球形假设检验！ R语言作为专为统计而生的语言，球形检验的函数就内置在stats包中，就是mauchly.test()，但是用法却和其他常见统计检验函数很不一样。 下面我将会为大家讲解如何使用R语言进行球形检验！  8.1.1 使用课本表12-3的数据 这是一个只有1组的！...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="8 球对称检验 | R语言实战医学统计">
+<meta name="twitter:description" content="8.1 球对称检验 如何使用R语言进行球形检验？ 球形检验是非常重要的内容，在进行重复测量方差分析之前，都应该先进行球形假设检验！ R语言作为专为统计而生的语言，球形检验的函数就内置在stats包中，就是mauchly.test()，但是用法却和其他常见统计检验函数很不一样。 下面我将会为大家讲解如何使用R语言进行球形检验！  8.1.1 使用课本表12-3的数据 这是一个只有1组的！...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="active" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="yruugkjh" class="section level1" number="8">
+<h1>
+<span class="header-section-number">8</span> 球对称检验<a class="anchor" aria-label="anchor" href="#yruugkjh"><i class="fas fa-link"></i></a>
+</h1>
+<div id="球对称检验" class="section level2" number="8.1">
+<h2>
+<span class="header-section-number">8.1</span> 球对称检验<a class="anchor" aria-label="anchor" href="#%E7%90%83%E5%AF%B9%E7%A7%B0%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p><strong>如何使用R语言进行球形检验？</strong></p>
+<p>球形检验是非常重要的内容，在进行重复测量方差分析之前，都应该先进行球形假设检验！</p>
+<p>R语言作为专为统计而生的语言，球形检验的函数就内置在<code>stats</code>包中，就是<code><a href="https://rdrr.io/r/stats/mauchly.test.html">mauchly.test()</a></code>，但是用法却和其他常见统计检验函数很不一样。</p>
+<p>下面我将会为大家讲解如何使用R语言进行球形检验！</p>
+<div id="使用课本表12-3的数据" class="section level3" number="8.1.1">
+<h3>
+<span class="header-section-number">8.1.1</span> 使用课本<strong>表12-3</strong>的数据<a class="anchor" aria-label="anchor" href="#%E4%BD%BF%E7%94%A8%E8%AF%BE%E6%9C%AC%E8%A1%A812-3%E7%9A%84%E6%95%B0%E6%8D%AE"><i class="fas fa-link"></i></a>
+</h3>
+<p>这是一个只有1组的！</p>
+<p>读取数据：</p>
+<div class="sourceCode" id="cb144"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/表12-3重复测量ANOVA.sav"</span>,</span>
+<span>                         to.data.frame <span class="op">=</span> <span class="cn">T</span>, reencode <span class="op">=</span> <span class="st">"utf-8"</span><span class="op">)</span></span>
+<span><span class="co">## re-encoding from utf-8</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    8 obs. of  4 variables:</span></span>
+<span><span class="co">##  $ t0  : num  5.32 5.32 5.94 5.49 5.71 6.27 5.88 5.32</span></span>
+<span><span class="co">##  $ t45 : num  5.32 5.26 5.88 5.43 5.49 6.27 5.77 5.15</span></span>
+<span><span class="co">##  $ t90 : num  4.98 4.93 5.43 5.32 5.43 5.66 5.43 5.04</span></span>
+<span><span class="co">##  $ t135: num  4.65 4.7 5.04 5.04 4.93 5.26 4.93 4.48</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr(0) </span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr(0) </span></span>
+<span><span class="co">##  - attr(*, "codepage")= int 936</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##     t0  t45  t90 t135</span></span>
+<span><span class="co">## 1 5.32 5.32 4.98 4.65</span></span>
+<span><span class="co">## 2 5.32 5.26 4.93 4.70</span></span>
+<span><span class="co">## 3 5.94 5.88 5.43 5.04</span></span>
+<span><span class="co">## 4 5.49 5.43 5.32 5.04</span></span>
+<span><span class="co">## 5 5.71 5.49 5.43 4.93</span></span>
+<span><span class="co">## 6 6.27 6.27 5.66 5.26</span></span></code></pre></div>
+<p>数据一共4列，就是4个时间点的血糖值。</p>
+<p>首先将数据变为矩阵：</p>
+<div class="sourceCode" id="cb145"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<p>然后进行球对称检验（球形检验）：</p>
+<div class="sourceCode" id="cb146"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/mauchly.test.html">mauchly.test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">df</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span>, X <span class="op">=</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Mauchly's test of sphericity</span></span>
+<span><span class="co">##  Contrasts orthogonal to</span></span>
+<span><span class="co">##  ~1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  SSD matrix from lm(formula = df ~ 1)</span></span>
+<span><span class="co">## W = 0.06273, p-value = 0.008207</span></span></code></pre></div>
+<p>结果就有了，就是这么简单直接，网上很多资料都是直接复制粘贴帮助文档里的内容，非常费脑子！</p>
+</div>
+<div id="使用课本例12-3的数据" class="section level3" number="8.1.2">
+<h3>
+<span class="header-section-number">8.1.2</span> 使用课本<strong>例12-3</strong>的数据<a class="anchor" aria-label="anchor" href="#%E4%BD%BF%E7%94%A8%E8%AF%BE%E6%9C%AC%E4%BE%8B12-3%E7%9A%84%E6%95%B0%E6%8D%AE"><i class="fas fa-link"></i></a>
+</h3>
+<p>这个数据有2组！</p>
+<p>直接读取：</p>
+<div class="sourceCode" id="cb147"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/例12-03.sav"</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    15 obs. of  7 variables:</span></span>
+<span><span class="co">##  $ No   : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 3 levels "A","B","C": 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ t0   : num  120 118 119 121 127 121 122 128 117 118 ...</span></span>
+<span><span class="co">##  $ t1   : num  108 109 112 112 121 120 121 129 115 114 ...</span></span>
+<span><span class="co">##  $ t2   : num  112 115 119 119 127 118 119 126 111 116 ...</span></span>
+<span><span class="co">##  $ t3   : num  120 126 124 126 133 131 129 135 123 123 ...</span></span>
+<span><span class="co">##  $ t4   : num  117 123 118 120 126 137 133 142 131 133 ...</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr [1:7] "\xd0\xf2\xba\xc5" "\xd7\xe9\xb1\xf0" "" "" ...</span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr [1:7] "No" "group" "t0" "t1" ...</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span>
+<span><span class="co">##   No group  t0  t1  t2  t3  t4</span></span>
+<span><span class="co">## 1  1     A 120 108 112 120 117</span></span>
+<span><span class="co">## 2  2     A 118 109 115 126 123</span></span>
+<span><span class="co">## 3  3     A 119 112 119 124 118</span></span>
+<span><span class="co">## 4  4     A 121 112 119 126 120</span></span>
+<span><span class="co">## 5  5     A 127 121 127 133 126</span></span>
+<span><span class="co">## 6  6     B 121 120 118 131 137</span></span></code></pre></div>
+<p>数据一共7列，第1列是患者编号，第2列是诱导方法（3种），第3-7列是5个时间点的血压。</p>
+<p>首先将数据变为矩阵，转换数据格式：</p>
+<div class="sourceCode" id="cb148"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">df1</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span>, <span class="va">df1</span><span class="op">[</span><span class="fl">6</span><span class="op">:</span><span class="fl">10</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span>, <span class="va">df1</span><span class="op">[</span><span class="fl">11</span><span class="op">:</span><span class="fl">15</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>把测量点和分组单独建立，注意要和上面的顺序一致：</p>
+<div class="sourceCode" id="cb149"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">times</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">ordered</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">group</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span>,<span class="st">"C"</span><span class="op">)</span>,each <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>然后进行球对称检验（球形检验）：</p>
+<div class="sourceCode" id="cb150"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/mauchly.test.html">mauchly.test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">df2</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span>, M <span class="op">=</span> <span class="op">~</span> <span class="va">group</span> <span class="op">+</span> <span class="va">times</span>, X <span class="op">=</span> <span class="op">~</span> <span class="va">times</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Mauchly's test of sphericity</span></span>
+<span><span class="co">##  Contrasts orthogonal to</span></span>
+<span><span class="co">##  ~times</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Contrasts spanned by</span></span>
+<span><span class="co">##  ~group + times</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  SSD matrix from lm(formula = df2 ~ 1)</span></span>
+<span><span class="co">## W = 0.427, p-value = 0.279</span></span></code></pre></div>
+<p>真的是有点费事儿！</p>
+<p>后面会介绍一种更为简单的方法，在进行重复测量方差分析时会自动进行球形检验！</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></div>
+<div class="next"><a href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#yruugkjh"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li>
+<a class="nav-link" href="#%E7%90%83%E5%AF%B9%E7%A7%B0%E6%A3%80%E9%AA%8C"><span class="header-section-number">8.1</span> 球对称检验</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AF%BE%E6%9C%AC%E8%A1%A812-3%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="header-section-number">8.1.1</span> 使用课本表12-3的数据</a></li>
+<li><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AF%BE%E6%9C%AC%E4%BE%8B12-3%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="header-section-number">8.1.2</span> 使用课本例12-3的数据</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1008-mauchlytest.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1008-mauchlytest.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

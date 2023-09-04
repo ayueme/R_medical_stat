@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>36 R语言倾向性评分：回归和分层 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="倾向性评分有4种应用，前面介绍了倾向性评分匹配及matchIt和cobalt包的使用。 今天说一下倾向性评分回归和分层。使用了一个不是很成功的案例，并使用了大量purrr风格的代码实现。  36.1 演示数据 下面这个例子探讨不同学校对学生成绩的影响，这个数据一共有11078行，23列，我们只用其中一部分数据演示倾向性评分回归和分层。 我们用到以下几个变量：...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="倾向性评分有4种应用，前面介绍了倾向性评分匹配及matchIt和cobalt包的使用。 今天说一下倾向性评分回归和分层。使用了一个不是很成功的案例，并使用了大量purrr风格的代码实现。  36.1 演示数据 下面这个例子探讨不同学校对学生成绩的影响，这个数据一共有11078行，23列，我们只用其中一部分数据演示倾向性评分回归和分层。 我们用到以下几个变量：...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="36 R语言倾向性评分：回归和分层 | R语言实战医学统计">
+<meta name="twitter:description" content="倾向性评分有4种应用，前面介绍了倾向性评分匹配及matchIt和cobalt包的使用。 今天说一下倾向性评分回归和分层。使用了一个不是很成功的案例，并使用了大量purrr风格的代码实现。  36.1 演示数据 下面这个例子探讨不同学校对学生成绩的影响，这个数据一共有11078行，23列，我们只用其中一部分数据演示倾向性评分回归和分层。 我们用到以下几个变量：...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="active" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="yxkskjhfk" class="section level1" number="36">
+<h1>
+<span class="header-section-number">36</span> R语言倾向性评分：回归和分层<a class="anchor" aria-label="anchor" href="#yxkskjhfk"><i class="fas fa-link"></i></a>
+</h1>
+<p>倾向性评分有4种应用，前面介绍了倾向性评分匹配及<code>matchIt</code>和<code>cobalt</code>包的使用。</p>
+<p>今天说一下倾向性评分回归和分层。使用了一个不是很成功的案例，并使用了大量<code>purrr</code>风格的代码实现。</p>
+<div id="演示数据-3" class="section level2" number="36.1">
+<h2>
+<span class="header-section-number">36.1</span> 演示数据<a class="anchor" aria-label="anchor" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-3"><i class="fas fa-link"></i></a>
+</h2>
+<p>下面这个例子探讨<strong>不同学校对学生成绩的影响</strong>，这个数据一共有11078行，23列，我们只用其中一部分数据演示<strong>倾向性评分回归和分层</strong>。</p>
+<p>我们用到以下几个变量：</p>
+<ul>
+<li>
+<code>catholic</code>：是我们的处理因素，1是天主教（catholic）学校，0是公立（public）学校，</li>
+<li>
+<code>c5r2mtsc_std</code>：结果变量（因变量），标准化之后的学生成绩，</li>
+<li>
+<code>race_white</code>：是否是白人，1是0否，</li>
+<li>
+<code>w3momed_hsb</code>：妈妈的教育水平，1高中及以下，0大学及以上，</li>
+<li>
+<code>p5hmage</code>：妈妈的年龄，要控制的混杂因素，</li>
+<li>
+<code>w3momscr</code>：妈妈的成绩，</li>
+<li>
+<code>w3dadscr</code>：爸爸的成绩。</li>
+</ul>
+<p>首先加载数据，已上传到QQ群，需要的加群下载即可。</p>
+<div class="sourceCode" id="cb614"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ecls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"datasets/ecls.csv"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">c5r2mtsc_std</span>,<span class="va">catholic</span>,<span class="va">race_white</span>,<span class="va">w3momed_hsb</span>,<span class="va">p5hmage</span>,</span>
+<span>                <span class="va">w3momscr</span>,<span class="va">w3dadscr</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">ecls</span><span class="op">)</span></span>
+<span><span class="co">## [1] 5548    7</span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">ecls</span><span class="op">)</span></span>
+<span><span class="co">## Rows: 5,548</span></span>
+<span><span class="co">## Columns: 7</span></span>
+<span><span class="co">## $ c5r2mtsc_std &lt;dbl&gt; 0.98175332, 0.59437751, 0.49061062, 1.45127793, 2.5956991…</span></span>
+<span><span class="co">## $ catholic     &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">## $ race_white   &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, …</span></span>
+<span><span class="co">## $ w3momed_hsb  &lt;int&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, …</span></span>
+<span><span class="co">## $ p5hmage      &lt;int&gt; 47, 41, 43, 38, 47, 41, 31, 38, 26, 38, 27, 40, 33, 36, 4…</span></span>
+<span><span class="co">## $ w3momscr     &lt;dbl&gt; 53.50, 34.95, 63.43, 53.50, 61.56, 38.18, 34.95, 63.43, 3…</span></span>
+<span><span class="co">## $ w3dadscr     &lt;dbl&gt; 77.50, 53.50, 53.50, 53.50, 77.50, 53.50, 29.60, 33.42, 2…</span></span></code></pre></div>
+</div>
+<div id="原始数据的概况" class="section level2" number="36.2">
+<h2>
+<span class="header-section-number">36.2</span> 原始数据的概况<a class="anchor" aria-label="anchor" href="#%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E6%A6%82%E5%86%B5"><i class="fas fa-link"></i></a>
+</h2>
+<p>首先看一下原始数据的情况。</p>
+<div class="sourceCode" id="cb615"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">catholic</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>n_students <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>            mean_math <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">c5r2mtsc_std</span><span class="op">)</span>,</span>
+<span>            std_error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">c5r2mtsc_std</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">n_students</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 2 × 4</span></span>
+<span><span class="co">##   catholic n_students mean_math std_error</span></span>
+<span><span class="co">##      &lt;int&gt;      &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">## 1        0       4597     0.156    0.0144</span></span>
+<span><span class="co">## 2        1        951     0.221    0.0277</span></span></code></pre></div>
+<p>可以看到去公立学校的4597人，去天主教学校的才951人，并且去天主教的学校的学生成绩明显高于去公立学校的学生。</p>
+<p>此时如果不控制混杂因素直接进行t检验，结果是有统计学意义的，但是由于基线资料不可比，一开始两组学生的各种情况就不一样，所以结果很难说明成绩不同到底是不同学校导致的还是混杂因素导致的。</p>
+<div class="sourceCode" id="cb616"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">ecls</span>, <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">c5r2mtsc_std</span> <span class="op">~</span> <span class="va">catholic</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Welch Two Sample t-test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  c5r2mtsc_std by catholic</span></span>
+<span><span class="co">## t = -2.0757, df = 1508.1, p-value = 0.03809</span></span>
+<span><span class="co">## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  -0.126029105 -0.003564746</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## mean in group 0 mean in group 1 </span></span>
+<span><span class="co">##       0.1562757       0.2210727</span></span></code></pre></div>
+<p>我们可以看看不同组别间混杂因素的差异，首先是3个连续型变量在两组间的平均值，可以看到都是不一样的：</p>
+<div class="sourceCode" id="cb617"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">catholic</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">p5hmage</span>, <span class="va">w3momscr</span>, <span class="va">w3dadscr</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise_all.html">summarise_all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.</span>, na.rm <span class="op">=</span> <span class="cn">T</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## Adding missing grouping variables: `catholic`</span></span>
+<span><span class="co">## # A tibble: 2 × 4</span></span>
+<span><span class="co">##   catholic p5hmage w3momscr w3dadscr</span></span>
+<span><span class="co">##      &lt;int&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">## 1        0    37.8     43.8     42.6</span></span>
+<span><span class="co">## 2        1    39.8     47.5     45.8</span></span></code></pre></div>
+<p>可以看到不同组别间混杂因素明显是不同的，还可以分别对3个连续型变量做t检验，结果也显示这些混杂因素在一开始就是存在差异的。</p>
+<div class="sourceCode" id="cb618"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">p5hmage</span>,<span class="va">w3momscr</span>,<span class="va">w3dadscr</span><span class="op">)</span>,</span>
+<span>               names_to <span class="op">=</span> <span class="st">"covs"</span>,</span>
+<span>               values_to <span class="op">=</span> <span class="st">"values"</span></span>
+<span>               <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_split.html">group_split</a></span><span class="op">(</span><span class="va">covs</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">values</span> <span class="op">~</span> <span class="va">catholic</span>, data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dbl</a></span><span class="op">(</span><span class="st">"p.value"</span><span class="op">)</span></span>
+<span><span class="co">## [1] 1.062659e-28 3.722314e-16 2.208513e-18</span></span></code></pre></div>
+<p>对于两个分类变量，我们可以看看分别在两组间的数量构成比有没有差异。</p>
+<div class="sourceCode" id="cb619"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="op">~</span><span class="va">race_white</span><span class="op">+</span><span class="va">catholic</span>,data <span class="op">=</span> <span class="va">ecls</span><span class="op">)</span></span>
+<span><span class="va">tab</span></span>
+<span><span class="co">##           catholic</span></span>
+<span><span class="co">## race_white    0    1</span></span>
+<span><span class="co">##          0 1610  222</span></span>
+<span><span class="co">##          1 2987  729</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">tab</span>,correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  tab</span></span>
+<span><span class="co">## X-squared = 48.596, df = 1, p-value = 3.145e-12</span></span></code></pre></div>
+<div class="sourceCode" id="cb620"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="op">~</span><span class="va">w3momed_hsb</span><span class="op">+</span><span class="va">catholic</span>,data <span class="op">=</span> <span class="va">ecls</span><span class="op">)</span></span>
+<span><span class="va">tab</span></span>
+<span><span class="co">##            catholic</span></span>
+<span><span class="co">## w3momed_hsb    0    1</span></span>
+<span><span class="co">##           0 2777  751</span></span>
+<span><span class="co">##           1 1820  200</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">tab</span>,correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  tab</span></span>
+<span><span class="co">## X-squared = 117.24, df = 1, p-value &lt; 2.2e-16</span></span></code></pre></div>
+<p>可以看到两个分类变量在两组间的差异是非常明显的！</p>
+<p>所以我们现在要做的事就是控制混杂因素，让这些混杂因素变成可比的状态，不要影响我们的处理因素。</p>
+<p>开头也说过，控制混杂因素的方法其实是很多的，比如分层、协方差分析、多因素分析等，每种情况都要具体分析，选择一种最合适的。</p>
+<p>下面我们介绍倾向性评分回归和分层。</p>
+</div>
+<div id="计算倾向性评分" class="section level2" number="36.3">
+<h2>
+<span class="header-section-number">36.3</span> 计算倾向性评分<a class="anchor" aria-label="anchor" href="#%E8%AE%A1%E7%AE%97%E5%80%BE%E5%90%91%E6%80%A7%E8%AF%84%E5%88%86"><i class="fas fa-link"></i></a>
+</h2>
+<p>倾向性评分就是倾向干预的概率，所以可以通过逻辑回归计算P值，这个P值就是倾向性评分，所以也不一定要用到专用的R包！</p>
+<p>首先以处理因素（这里是<code>catholic</code>）为因变量，混杂因素为自变量构建逻辑回归模型：</p>
+<div class="sourceCode" id="cb621"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">m_ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">catholic</span> <span class="op">~</span> <span class="va">race_white</span><span class="op">+</span><span class="va">w3momed_hsb</span><span class="op">+</span><span class="va">p5hmage</span><span class="op">+</span><span class="va">w3momscr</span><span class="op">+</span><span class="va">w3dadscr</span>,</span>
+<span>            family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">ecls</span><span class="op">)</span></span></code></pre></div>
+<p>提取P值，也就是倾向性评分：</p>
+<div class="sourceCode" id="cb622"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prs_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>pr_score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">m_ps</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span>,</span>
+<span>                     catholic <span class="op">=</span> <span class="va">m_ps</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">catholic</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">prs_df</span><span class="op">)</span></span>
+<span><span class="co">##    pr_score catholic</span></span>
+<span><span class="co">## 1 0.3755223        0</span></span>
+<span><span class="co">## 2 0.2340976        0</span></span>
+<span><span class="co">## 4 0.2990706        0</span></span>
+<span><span class="co">## 5 0.2394663        1</span></span>
+<span><span class="co">## 6 0.3920115        0</span></span>
+<span><span class="co">## 8 0.2391453        0</span></span></code></pre></div>
+<p>可以看一下不同处理因素间的P值（倾向性评分）分布：</p>
+<div class="sourceCode" id="cb623"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">labs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Actual school type attended:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Catholic"</span>, <span class="st">"Public"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">prs_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>catholic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">catholic</span> <span class="op">==</span> <span class="fl">1</span>, <span class="va">labs</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">labs</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pr_score</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">catholic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Probability of going to Catholic school"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</span></span></code></pre></div>
+<div class="inline-figure"><img src="1036-pssc_files/figure-html/unnamed-chunk-10-1.png" width="90%"></div>
+<p>计算倾向性评分只是第一步，有了这个倾向性评分后，就可以进行下面的分析了，比如回归、匹配、加权、分层等。</p>
+<p>可以看出我们这个PS是偏态的，其实是可以<strong>对PS做一些变换的，比如log</strong>，然后使用变换后的PS继续进行后面的分析。这里就不做变换了。</p>
+</div>
+<div id="倾向性评分回归" class="section level2" number="36.4">
+<h2>
+<span class="header-section-number">36.4</span> 倾向性评分回归<a class="anchor" aria-label="anchor" href="#%E5%80%BE%E5%90%91%E6%80%A7%E8%AF%84%E5%88%86%E5%9B%9E%E5%BD%92"><i class="fas fa-link"></i></a>
+</h2>
+<p>此时如果直接把这个评分和<code>catholic</code>作为自变量进行回归分析，就是倾向性评分回归了（也叫协变量调整/倾向性评分矫正等）！应该是倾向性评分4种方法里面最简单的一种了。</p>
+<div class="sourceCode" id="cb624"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 计算倾向性评分</span></span>
+<span><span class="va">pr_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">m_ps</span>, type <span class="op">=</span> <span class="st">"response"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 把倾向性评分加入到原数据中</span></span>
+<span><span class="va">ecls_ps</span> <span class="op">&lt;-</span> <span class="va">ecls</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>ps <span class="op">=</span> <span class="va">pr_score</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 把处理因素和倾向性评分作为自变量进行回归</span></span>
+<span><span class="va">psl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">c5r2mtsc_std</span> <span class="op">~</span> <span class="va">catholic</span> <span class="op">+</span> <span class="va">ps</span>, data <span class="op">=</span> <span class="va">ecls_ps</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">psl</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = c5r2mtsc_std ~ catholic + ps, data = ecls_ps)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">## -4.0525 -0.5741  0.0462  0.6106  3.1468 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept) -0.58249    0.02929 -19.885  &lt; 2e-16 ***</span></span>
+<span><span class="co">## catholic    -0.10772    0.03241  -3.324 0.000893 ***</span></span>
+<span><span class="co">## ps           4.48236    0.15873  28.239  &lt; 2e-16 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 0.8934 on 5545 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1263, Adjusted R-squared:  0.126 </span></span>
+<span><span class="co">## F-statistic: 400.8 on 2 and 5545 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>结果表明处理因素(分组变量)还是有意义的！</p>
+</div>
+<div id="倾向性评分分层" class="section level2" number="36.5">
+<h2>
+<span class="header-section-number">36.5</span> 倾向性评分分层<a class="anchor" aria-label="anchor" href="#%E5%80%BE%E5%90%91%E6%80%A7%E8%AF%84%E5%88%86%E5%88%86%E5%B1%82"><i class="fas fa-link"></i></a>
+</h2>
+<p>顾名思义，根据PS值进行分层，然后在每层内进行分析。每一层的协变量分布可认为是同质或均衡的。先对每一层干预与结局之间的关联进行估算，然后对所有层的关联作加权平均，最后得出干预与结局之间的总的关联效应。</p>
+<p>一般来说最好保证干预组和对照组两组的PS范围在差不多的范围内，如果相差很大，那分层效果肯定不好。比如干预组PS范围是0.5<sub>0.9，对照组PS范围是0.01</sub>0.4，这样两组PS完全没有交集，按照PS进行分层没啥意义。</p>
+<p>首先看一下PS的范围：</p>
+<div class="sourceCode" id="cb625"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls_ps</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">catholic</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## `summarise()` has grouped output by 'catholic'. You can override using the</span></span>
+<span><span class="co">## `.groups` argument.</span></span>
+<span><span class="co">## # A tibble: 4 × 2</span></span>
+<span><span class="co">## # Groups:   catholic [2]</span></span>
+<span><span class="co">##   catholic  range</span></span>
+<span><span class="co">##      &lt;int&gt;  &lt;dbl&gt;</span></span>
+<span><span class="co">## 1        0 0.0370</span></span>
+<span><span class="co">## 2        0 0.477 </span></span>
+<span><span class="co">## 3        1 0.0492</span></span>
+<span><span class="co">## 4        1 0.404</span></span></code></pre></div>
+<p>两组分别是0.037<sub>0.477和0.049</sub>0.404，范围基本一致，所以我们就直接按照总体PS的最大值和最小值进行分层，如果两组PS差很多，可以按照两组PS的交集进行分层。</p>
+<p>文献一般建议分5-10层，可以根据PS进行平分，也可以按照百分位数进行分层，具体方法很多，大家自己看文献即可。</p>
+<p>我们这里简单点，结合上面PS的分布图，分4层，切点就用0.1,0.2,0.3。</p>
+<div class="sourceCode" id="cb626"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls_pslevel</span> <span class="op">&lt;-</span> <span class="va">ecls_ps</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>ps_level <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span><span class="va">ps</span><span class="op">&lt;=</span><span class="fl">0.1</span> <span class="op">~</span> <span class="st">"level_1"</span>,</span>
+<span>                              <span class="va">ps</span><span class="op">&gt;</span><span class="fl">0.1</span> <span class="op">&amp;</span> <span class="va">ps</span><span class="op">&lt;=</span><span class="fl">0.2</span> <span class="op">~</span> <span class="st">"level_2"</span>,</span>
+<span>                              <span class="va">ps</span><span class="op">&gt;</span><span class="fl">0.2</span> <span class="op">&amp;</span> <span class="va">ps</span><span class="op">&lt;=</span><span class="fl">0.3</span> <span class="op">~</span> <span class="st">"level_3"</span>,</span>
+<span>                              <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">"level_4"</span></span>
+<span>                              <span class="op">)</span>,</span>
+<span>         <span class="co">#ps_level = factor(ps_level),</span></span>
+<span>         p5hmage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html">as.double</a></span><span class="op">(</span><span class="va">p5hmage</span><span class="op">)</span>,</span>
+<span>         <span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html">where</a></span><span class="op">(</span><span class="va">is.integer</span><span class="op">)</span>, <span class="va">as.factor</span><span class="op">)</span></span>
+<span>         <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">ecls_pslevel</span><span class="op">)</span></span>
+<span><span class="co">## Rows: 5,548</span></span>
+<span><span class="co">## Columns: 9</span></span>
+<span><span class="co">## $ c5r2mtsc_std &lt;dbl&gt; 0.98175332, 0.59437751, 0.49061062, 1.45127793, 2.5956991…</span></span>
+<span><span class="co">## $ catholic     &lt;fct&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …</span></span>
+<span><span class="co">## $ race_white   &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, …</span></span>
+<span><span class="co">## $ w3momed_hsb  &lt;fct&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, …</span></span>
+<span><span class="co">## $ p5hmage      &lt;dbl&gt; 47, 41, 43, 38, 47, 41, 31, 38, 26, 38, 27, 40, 33, 36, 4…</span></span>
+<span><span class="co">## $ w3momscr     &lt;dbl&gt; 53.50, 34.95, 63.43, 53.50, 61.56, 38.18, 34.95, 63.43, 3…</span></span>
+<span><span class="co">## $ w3dadscr     &lt;dbl&gt; 77.50, 53.50, 53.50, 53.50, 77.50, 53.50, 29.60, 33.42, 2…</span></span>
+<span><span class="co">## $ ps           &lt;dbl&gt; 0.37552233, 0.23409764, 0.29907061, 0.23946627, 0.3920115…</span></span>
+<span><span class="co">## $ ps_level     &lt;chr&gt; "level_4", "level_3", "level_3", "level_3", "level_4", "l…</span></span></code></pre></div>
+</div>
+<div id="分层后的数据" class="section level2" number="36.6">
+<h2>
+<span class="header-section-number">36.6</span> 分层后的数据<a class="anchor" aria-label="anchor" href="#%E5%88%86%E5%B1%82%E5%90%8E%E7%9A%84%E6%95%B0%E6%8D%AE"><i class="fas fa-link"></i></a>
+</h2>
+<p>下面我们对每一层内的3个连续型协变量和我们的因变量进行t检验，其实这里可以直接用<code>rstatix</code>包解决，非常好用，但其实<code>rstatix</code>包就是基于<code>purrr</code>的，所以直接用<code>purrr</code>也可以。</p>
+<div class="sourceCode" id="cb627"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls_pslevel</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">5</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>,names_to <span class="op">=</span> <span class="st">"variates"</span>,values_to <span class="op">=</span> <span class="st">"values"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_nest.html">group_nest</a></span><span class="op">(</span><span class="va">ps_level</span>,<span class="va">variates</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>tt <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">values</span> <span class="op">~</span> <span class="va">catholic</span>,data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                res <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map_dfr.html">map_dfr</a></span><span class="op">(</span><span class="va">tt</span>, <span class="fu">broom</span><span class="fu">::</span><span class="va"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">)</span></span>
+<span>                <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest.html">unnest</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 16 × 14</span></span>
+<span><span class="co">##    ps_level variates         data tt      estimate estimate1 estimate2 statistic</span></span>
+<span><span class="co">##    &lt;chr&gt;    &lt;chr&gt;     &lt;list&lt;tibb&gt; &lt;list&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">##  1 level_1  c5r2mtsc… [1,202 × 5] &lt;htest&gt; -0.00108    -0.347   -0.346   -0.00973</span></span>
+<span><span class="co">##  2 level_1  p5hmage   [1,202 × 5] &lt;htest&gt; -1.00       32.9     33.9     -1.66   </span></span>
+<span><span class="co">##  3 level_1  w3dadscr  [1,202 × 5] &lt;htest&gt; -0.639      36.8     37.4     -0.886  </span></span>
+<span><span class="co">##  4 level_1  w3momscr  [1,202 × 5] &lt;htest&gt; -1.07       37.0     38.1     -1.40   </span></span>
+<span><span class="co">##  5 level_2  c5r2mtsc… [2,388 × 5] &lt;htest&gt;  0.0685      0.142    0.0737   1.54   </span></span>
+<span><span class="co">##  6 level_2  p5hmage   [2,388 × 5] &lt;htest&gt; -0.724      37.4     38.1     -2.92   </span></span>
+<span><span class="co">##  7 level_2  w3dadscr  [2,388 × 5] &lt;htest&gt; -0.818      40.7     41.5     -1.73   </span></span>
+<span><span class="co">##  8 level_2  w3momscr  [2,388 × 5] &lt;htest&gt; -1.13       41.3     42.5     -2.21   </span></span>
+<span><span class="co">##  9 level_3  c5r2mtsc… [1,618 × 5] &lt;htest&gt;  0.171       0.533    0.361    3.46   </span></span>
+<span><span class="co">## 10 level_3  p5hmage   [1,618 × 5] &lt;htest&gt;  0.00290    41.1     41.1      0.0141 </span></span>
+<span><span class="co">## 11 level_3  w3dadscr  [1,618 × 5] &lt;htest&gt; -1.36       47.5     48.8     -2.17   </span></span>
+<span><span class="co">## 12 level_3  w3momscr  [1,618 × 5] &lt;htest&gt; -0.371      50.9     51.3     -0.573  </span></span>
+<span><span class="co">## 13 level_4  c5r2mtsc…   [340 × 5] &lt;htest&gt;  0.0580      0.728    0.670    0.548  </span></span>
+<span><span class="co">## 14 level_4  p5hmage     [340 × 5] &lt;htest&gt;  0.820      46.2     45.4      1.84   </span></span>
+<span><span class="co">## 15 level_4  w3dadscr    [340 × 5] &lt;htest&gt;  0.868      59.6     58.7      0.582  </span></span>
+<span><span class="co">## 16 level_4  w3momscr    [340 × 5] &lt;htest&gt; -0.739      60.0     60.7     -0.637  </span></span>
+<span><span class="co">## # ℹ 6 more variables: p.value &lt;dbl&gt;, parameter &lt;dbl&gt;, conf.low &lt;dbl&gt;,</span></span>
+<span><span class="co">## #   conf.high &lt;dbl&gt;, method &lt;chr&gt;, alternative &lt;chr&gt;</span></span></code></pre></div>
+<p>直接看<code>p.value</code>这一列，可以看到大部分都是大于0.05的，因变量<code>c5r2mtsc_std</code>只有在第3层是有差异的！</p>
+<p><code>level_2</code>中的<code>p5hmage</code>和<code>w3momscr</code>变量的P值是小于0.05的，<code>level_3</code>中的<code>w3dadscr</code>变量P值也是小于0.05的。</p>
+<p>这说明我们的分层并没有很好的解决这几个混杂因素的影响，而且分层后每一层内（除了第3层）的因变量都没有差异了。。。<strong>理想的结果应该是分层后每一层内混杂因素在两组间都是没有差异的，而因变量都是有差异的！</strong>这样才能说明我们的分层很好地控制了混杂因素！</p>
+<p>但我们的这个结果很明显很差劲！大家可以考虑不同的分层方法再重新尝试几次，或者这个数据并不适合使用这种方法，可以用其他方法试试看，比如匹配、回归等。</p>
+<p>下面再看看分类变量，首先是<code>race_white</code>，在每一层内使用卡方检验，我们直接提取P值：</p>
+<div class="sourceCode" id="cb628"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls_pslevel</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_split.html">group_split</a></span><span class="op">(</span><span class="va">ps_level</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">race_white</span>,<span class="va">.</span><span class="op">$</span><span class="va">catholic</span>,correct<span class="op">=</span><span class="cn">F</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dbl</a></span><span class="op">(</span><span class="st">"p.value"</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.4755703 0.8423902 0.5696924 0.2667193</span></span></code></pre></div>
+<p>结果还不错，每一层内都没有差异了。</p>
+<p>然后是<code>w3momed_hsb</code>这个变量，但是由于我们的分层有问题，导致<code>level_4</code>这一层中<code>w3momed_hsb</code>全都是0！</p>
+<div class="sourceCode" id="cb629"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># level_4有问题</span></span>
+<span><span class="va">ecls_pslevel</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">ps_level</span>,<span class="va">w3momed_hsb</span>,<span class="va">catholic</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>count<span class="op">=</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## `summarise()` has grouped output by 'ps_level', 'w3momed_hsb'. You can override</span></span>
+<span><span class="co">## using the `.groups` argument.</span></span>
+<span><span class="co">## # A tibble: 14 × 4</span></span>
+<span><span class="co">## # Groups:   ps_level, w3momed_hsb [7]</span></span>
+<span><span class="co">##    ps_level w3momed_hsb catholic count</span></span>
+<span><span class="co">##    &lt;chr&gt;    &lt;fct&gt;       &lt;fct&gt;    &lt;int&gt;</span></span>
+<span><span class="co">##  1 level_1  0           0           61</span></span>
+<span><span class="co">##  2 level_1  0           1            5</span></span>
+<span><span class="co">##  3 level_1  1           0         1082</span></span>
+<span><span class="co">##  4 level_1  1           1           54</span></span>
+<span><span class="co">##  5 level_2  0           0         1262</span></span>
+<span><span class="co">##  6 level_2  0           1          261</span></span>
+<span><span class="co">##  7 level_2  1           0          724</span></span>
+<span><span class="co">##  8 level_2  1           1          141</span></span>
+<span><span class="co">##  9 level_3  0           0         1192</span></span>
+<span><span class="co">## 10 level_3  0           1          407</span></span>
+<span><span class="co">## 11 level_3  1           0           14</span></span>
+<span><span class="co">## 12 level_3  1           1            5</span></span>
+<span><span class="co">## 13 level_4  0           0          262</span></span>
+<span><span class="co">## 14 level_4  0           1           78</span></span></code></pre></div>
+<p>所以我们就对前3层做一个统计检验吧。</p>
+<div class="sourceCode" id="cb630"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ecls_pslevel</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">ps_level</span> <span class="op">==</span> <span class="st">"level_4"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_split.html">group_split</a></span><span class="op">(</span><span class="va">ps_level</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">w3momed_hsb</span>,<span class="va">.</span><span class="op">$</span><span class="va">catholic</span>,correct<span class="op">=</span><span class="cn">F</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dbl</a></span><span class="op">(</span><span class="st">"p.value"</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.3022080 0.5994507 0.9316443</span></span></code></pre></div>
+<p>可以看到每一层内也是没有明显差别的。</p>
+<p>说明我们的分层对2个分类变量的平衡效果还是可以的，但是对连续型变量的效果真是一言难尽！</p>
+</div>
+<div id="总结" class="section level2" number="36.7">
+<h2>
+<span class="header-section-number">36.7</span> 总结<a class="anchor" aria-label="anchor" href="#%E6%80%BB%E7%BB%93"><i class="fas fa-link"></i></a>
+</h2>
+<p>倾向性评分回归和分层的大致过程就是这样的，但其实很多细节我都忽略了，比如到底分几层？依据是什么？用PS还是log(PS)？</p>
+<p>而且特地找了一个不是很成功的例子（可能不是很恰当），结果并不是很完美，还有很多可以调整测试的空间，大家可以适当修改其中的方法细节，最后得到一个笔记好的结果。</p>
+<p>实际使用时大家要根据自己的实际情况选择最合适的方法，多读文献，从文献中找灵感。</p>
+</div>
+<div id="参考资料-5" class="section level2" number="36.8">
+<h2>
+<span class="header-section-number">36.8</span> 参考资料<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-5"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://sejdemyr.github.io/r-tutorials/statistics/tutorial8.html" class="uri">https://sejdemyr.github.io/r-tutorials/statistics/tutorial8.html</a></li>
+</ol>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></div>
+<div class="next"><a href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#yxkskjhfk"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="nav-link" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-3"><span class="header-section-number">36.1</span> 演示数据</a></li>
+<li><a class="nav-link" href="#%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E6%A6%82%E5%86%B5"><span class="header-section-number">36.2</span> 原始数据的概况</a></li>
+<li><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%80%BE%E5%90%91%E6%80%A7%E8%AF%84%E5%88%86"><span class="header-section-number">36.3</span> 计算倾向性评分</a></li>
+<li><a class="nav-link" href="#%E5%80%BE%E5%90%91%E6%80%A7%E8%AF%84%E5%88%86%E5%9B%9E%E5%BD%92"><span class="header-section-number">36.4</span> 倾向性评分回归</a></li>
+<li><a class="nav-link" href="#%E5%80%BE%E5%90%91%E6%80%A7%E8%AF%84%E5%88%86%E5%88%86%E5%B1%82"><span class="header-section-number">36.5</span> 倾向性评分分层</a></li>
+<li><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%90%8E%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="header-section-number">36.6</span> 分层后的数据</a></li>
+<li><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="header-section-number">36.7</span> 总结</a></li>
+<li><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-5"><span class="header-section-number">36.8</span> 参考资料</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1036-pssc.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1036-pssc.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

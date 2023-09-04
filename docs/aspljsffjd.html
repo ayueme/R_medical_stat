@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>6 卡方检验 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T)  6.1 不同类型卡方检验的选择 课本中关于四格表资料的卡方检验的方法选择以及RxC表资料的检验方法选择做了非常好的总结，在这里一并和大家分享一下：...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="6 卡方检验 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T)  6.1 不同类型卡方检验的选择 课本中关于四格表资料的卡方检验的方法选择以及RxC表资料的检验方法选择做了非常好的总结，在这里一并和大家分享一下：...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="6 卡方检验 | R语言实战医学统计">
+<meta name="twitter:description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T)  6.1 不同类型卡方检验的选择 课本中关于四格表资料的卡方检验的方法选择以及RxC表资料的检验方法选择做了非常好的总结，在这里一并和大家分享一下：...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="active" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="aspljsffjd" class="section level1" number="6">
+<h1>
+<span class="header-section-number">6</span> 卡方检验<a class="anchor" aria-label="anchor" href="#aspljsffjd"><i class="fas fa-link"></i></a>
+</h1>
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yixuan/showtext">showtext</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: sysfonts</span></span>
+<span><span class="co">## Loading required package: showtextdb</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/showtext/man/showtext_auto.html">showtext_auto</a></span><span class="op">(</span>enable <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<div id="不同类型卡方检验的选择" class="section level2" number="6.1">
+<h2>
+<span class="header-section-number">6.1</span> 不同类型卡方检验的选择<a class="anchor" aria-label="anchor" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C%E7%9A%84%E9%80%89%E6%8B%A9"><i class="fas fa-link"></i></a>
+</h2>
+<p>课本中关于<strong>四格表资料的卡方检验的方法选择</strong>以及<strong>RxC表资料的检验方法选择</strong>做了非常好的总结，在这里一并和大家分享一下：</p>
+<p><strong>四格表资料的方法选择：</strong></p>
+<ul>
+<li>当 n(样本量)≥40 且所有的T(期望频数)≥5时，用χ2检验的基本公式或四格表资料之χ2检验的专用公式；当P ≈ α时，改用四格表资料的 Fisher 确切概率法；</li>
+<li>当 n≥40 但有 1≤T&lt;5 时，用四格表资料χ2检验的校正公式，或改用四格表资料的 Fisher 确切概率法。</li>
+<li>当 n&lt;40，或 T&lt;1时，用四格表资料的 Fisher 确切概率法。</li>
+</ul>
+<p><strong>R×C表资料的分类及其检验方法的选择：</strong></p>
+<p>R×C表资料可以分为双向无序、单向有序、双向有序属性相同和双向有序属性不同4类。</p>
+<ol style="list-style-type: decimal">
+<li><p><em>双向无序R×C表资料</em> R×C表资料中两个分类变量皆为无序分类变量对于该类资料，若研究目的为多个样本率（或构成比）的比较，可用行×列表资料的χ2检验：若研究目的为分析两个分类变量之间有无关联性以及关系的密切程度时，可用行×列表资料的χ2检验以及Pearson列联系数进行分析。</p></li>
+<li><p><em>单向有序R×C表资料</em> 有两种形式。一种是R×C表资料中的分组变量（如年龄）是有序的，而指标变量（如传染病的类型）是无序的。其研究目的通常是分析不同年龄组各种传染病的构成情况，此种单向有序R×C表资料可用行×列表资料的χ2检验进行分析。另一种情况是R×C表资料中的分组变量(如疗法)为无序的，而指标变量（如疗效按等级分组）是有序的。其研究目的为比较不同疗法的疗效，此种单向有序R×C表资料宜用秩转换的非参数检验进行分析。</p></li>
+<li><p><em>双向有序属性相同的R×C表资料</em> R×C表资料中的两个分类变量皆为有序且属性相同。实际上是配对四格表资料的扩展，即水平数≥3的配伍资料，如用两种检测方法同时对同一批样品的测定结果。其研究目的通常是分析两种检测方法的一致性，此时宜用一致性检验或称Kappa检验；也可用特殊模型分析方法（可用SAS软件）。</p></li>
+<li><p><em>双向有序属性不同的R×C表资料</em> R×C表资料中两个分类变量皆为有序的，但属性不同。对于该类资料，若研究目的为分析不同年龄组患者疗效之间有无差别时，可把它视为单向有序R×C表资料，选用秩转换的非参数检验；若研究目的为分析两个有序分类变量间是否存在相关关系，宜用等级相关分析：若研究目的为分析两个有序分类变量间是否存在线性变化趋势，宜用前述的双向有序分组资料的线性趋势检验(test for linear trend)。</p></li>
+</ol>
+</div>
+<div id="四格表资料的卡方检验" class="section level2" number="6.2">
+<h2>
+<span class="header-section-number">6.2</span> 四格表资料的卡方检验<a class="anchor" aria-label="anchor" href="#%E5%9B%9B%E6%A0%BC%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例7-1</strong>的数据。</p>
+<p>首先是构造数据，本次数据自己从书上摘录。</p>
+<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ID</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">200</span><span class="op">)</span></span>
+<span><span class="va">treat</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"treated"</span>,<span class="fl">104</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"placebo"</span>,<span class="fl">96</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">treat</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span></span>
+<span><span class="va">impro</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"marked"</span>,<span class="fl">99</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"none"</span>,<span class="fl">5</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"marked"</span>,<span class="fl">75</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"none"</span>,<span class="fl">21</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">impro</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">impro</span><span class="op">)</span></span>
+<span><span class="va">data1</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">ID</span>,<span class="va">treat</span>,<span class="va">impro</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">data1</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    200 obs. of  3 variables:</span></span>
+<span><span class="co">##  $ ID   : int  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ treat: Factor w/ 2 levels "placebo","treated": 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ impro: Factor w/ 2 levels "marked","none": 1 1 1 1 1 1 1 1 1 1 ...</span></span></code></pre></div>
+<p>数据一共3列，第一列是id，第二列是治疗方法，第三列是等级（有效和无效）。</p>
+<p>简单看下各组情况：</p>
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">data1</span><span class="op">$</span><span class="va">treat</span>,<span class="va">data1</span><span class="op">$</span><span class="va">impro</span><span class="op">)</span></span>
+<span><span class="co">##          </span></span>
+<span><span class="co">##           marked none</span></span>
+<span><span class="co">##   placebo     75   21</span></span>
+<span><span class="co">##   treated     99    5</span></span></code></pre></div>
+<p>做卡方检验有2种方法，分别演示：</p>
+<div id="方法1" class="section level3" number="6.2.1">
+<h3>
+<span class="header-section-number">6.2.1</span> 方法1<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%B3%951"><i class="fas fa-link"></i></a>
+</h3>
+<p>直接使用 <code>gmodels</code>包里面的 <code><a href="https://rdrr.io/pkg/gmodels/man/CrossTable.html">CrossTable()</a></code>函数，非常强大，直接给出所有结果，和SPSS差不多。</p>
+<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">gmodels</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/gmodels/man/CrossTable.html">CrossTable</a></span><span class="op">(</span><span class="va">data1</span><span class="op">$</span><span class="va">treat</span>, <span class="va">data1</span><span class="op">$</span><span class="va">impro</span>, digits <span class="op">=</span> <span class="fl">4</span>, </span>
+<span>           expected <span class="op">=</span> <span class="cn">T</span>, chisq <span class="op">=</span> <span class="cn">T</span>, fisher <span class="op">=</span> <span class="cn">T</span>, mcnemar <span class="op">=</span> <span class="cn">T</span>, </span>
+<span>           format <span class="op">=</span> <span class="st">"SPSS"</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##    Cell Contents</span></span>
+<span><span class="co">## |-------------------------|</span></span>
+<span><span class="co">## |                   Count |</span></span>
+<span><span class="co">## |         Expected Values |</span></span>
+<span><span class="co">## | Chi-square contribution |</span></span>
+<span><span class="co">## |             Row Percent |</span></span>
+<span><span class="co">## |          Column Percent |</span></span>
+<span><span class="co">## |           Total Percent |</span></span>
+<span><span class="co">## |-------------------------|</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Total Observations in Table:  200 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##              | data1$impro </span></span>
+<span><span class="co">##  data1$treat |   marked  |     none  | Row Total | </span></span>
+<span><span class="co">## -------------|-----------|-----------|-----------|</span></span>
+<span><span class="co">##      placebo |       75  |       21  |       96  | </span></span>
+<span><span class="co">##              |  83.5200  |  12.4800  |           | </span></span>
+<span><span class="co">##              |   0.8691  |   5.8165  |           | </span></span>
+<span><span class="co">##              |  78.1250% |  21.8750% |  48.0000% | </span></span>
+<span><span class="co">##              |  43.1034% |  80.7692% |           | </span></span>
+<span><span class="co">##              |  37.5000% |  10.5000% |           | </span></span>
+<span><span class="co">## -------------|-----------|-----------|-----------|</span></span>
+<span><span class="co">##      treated |       99  |        5  |      104  | </span></span>
+<span><span class="co">##              |  90.4800  |  13.5200  |           | </span></span>
+<span><span class="co">##              |   0.8023  |   5.3691  |           | </span></span>
+<span><span class="co">##              |  95.1923% |   4.8077% |  52.0000% | </span></span>
+<span><span class="co">##              |  56.8966% |  19.2308% |           | </span></span>
+<span><span class="co">##              |  49.5000% |   2.5000% |           | </span></span>
+<span><span class="co">## -------------|-----------|-----------|-----------|</span></span>
+<span><span class="co">## Column Total |      174  |       26  |      200  | </span></span>
+<span><span class="co">##              |  87.0000% |  13.0000% |           | </span></span>
+<span><span class="co">## -------------|-----------|-----------|-----------|</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  </span></span>
+<span><span class="co">## Statistics for All Table Factors</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Pearson's Chi-squared test </span></span>
+<span><span class="co">## ------------------------------------------------------------</span></span>
+<span><span class="co">## Chi^2 =  12.85707     d.f. =  1     p =  0.0003362066 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Pearson's Chi-squared test with Yates' continuity correction </span></span>
+<span><span class="co">## ------------------------------------------------------------</span></span>
+<span><span class="co">## Chi^2 =  11.3923     d.f. =  1     p =  0.0007374901 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  </span></span>
+<span><span class="co">## McNemar's Chi-squared test </span></span>
+<span><span class="co">## ------------------------------------------------------------</span></span>
+<span><span class="co">## Chi^2 =  50.7     d.f. =  1     p =  1.076196e-12 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## McNemar's Chi-squared test with continuity correction </span></span>
+<span><span class="co">## ------------------------------------------------------------</span></span>
+<span><span class="co">## Chi^2 =  49.40833     d.f. =  1     p =  2.078608e-12 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  </span></span>
+<span><span class="co">## Fisher's Exact Test for Count Data</span></span>
+<span><span class="co">## ------------------------------------------------------------</span></span>
+<span><span class="co">## Sample estimate odds ratio:  0.1818332 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Alternative hypothesis: true odds ratio is not equal to 1</span></span>
+<span><span class="co">## p =  0.0005286933 </span></span>
+<span><span class="co">## 95% confidence interval:  0.05117986 0.5256375 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Alternative hypothesis: true odds ratio is less than 1</span></span>
+<span><span class="co">## p =  0.0002823226 </span></span>
+<span><span class="co">## 95% confidence interval:  0 0.4569031 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Alternative hypothesis: true odds ratio is greater than 1</span></span>
+<span><span class="co">## p =  0.9999541 </span></span>
+<span><span class="co">## 95% confidence interval:  0.06281418 Inf </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  </span></span>
+<span><span class="co">##        Minimum expected frequency: 12.48</span></span></code></pre></div>
+<p>可以看到这个函数直接给出所有结果，根据需要自己选择合适的即可。</p>
+<p>本例符合pearson卡方，卡方值为12.85707，p&lt;0.01，和课本一致。</p>
+</div>
+<div id="方法2" class="section level3" number="6.2.2">
+<h3>
+<span class="header-section-number">6.2.2</span> 方法2<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%B3%952"><i class="fas fa-link"></i></a>
+</h3>
+<p>先把数据变成2x2列联表，然后用 <code>chisq.test</code>函数做</p>
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mytable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">data1</span><span class="op">$</span><span class="va">treat</span>,<span class="va">data1</span><span class="op">$</span><span class="va">impro</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mytable</span></span>
+<span><span class="co">##          </span></span>
+<span><span class="co">##           marked none</span></span>
+<span><span class="co">##   placebo     75   21</span></span>
+<span><span class="co">##   treated     99    5</span></span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">mytable</span>,correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="co"># 和SPSS一样</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  mytable</span></span>
+<span><span class="co">## X-squared = 12.857, df = 1, p-value = 0.0003362</span></span></code></pre></div>
+<p>这个结果和课本也是一致的，和SPSS算出来的也是一样的。</p>
+<p><strong>四格表资料卡方检验的专用公式/四格表资料卡方检验的校正公式/配对四格表资料的卡方检验/四格表资料的Fisher精确概率法</strong>，都可以用方法1直接解决。</p>
+<p>下面使用R语言自带的<code><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test()</a></code>函数进行演示。</p>
+<p>使用课本<strong>例7-2</strong>的数据，这是一个连续校正卡方检验。</p>
+<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">per</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">46</span>,<span class="fl">6</span>,<span class="fl">18</span>,<span class="fl">8</span><span class="op">)</span>,</span>
+<span>              nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>              dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"胞磷胆碱"</span>,<span class="st">"神经节苷脂"</span><span class="op">)</span>,</span>
+<span>                              effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"有效"</span>,<span class="st">"无效"</span><span class="op">)</span></span>
+<span>                              <span class="op">)</span></span>
+<span>              <span class="op">)</span></span>
+<span></span>
+<span><span class="va">per</span></span>
+<span><span class="co">##             effect</span></span>
+<span><span class="co">## group        有效 无效</span></span>
+<span><span class="co">##   胞磷胆碱     46    6</span></span>
+<span><span class="co">##   神经节苷脂   18    8</span></span></code></pre></div>
+<p>进行连续校正的卡方检验：</p>
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">per</span>, correct <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## Warning in chisq.test(per, correct = T): Chi-squared approximation may be</span></span>
+<span><span class="co">## incorrect</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test with Yates' continuity correction</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  per</span></span>
+<span><span class="co">## X-squared = 3.1448, df = 1, p-value = 0.07617</span></span></code></pre></div>
+</div>
+</div>
+<div id="配对四格表资料的卡方检验" class="section level2" number="6.3">
+<h2>
+<span class="header-section-number">6.3</span> 配对四格表资料的卡方检验<a class="anchor" aria-label="anchor" href="#%E9%85%8D%E5%AF%B9%E5%9B%9B%E6%A0%BC%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例7-3</strong>的数据。</p>
+<div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ana</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>,<span class="fl">12</span>,<span class="fl">2</span>,<span class="fl">33</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>              dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>免疫荧光 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"阳性"</span>,<span class="st">"阴性"</span><span class="op">)</span>,</span>
+<span>                              乳胶凝集 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"阳性"</span>,<span class="st">"阴性"</span><span class="op">)</span></span>
+<span>                              <span class="op">)</span></span>
+<span>              <span class="op">)</span></span>
+<span></span>
+<span><span class="va">ana</span></span>
+<span><span class="co">##         乳胶凝集</span></span>
+<span><span class="co">## 免疫荧光 阳性 阴性</span></span>
+<span><span class="co">##     阳性   11   12</span></span>
+<span><span class="co">##     阴性    2   33</span></span></code></pre></div>
+<p>配对四个表资料需要用McNemar检验：</p>
+<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/mcnemar.test.html">mcnemar.test</a></span><span class="op">(</span><span class="va">ana</span>, correct <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  McNemar's Chi-squared test with continuity correction</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  ana</span></span>
+<span><span class="co">## McNemar's chi-squared = 5.7857, df = 1, p-value = 0.01616</span></span></code></pre></div>
+</div>
+<div id="四格表资料的-fisher-确切概率法" class="section level2" number="6.4">
+<h2>
+<span class="header-section-number">6.4</span> 四格表资料的 Fisher 确切概率法<a class="anchor" aria-label="anchor" href="#%E5%9B%9B%E6%A0%BC%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84-fisher-%E7%A1%AE%E5%88%87%E6%A6%82%E7%8E%87%E6%B3%95"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例7-4</strong>的数据。</p>
+<div class="sourceCode" id="cb98"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hbv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">18</span>,<span class="fl">5</span>,<span class="fl">6</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>              dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>组别 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"预防注射组"</span>,<span class="st">"非预防组"</span><span class="op">)</span>,</span>
+<span>                              效果 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"阳性"</span>,<span class="st">"阴性"</span><span class="op">)</span></span>
+<span>                              <span class="op">)</span></span>
+<span>              <span class="op">)</span></span>
+<span><span class="va">hbv</span></span>
+<span><span class="co">##             效果</span></span>
+<span><span class="co">## 组别       阳性 阴性</span></span>
+<span><span class="co">##   预防注射组    4   18</span></span>
+<span><span class="co">##   非预防组      5    6</span></span></code></pre></div>
+<p>进行 Fisher 检验：</p>
+<div class="sourceCode" id="cb99"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/fisher.test.html">fisher.test</a></span><span class="op">(</span><span class="va">hbv</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Fisher's Exact Test for Count Data</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  hbv</span></span>
+<span><span class="co">## p-value = 0.121</span></span>
+<span><span class="co">## alternative hypothesis: true odds ratio is not equal to 1</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  0.03974151 1.76726409</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## odds ratio </span></span>
+<span><span class="co">##  0.2791061</span></span></code></pre></div>
+<p>P值为0.121，和课本一样。</p>
+</div>
+<div id="行-x-列表资料的卡方检验" class="section level2" number="6.5">
+<h2>
+<span class="header-section-number">6.5</span> 行 x 列表资料的卡方检验<a class="anchor" aria-label="anchor" href="#%E8%A1%8C-x-%E5%88%97%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>行 x 列表资料的卡方检验有很多种情况，不是所有的列联表资料都可以直接用卡方检验，大家要注意甄别！方法选择可以参考本篇开头部分。</p>
+<div id="多个样本率的比较" class="section level3" number="6.5.1">
+<h3>
+<span class="header-section-number">6.5.1</span> 多个样本率的比较<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本<strong>例7-6</strong>的数据。</p>
+<p>首先是构造数据，本次数据直接读取，也可以自己手动摘录。</p>
+<div class="sourceCode" id="cb100"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"datasets/例07-06.csv"</span>, header <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    6 obs. of  3 variables:</span></span>
+<span><span class="co">##  $ 疗法: int  1 1 2 2 3 3</span></span>
+<span><span class="co">##  $ 疗效: int  1 2 1 2 1 2</span></span>
+<span><span class="co">##  $ f   : int  199 7 164 18 118 26</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##   疗法 疗效   f</span></span>
+<span><span class="co">## 1    1    1 199</span></span>
+<span><span class="co">## 2    1    2   7</span></span>
+<span><span class="co">## 3    2    1 164</span></span>
+<span><span class="co">## 4    2    2  18</span></span>
+<span><span class="co">## 5    3    1 118</span></span>
+<span><span class="co">## 6    3    2  26</span></span></code></pre></div>
+<p>数据一共3列，第1列是疗法，第2列是有效无效，第3列是频数.</p>
+<p>进行 行 x 列表资料的卡方检验，首先要对数据格式转换一下，变成 <code>table</code>或者 <code>矩阵</code>：</p>
+<div class="sourceCode" id="cb101"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">f</span>,nrow <span class="op">=</span> <span class="fl">3</span>,byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>            dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>trt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"物理"</span>, <span class="st">"药物"</span>, <span class="st">"外用"</span><span class="op">)</span>,</span>
+<span>                            effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"有效"</span>,<span class="st">"无效"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">M</span></span>
+<span><span class="co">##       effect</span></span>
+<span><span class="co">## trt    有效 无效</span></span>
+<span><span class="co">##   物理  199    7</span></span>
+<span><span class="co">##   药物  164   18</span></span>
+<span><span class="co">##   外用  118   26</span></span></code></pre></div>
+<p>这里教大家一个可视化列联表资料非常好用的马赛克图：</p>
+<div class="sourceCode" id="cb102"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/mosaicplot.html">mosaicplot</a></span><span class="op">(</span><span class="va">M</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1006-chisq_files/figure-html/unnamed-chunk-15-1.png" width="90%"></div>
+<p>进行 行 x 列表资料的卡方检验：</p>
+<div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">kf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">M</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">kf</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  M</span></span>
+<span><span class="co">## X-squared = 21.038, df = 2, p-value = 2.702e-05</span></span></code></pre></div>
+<p>多个样本率的比较也可以使用以下函数进行检验：</p>
+<div class="sourceCode" id="cb104"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 只适用于两列的，类似于 有效/无效 这种！</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/prop.test.html">prop.test</a></span><span class="op">(</span><span class="va">M</span>, correct <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  3-sample test for equality of proportions without continuity correction</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  M</span></span>
+<span><span class="co">## X-squared = 21.038, df = 2, p-value = 2.702e-05</span></span>
+<span><span class="co">## alternative hypothesis: two.sided</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">##    prop 1    prop 2    prop 3 </span></span>
+<span><span class="co">## 0.9660194 0.9010989 0.8194444</span></span></code></pre></div>
+<p>可以看到两种结果是一样的，和课本一致的！</p>
+</div>
+<div id="样本构成比的比较" class="section level3" number="6.5.2">
+<h3>
+<span class="header-section-number">6.5.2</span> 样本构成比的比较<a class="anchor" aria-label="anchor" href="#%E6%A0%B7%E6%9C%AC%E6%9E%84%E6%88%90%E6%AF%94%E7%9A%84%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本<strong>例7-7</strong>的数据。</p>
+<div class="sourceCode" id="cb105"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">42</span>,<span class="fl">48</span>,<span class="fl">21</span>,<span class="fl">30</span>,<span class="fl">72</span>,<span class="fl">36</span><span class="op">)</span>,nrow <span class="op">=</span> <span class="fl">2</span>,byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>              dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>dn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dn组"</span>,<span class="st">"非dn组"</span><span class="op">)</span>,</span>
+<span>                              idi <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dd"</span>,<span class="st">"id"</span>,<span class="st">"ii"</span><span class="op">)</span></span>
+<span>                              <span class="op">)</span></span>
+<span>              <span class="op">)</span></span>
+<span><span class="va">ace</span></span>
+<span><span class="co">##         idi</span></span>
+<span><span class="co">## dn       dd id ii</span></span>
+<span><span class="co">##   dn组   42 48 21</span></span>
+<span><span class="co">##   非dn组 30 72 36</span></span></code></pre></div>
+<p>进行卡方检验：</p>
+<div class="sourceCode" id="cb106"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">ace</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  ace</span></span>
+<span><span class="co">## X-squared = 7.9127, df = 2, p-value = 0.01913</span></span></code></pre></div>
+<p>卡方值为7.91，和课本一致。</p>
+</div>
+<div id="双向无序分类资料的关联性检验" class="section level3" number="6.5.3">
+<h3>
+<span class="header-section-number">6.5.3</span> 双向无序分类资料的关联性检验<a class="anchor" aria-label="anchor" href="#%E5%8F%8C%E5%90%91%E6%97%A0%E5%BA%8F%E5%88%86%E7%B1%BB%E8%B5%84%E6%96%99%E7%9A%84%E5%85%B3%E8%81%94%E6%80%A7%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本例<strong>例7-8</strong>的数据。</p>
+<div class="sourceCode" id="cb107"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">blood</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">431</span>,<span class="fl">490</span>,<span class="fl">902</span>,<span class="fl">388</span>,<span class="fl">410</span>,<span class="fl">800</span>,<span class="fl">495</span>,<span class="fl">587</span>,<span class="fl">950</span>,<span class="fl">137</span>,<span class="fl">179</span>,<span class="fl">32</span><span class="op">)</span>,</span>
+<span>                nrow <span class="op">=</span> <span class="fl">4</span>,byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>abo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"o"</span>,<span class="st">"a"</span>,<span class="st">"b"</span>,<span class="st">"ab"</span><span class="op">)</span>,</span>
+<span>                                mn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"m"</span>,<span class="st">"n"</span>,<span class="st">"mn"</span><span class="op">)</span></span>
+<span>                                <span class="op">)</span></span>
+<span>                <span class="op">)</span></span>
+<span><span class="va">blood</span></span>
+<span><span class="co">##     mn</span></span>
+<span><span class="co">## abo    m   n  mn</span></span>
+<span><span class="co">##   o  431 490 902</span></span>
+<span><span class="co">##   a  388 410 800</span></span>
+<span><span class="co">##   b  495 587 950</span></span>
+<span><span class="co">##   ab 137 179  32</span></span></code></pre></div>
+<p>进行 关联性检验：</p>
+<div class="sourceCode" id="cb108"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">blood</span>,correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  blood</span></span>
+<span><span class="co">## X-squared = 213.16, df = 6, p-value &lt; 2.2e-16</span></span></code></pre></div>
+<p>计算列联系数：</p>
+<div class="sourceCode" id="cb109"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">vcd</span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: grid</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/vcd/man/assocstats.html">assocstats</a></span><span class="op">(</span><span class="va">blood</span><span class="op">)</span></span>
+<span><span class="co">##                     X^2 df P(&gt; X^2)</span></span>
+<span><span class="co">## Likelihood Ratio 248.14  6        0</span></span>
+<span><span class="co">## Pearson          213.16  6        0</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Phi-Coefficient   : NA </span></span>
+<span><span class="co">## Contingency Coeff.: 0.188 </span></span>
+<span><span class="co">## Cramer's V        : 0.136</span></span></code></pre></div>
+<p>Pearson列联系数是0.188，和课本一样。</p>
+</div>
+<div id="双向有序分组资料的线性趋势检验" class="section level3" number="6.5.4">
+<h3>
+<span class="header-section-number">6.5.4</span> 双向有序分组资料的线性趋势检验<a class="anchor" aria-label="anchor" href="#%E5%8F%8C%E5%90%91%E6%9C%89%E5%BA%8F%E5%88%86%E7%BB%84%E8%B5%84%E6%96%99%E7%9A%84%E7%BA%BF%E6%80%A7%E8%B6%8B%E5%8A%BF%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本<strong>例7-9</strong>的数据。</p>
+<div class="sourceCode" id="cb110"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ather</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">70</span>,<span class="fl">22</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">27</span>,<span class="fl">24</span>,<span class="fl">9</span>,<span class="fl">3</span>,<span class="fl">16</span>,<span class="fl">23</span>,<span class="fl">13</span>,<span class="fl">7</span>,<span class="fl">9</span>,<span class="fl">20</span>,<span class="fl">15</span>,<span class="fl">14</span><span class="op">)</span>,</span>
+<span>                nrow <span class="op">=</span> <span class="fl">4</span>,byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"20~"</span>,<span class="st">"30~"</span>,<span class="st">"40~"</span>,<span class="st">"≥50"</span><span class="op">)</span>,</span>
+<span>                                level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"-"</span>,<span class="st">"+"</span>,<span class="st">"++"</span>,<span class="st">"+++"</span><span class="op">)</span></span>
+<span>                                <span class="op">)</span></span>
+<span>                <span class="op">)</span></span>
+<span><span class="va">ather</span></span>
+<span><span class="co">##      level</span></span>
+<span><span class="co">## age    -  + ++ +++</span></span>
+<span><span class="co">##   20~ 70 22  4   2</span></span>
+<span><span class="co">##   30~ 27 24  9   3</span></span>
+<span><span class="co">##   40~ 16 23 13   7</span></span>
+<span><span class="co">##   ≥50  9 20 15  14</span></span></code></pre></div>
+<p>进行卡方检验：</p>
+<div class="sourceCode" id="cb111"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">ather</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  ather</span></span>
+<span><span class="co">## X-squared = 71.432, df = 9, p-value = 7.97e-12</span></span></code></pre></div>
+<p>但这种情况下做这种卡方检验并不能说明什么问题，课本是看两者之间有没有线性趋势，我们可以直接用<code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>函数做，把age作为自变量，把level作为因变量即可，由于没有原始数据，这里就不演示了。</p>
+<p>或者可以进行Kappa一致性检验，Kappa的值的大小代表的一致性的程度，此值介于0到1之间，越大一致性程度越大。</p>
+<div class="sourceCode" id="cb112"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 2选1</span></span>
+<span><span class="fu">DescTools</span><span class="fu">::</span><span class="fu"><a href="https://andrisignorell.github.io/DescTools/reference/CohenKappa.html">CohenKappa</a></span><span class="op">(</span><span class="va">ather</span>, weight<span class="op">=</span><span class="st">"Unweighted"</span><span class="op">)</span></span>
+<span><span class="co">## Registered S3 method overwritten by 'DescTools':</span></span>
+<span><span class="co">##   method         from </span></span>
+<span><span class="co">##   reorder.factor gdata</span></span>
+<span><span class="co">## [1] 0.2177295</span></span>
+<span><span class="fu">vcd</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/vcd/man/Kappa.html">Kappa</a></span><span class="op">(</span><span class="va">ather</span><span class="op">)</span></span>
+<span><span class="co">##             value     ASE     z  Pr(&gt;|z|)</span></span>
+<span><span class="co">## Unweighted 0.2177 0.03799 5.732 9.953e-09</span></span>
+<span><span class="co">## Weighted   0.3368 0.03949 8.529 1.477e-17</span></span></code></pre></div>
+</div>
+</div>
+<div id="多个样本率间的多重比较" class="section level2" number="6.6">
+<h2>
+<span class="header-section-number">6.6</span> 多个样本率间的多重比较<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E7%8E%87%E9%97%B4%E7%9A%84%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>主要有卡方分割法、Scheffe可信区间法、SNK法等，这里主要演示卡方分割法。</p>
+<p>其实非常简单，就是把多个组手动拆分为多个两个组，分别进行卡方检验，和P值比较，只不过这里的P值不再是0.05，而是和组数（比较次数）有关。</p>
+<p>使用<strong>例7-10</strong>的数据。</p>
+<div class="sourceCode" id="cb113"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"datasets/例07-06.csv"</span>, header <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">f</span>,nrow <span class="op">=</span> <span class="fl">3</span>,byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>            dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>trt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"物理"</span>, <span class="st">"药物"</span>, <span class="st">"外用"</span><span class="op">)</span>,</span>
+<span>                            effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"有效"</span>,<span class="st">"无效"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">M</span></span>
+<span><span class="co">##       effect</span></span>
+<span><span class="co">## trt    有效 无效</span></span>
+<span><span class="co">##   物理  199    7</span></span>
+<span><span class="co">##   药物  164   18</span></span>
+<span><span class="co">##   外用  118   26</span></span></code></pre></div>
+<p>手动拆分，两两比较，直接取子集即可：</p>
+<div class="sourceCode" id="cb114"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 物理治疗组和药物治疗组的卡方检验</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">M</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="op">]</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  M[1:2, ]</span></span>
+<span><span class="co">## X-squared = 6.756, df = 1, p-value = 0.009343</span></span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 物理治疗组和外用膏药组的卡方检验</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">M</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>,<span class="op">]</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  M[c(1, 3), ]</span></span>
+<span><span class="co">## X-squared = 21.323, df = 1, p-value = 3.881e-06</span></span></code></pre></div>
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 药物治疗组和外用膏药组的卡方检验</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">M</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span>,<span class="op">]</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's Chi-squared test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  M[2:3, ]</span></span>
+<span><span class="co">## X-squared = 4.591, df = 1, p-value = 0.03214</span></span></code></pre></div>
+<p>可以看到和课本是一样的。</p>
+<p>这时的 P’ = P / (K * (K - 1) / 2 + 1)，K是组数，一般情况下P=0.05，所以P’ = 0.05/(3*(3-1)/2+1) = 0.0125，上面3个卡方分析的P值和0.0125比较即可！</p>
+</div>
+<div id="cochran-mantel-haenszel-卡方统计量检验" class="section level2" number="6.7">
+<h2>
+<span class="header-section-number">6.7</span> Cochran-Mantel-Haenszel 卡方统计量检验<a class="anchor" aria-label="anchor" href="#cochran-mantel-haenszel-%E5%8D%A1%E6%96%B9%E7%BB%9F%E8%AE%A1%E9%87%8F%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>中文名又叫行均分检验，常用于按照某个变量进行分层后的检验，这个方法课本上说<strong>用于检验两个有序分类变量是否存在线性相关</strong>，但实际上用途很广泛，比如因变量是有序变量的单向有序列联表，也可以用。</p>
+<p>使用课本<strong>例7-12</strong>的数据。</p>
+<p>这个数据有3个变量，首先是年龄，根据年龄分成两层，然后是是否心肌梗死和是否口服避孕药，我们可以直接把这个数据录入成3维<code>array</code>的形式：</p>
+<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">17</span>,<span class="fl">47</span>,</span>
+<span>               <span class="fl">121</span>,<span class="fl">944</span>,</span>
+<span>               <span class="fl">12</span>,<span class="fl">158</span>,</span>
+<span>               <span class="fl">14</span>,<span class="fl">663</span><span class="op">)</span>,</span>
+<span>             dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,</span>
+<span>             dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>心肌梗死 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"病例"</span>,<span class="st">"对照"</span><span class="op">)</span>,</span>
+<span>                             口服避孕药 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"是"</span>,<span class="st">"否"</span><span class="op">)</span>,</span>
+<span>                             年龄分层 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"&lt;40岁"</span>,<span class="st">"≥40岁"</span><span class="op">)</span></span>
+<span>                             <span class="op">)</span></span>
+<span>             <span class="op">)</span></span>
+<span><span class="va">myo</span></span>
+<span><span class="co">## , , 年龄分层 = &lt;40岁</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##         口服避孕药</span></span>
+<span><span class="co">## 心肌梗死 是  否</span></span>
+<span><span class="co">##     病例 17 121</span></span>
+<span><span class="co">##     对照 47 944</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## , , 年龄分层 = ≥40岁</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##         口服避孕药</span></span>
+<span><span class="co">## 心肌梗死  是  否</span></span>
+<span><span class="co">##     病例  12  14</span></span>
+<span><span class="co">##     对照 158 663</span></span></code></pre></div>
+<p>这样就能直接进行<code>Cochran-Mantel-Haenszel检验</code>了，这个检验的函数是R语言自带的，不需要另外的包：</p>
+<div class="sourceCode" id="cb118"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/mantelhaen.test.html">mantelhaen.test</a></span><span class="op">(</span><span class="va">myo</span>,correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Mantel-Haenszel chi-squared test without continuity correction</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  myo</span></span>
+<span><span class="co">## Mantel-Haenszel X-squared = 24.184, df = 1, p-value = 8.755e-07</span></span>
+<span><span class="co">## alternative hypothesis: true common odds ratio is not equal to 1</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  1.930775 4.933840</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## common odds ratio </span></span>
+<span><span class="co">##          3.086444</span></span></code></pre></div>
+<p>这样就得到结果了，这个结果和课本也是一样的。</p>
+<p>课本还介绍了Breslow-Day对各层的效应值进行齐性检验，这个检验可以通过<code>DescTools</code>包实现：</p>
+<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://andrisignorell.github.io/DescTools/">DescTools</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://andrisignorell.github.io/DescTools/reference/BreslowDayTest.html">BreslowDayTest</a></span><span class="op">(</span><span class="va">myo</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Breslow-Day test on Homogeneity of Odds Ratios</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  myo</span></span>
+<span><span class="co">## X-squared = 0.23409, df = 1, p-value = 0.6285</span></span></code></pre></div>
+<p>结果也是和课本一模一样。</p>
+<p>如果你的是原始数据的形式，也是很简单的，我们构造一个和上面数据一样的原始数据：</p>
+<div class="sourceCode" id="cb120"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myoo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>年龄分层 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"&lt;40岁"</span>,<span class="fl">1129</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"≥40岁"</span>,<span class="fl">847</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   心肌梗死 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"病例"</span>,<span class="fl">64</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"对照"</span>,<span class="fl">1065</span><span class="op">)</span>,</span>
+<span>                                <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"病例"</span>,<span class="fl">170</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"对照"</span>,<span class="fl">677</span><span class="op">)</span></span>
+<span>                                <span class="op">)</span>,</span>
+<span>                   口服避孕药 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"是"</span>,<span class="fl">17</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"否"</span>,<span class="fl">47</span><span class="op">)</span>,</span>
+<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"是"</span>,<span class="fl">121</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"否"</span>,<span class="fl">944</span><span class="op">)</span>,</span>
+<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"是"</span>,<span class="fl">12</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"否"</span>,<span class="fl">158</span><span class="op">)</span>,</span>
+<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"是"</span>,<span class="fl">14</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"否"</span>,<span class="fl">663</span><span class="op">)</span></span>
+<span>                                  <span class="op">)</span></span>
+<span>                   <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 分类变量变为因子型</span></span>
+<span><span class="va">myoo</span><span class="op">$</span><span class="va">年龄分层</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">myoo</span><span class="op">$</span><span class="va">年龄分层</span>,levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"&lt;40岁"</span>,<span class="st">"≥40岁"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">myoo</span><span class="op">$</span><span class="va">心肌梗死</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">myoo</span><span class="op">$</span><span class="va">心肌梗死</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"病例"</span>,<span class="st">"对照"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">myoo</span><span class="op">$</span><span class="va">口服避孕药</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">myoo</span><span class="op">$</span><span class="va">口服避孕药</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"是"</span>,<span class="st">"否"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">myoo</span><span class="op">)</span></span>
+<span><span class="co">##   年龄分层 心肌梗死 口服避孕药</span></span>
+<span><span class="co">## 1    &lt;40岁     病例         是</span></span>
+<span><span class="co">## 2    &lt;40岁     病例         是</span></span>
+<span><span class="co">## 3    &lt;40岁     病例         是</span></span>
+<span><span class="co">## 4    &lt;40岁     病例         是</span></span>
+<span><span class="co">## 5    &lt;40岁     病例         是</span></span>
+<span><span class="co">## 6    &lt;40岁     病例         是</span></span></code></pre></div>
+<p>用<code>xtabs</code>查看数据，结果和我们的<code>array</code>的形式是一样的：</p>
+<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myoo.tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/xtabs.html">xtabs</a></span><span class="op">(</span><span class="op">~</span><span class="va">口服避孕药</span><span class="op">+</span><span class="va">心肌梗死</span><span class="op">+</span><span class="va">年龄分层</span>,data <span class="op">=</span> <span class="va">myoo</span><span class="op">)</span></span>
+<span><span class="va">myoo.tab</span></span>
+<span><span class="co">## , , 年龄分层 = &lt;40岁</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##           心肌梗死</span></span>
+<span><span class="co">## 口服避孕药 病例 对照</span></span>
+<span><span class="co">##         是   17  121</span></span>
+<span><span class="co">##         否   47  944</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## , , 年龄分层 = ≥40岁</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##           心肌梗死</span></span>
+<span><span class="co">## 口服避孕药 病例 对照</span></span>
+<span><span class="co">##         是   12   14</span></span>
+<span><span class="co">##         否  158  663</span></span></code></pre></div>
+<p>这样就可以直接进行<code>Cochran-Mantel-Haenszel检验</code>了：</p>
+<div class="sourceCode" id="cb122"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/mantelhaen.test.html">mantelhaen.test</a></span><span class="op">(</span><span class="va">myoo.tab</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Mantel-Haenszel chi-squared test without continuity correction</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  myoo.tab</span></span>
+<span><span class="co">## Mantel-Haenszel X-squared = 24.184, df = 1, p-value = 8.755e-07</span></span>
+<span><span class="co">## alternative hypothesis: true common odds ratio is not equal to 1</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  1.930775 4.933840</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## common odds ratio </span></span>
+<span><span class="co">##          3.086444</span></span></code></pre></div>
+<p>结果也是一样的。</p>
+<p>还可用<code>woolf法</code>检验不同分层之间的效应值有没有统计学显著性，通过使用<code><a href="https://rdrr.io/r/stats/mantelhaen.test.html">?mantelhaen.test</a></code>查看帮助文档，作者直接给了一个现成的计算方法：</p>
+<div class="sourceCode" id="cb123"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">woolf</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">1</span> <span class="op">/</span> <span class="fl">2</span></span>
+<span>  <span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></span>
+<span>  <span class="va">or</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">3</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">*</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">w</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">3</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Chisquare.html">pchisq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">w</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">or</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">or</span><span class="op">)</span>, <span class="va">w</span><span class="op">)</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span><span class="op">)</span>, <span class="va">k</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">woolf</span><span class="op">(</span><span class="va">myoo.tab</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.6400154</span></span></code></pre></div>
+<p>直接给出了P值。</p>
+</div>
+<div id="频数分布拟合优度卡方检验" class="section level2" number="6.8">
+<h2>
+<span class="header-section-number">6.8</span> 频数分布拟合优度卡方检验<a class="anchor" aria-label="anchor" href="#%E9%A2%91%E6%95%B0%E5%88%86%E5%B8%83%E6%8B%9F%E5%90%88%E4%BC%98%E5%BA%A6%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例7-13</strong>的数据。</p>
+<p>R语言做卡方拟合优度检验非常简单，关键是概率的计算，这里我们直接用课本中的概率。</p>
+<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">26</span>,<span class="fl">51</span>,<span class="fl">75</span>,<span class="fl">63</span>,<span class="fl">38</span>,<span class="fl">17</span>,<span class="fl">9</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.0854</span>,<span class="fl">0.2102</span>,<span class="fl">0.2585</span>,<span class="fl">0.2120</span>,<span class="fl">0.1304</span>,<span class="fl">0.0641</span>,<span class="fl">0.0394</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, p <span class="op">=</span><span class="va">p</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Chi-squared test for given probabilities</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  x</span></span>
+<span><span class="co">## X-squared = 2.0377, df = 6, p-value = 0.9162</span></span></code></pre></div>
+<p>结果和课本非常接近。</p>
+<p>这里贴一个<a href="http://rvdsd.top/">网络教程</a>的概率计算方法：</p>
+<div class="sourceCode" id="cb125"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span><span class="op">&lt;-</span><span class="fl">0</span><span class="op">:</span><span class="fl">6</span></span>
+<span><span class="va">y</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">26</span>,<span class="fl">51</span>,<span class="fl">75</span>,<span class="fl">63</span>,<span class="fl">38</span>,<span class="fl">17</span>,<span class="fl">9</span><span class="op">)</span></span>
+<span><span class="va">mean</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">q</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html">ppois</a></span><span class="op">(</span><span class="va">x</span>,<span class="va">mean</span><span class="op">)</span></span>
+<span><span class="va">n</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">&lt;-</span><span class="va">q</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">p</span><span class="op">[</span><span class="va">n</span><span class="op">]</span><span class="op">&lt;-</span><span class="fl">1</span><span class="op">-</span><span class="va">q</span><span class="op">[</span><span class="va">n</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="op">(</span><span class="va">n</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">p</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">&lt;-</span><span class="va">q</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">-</span><span class="va">q</span><span class="op">[</span><span class="va">i</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/chisq.test.html">chisq.test</a></span><span class="op">(</span><span class="va">y</span>, p<span class="op">=</span><span class="va">p</span>,correct<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Chi-squared test for given probabilities</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  y</span></span>
+<span><span class="co">## X-squared = 2.0569, df = 6, p-value = 0.9144</span></span></code></pre></div>
+<p>结果和课本非常接近。</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></div>
+<div class="next"><a href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#aspljsffjd"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C%E7%9A%84%E9%80%89%E6%8B%A9"><span class="header-section-number">6.1</span> 不同类型卡方检验的选择</a></li>
+<li>
+<a class="nav-link" href="#%E5%9B%9B%E6%A0%BC%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.2</span> 四格表资料的卡方检验</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E6%96%B9%E6%B3%951"><span class="header-section-number">6.2.1</span> 方法1</a></li>
+<li><a class="nav-link" href="#%E6%96%B9%E6%B3%952"><span class="header-section-number">6.2.2</span> 方法2</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E9%85%8D%E5%AF%B9%E5%9B%9B%E6%A0%BC%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.3</span> 配对四格表资料的卡方检验</a></li>
+<li><a class="nav-link" href="#%E5%9B%9B%E6%A0%BC%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84-fisher-%E7%A1%AE%E5%88%87%E6%A6%82%E7%8E%87%E6%B3%95"><span class="header-section-number">6.4</span> 四格表资料的 Fisher 确切概率法</a></li>
+<li>
+<a class="nav-link" href="#%E8%A1%8C-x-%E5%88%97%E8%A1%A8%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.5</span> 行 x 列表资料的卡方检验</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><span class="header-section-number">6.5.1</span> 多个样本率的比较</a></li>
+<li><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E6%9E%84%E6%88%90%E6%AF%94%E7%9A%84%E6%AF%94%E8%BE%83"><span class="header-section-number">6.5.2</span> 样本构成比的比较</a></li>
+<li><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E6%97%A0%E5%BA%8F%E5%88%86%E7%B1%BB%E8%B5%84%E6%96%99%E7%9A%84%E5%85%B3%E8%81%94%E6%80%A7%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.5.3</span> 双向无序分类资料的关联性检验</a></li>
+<li><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E6%9C%89%E5%BA%8F%E5%88%86%E7%BB%84%E8%B5%84%E6%96%99%E7%9A%84%E7%BA%BF%E6%80%A7%E8%B6%8B%E5%8A%BF%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.5.4</span> 双向有序分组资料的线性趋势检验</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E7%8E%87%E9%97%B4%E7%9A%84%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><span class="header-section-number">6.6</span> 多个样本率间的多重比较</a></li>
+<li><a class="nav-link" href="#cochran-mantel-haenszel-%E5%8D%A1%E6%96%B9%E7%BB%9F%E8%AE%A1%E9%87%8F%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.7</span> Cochran-Mantel-Haenszel 卡方统计量检验</a></li>
+<li><a class="nav-link" href="#%E9%A2%91%E6%95%B0%E5%88%86%E5%B8%83%E6%8B%9F%E5%90%88%E4%BC%98%E5%BA%A6%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><span class="header-section-number">6.8</span> 频数分布拟合优度卡方检验</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1006-chisq.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1006-chisq.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>37 R语言倾向性评分：加权 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="之前已经介绍过倾向性评分匹配（propensity score matching）、倾向性评分回归和分层。 今天继续介绍倾向性评分最后一个重要的部分：倾向性评分加权。 主要介绍两种加权方法：逆概率加权(inverse probability weighting, IPW)和重叠加权(overlap weighting)。 倾向性评分加权的方法有很多，常见的一些加权方法比较如下：...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="37 R语言倾向性评分：加权 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="之前已经介绍过倾向性评分匹配（propensity score matching）、倾向性评分回归和分层。 今天继续介绍倾向性评分最后一个重要的部分：倾向性评分加权。 主要介绍两种加权方法：逆概率加权(inverse probability weighting, IPW)和重叠加权(overlap weighting)。 倾向性评分加权的方法有很多，常见的一些加权方法比较如下：...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="37 R语言倾向性评分：加权 | R语言实战医学统计">
+<meta name="twitter:description" content="之前已经介绍过倾向性评分匹配（propensity score matching）、倾向性评分回归和分层。 今天继续介绍倾向性评分最后一个重要的部分：倾向性评分加权。 主要介绍两种加权方法：逆概率加权(inverse probability weighting, IPW)和重叠加权(overlap weighting)。 倾向性评分加权的方法有很多，常见的一些加权方法比较如下：...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="active" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="yplksjhfk" class="section level1" number="37">
+<h1>
+<span class="header-section-number">37</span> R语言倾向性评分：加权<a class="anchor" aria-label="anchor" href="#yplksjhfk"><i class="fas fa-link"></i></a>
+</h1>
+<p>之前已经介绍过<strong>倾向性评分匹配（propensity score matching）</strong>、<strong>倾向性评分回归和分层</strong>。</p>
+<p>今天继续介绍倾向性评分最后一个重要的部分：<strong>倾向性评分加权</strong>。</p>
+<p>主要介绍两种加权方法：<strong>逆概率加权</strong>(inverse probability weighting, IPW)和<strong>重叠加权</strong>(overlap weighting)。</p>
+<p>倾向性评分加权的方法有很多，常见的一些加权方法比较如下：</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_17-06-17.png" width="90%"></div>
+<p>其中<code>ATE</code>就是大家比较常见的<code>IPW</code>方法，还有一种常见的<strong>inverse probability of treatment weighting, IPTW</strong>，是这里的<code>ATT</code>。前者是针对所有研究对象，后者是针对病例组。</p>
+<div id="演示数据-4" class="section level2" number="37.1">
+<h2>
+<span class="header-section-number">37.1</span> 演示数据<a class="anchor" aria-label="anchor" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-4"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb631"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lindner</span>, package <span class="op">=</span> <span class="st">"twang"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">lindner</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">6</span>,<span class="fl">7</span>,<span class="fl">8</span>,<span class="fl">10</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">lindner</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">6</span>,<span class="fl">7</span>,<span class="fl">8</span>,<span class="fl">10</span><span class="op">)</span><span class="op">]</span>,<span class="va">factor</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">lindner</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    996 obs. of  11 variables:</span></span>
+<span><span class="co">##  $ lifepres       : num  0 11.6 11.6 11.6 11.6 11.6 11.6 11.6 11.6 11.6 ...</span></span>
+<span><span class="co">##  $ cardbill       : int  14301 3563 4694 7366 8247 8319 8410 8517 8763 8823 ...</span></span>
+<span><span class="co">##  $ abcix          : Factor w/ 2 levels "0","1": 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ stent          : Factor w/ 2 levels "0","1": 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ height         : int  163 168 188 175 168 178 185 173 152 180 ...</span></span>
+<span><span class="co">##  $ female         : Factor w/ 2 levels "0","1": 2 1 1 1 2 1 1 2 2 1 ...</span></span>
+<span><span class="co">##  $ diabetic       : Factor w/ 2 levels "0","1": 2 1 1 2 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ acutemi        : Factor w/ 2 levels "0","1": 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ ejecfrac       : int  56 56 50 50 55 50 58 30 60 60 ...</span></span>
+<span><span class="co">##  $ ves1proc       : Factor w/ 6 levels "0","1","2","3",..: 2 2 2 2 2 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ sixMonthSurvive: logi  FALSE TRUE TRUE TRUE TRUE TRUE ...</span></span></code></pre></div>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_17-06-55.png" width="90%"></div>
+<p>其中<code>abcix</code>是处理因素变量，<code>sixMonthSurvive</code>是二分类的结局变量，<code>cardbill</code>是连续型的结局变量，其余变量是协变量。</p>
+<p>首先可以通过<code>tableone</code>包看一下加权前的数据情况：</p>
+<div class="sourceCode" id="cb632"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/kaz-yos/tableone">tableone</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">covs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">lindner</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tableone/man/CreateTableOne.html">CreateTableOne</a></span><span class="op">(</span>vars <span class="op">=</span> <span class="va">covs</span>,</span>
+<span>                      strata <span class="op">=</span> <span class="st">"abcix"</span>,</span>
+<span>                      data <span class="op">=</span> <span class="va">lindner</span></span>
+<span>                      <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">tab</span>,showAllLevels <span class="op">=</span> <span class="cn">T</span>,smd <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">##                       Stratified by abcix</span></span>
+<span><span class="co">##                        level 0              1              p      test SMD   </span></span>
+<span><span class="co">##   n                             298            698                           </span></span>
+<span><span class="co">##   lifepres (mean (SD))        11.02 (2.54)   11.42 (1.45)   0.002       0.194</span></span>
+<span><span class="co">##   stent (%)            0        124 (41.6)     206 (29.5)  &lt;0.001       0.255</span></span>
+<span><span class="co">##                        1        174 (58.4)     492 (70.5)                    </span></span>
+<span><span class="co">##   height (mean (SD))         171.45 (10.59) 171.44 (10.69)  0.996      &lt;0.001</span></span>
+<span><span class="co">##   female (%)           0        183 (61.4)     467 (66.9)   0.111       0.115</span></span>
+<span><span class="co">##                        1        115 (38.6)     231 (33.1)                    </span></span>
+<span><span class="co">##   diabetic (%)         0        218 (73.2)     555 (79.5)   0.034       0.150</span></span>
+<span><span class="co">##                        1         80 (26.8)     143 (20.5)                    </span></span>
+<span><span class="co">##   acutemi (%)          0        280 (94.0)     573 (82.1)  &lt;0.001       0.372</span></span>
+<span><span class="co">##                        1         18 ( 6.0)     125 (17.9)                    </span></span>
+<span><span class="co">##   ejecfrac (mean (SD))        52.29 (10.30)  50.40 (10.42)  0.009       0.182</span></span>
+<span><span class="co">##   ves1proc (%)         0          1 ( 0.3)       3 ( 0.4)  &lt;0.001       0.446</span></span>
+<span><span class="co">##                        1        243 (81.5)     437 (62.6)                    </span></span>
+<span><span class="co">##                        2         47 (15.8)     205 (29.4)                    </span></span>
+<span><span class="co">##                        3          6 ( 2.0)      39 ( 5.6)                    </span></span>
+<span><span class="co">##                        4          1 ( 0.3)      13 ( 1.9)                    </span></span>
+<span><span class="co">##                        5          0 ( 0.0)       1 ( 0.1)</span></span></code></pre></div>
+<p>如果只是看一下协变量是否在不同组间均衡，可以通过之前介绍过的<code>cobalt</code>实现：</p>
+<div class="sourceCode" id="cb633"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ngreifer.github.io/cobalt/">cobalt</a></span><span class="op">)</span></span>
+<span><span class="co">##  cobalt (Version 4.4.1, Build Date: 2022-11-03)</span></span>
+<span></span>
+<span><span class="co"># 选择只有协变量的数据框</span></span>
+<span><span class="va">covariates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">lindner</span>, select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">4</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ngreifer.github.io/cobalt/reference/bal.tab.html">bal.tab</a></span><span class="op">(</span><span class="va">covariates</span>,treat <span class="op">=</span> <span class="va">lindner</span><span class="op">$</span><span class="va">abcix</span>, s.d.denom <span class="op">=</span> <span class="st">"pooled"</span>,</span>
+<span>        m.threshold <span class="op">=</span> <span class="fl">0.1</span>, un <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        v.threshold <span class="op">=</span> <span class="fl">2</span></span>
+<span>        <span class="op">)</span></span>
+<span><span class="co">## Balance Measures</span></span>
+<span><span class="co">##               Type Diff.Un     M.Threshold.Un V.Ratio.Un   V.Threshold.Un</span></span>
+<span><span class="co">## lifepres   Contin.  0.1941 Not Balanced, &gt;0.1     0.3239 Not Balanced, &gt;2</span></span>
+<span><span class="co">## stent       Binary  0.1210 Not Balanced, &gt;0.1          .                 </span></span>
+<span><span class="co">## height     Contin. -0.0003     Balanced, &lt;0.1     1.0201     Balanced, &lt;2</span></span>
+<span><span class="co">## female      Binary -0.0550     Balanced, &lt;0.1          .                 </span></span>
+<span><span class="co">## diabetic    Binary -0.0636     Balanced, &lt;0.1          .                 </span></span>
+<span><span class="co">## acutemi     Binary  0.1187 Not Balanced, &gt;0.1          .                 </span></span>
+<span><span class="co">## ejecfrac   Contin. -0.1821 Not Balanced, &gt;0.1     1.0238     Balanced, &lt;2</span></span>
+<span><span class="co">## ves1proc_0  Binary  0.0009     Balanced, &lt;0.1          .                 </span></span>
+<span><span class="co">## ves1proc_1  Binary -0.1894 Not Balanced, &gt;0.1          .                 </span></span>
+<span><span class="co">## ves1proc_2  Binary  0.1360 Not Balanced, &gt;0.1          .                 </span></span>
+<span><span class="co">## ves1proc_3  Binary  0.0357     Balanced, &lt;0.1          .                 </span></span>
+<span><span class="co">## ves1proc_4  Binary  0.0153     Balanced, &lt;0.1          .                 </span></span>
+<span><span class="co">## ves1proc_5  Binary  0.0014     Balanced, &lt;0.1          .                 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Balance tally for mean differences</span></span>
+<span><span class="co">##                    count</span></span>
+<span><span class="co">## Balanced, &lt;0.1         7</span></span>
+<span><span class="co">## Not Balanced, &gt;0.1     6</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Variable with the greatest mean difference</span></span>
+<span><span class="co">##  Variable Diff.Un     M.Threshold.Un</span></span>
+<span><span class="co">##  lifepres  0.1941 Not Balanced, &gt;0.1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Balance tally for variance ratios</span></span>
+<span><span class="co">##                  count</span></span>
+<span><span class="co">## Balanced, &lt;2         2</span></span>
+<span><span class="co">## Not Balanced, &gt;2     1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Variable with the greatest variance ratio</span></span>
+<span><span class="co">##  Variable V.Ratio.Un   V.Threshold.Un</span></span>
+<span><span class="co">##  lifepres     0.3239 Not Balanced, &gt;2</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Sample sizes</span></span>
+<span><span class="co">##     Control Treated</span></span>
+<span><span class="co">## All     298     698</span></span></code></pre></div>
+<p><code>Diff.Adj</code>就是<code>SMD</code></p>
+</div>
+<div id="iptw" class="section level2" number="37.2">
+<h2>
+<span class="header-section-number">37.2</span> IPTW<a class="anchor" aria-label="anchor" href="#iptw"><i class="fas fa-link"></i></a>
+</h2>
+<p><strong>倾向性评分只是一个概率（倾向干预组的概率）</strong>，计算概率的算法是在是太多了，选择自己喜欢的就好，我这里就用最简单的逻辑回归，之前的推文中也演示过随机森林等其他估计PS的方法。</p>
+<div class="sourceCode" id="cb634"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">psfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">abcix</span> <span class="op">~</span> <span class="va">stent</span> <span class="op">+</span> <span class="va">height</span> <span class="op">+</span> <span class="va">female</span> <span class="op">+</span> <span class="va">diabetic</span> <span class="op">+</span> <span class="va">acutemi</span> <span class="op">+</span> </span>
+<span>               <span class="va">ejecfrac</span> <span class="op">+</span> <span class="va">ves1proc</span>,</span>
+<span>             data <span class="op">=</span> <span class="va">lindner</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="va">psfit</span><span class="op">$</span><span class="va">fitted.values</span></span></code></pre></div>
+<p>逆概率加权以全部研究对象（ATE）为目标人群，通过加权是每一组研究对象的协变量分布于全部研究对象相似。</p>
+<p>该种加权方法下，研究对象的权重为该对象所在组的概率的倒数。</p>
+<ul>
+<li>干预组：1/ps</li>
+<li>对照组：1/(1-ps)</li>
+</ul>
+<p>下面根据计算出的PS计算每一个样本的权重：</p>
+<div class="sourceCode" id="cb635"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">iptw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">lindner</span><span class="op">$</span><span class="va">abcix</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">1</span><span class="op">/</span><span class="va">ps</span>, <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">lindner</span><span class="op">$</span><span class="va">iptw</span> <span class="op">&lt;-</span> <span class="va">iptw</span></span></code></pre></div>
+<p>加权后可以再次看看数据是否已经均衡：</p>
+<div class="sourceCode" id="cb636"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ngreifer.github.io/cobalt/reference/bal.tab.html">bal.tab</a></span><span class="op">(</span><span class="va">covariates</span>,treat <span class="op">=</span> <span class="va">lindner</span><span class="op">$</span><span class="va">abcix</span>, s.d.denom <span class="op">=</span> <span class="st">"pooled"</span>,</span>
+<span>        weights <span class="op">=</span> <span class="va">lindner</span><span class="op">$</span><span class="va">iptw</span>,</span>
+<span>        m.threshold <span class="op">=</span> <span class="fl">0.1</span>, un <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        v.threshold <span class="op">=</span> <span class="fl">2</span></span>
+<span>        <span class="op">)</span></span>
+<span><span class="co">## Balance Measures</span></span>
+<span><span class="co">##               Type Diff.Un V.Ratio.Un Diff.Adj        M.Threshold V.Ratio.Adj</span></span>
+<span><span class="co">## lifepres   Contin.  0.1941     0.3239   0.3310 Not Balanced, &gt;0.1      0.2185</span></span>
+<span><span class="co">## stent       Binary  0.1210          .   0.0036     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## height     Contin. -0.0003     1.0201  -0.0175     Balanced, &lt;0.1      0.8647</span></span>
+<span><span class="co">## female      Binary -0.0550          .   0.0101     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## diabetic    Binary -0.0636          .  -0.0175     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## acutemi     Binary  0.1187          .  -0.0028     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## ejecfrac   Contin. -0.1821     1.0238  -0.0119     Balanced, &lt;0.1      0.9784</span></span>
+<span><span class="co">## ves1proc_0  Binary  0.0009          .   0.0009     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## ves1proc_1  Binary -0.1894          .   0.0211     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## ves1proc_2  Binary  0.1360          .  -0.0073     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## ves1proc_3  Binary  0.0357          .  -0.0155     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## ves1proc_4  Binary  0.0153          .  -0.0002     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">## ves1proc_5  Binary  0.0014          .   0.0010     Balanced, &lt;0.1           .</span></span>
+<span><span class="co">##                 V.Threshold</span></span>
+<span><span class="co">## lifepres   Not Balanced, &gt;2</span></span>
+<span><span class="co">## stent                      </span></span>
+<span><span class="co">## height         Balanced, &lt;2</span></span>
+<span><span class="co">## female                     </span></span>
+<span><span class="co">## diabetic                   </span></span>
+<span><span class="co">## acutemi                    </span></span>
+<span><span class="co">## ejecfrac       Balanced, &lt;2</span></span>
+<span><span class="co">## ves1proc_0                 </span></span>
+<span><span class="co">## ves1proc_1                 </span></span>
+<span><span class="co">## ves1proc_2                 </span></span>
+<span><span class="co">## ves1proc_3                 </span></span>
+<span><span class="co">## ves1proc_4                 </span></span>
+<span><span class="co">## ves1proc_5                 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Balance tally for mean differences</span></span>
+<span><span class="co">##                    count</span></span>
+<span><span class="co">## Balanced, &lt;0.1        12</span></span>
+<span><span class="co">## Not Balanced, &gt;0.1     1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Variable with the greatest mean difference</span></span>
+<span><span class="co">##  Variable Diff.Adj        M.Threshold</span></span>
+<span><span class="co">##  lifepres    0.331 Not Balanced, &gt;0.1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Balance tally for variance ratios</span></span>
+<span><span class="co">##                  count</span></span>
+<span><span class="co">## Balanced, &lt;2         2</span></span>
+<span><span class="co">## Not Balanced, &gt;2     1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Variable with the greatest variance ratio</span></span>
+<span><span class="co">##  Variable V.Ratio.Adj      V.Threshold</span></span>
+<span><span class="co">##  lifepres      0.2185 Not Balanced, &gt;2</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Effective sample sizes</span></span>
+<span><span class="co">##            Control Treated</span></span>
+<span><span class="co">## Unadjusted  298.    698.  </span></span>
+<span><span class="co">## Adjusted    202.27  671.09</span></span></code></pre></div>
+<p>可以看到除了<code>lifepres</code>之外，其他全都均衡了，效果还是挺不错的。加权后，干预组和对照组的样本量已经变了哦！</p>
+<p>如果想要画出加权后数据的基线资料表，可以借助<code>survey</code>包。</p>
+<div class="sourceCode" id="cb637"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://r-survey.r-forge.r-project.org/survey/">survey</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: grid</span></span>
+<span><span class="co">## Loading required package: Matrix</span></span>
+<span><span class="co">## Loading required package: survival</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'survey'</span></span>
+<span><span class="co">## The following object is masked from 'package:graphics':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     dotchart</span></span>
+<span></span>
+<span><span class="co"># 获取加权后的数据</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survey/man/svydesign.html">svydesign</a></span><span class="op">(</span>ids <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">lindner</span>, weights <span class="op">=</span> <span class="op">~</span> <span class="va">iptw</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 使用tableone中的函数创建加权后的三线表</span></span>
+<span><span class="va">tab_IPTW</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/pkg/tableone/man/svyCreateTableOne.html">svyCreateTableOne</a></span><span class="op">(</span>vars<span class="op">=</span><span class="va">covs</span>, strata<span class="op">=</span><span class="st">"abcix"</span>,data<span class="op">=</span><span class="va">df</span> ,test<span class="op">=</span><span class="cn">T</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">tab_IPTW</span>,showAllLevels<span class="op">=</span><span class="cn">TRUE</span>,smd<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">##                       Stratified by abcix</span></span>
+<span><span class="co">##                        level 0               1              p      test SMD   </span></span>
+<span><span class="co">##   n                          1004.38         994.47                           </span></span>
+<span><span class="co">##   lifepres (mean (SD))         10.74 (3.05)   11.42 (1.43)   0.024       0.288</span></span>
+<span><span class="co">##   stent (%)            0       333.7 (33.2)   326.8 (32.9)   0.921       0.008</span></span>
+<span><span class="co">##                        1       670.7 (66.8)   667.7 (67.1)                    </span></span>
+<span><span class="co">##   height (mean (SD))          171.60 (11.39) 171.41 (10.60)  0.849       0.017</span></span>
+<span><span class="co">##   female (%)           0       668.5 (66.6)   651.8 (65.5)   0.782       0.021</span></span>
+<span><span class="co">##                        1       335.9 (33.4)   342.7 (34.5)                    </span></span>
+<span><span class="co">##   diabetic (%)         0       762.7 (75.9)   772.6 (77.7)   0.610       0.042</span></span>
+<span><span class="co">##                        1       241.7 (24.1)   221.8 (22.3)                    </span></span>
+<span><span class="co">##   acutemi (%)          0       857.6 (85.4)   851.8 (85.7)   0.942       0.008</span></span>
+<span><span class="co">##                        1       146.8 (14.6)   142.6 (14.3)                    </span></span>
+<span><span class="co">##   ejecfrac (mean (SD))         51.07 (10.23)  50.95 (10.12)  0.879       0.012</span></span>
+<span><span class="co">##   ves1proc (%)         0         3.0 ( 0.3)     3.9 ( 0.4)   0.937       0.088</span></span>
+<span><span class="co">##                        1       664.1 (66.1)   678.6 (68.2)                    </span></span>
+<span><span class="co">##                        2       261.6 (26.0)   251.7 (25.3)                    </span></span>
+<span><span class="co">##                        3        61.3 ( 6.1)    45.3 ( 4.6)                    </span></span>
+<span><span class="co">##                        4        14.4 ( 1.4)    14.0 ( 1.4)                    </span></span>
+<span><span class="co">##                        5         0.0 ( 0.0)     1.0 ( 0.1)</span></span></code></pre></div>
+<p><strong>加权之后，就可以做各种分析了，比如回归分析等，分析时把权重因素也考虑进去即可。</strong></p>
+<p>这里演示逻辑回归，根据因变量的类型，可选择不同的回归方法。</p>
+<div class="sourceCode" id="cb638"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">sixMonthSurvive</span><span class="op">~</span><span class="va">abcix</span><span class="op">+</span><span class="va">stent</span><span class="op">+</span><span class="va">height</span><span class="op">+</span><span class="va">female</span><span class="op">+</span><span class="va">diabetic</span><span class="op">+</span><span class="va">acutemi</span><span class="op">+</span></span>
+<span>           <span class="va">ejecfrac</span><span class="op">+</span><span class="va">ves1proc</span>,</span>
+<span>             data <span class="op">=</span> <span class="va">lindner</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>         weights <span class="op">=</span> <span class="va">iptw</span> <span class="co"># 把权重加进去</span></span>
+<span>         <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## glm(formula = sixMonthSurvive ~ abcix + stent + height + female + </span></span>
+<span><span class="co">##     diabetic + acutemi + ejecfrac + ves1proc, family = binomial(), </span></span>
+<span><span class="co">##     data = lindner, weights = iptw)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Deviance Residuals: </span></span>
+<span><span class="co">##     Min       1Q   Median       3Q      Max  </span></span>
+<span><span class="co">## -4.9894   0.0958   0.1640   0.3071   2.8009  </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##               Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)  8.598e+00  1.585e+03   0.005  0.99567    </span></span>
+<span><span class="co">## abcix1       1.785e+00  3.215e-01   5.551 2.84e-08 ***</span></span>
+<span><span class="co">## stent1      -6.401e-01  3.024e-01  -2.117  0.03426 *  </span></span>
+<span><span class="co">## height       3.491e-02  1.154e-02   3.025  0.00248 ** </span></span>
+<span><span class="co">## female1      8.123e-03  3.143e-01   0.026  0.97938    </span></span>
+<span><span class="co">## diabetic1   -7.314e-01  2.813e-01  -2.599  0.00934 ** </span></span>
+<span><span class="co">## acutemi1    -1.540e+00  3.011e-01  -5.116 3.11e-07 ***</span></span>
+<span><span class="co">## ejecfrac     5.923e-02  1.057e-02   5.604 2.10e-08 ***</span></span>
+<span><span class="co">## ves1proc1   -1.378e+01  1.585e+03  -0.009  0.99306    </span></span>
+<span><span class="co">## ves1proc2   -1.184e+01  1.585e+03  -0.007  0.99404    </span></span>
+<span><span class="co">## ves1proc3   -1.569e+01  1.585e+03  -0.010  0.99210    </span></span>
+<span><span class="co">## ves1proc4   -7.180e-02  1.787e+03   0.000  0.99997    </span></span>
+<span><span class="co">## ves1proc5   -1.817e+00  4.262e+03   0.000  0.99966    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     Null deviance: 732.98  on 995  degrees of freedom</span></span>
+<span><span class="co">## Residual deviance: 469.49  on 983  degrees of freedom</span></span>
+<span><span class="co">## AIC: 485.36</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Number of Fisher Scoring iterations: 16</span></span></code></pre></div>
+<blockquote>
+<p>但是这种方法存在问题，我在<a href="https://stackoverflow.com/questions/7026549/weight-data-with-r-part-ii">stackoverflow</a>中的帖子中看到有人指出，R自带的<code>lm</code>和<code>glm</code>中的<code>weights</code>参数并不是样本的权重，这点可以查看帮助文档确定，所以如果想要使用加权后的数据进行线性回归和逻辑回归，需要使用其他的R包，比如survey包。</p>
+</blockquote>
+<p>除了上面介绍的手动计算权重的方法，也可以通过多个R包实现，比如<code>PSW</code>/<code>PSweight</code>/<code>twang</code>等，大家感兴趣的可以自己查看相关说明。</p>
+</div>
+<div id="重叠加权" class="section level2" number="37.3">
+<h2>
+<span class="header-section-number">37.3</span> 重叠加权<a class="anchor" aria-label="anchor" href="#%E9%87%8D%E5%8F%A0%E5%8A%A0%E6%9D%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>重叠加权的目标人群是两组协变量相似的人，即PS值分布重叠的人，其估计的效应为重叠人群平均处理效应（ATO）。</p>
+<ul>
+<li>干预组：1-ps</li>
+<li>对照组：ps</li>
+</ul>
+<p>重叠加权的优缺点可以看这篇文章：<a href="https://mp.weixin.qq.com/s/OgsRAuMFD9kuiT1Dsze62g">最强的倾向性评分方法—重叠加权</a></p>
+<p>使用<code>PSweight</code>包演示重叠加权，这个包不仅可以用于二分类，还可以用于多分类。</p>
+<p>还是使用<code>lindner</code>这个数据集。</p>
+<div class="sourceCode" id="cb639"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## 数据准备</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lindner</span>, package <span class="op">=</span> <span class="st">"twang"</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># 构建估计PS的formula</span></span>
+<span><span class="va">formula.ps</span> <span class="op">&lt;-</span> <span class="va">abcix</span> <span class="op">~</span> <span class="va">stent</span> <span class="op">+</span> <span class="va">height</span> <span class="op">+</span> <span class="va">female</span> <span class="op">+</span> <span class="va">diabetic</span> <span class="op">+</span> <span class="va">acutemi</span> <span class="op">+</span> <span class="va">ejecfrac</span> <span class="op">+</span> <span class="va">ves1proc</span></span></code></pre></div>
+<p>进行重叠加权：</p>
+<div class="sourceCode" id="cb640"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thuizhou/PSweight">PSweight</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">PSweight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/PSweight/man/PSweight.html">PSweight</a></span><span class="op">(</span>ps.formula <span class="op">=</span> <span class="va">formula.ps</span>, data <span class="op">=</span> <span class="va">lindner</span>, </span>
+<span>                     weight <span class="op">=</span> <span class="st">"overlap"</span>, <span class="co"># 重叠加权</span></span>
+<span>                     yname <span class="op">=</span> <span class="st">"cardbill"</span>, <span class="co"># 因变量</span></span>
+<span>                     family <span class="op">=</span> <span class="st">"gaussian"</span>, </span>
+<span>                     ps.method <span class="op">=</span> <span class="st">"glm"</span>, </span>
+<span>                     out.method <span class="op">=</span> <span class="st">"glm"</span></span>
+<span>                     <span class="op">)</span></span>
+<span></span>
+<span><span class="co">#返回结果，效应估计及其标准误、置信区间、P值</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">PSweight</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Closed-form inference: </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Original group value:  0, 1 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Contrast: </span></span>
+<span><span class="co">##             0 1</span></span>
+<span><span class="co">## Contrast 1 -1 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##            Estimate Std.Error     lwr    upr Pr(&gt;|z|)</span></span>
+<span><span class="co">## Contrast 1  1134.91    879.51 -588.90 2858.7   0.1969</span></span></code></pre></div>
+<p>计算数据均衡性：</p>
+<div class="sourceCode" id="cb641"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">SumStat</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/PSweight/man/SumStat.html">SumStat</a></span><span class="op">(</span>ps.formula <span class="op">=</span> <span class="va">formula.ps</span>, data <span class="op">=</span> <span class="va">lindner</span>, weight <span class="op">=</span> <span class="st">"overlap"</span><span class="op">)</span></span>
+<span><span class="va">SumStat</span><span class="op">[[</span><span class="st">"ess"</span><span class="op">]</span><span class="op">]</span> <span class="co">#有效样本量</span></span>
+<span><span class="co">##   unweighted  overlap</span></span>
+<span><span class="co">## 0        298 287.4367</span></span>
+<span><span class="co">## 1        698 569.5826</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">SumStat</span><span class="op">)</span> <span class="co">#均衡性检验图形</span></span></code></pre></div>
+<div class="inline-figure"><img src="1037-psw_files/figure-html/unnamed-chunk-13-1.png" width="90%"></div>
+<div class="sourceCode" id="cb642"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">SumStat</span><span class="op">)</span> <span class="co">#均衡性检验</span></span>
+<span><span class="co">## unweighted result</span></span>
+<span><span class="co">##           Mean 0  Mean 1   SMD</span></span>
+<span><span class="co">## stent      0.584   0.705 0.254</span></span>
+<span><span class="co">## height   171.446 171.443 0.000</span></span>
+<span><span class="co">## female     0.386   0.331 0.115</span></span>
+<span><span class="co">## diabetic   0.268   0.205 0.150</span></span>
+<span><span class="co">## acutemi    0.060   0.179 0.371</span></span>
+<span><span class="co">## ejecfrac  52.289  50.403 0.182</span></span>
+<span><span class="co">## ves1proc   1.205   1.463 0.427</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## overlap result</span></span>
+<span><span class="co">##           Mean 0  Mean 1 SMD</span></span>
+<span><span class="co">## stent      0.633   0.633   0</span></span>
+<span><span class="co">## height   171.464 171.464   0</span></span>
+<span><span class="co">## female     0.359   0.359   0</span></span>
+<span><span class="co">## diabetic   0.242   0.242   0</span></span>
+<span><span class="co">## acutemi    0.078   0.078   0</span></span>
+<span><span class="co">## ejecfrac  51.830  51.830   0</span></span>
+<span><span class="co">## ves1proc   1.257   1.257   0</span></span></code></pre></div>
+<p>加权后，可以进行后续的各种分析，这里就不演示了。</p>
+</div>
+<div id="参考资料-6" class="section level2" number="37.4">
+<h2>
+<span class="header-section-number">37.4</span> 参考资料<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-6"><i class="fas fa-link"></i></a>
+</h2>
+<p>涂博祥, 秦婴逸, 吴骋, 等. 倾向性评分加权方法介绍及R软件实现[J]. 中国循证医学杂志, 2022, 22(3): 365–372.</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></div>
+<div class="next"><a href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#yplksjhfk"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="nav-link" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-4"><span class="header-section-number">37.1</span> 演示数据</a></li>
+<li><a class="nav-link" href="#iptw"><span class="header-section-number">37.2</span> IPTW</a></li>
+<li><a class="nav-link" href="#%E9%87%8D%E5%8F%A0%E5%8A%A0%E6%9D%83"><span class="header-section-number">37.3</span> 重叠加权</a></li>
+<li><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-6"><span class="header-section-number">37.4</span> 参考资料</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1037-psw.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1037-psw.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>17 多元线性回归 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="17.1 多元线性回归 使用课本例15-1的数据，手动摘录： df15_1 &lt;- data.frame(  cho = c(5.68,3.79,6.02,4.85,4.60,6.05,4.90,7.08,3.85,4.65,4.59,4.29,7.97,   ...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="17 多元线性回归 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="17.1 多元线性回归 使用课本例15-1的数据，手动摘录： df15_1 &lt;- data.frame(  cho = c(5.68,3.79,6.02,4.85,4.60,6.05,4.90,7.08,3.85,4.65,4.59,4.29,7.97,   ...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="17 多元线性回归 | R语言实战医学统计">
+<meta name="twitter:description" content="17.1 多元线性回归 使用课本例15-1的数据，手动摘录： df15_1 &lt;- data.frame(  cho = c(5.68,3.79,6.02,4.85,4.60,6.05,4.90,7.08,3.85,4.65,4.59,4.29,7.97,   ...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="active" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="raljflksdj" class="section level1" number="17">
+<h1>
+<span class="header-section-number">17</span> 多元线性回归<a class="anchor" aria-label="anchor" href="#raljflksdj"><i class="fas fa-link"></i></a>
+</h1>
+<div id="多元线性回归" class="section level2" number="17.1">
+<h2>
+<span class="header-section-number">17.1</span> 多元线性回归<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E5%85%83%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例15-1</strong>的数据，手动摘录：</p>
+<div class="sourceCode" id="cb279"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df15_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  cho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5.68</span>,<span class="fl">3.79</span>,<span class="fl">6.02</span>,<span class="fl">4.85</span>,<span class="fl">4.60</span>,<span class="fl">6.05</span>,<span class="fl">4.90</span>,<span class="fl">7.08</span>,<span class="fl">3.85</span>,<span class="fl">4.65</span>,<span class="fl">4.59</span>,<span class="fl">4.29</span>,<span class="fl">7.97</span>,</span>
+<span>      <span class="fl">6.19</span>,<span class="fl">6.13</span>,<span class="fl">5.71</span>,<span class="fl">6.40</span>,<span class="fl">6.06</span>,<span class="fl">5.09</span>,<span class="fl">6.13</span>,<span class="fl">5.78</span>,<span class="fl">5.43</span>,<span class="fl">6.50</span>,<span class="fl">7.98</span>,<span class="fl">11.54</span>,<span class="fl">5.84</span>,</span>
+<span>      <span class="fl">3.84</span><span class="op">)</span>,</span>
+<span>  tg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.90</span>,<span class="fl">1.64</span>,<span class="fl">3.56</span>,<span class="fl">1.07</span>,<span class="fl">2.32</span>,<span class="fl">0.64</span>,<span class="fl">8.50</span>,<span class="fl">3.00</span>,<span class="fl">2.11</span>,<span class="fl">0.63</span>,<span class="fl">1.97</span>,<span class="fl">1.97</span>,<span class="fl">1.93</span>,</span>
+<span>      <span class="fl">1.18</span>,<span class="fl">2.06</span>,<span class="fl">1.78</span>,<span class="fl">2.40</span>,<span class="fl">3.67</span>,<span class="fl">1.03</span>,<span class="fl">1.71</span>,<span class="fl">3.36</span>,<span class="fl">1.13</span>,<span class="fl">6.21</span>,<span class="fl">7.92</span>,<span class="fl">10.89</span>,<span class="fl">0.92</span>,</span>
+<span>      <span class="fl">1.20</span><span class="op">)</span>,</span>
+<span>  ri <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4.53</span>, <span class="fl">7.32</span>,<span class="fl">6.95</span>,<span class="fl">5.88</span>,<span class="fl">4.05</span>,<span class="fl">1.42</span>,<span class="fl">12.60</span>,<span class="fl">6.75</span>,<span class="fl">16.28</span>,<span class="fl">6.59</span>,<span class="fl">3.61</span>,<span class="fl">6.61</span>,<span class="fl">7.57</span>,</span>
+<span>      <span class="fl">1.42</span>,<span class="fl">10.35</span>,<span class="fl">8.53</span>,<span class="fl">4.53</span>,<span class="fl">12.79</span>,<span class="fl">2.53</span>,<span class="fl">5.28</span>,<span class="fl">2.96</span>,<span class="fl">4.31</span>,<span class="fl">3.47</span>,<span class="fl">3.37</span>,<span class="fl">1.20</span>,<span class="fl">8.61</span>,</span>
+<span>      <span class="fl">6.45</span><span class="op">)</span>,</span>
+<span>  hba <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8.2</span>,<span class="fl">6.9</span>,<span class="fl">10.8</span>,<span class="fl">8.3</span>,<span class="fl">7.5</span>,<span class="fl">13.6</span>,<span class="fl">8.5</span>,<span class="fl">11.5</span>,<span class="fl">7.9</span>,<span class="fl">7.1</span>,<span class="fl">8.7</span>,<span class="fl">7.8</span>,<span class="fl">9.9</span>,<span class="fl">6.9</span>,<span class="fl">10.5</span>,<span class="fl">8.0</span>,</span>
+<span>      <span class="fl">10.3</span>,<span class="fl">7.1</span>,<span class="fl">8.9</span>,<span class="fl">9.9</span>,<span class="fl">8.0</span>,<span class="fl">11.3</span>,<span class="fl">12.3</span>,<span class="fl">9.8</span>,<span class="fl">10.5</span>,<span class="fl">6.4</span>,<span class="fl">9.6</span><span class="op">)</span>,</span>
+<span>  fpg <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11.2</span>,<span class="fl">8.8</span>,<span class="fl">12.3</span>,<span class="fl">11.6</span>,<span class="fl">13.4</span>,<span class="fl">18.3</span>,<span class="fl">11.1</span>,<span class="fl">12.1</span>,<span class="fl">9.6</span>,<span class="fl">8.4</span>,<span class="fl">9.3</span>,<span class="fl">10.6</span>,<span class="fl">8.4</span>,<span class="fl">9.6</span>,<span class="fl">10.9</span>,</span>
+<span>     <span class="fl">10.1</span>,<span class="fl">14.8</span>,<span class="fl">9.1</span>,<span class="fl">10.8</span>,<span class="fl">10.2</span>,<span class="fl">13.6</span>,<span class="fl">14.9</span>,<span class="fl">16.0</span>,<span class="fl">13.2</span>,<span class="fl">20.0</span>,<span class="fl">13.3</span>,<span class="fl">10.4</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df15_1</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    27 obs. of  5 variables:</span></span>
+<span><span class="co">##  $ cho: num  5.68 3.79 6.02 4.85 4.6 6.05 4.9 7.08 3.85 4.65 ...</span></span>
+<span><span class="co">##  $ tg : num  1.9 1.64 3.56 1.07 2.32 0.64 8.5 3 2.11 0.63 ...</span></span>
+<span><span class="co">##  $ ri : num  4.53 7.32 6.95 5.88 4.05 ...</span></span>
+<span><span class="co">##  $ hba: num  8.2 6.9 10.8 8.3 7.5 13.6 8.5 11.5 7.9 7.1 ...</span></span>
+<span><span class="co">##  $ fpg: num  11.2 8.8 12.3 11.6 13.4 18.3 11.1 12.1 9.6 8.4 ...</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df15_1</span><span class="op">)</span></span>
+<span><span class="co">##    cho   tg   ri  hba  fpg</span></span>
+<span><span class="co">## 1 5.68 1.90 4.53  8.2 11.2</span></span>
+<span><span class="co">## 2 3.79 1.64 7.32  6.9  8.8</span></span>
+<span><span class="co">## 3 6.02 3.56 6.95 10.8 12.3</span></span>
+<span><span class="co">## 4 4.85 1.07 5.88  8.3 11.6</span></span>
+<span><span class="co">## 5 4.60 2.32 4.05  7.5 13.4</span></span>
+<span><span class="co">## 6 6.05 0.64 1.42 13.6 18.3</span></span></code></pre></div>
+<p>数据一共5列，第1列是总胆固醇，第2列是甘油三酯，第3列是胰岛素，第4列是糖化血红蛋白，第5列是空腹血糖（因变量）。</p>
+<p>在建立回归方程前，先简单探索下数据：</p>
+<div class="sourceCode" id="cb280"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggobi.github.io/ggally/">GGally</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: ggplot2</span></span>
+<span><span class="co">## Warning: package 'ggplot2' was built under R version 4.2.3</span></span>
+<span><span class="co">## Registered S3 method overwritten by 'GGally':</span></span>
+<span><span class="co">##   method from   </span></span>
+<span><span class="co">##   +.gg   ggplot2</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span><span class="op">(</span><span class="va">df15_1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1017-multiregression_files/figure-html/unnamed-chunk-3-1.png" width="90%"></div>
+<p>从这幅图来看，血糖和糖化血红蛋白相关性最大，和甘油三酯关系最小。</p>
+<p>接下来建立回归方程：</p>
+<div class="sourceCode" id="cb281"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">fpg</span> <span class="op">~</span> <span class="va">cho</span> <span class="op">+</span> <span class="va">tg</span> <span class="op">+</span> <span class="va">ri</span> <span class="op">+</span> <span class="va">hba</span>, data <span class="op">=</span> <span class="va">df15_1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = fpg ~ cho + tg + ri + hba, data = df15_1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">## -3.6268 -1.2004 -0.2276  1.5389  4.4467 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span><span class="co">## (Intercept)   5.9433     2.8286   2.101   0.0473 *</span></span>
+<span><span class="co">## cho           0.1424     0.3657   0.390   0.7006  </span></span>
+<span><span class="co">## tg            0.3515     0.2042   1.721   0.0993 .</span></span>
+<span><span class="co">## ri           -0.2706     0.1214  -2.229   0.0363 *</span></span>
+<span><span class="co">## hba           0.6382     0.2433   2.623   0.0155 *</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 2.01 on 22 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.6008, Adjusted R-squared:  0.5282 </span></span>
+<span><span class="co">## F-statistic: 8.278 on 4 and 22 DF,  p-value: 0.0003121</span></span></code></pre></div>
+<p>这个结果信息很丰富，给出了截距，各自变量的系数以及标准误、t值、P值，最下方给出了决定系数R2，调整后的R2，F值，总体方程的P值等。</p>
+</div>
+<div id="回归诊断" class="section level2" number="17.2">
+<h2>
+<span class="header-section-number">17.2</span> 回归诊断<a class="anchor" aria-label="anchor" href="#%E5%9B%9E%E5%BD%92%E8%AF%8A%E6%96%AD"><i class="fas fa-link"></i></a>
+</h2>
+<p>判断数据是否满足多元线性回归的条件。</p>
+<div id="可以通过看图来判断" class="section level3" number="17.2.1">
+<h3>
+<span class="header-section-number">17.2.1</span> 可以通过看图来判断<a class="anchor" aria-label="anchor" href="#%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E7%9C%8B%E5%9B%BE%E6%9D%A5%E5%88%A4%E6%96%AD"><i class="fas fa-link"></i></a>
+</h3>
+<div class="sourceCode" id="cb282"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">opar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1017-multiregression_files/figure-html/unnamed-chunk-5-1.png" width="90%"></div>
+<div class="sourceCode" id="cb283"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">opar</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li><p>第1幅图（左上）是<strong>残差拟合图</strong>，展示真实残差和拟合残差的关系，判读是否满足<strong>线性</strong>这个条件，如果满足，则应该为一条直线，但是本图明显是一条曲线，说明不是很满足<strong>线性</strong>这个条件，可能需要加二次项。</p></li>
+<li><p>第2幅图（右上）是<strong>正态Q-Q图</strong>，判断是否满足<strong>正态性</strong>这个条件，通过这个图来看，基本满足。</p></li>
+<li><p>第3幅图（左下）是<strong>位置尺度图</strong>，判读是否满足<strong>同方差性</strong>，如果满足，水平线两侧的点应该随机分布，从此图来看基本满足。</p></li>
+<li><p>第4幅图（右下）是<strong>残差杠杆图</strong>，用于识别离群点等。</p></li>
+</ul>
+</div>
+<div id="也可以通过统计方法验证" class="section level3" number="17.2.2">
+<h3>
+<span class="header-section-number">17.2.2</span> 也可以通过统计方法验证<a class="anchor" aria-label="anchor" href="#%E4%B9%9F%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E7%BB%9F%E8%AE%A1%E6%96%B9%E6%B3%95%E9%AA%8C%E8%AF%81"><i class="fas fa-link"></i></a>
+</h3>
+<div id="首先是线性回归模型的综合验证" class="section level4" number="17.2.2.1">
+<h4>
+<span class="header-section-number">17.2.2.1</span> 首先是线性回归模型的综合验证<a class="anchor" aria-label="anchor" href="#%E9%A6%96%E5%85%88%E6%98%AF%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%BC%E5%90%88%E9%AA%8C%E8%AF%81"><i class="fas fa-link"></i></a>
+</h4>
+<div class="sourceCode" id="cb284"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">gvlma</span><span class="op">)</span></span>
+<span><span class="va">gvmodel</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/gvlma/man/gvlma.html">gvlma</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">gvmodel</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = fpg ~ cho + tg + ri + hba, data = df15_1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">## -3.6268 -1.2004 -0.2276  1.5389  4.4467 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span><span class="co">## (Intercept)   5.9433     2.8286   2.101   0.0473 *</span></span>
+<span><span class="co">## cho           0.1424     0.3657   0.390   0.7006  </span></span>
+<span><span class="co">## tg            0.3515     0.2042   1.721   0.0993 .</span></span>
+<span><span class="co">## ri           -0.2706     0.1214  -2.229   0.0363 *</span></span>
+<span><span class="co">## hba           0.6382     0.2433   2.623   0.0155 *</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 2.01 on 22 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.6008, Adjusted R-squared:  0.5282 </span></span>
+<span><span class="co">## F-statistic: 8.278 on 4 and 22 DF,  p-value: 0.0003121</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## ASSESSMENT OF THE LINEAR MODEL ASSUMPTIONS</span></span>
+<span><span class="co">## USING THE GLOBAL TEST ON 4 DEGREES-OF-FREEDOM:</span></span>
+<span><span class="co">## Level of Significance =  0.05 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">##  gvlma(x = f) </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                      Value  p-value                   Decision</span></span>
+<span><span class="co">## Global Stat        9.68910 0.046003 Assumptions NOT satisfied!</span></span>
+<span><span class="co">## Skewness           0.65344 0.418886    Assumptions acceptable.</span></span>
+<span><span class="co">## Kurtosis           0.04015 0.841193    Assumptions acceptable.</span></span>
+<span><span class="co">## Link Function      7.68064 0.005582 Assumptions NOT satisfied!</span></span>
+<span><span class="co">## Heteroscedasticity 1.31487 0.251515    Assumptions acceptable.</span></span></code></pre></div>
+<p>从最后一句话看，我们的数据满足多元线性回归的所有统计假设，如果不满足会有对应输出。</p>
+<p>####回归模型条件挨个验证</p>
+<div class="sourceCode" id="cb285"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-forge.r-project.org/projects/car/">car</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: carData</span></span>
+<span></span>
+<span><span class="co"># 验证正态性</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/car/man/qqPlot.html">qqPlot</a></span><span class="op">(</span><span class="va">f</span>,labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">df15_1</span><span class="op">)</span>, id.method <span class="op">=</span> <span class="st">"identify"</span>,simulate <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>       main <span class="op">=</span> <span class="st">"Q-Q plot"</span><span class="op">)</span>   </span></code></pre></div>
+<div class="inline-figure"><img src="1017-multiregression_files/figure-html/unnamed-chunk-7-1.png" width="90%"></div>
+<pre><code>## [1] 13 26</code></pre>
+<p>从图中可看出正态性基本满足。</p>
+<div class="sourceCode" id="cb287"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 验证因变量独立性</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/car/man/durbinWatsonTest.html">durbinWatsonTest</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span>   </span>
+<span><span class="co">##  lag Autocorrelation D-W Statistic p-value</span></span>
+<span><span class="co">##    1       0.1778885      1.634654   0.334</span></span>
+<span><span class="co">##  Alternative hypothesis: rho != 0</span></span></code></pre></div>
+<p>P值大于0.05，满足条件。</p>
+<div class="sourceCode" id="cb288"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 验证线性</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/car/man/crPlots.html">crPlots</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1017-multiregression_files/figure-html/unnamed-chunk-9-1.png" width="90%"></div>
+<p>通过观察成分残差图，线性基本满足。</p>
+<div class="sourceCode" id="cb289"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 验证方差齐性</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/car/man/ncvTest.html">ncvTest</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span>   </span>
+<span><span class="co">## Non-constant Variance Score Test </span></span>
+<span><span class="co">## Variance formula: ~ fitted.values </span></span>
+<span><span class="co">## Chisquare = 0.0004274839, Df = 1, p = 0.9835</span></span></code></pre></div>
+<p>P值大于0.05，方差齐性满足。</p>
+<div class="sourceCode" id="cb290"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 还是验证方差齐性</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/car/man/spreadLevelPlot.html">spreadLevelPlot</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span> </span></code></pre></div>
+<div class="inline-figure"><img src="1017-multiregression_files/figure-html/unnamed-chunk-11-1.png" width="90%"></div>
+<pre><code>## 
+## Suggested power transformation:  -0.4993159</code></pre>
+<p>基本满足。</p>
+</div>
+</div>
+<div id="多重共线性的检验" class="section level3" number="17.2.3">
+<h3>
+<span class="header-section-number">17.2.3</span> 多重共线性的检验<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E9%87%8D%E5%85%B1%E7%BA%BF%E6%80%A7%E7%9A%84%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>通过计算方差膨胀因子检验</p>
+<div class="sourceCode" id="cb292"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/car/man/vif.html">vif</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="co">##      cho       tg       ri      hba </span></span>
+<span><span class="co">## 2.185539 1.779862 1.278364 1.266730</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/car/man/vif.html">vif</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span><span class="op">&gt;</span><span class="fl">4</span></span>
+<span><span class="co">##   cho    tg    ri   hba </span></span>
+<span><span class="co">## FALSE FALSE FALSE FALSE</span></span></code></pre></div>
+<p>都小于4（标准有争议），基本不存在多重共线性。</p>
+</div>
+</div>
+<div id="逐步选择法" class="section level2" number="17.3">
+<h2>
+<span class="header-section-number">17.3</span> 逐步选择法<a class="anchor" aria-label="anchor" href="#%E9%80%90%E6%AD%A5%E9%80%89%E6%8B%A9%E6%B3%95"><i class="fas fa-link"></i></a>
+</h2>
+<p>向后回归：</p>
+<div class="sourceCode" id="cb293"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">MASS</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/stepAIC.html">stepAIC</a></span><span class="op">(</span><span class="va">f</span>, direction <span class="op">=</span> <span class="st">"backward"</span><span class="op">)</span></span>
+<span><span class="co">## Start:  AIC=42.16</span></span>
+<span><span class="co">## fpg ~ cho + tg + ri + hba</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##        Df Sum of Sq     RSS    AIC</span></span>
+<span><span class="co">## - cho   1    0.6129  89.454 40.343</span></span>
+<span><span class="co">## &lt;none&gt;               88.841 42.157</span></span>
+<span><span class="co">## - tg    1   11.9627 100.804 43.568</span></span>
+<span><span class="co">## - ri    1   20.0635 108.905 45.655</span></span>
+<span><span class="co">## - hba   1   27.7939 116.635 47.507</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Step:  AIC=40.34</span></span>
+<span><span class="co">## fpg ~ tg + ri + hba</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##        Df Sum of Sq     RSS    AIC</span></span>
+<span><span class="co">## &lt;none&gt;               89.454 40.343</span></span>
+<span><span class="co">## - ri    1    25.690 115.144 45.159</span></span>
+<span><span class="co">## - tg    1    26.530 115.984 45.356</span></span>
+<span><span class="co">## - hba   1    32.269 121.723 46.660</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = fpg ~ tg + ri + hba, data = df15_1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">## (Intercept)           tg           ri          hba  </span></span>
+<span><span class="co">##      6.4996       0.4023      -0.2870       0.6632</span></span></code></pre></div>
+<p>向前回归：</p>
+<div class="sourceCode" id="cb294"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/stepAIC.html">stepAIC</a></span><span class="op">(</span><span class="va">f</span>, direction <span class="op">=</span> <span class="st">"forward"</span><span class="op">)</span></span>
+<span><span class="co">## Start:  AIC=42.16</span></span>
+<span><span class="co">## fpg ~ cho + tg + ri + hba</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = fpg ~ cho + tg + ri + hba, data = df15_1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">## (Intercept)          cho           tg           ri          hba  </span></span>
+<span><span class="co">##      5.9433       0.1424       0.3515      -0.2706       0.6382</span></span></code></pre></div>
+<p>逐步回归：</p>
+<div class="sourceCode" id="cb295"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/MASS/man/stepAIC.html">stepAIC</a></span><span class="op">(</span><span class="va">f</span>, direction <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="co">## Start:  AIC=42.16</span></span>
+<span><span class="co">## fpg ~ cho + tg + ri + hba</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##        Df Sum of Sq     RSS    AIC</span></span>
+<span><span class="co">## - cho   1    0.6129  89.454 40.343</span></span>
+<span><span class="co">## &lt;none&gt;               88.841 42.157</span></span>
+<span><span class="co">## - tg    1   11.9627 100.804 43.568</span></span>
+<span><span class="co">## - ri    1   20.0635 108.905 45.655</span></span>
+<span><span class="co">## - hba   1   27.7939 116.635 47.507</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Step:  AIC=40.34</span></span>
+<span><span class="co">## fpg ~ tg + ri + hba</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##        Df Sum of Sq     RSS    AIC</span></span>
+<span><span class="co">## &lt;none&gt;               89.454 40.343</span></span>
+<span><span class="co">## + cho   1     0.613  88.841 42.157</span></span>
+<span><span class="co">## - ri    1    25.690 115.144 45.159</span></span>
+<span><span class="co">## - tg    1    26.530 115.984 45.356</span></span>
+<span><span class="co">## - hba   1    32.269 121.723 46.660</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = fpg ~ tg + ri + hba, data = df15_1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">## (Intercept)           tg           ri          hba  </span></span>
+<span><span class="co">##      6.4996       0.4023      -0.2870       0.6632</span></span></code></pre></div>
+</div>
+<div id="全局择优法" class="section level2" number="17.4">
+<h2>
+<span class="header-section-number">17.4</span> 全局择优法<a class="anchor" aria-label="anchor" href="#%E5%85%A8%E5%B1%80%E6%8B%A9%E4%BC%98%E6%B3%95"><i class="fas fa-link"></i></a>
+</h2>
+<p>也就是全子集回归法。</p>
+<div class="sourceCode" id="cb296"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">leaps</span><span class="op">)</span></span>
+<span><span class="va">leaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/leaps/man/regsubsets.html">regsubsets</a></span><span class="op">(</span><span class="va">fpg</span> <span class="op">~</span> <span class="va">cho</span> <span class="op">+</span> <span class="va">tg</span> <span class="op">+</span> <span class="va">ri</span> <span class="op">+</span> <span class="va">hba</span>, data <span class="op">=</span> <span class="va">df15_1</span>, nbest<span class="op">=</span><span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">leaps</span>, scale <span class="op">=</span> <span class="st">"Cp"</span><span class="op">)</span> <span class="co"># 通过Cp判断</span></span></code></pre></div>
+<div class="inline-figure"><img src="1017-multiregression_files/figure-html/unnamed-chunk-16-1.png" width="90%"></div>
+<p>Cp是越小越好的，从上面这幅图来看，纳入3个自变量（tg/ri/hba）时最好。</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></div>
+<div class="next"><a href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#raljflksdj"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E5%85%83%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92"><span class="header-section-number">17.1</span> 多元线性回归</a></li>
+<li>
+<a class="nav-link" href="#%E5%9B%9E%E5%BD%92%E8%AF%8A%E6%96%AD"><span class="header-section-number">17.2</span> 回归诊断</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E7%9C%8B%E5%9B%BE%E6%9D%A5%E5%88%A4%E6%96%AD"><span class="header-section-number">17.2.1</span> 可以通过看图来判断</a></li>
+<li><a class="nav-link" href="#%E4%B9%9F%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E7%BB%9F%E8%AE%A1%E6%96%B9%E6%B3%95%E9%AA%8C%E8%AF%81"><span class="header-section-number">17.2.2</span> 也可以通过统计方法验证</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E9%87%8D%E5%85%B1%E7%BA%BF%E6%80%A7%E7%9A%84%E6%A3%80%E9%AA%8C"><span class="header-section-number">17.2.3</span> 多重共线性的检验</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E9%80%90%E6%AD%A5%E9%80%89%E6%8B%A9%E6%B3%95"><span class="header-section-number">17.3</span> 逐步选择法</a></li>
+<li><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%8B%A9%E4%BC%98%E6%B3%95"><span class="header-section-number">17.4</span> 全局择优法</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1017-multiregression.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1017-multiregression.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

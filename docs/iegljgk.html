@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>4 重复测量方差分析 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T)  4.1 重复测量数据两因素两水平的方差分析 使用课本例12-1的数据，直接读取： df12_1 &lt;-...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="4 重复测量方差分析 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T)  4.1 重复测量数据两因素两水平的方差分析 使用课本例12-1的数据，直接读取： df12_1 &lt;-...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="4 重复测量方差分析 | R语言实战医学统计">
+<meta name="twitter:description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T)  4.1 重复测量数据两因素两水平的方差分析 使用课本例12-1的数据，直接读取： df12_1 &lt;-...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="active" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="iegljgk" class="section level1" number="4">
+<h1>
+<span class="header-section-number">4</span> 重复测量方差分析<a class="anchor" aria-label="anchor" href="#iegljgk"><i class="fas fa-link"></i></a>
+</h1>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yixuan/showtext">showtext</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: sysfonts</span></span>
+<span><span class="co">## Loading required package: showtextdb</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/showtext/man/showtext_auto.html">showtext_auto</a></span><span class="op">(</span>enable <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<div id="重复测量数据两因素两水平的方差分析" class="section level2" number="4.1">
+<h2>
+<span class="header-section-number">4.1</span> 重复测量数据两因素两水平的方差分析<a class="anchor" aria-label="anchor" href="#%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F%E6%95%B0%E6%8D%AE%E4%B8%A4%E5%9B%A0%E7%B4%A0%E4%B8%A4%E6%B0%B4%E5%B9%B3%E7%9A%84%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例12-1</strong>的数据，直接读取：</p>
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df12_1</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/12-1.sav"</span>, to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## re-encoding from CP936</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df12_1</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    20 obs. of  5 variables:</span></span>
+<span><span class="co">##  $ n    : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ x1   : num  130 124 136 128 122 118 116 138 126 124 ...</span></span>
+<span><span class="co">##  $ x2   : num  114 110 126 116 102 100 98 122 108 106 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 2 levels "处理组","对照组": 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ d    : num  16 14 10 12 20 18 18 16 18 18 ...</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr [1:5] "编号" "治疗前血压" "治疗后血压" "组别" ...</span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr [1:5] "n" "x1" "x2" "group" ...</span></span>
+<span><span class="co">##  - attr(*, "codepage")= int 936</span></span></code></pre></div>
+<p>数据一共5列（第5列是自己算出来的，其实原始数据只有4列），第1列是编号，第2列是治疗前血压，第3例是治疗后血压，第4列是分组，第5列是血压前后差值。</p>
+<p>进行重复测量数据两因素两水平的方差分析前，先把数据转换一下格式：</p>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df12_11</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">df12_1</span><span class="op">[</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>,names_to <span class="op">=</span> <span class="st">"time"</span>,values_to <span class="op">=</span> <span class="st">"hp"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_if</a></span><span class="op">(</span><span class="va">is.character</span>, <span class="va">as.factor</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df12_11</span><span class="op">$</span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df12_11</span><span class="op">$</span><span class="va">n</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df12_11</span><span class="op">)</span></span>
+<span><span class="co">## tibble [40 × 4] (S3: tbl_df/tbl/data.frame)</span></span>
+<span><span class="co">##  $ n    : Factor w/ 20 levels "1","2","3","4",..: 1 1 2 2 3 3 4 4 5 5 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 2 levels "处理组","对照组": 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ time : Factor w/ 2 levels "x1","x2": 1 2 1 2 1 2 1 2 1 2 ...</span></span>
+<span><span class="co">##  $ hp   : num [1:40] 130 114 124 110 136 126 128 116 122 102 ...</span></span></code></pre></div>
+<p>转换后的数据格式如上，只截取了一部分。</p>
+<p>进行重复测量数据两因素两水平的方差分析:</p>
+<p>hp是因变量，time是测量时间（治疗前和治疗后各测量一次），group是分组因素（两种治疗方法），n是受试者编号。</p>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">time</span> <span class="op">*</span> <span class="va">group</span> <span class="op">+</span> <span class="fu">Error</span><span class="op">(</span><span class="va">n</span><span class="op">/</span><span class="op">(</span><span class="va">time</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df12_11</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f1</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: n</span></span>
+<span><span class="co">##           Df Sum Sq Mean Sq F value Pr(&gt;F)</span></span>
+<span><span class="co">## group      1  202.5   202.5   1.574  0.226</span></span>
+<span><span class="co">## Residuals 18 2315.4   128.6               </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: n:time</span></span>
+<span><span class="co">##            Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## time        1 1020.1  1020.1   55.01 7.08e-07 ***</span></span>
+<span><span class="co">## time:group  1  348.1   348.1   18.77 0.000401 ***</span></span>
+<span><span class="co">## Residuals  18  333.8    18.5                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>结果输出了两张表，第二个是测量前后比较与交互作用的方差分析表，第一个是处理组与对照组比较的方差分析表，可以看到结果和课本是一样的！</p>
+<p>用图形方式展示重复测量的结果：</p>
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">df12_11</span>,</span>
+<span>     <span class="fu"><a href="https://rdrr.io/r/stats/interaction.plot.html">interaction.plot</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">group</span>, <span class="va">hp</span>, type <span class="op">=</span> <span class="st">"b"</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"blue"</span><span class="op">)</span>, </span>
+<span>                      pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>,<span class="fl">16</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"两因素两水平重复测量方差分析"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1004-repeatedmeaanova_files/figure-html/unnamed-chunk-5-1.png" width="90%"></div>
+<p>或者用箱线图展示结果：</p>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">group</span><span class="op">*</span><span class="va">time</span>, data <span class="op">=</span> <span class="va">df12_11</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gold"</span>,<span class="st">"green"</span><span class="op">)</span>,</span>
+<span>        main <span class="op">=</span> <span class="st">"两因素两水平重复测量方差分析"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1004-repeatedmeaanova_files/figure-html/unnamed-chunk-6-1.png" width="90%"></div>
+</div>
+<div id="重复测量数据两因素多水平的分析" class="section level2" number="4.2">
+<h2>
+<span class="header-section-number">4.2</span> 重复测量数据两因素多水平的分析<a class="anchor" aria-label="anchor" href="#%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F%E6%95%B0%E6%8D%AE%E4%B8%A4%E5%9B%A0%E7%B4%A0%E5%A4%9A%E6%B0%B4%E5%B9%B3%E7%9A%84%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例12-3</strong>的数据，直接读取：</p>
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df12_3</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/例12-03.sav"</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                             reencode <span class="op">=</span> <span class="st">"utf-8"</span></span>
+<span>                             <span class="op">)</span></span>
+<span><span class="co">## re-encoding from utf-8</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df12_3</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    15 obs. of  7 variables:</span></span>
+<span><span class="co">##  $ No   : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 3 levels "A","B","C": 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ t0   : num  120 118 119 121 127 121 122 128 117 118 ...</span></span>
+<span><span class="co">##  $ t1   : num  108 109 112 112 121 120 121 129 115 114 ...</span></span>
+<span><span class="co">##  $ t2   : num  112 115 119 119 127 118 119 126 111 116 ...</span></span>
+<span><span class="co">##  $ t3   : num  120 126 124 126 133 131 129 135 123 123 ...</span></span>
+<span><span class="co">##  $ t4   : num  117 123 118 120 126 137 133 142 131 133 ...</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr [1:7] "...." "...." "" "" ...</span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr [1:7] "No" "group" "t0" "t1" ...</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df12_3</span><span class="op">)</span></span>
+<span><span class="co">##   No group  t0  t1  t2  t3  t4</span></span>
+<span><span class="co">## 1  1     A 120 108 112 120 117</span></span>
+<span><span class="co">## 2  2     A 118 109 115 126 123</span></span>
+<span><span class="co">## 3  3     A 119 112 119 124 118</span></span>
+<span><span class="co">## 4  4     A 121 112 119 126 120</span></span>
+<span><span class="co">## 5  5     A 127 121 127 133 126</span></span>
+<span><span class="co">## 6  6     B 121 120 118 131 137</span></span></code></pre></div>
+<p>数据一共7列，第1列是患者编号，第2列是诱导方法（3种），第3-7列是5个时间点的血压。</p>
+<p>首先转换数据格式：</p>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df12_31</span> <span class="op">&lt;-</span> <span class="va">df12_3</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fl">3</span><span class="op">:</span><span class="fl">7</span>, names_to <span class="op">=</span> <span class="st">"times"</span>, values_to <span class="op">=</span> <span class="st">"hp"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df12_31</span><span class="op">$</span><span class="va">No</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df12_31</span><span class="op">$</span><span class="va">No</span><span class="op">)</span></span>
+<span><span class="va">df12_31</span><span class="op">$</span><span class="va">times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df12_31</span><span class="op">$</span><span class="va">times</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df12_31</span><span class="op">)</span></span>
+<span><span class="co">## tibble [75 × 4] (S3: tbl_df/tbl/data.frame)</span></span>
+<span><span class="co">##  $ No   : Factor w/ 15 levels "1","2","3","4",..: 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 3 levels "A","B","C": 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ times: Factor w/ 5 levels "t0","t1","t2",..: 1 2 3 4 5 1 2 3 4 5 ...</span></span>
+<span><span class="co">##  $ hp   : num [1:75] 120 108 112 120 117 118 109 115 126 123 ...</span></span></code></pre></div>
+<p>转换后的格式见上图，只截取了部分。</p>
+<p>进行方差分析：</p>
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">times</span> <span class="op">*</span> <span class="va">group</span> <span class="op">+</span> <span class="fu">Error</span><span class="op">(</span><span class="va">No</span><span class="op">/</span><span class="op">(</span><span class="va">times</span><span class="op">)</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df12_31</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f2</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: No</span></span>
+<span><span class="co">##           Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
+<span><span class="co">## group      2  912.2   456.1   5.783 0.0174 *</span></span>
+<span><span class="co">## Residuals 12  946.5    78.9                 </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: No:times</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## times        4 2336.5   584.1   106.6  &lt; 2e-16 ***</span></span>
+<span><span class="co">## times:group  8  837.6   104.7    19.1 1.62e-12 ***</span></span>
+<span><span class="co">## Residuals   48  263.1     5.5                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>输出结果是两张表格，第1个是不同诱导方法患者血压比较的方差分析表，第2个是麻醉诱导时相及其与诱导方法交互作用的方差分析表。</p>
+<p>结果和课本是一样的！具体意义解读请认真学习医学统计学相关知识。</p>
+<p>用图形方式展示重复测量的结果：</p>
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="va">df12_31</span>,</span>
+<span>     <span class="fu"><a href="https://rdrr.io/r/stats/interaction.plot.html">interaction.plot</a></span><span class="op">(</span><span class="va">times</span>, <span class="va">group</span>, <span class="va">hp</span>, type <span class="op">=</span> <span class="st">"b"</span>, </span>
+<span>                      col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"red"</span>,<span class="st">"blue"</span>,<span class="st">"green"</span><span class="op">)</span>, </span>
+<span>                      pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>,<span class="fl">16</span>,<span class="fl">20</span><span class="op">)</span>, </span>
+<span>                      main <span class="op">=</span> <span class="st">"两因素多水平重复测量方差分析"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1004-repeatedmeaanova_files/figure-html/unnamed-chunk-10-1.png" width="90%"></div>
+<p>或者用箱线图展示结果：</p>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">group</span><span class="op">*</span><span class="va">times</span>, data <span class="op">=</span> <span class="va">df12_31</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"gold"</span>,<span class="st">"green"</span>,<span class="st">"black"</span><span class="op">)</span>,</span>
+<span>        main <span class="op">=</span> <span class="st">"两因素多水平重复测量方差分析"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1004-repeatedmeaanova_files/figure-html/unnamed-chunk-11-1.png" width="90%"></div>
+</div>
+<div id="重复测量数据的多重比较" class="section level2" number="4.3">
+<h2>
+<span class="header-section-number">4.3</span> 重复测量数据的多重比较<a class="anchor" aria-label="anchor" href="#%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例12-1</strong>的数据，直接读取：</p>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df12_3</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/例12-03.sav"</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df12_3</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    15 obs. of  7 variables:</span></span>
+<span><span class="co">##  $ No   : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 3 levels "A","B","C": 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ t0   : num  120 118 119 121 127 121 122 128 117 118 ...</span></span>
+<span><span class="co">##  $ t1   : num  108 109 112 112 121 120 121 129 115 114 ...</span></span>
+<span><span class="co">##  $ t2   : num  112 115 119 119 127 118 119 126 111 116 ...</span></span>
+<span><span class="co">##  $ t3   : num  120 126 124 126 133 131 129 135 123 123 ...</span></span>
+<span><span class="co">##  $ t4   : num  117 123 118 120 126 137 133 142 131 133 ...</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr [1:7] "\xd0\xf2\xba\xc5" "\xd7\xe9\xb1\xf0" "" "" ...</span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr [1:7] "No" "group" "t0" "t1" ...</span></span></code></pre></div>
+<p>数据一共7列，第1列是患者编号，第2列是诱导方法（3种），第3-7列是5个时间点的血压。</p>
+<p>首先转换数据格式：</p>
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/hadley/reshape">reshape2</a></span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'reshape2'</span></span>
+<span><span class="co">## The following object is masked from 'package:tidyr':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     smiths</span></span>
+<span></span>
+<span><span class="va">df.l</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reshape2/man/melt.html">melt</a></span><span class="op">(</span><span class="va">df12_3</span>, id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"No"</span>,<span class="st">"group"</span><span class="op">)</span>, </span>
+<span>             variable.name <span class="op">=</span> <span class="st">"times"</span>, </span>
+<span>             value.name <span class="op">=</span> <span class="st">"hp"</span><span class="op">)</span></span>
+<span><span class="va">df.l</span><span class="op">$</span><span class="va">No</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df.l</span><span class="op">$</span><span class="va">No</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df.l</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    75 obs. of  4 variables:</span></span>
+<span><span class="co">##  $ No   : Factor w/ 15 levels "1","2","3","4",..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 3 levels "A","B","C": 1 1 1 1 1 2 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ times: Factor w/ 5 levels "t0","t1","t2",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ hp   : num  120 118 119 121 127 121 122 128 117 118 ...</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df.l</span><span class="op">)</span></span>
+<span><span class="co">##   No group times  hp</span></span>
+<span><span class="co">## 1  1     A    t0 120</span></span>
+<span><span class="co">## 2  2     A    t0 118</span></span>
+<span><span class="co">## 3  3     A    t0 119</span></span>
+<span><span class="co">## 4  4     A    t0 121</span></span>
+<span><span class="co">## 5  5     A    t0 127</span></span>
+<span><span class="co">## 6  6     B    t0 121</span></span></code></pre></div>
+<p>进行重复测量方差分析，默认方法不能输出球形检验的结果，所以我更推荐<code>rstatix</code>提供的方法：</p>
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 默认</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">group</span><span class="op">*</span><span class="va">times</span> <span class="op">+</span> <span class="fu">Error</span><span class="op">(</span><span class="va">No</span><span class="op">/</span><span class="va">times</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df.l</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: No</span></span>
+<span><span class="co">##           Df Sum Sq Mean Sq F value Pr(&gt;F)  </span></span>
+<span><span class="co">## group      2  912.2   456.1   5.783 0.0174 *</span></span>
+<span><span class="co">## Residuals 12  946.5    78.9                 </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: No:times</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## times        4 2336.5   584.1   106.6  &lt; 2e-16 ***</span></span>
+<span><span class="co">## group:times  8  837.6   104.7    19.1 1.62e-12 ***</span></span>
+<span><span class="co">## Residuals   48  263.1     5.5                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># rstatix</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/rstatix/">rstatix</a></span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'rstatix'</span></span>
+<span><span class="co">## The following object is masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     filter</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/anova_test.html">anova_test</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df.l</span>,</span>
+<span>           dv <span class="op">=</span> <span class="va">hp</span>,</span>
+<span>           wid <span class="op">=</span> <span class="va">No</span>,</span>
+<span>           within <span class="op">=</span> <span class="va">times</span>,</span>
+<span>           between <span class="op">=</span> <span class="va">group</span></span>
+<span>           <span class="op">)</span></span>
+<span><span class="co">## ANOVA Table (type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $ANOVA</span></span>
+<span><span class="co">##        Effect DFn DFd       F        p p&lt;.05   ges</span></span>
+<span><span class="co">## 1       group   2  12   5.783 1.70e-02     * 0.430</span></span>
+<span><span class="co">## 2       times   4  48 106.558 3.02e-23     * 0.659</span></span>
+<span><span class="co">## 3 group:times   8  48  19.101 1.62e-12     * 0.409</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $`Mauchly's Test for Sphericity`</span></span>
+<span><span class="co">##        Effect     W     p p&lt;.05</span></span>
+<span><span class="co">## 1       times 0.293 0.178      </span></span>
+<span><span class="co">## 2 group:times 0.293 0.178      </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $`Sphericity Corrections`</span></span>
+<span><span class="co">##        Effect   GGe      DF[GG]    p[GG] p[GG]&lt;.05   HFe      DF[HF]    p[HF]</span></span>
+<span><span class="co">## 1       times 0.679 2.71, 32.58 1.87e-16         * 0.896 3.59, 43.03 4.65e-21</span></span>
+<span><span class="co">## 2 group:times 0.679 5.43, 32.58 4.26e-09         * 0.896 7.17, 43.03 2.04e-11</span></span>
+<span><span class="co">##   p[HF]&lt;.05</span></span>
+<span><span class="co">## 1         *</span></span>
+<span><span class="co">## 2         *</span></span></code></pre></div>
+<p>画图展示：</p>
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df.l</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">times</span>,<span class="va">group</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>mm<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">hp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">times</span>,<span class="va">mm</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>group<span class="op">=</span><span class="va">group</span>,color<span class="op">=</span><span class="va">group</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">## `summarise()` has grouped output by 'times'. You can override using the</span></span>
+<span><span class="co">## `.groups` argument.</span></span>
+<span><span class="co">## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
+<span><span class="co">## ℹ Please use `linewidth` instead.</span></span>
+<span><span class="co">## This warning is displayed once every 8 hours.</span></span>
+<span><span class="co">## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span>
+<span><span class="co">## generated.</span></span></code></pre></div>
+<div class="inline-figure"><img src="1004-repeatedmeaanova_files/figure-html/unnamed-chunk-16-1.png" width="90%"></div>
+<p>接下来是重复测量数据的多重比较，课本中分成了3个方面。</p>
+<div id="组间差别多重比较" class="section level3" number="4.3.1">
+<h3>
+<span class="header-section-number">4.3.1</span> 组间差别多重比较<a class="anchor" aria-label="anchor" href="#%E7%BB%84%E9%97%B4%E5%B7%AE%E5%88%AB%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p><code>LSD/SNK/Tukey/Dunnett/Bonferroni</code>等方法都可以，和多个均数比较的多重检验一样。</p>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">PMCMRplus</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/PMCMRplus/man/lsdTest.html">lsdTest</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df.l</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pairwise comparisons using Least Significant Difference Test</span></span>
+<span><span class="co">## data: hp by group</span></span>
+<span><span class="co">## alternative hypothesis: two.sided</span></span>
+<span><span class="co">## P value adjustment method: none</span></span>
+<span><span class="co">## H0</span></span>
+<span><span class="co">##            t value  Pr(&gt;|t|)    </span></span>
+<span><span class="co">## B - A == 0   2.175 0.0329218   *</span></span>
+<span><span class="co">## C - A == 0   3.860 0.0002446 ***</span></span>
+<span><span class="co">## C - B == 0   1.686 0.0962097   .</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>P值和课本不太一样，但是结论是一样的，A组和B组之间，A组和C组之间有差别，B组和C组之间没有差别。</p>
+</div>
+<div id="时间趋势比较" class="section level3" number="4.3.2">
+<h3>
+<span class="header-section-number">4.3.2</span> 时间趋势比较<a class="anchor" aria-label="anchor" href="#%E6%97%B6%E9%97%B4%E8%B6%8B%E5%8A%BF%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>重复测量方差分析可以采取正交多项式来探索时间变化趋势，具体的内涵解读可以参考冯国双老师的这篇文章：<a href="https://mp.weixin.qq.com/s/ndinwbDJsHjAelvNfwqgwA">重复测量数据探索时间变化趋势</a></p>
+<p>在R里面进行正交多项式的探索略显复杂，首先定义要对时间变量（这里是times）进行正交多项式转变，我们这里有5个时间点，所以是1次方到4次方：</p>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">df.l</span><span class="op">$</span><span class="va">times</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.poly</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">df.l</span><span class="op">$</span><span class="va">times</span><span class="op">)</span></span>
+<span><span class="co">##            .L         .Q            .C         ^4</span></span>
+<span><span class="co">## t0 -0.6324555  0.5345225 -3.162278e-01  0.1195229</span></span>
+<span><span class="co">## t1 -0.3162278 -0.2672612  6.324555e-01 -0.4780914</span></span>
+<span><span class="co">## t2  0.0000000 -0.5345225 -4.095972e-16  0.7171372</span></span>
+<span><span class="co">## t3  0.3162278 -0.2672612 -6.324555e-01 -0.4780914</span></span>
+<span><span class="co">## t4  0.6324555  0.5345225  3.162278e-01  0.1195229</span></span></code></pre></div>
+<p>然后继续进行方差分析，此时是单纯探索时间对因变量的影响，所以注意formula的形式：</p>
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># A组</span></span>
+<span><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">times</span>, data <span class="op">=</span> <span class="va">df.l</span><span class="op">[</span><span class="va">df.l</span><span class="op">$</span><span class="va">group</span><span class="op">==</span><span class="st">"A"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 分别看不同次方的结果</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f1</span>, </span>
+<span>        split<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>times<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>liner<span class="op">=</span><span class="fl">1</span>,quadratic<span class="op">=</span><span class="fl">2</span>,cubic<span class="op">=</span><span class="fl">3</span>,biquadrate<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">##                     Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## times                4  475.4   118.9   5.580 0.003486 ** </span></span>
+<span><span class="co">##   times: liner       1   84.5    84.5   3.967 0.060229 .  </span></span>
+<span><span class="co">##   times: quadratic   1   26.4    26.4   1.240 0.278655    </span></span>
+<span><span class="co">##   times: cubic       1  364.5   364.5  17.113 0.000511 ***</span></span>
+<span><span class="co">##   times: biquadrate  1    0.0     0.0   0.001 0.972627    </span></span>
+<span><span class="co">## Residuals           20  426.0    21.3                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># B组</span></span>
+<span><span class="va">f2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">times</span>, data <span class="op">=</span> <span class="va">df.l</span><span class="op">[</span><span class="va">df.l</span><span class="op">$</span><span class="va">group</span><span class="op">==</span><span class="st">"B"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f2</span>, split<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>times<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>liner<span class="op">=</span><span class="fl">1</span>,quadratic<span class="op">=</span><span class="fl">2</span>,cubic<span class="op">=</span><span class="fl">3</span>,biquadrate<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">##                     Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## times                4 1017.0   254.3   9.757 0.000152 ***</span></span>
+<span><span class="co">##   times: liner       1  662.5   662.5  25.421 6.24e-05 ***</span></span>
+<span><span class="co">##   times: quadratic   1  296.2   296.2  11.367 0.003034 ** </span></span>
+<span><span class="co">##   times: cubic       1    3.9     3.9   0.150 0.702229    </span></span>
+<span><span class="co">##   times: biquadrate  1   54.4    54.4   2.088 0.163954    </span></span>
+<span><span class="co">## Residuals           20  521.2    26.1                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># C组</span></span>
+<span><span class="va">f3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">times</span><span class="op">+</span><span class="fu">Error</span><span class="op">(</span><span class="va">No</span><span class="op">/</span><span class="va">times</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">df.l</span><span class="op">[</span><span class="va">df.l</span><span class="op">$</span><span class="va">group</span><span class="op">==</span><span class="st">"C"</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">f3</span>, split<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>times<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>liner<span class="op">=</span><span class="fl">1</span>,quadratic<span class="op">=</span><span class="fl">2</span>,cubic<span class="op">=</span><span class="fl">3</span>,biquadrate<span class="op">=</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: No</span></span>
+<span><span class="co">##           Df Sum Sq Mean Sq F value Pr(&gt;F)</span></span>
+<span><span class="co">## Residuals  4     98    24.5               </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Error: No:times</span></span>
+<span><span class="co">##                     Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## times                4 1681.6   420.4  40.915 3.28e-08 ***</span></span>
+<span><span class="co">##   times: liner       1  403.3   403.3  39.249 1.13e-05 ***</span></span>
+<span><span class="co">##   times: quadratic   1   41.7    41.7   4.054   0.0612 .  </span></span>
+<span><span class="co">##   times: cubic       1  605.5   605.5  58.931 9.43e-07 ***</span></span>
+<span><span class="co">##   times: biquadrate  1  631.1   631.1  61.425 7.23e-07 ***</span></span>
+<span><span class="co">## Residuals           16  164.4    10.3                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>可以看到结果和课本差异很大，关于这方面的资料较少，如果有大神知道，欢迎指教！</p>
+</div>
+<div id="时间点比较" class="section level3" number="4.3.3">
+<h3>
+<span class="header-section-number">4.3.3</span> 时间点比较<a class="anchor" aria-label="anchor" href="#%E6%97%B6%E9%97%B4%E7%82%B9%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>课本说因为事后检验重复次数太多难以承受，但是我们用计算机很快，所以用事后检验也没什么问题。</p>
+<p>事后检验可以参考组间比较，根据组别进行分组，分组比较不同时间点的差别。</p>
+<p>事前检验课本采用配对t检验，全都和t0的数据进行比较。</p>
+<p>事前检验使用<code>rstatix</code>包解决:</p>
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/rstatix/">rstatix</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df.l</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/t_test.html">t_test</a></span><span class="op">(</span><span class="va">hp</span> <span class="op">~</span> <span class="va">times</span>, ref.group <span class="op">=</span> <span class="st">"t0"</span>,paired <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 12 × 11</span></span>
+<span><span class="co">##    group .y.   group1 group2    n1    n2 statistic    df         p    p.adj</span></span>
+<span><span class="co">##  * &lt;fct&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;int&gt; &lt;int&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span><span class="co">##  1 A     hp    t0     t1         5     5     8.35      4 0.001     0.004   </span></span>
+<span><span class="co">##  2 A     hp    t0     t2         5     5     1.77      4 0.152     0.304   </span></span>
+<span><span class="co">##  3 A     hp    t0     t3         5     5    -3.64      4 0.022     0.066   </span></span>
+<span><span class="co">##  4 A     hp    t0     t4         5     5     0.147     4 0.89      0.89    </span></span>
+<span><span class="co">##  5 B     hp    t0     t1         5     5     1.72      4 0.16      0.16    </span></span>
+<span><span class="co">##  6 B     hp    t0     t2         5     5     4.35      4 0.012     0.024   </span></span>
+<span><span class="co">##  7 B     hp    t0     t3         5     5    -8.37      4 0.001     0.003   </span></span>
+<span><span class="co">##  8 B     hp    t0     t4         5     5   -16.7       4 0.0000747 0.000299</span></span>
+<span><span class="co">##  9 C     hp    t0     t1         5     5     1.44      4 0.223     0.292   </span></span>
+<span><span class="co">## 10 C     hp    t0     t2         5     5     4.75      4 0.009     0.028   </span></span>
+<span><span class="co">## 11 C     hp    t0     t3         5     5    -5.12      4 0.007     0.028   </span></span>
+<span><span class="co">## 12 C     hp    t0     t4         5     5    -1.80      4 0.146     0.292   </span></span>
+<span><span class="co">## # ℹ 1 more variable: p.adj.signif &lt;chr&gt;</span></span></code></pre></div>
+<p>直接给出3组的结果，和课本一模一样~</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></div>
+<div class="next"><a href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#iegljgk"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F%E6%95%B0%E6%8D%AE%E4%B8%A4%E5%9B%A0%E7%B4%A0%E4%B8%A4%E6%B0%B4%E5%B9%B3%E7%9A%84%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><span class="header-section-number">4.1</span> 重复测量数据两因素两水平的方差分析</a></li>
+<li><a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F%E6%95%B0%E6%8D%AE%E4%B8%A4%E5%9B%A0%E7%B4%A0%E5%A4%9A%E6%B0%B4%E5%B9%B3%E7%9A%84%E5%88%86%E6%9E%90"><span class="header-section-number">4.2</span> 重复测量数据两因素多水平的分析</a></li>
+<li>
+<a class="nav-link" href="#%E9%87%8D%E5%A4%8D%E6%B5%8B%E9%87%8F%E6%95%B0%E6%8D%AE%E7%9A%84%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><span class="header-section-number">4.3</span> 重复测量数据的多重比较</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E7%BB%84%E9%97%B4%E5%B7%AE%E5%88%AB%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><span class="header-section-number">4.3.1</span> 组间差别多重比较</a></li>
+<li><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E8%B6%8B%E5%8A%BF%E6%AF%94%E8%BE%83"><span class="header-section-number">4.3.2</span> 时间趋势比较</a></li>
+<li><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%82%B9%E6%AF%94%E8%BE%83"><span class="header-section-number">4.3.3</span> 时间点比较</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1004-repeatedmeaanova.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1004-repeatedmeaanova.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

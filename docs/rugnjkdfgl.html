@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>9 R语言Cochran Armitage检验 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="Cochran Armitage检验是一种线性趋势检验，常用于自变量是有序分类变量，而因变量是二分类变量的资料，可以用来检验自变量和因变量存不存在线性趋势。...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="9 R语言Cochran Armitage检验 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="Cochran Armitage检验是一种线性趋势检验，常用于自变量是有序分类变量，而因变量是二分类变量的资料，可以用来检验自变量和因变量存不存在线性趋势。...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="9 R语言Cochran Armitage检验 | R语言实战医学统计">
+<meta name="twitter:description" content="Cochran Armitage检验是一种线性趋势检验，常用于自变量是有序分类变量，而因变量是二分类变量的资料，可以用来检验自变量和因变量存不存在线性趋势。...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="active" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="rugnjkdfgl" class="section level1" number="9">
+<h1>
+<span class="header-section-number">9</span> R语言Cochran Armitage检验<a class="anchor" aria-label="anchor" href="#rugnjkdfgl"><i class="fas fa-link"></i></a>
+</h1>
+<p><code>Cochran Armitage</code>检验是一种线性趋势检验，常用于自变量是有序分类变量，而因变量是二分类变量的资料，可以用来检验自变量和因变量存不存在线性趋势。</p>
+<p>注意和<code>Cochran-Mantel-Haenszel</code>检验区分，<code>CMH检验</code>是研究两个分类变量之间关联性的一种检验方法。但有时数据除了我们研究的变量外，还混杂或隐含了其它的变量，如果将这些变量纳入分析中，则有可能得出完全不同的结论，著名的<code>Simpson悖论</code>就是这个问题的典型案例。</p>
+<p>换句话说，在2 x 2表格数据的基础上，引入了第三个分类变量，称之为混杂变量。混杂变量的引入使得<code>CMH检验</code>可以用于分析分层样本，作为生物统计学领域的一种常用技术，该检验常用于疾病对照研究。</p>
+<p>现在我们想要了解某种药物剂量和疗效之间的关系，药物剂量有50mg，100mg，200mg，300mg，500mg，5个水平，疗效分为有效/无效两个水平。这种情况可以使用<code>Cochran Armitage</code>检验。</p>
+<div class="sourceCode" id="cb151"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">136</span>, <span class="fl">17</span>, <span class="fl">125</span>, <span class="fl">16</span>, <span class="fl">104</span>, <span class="fl">32</span>, <span class="fl">149</span>, <span class="fl">9</span>, <span class="fl">45</span><span class="op">)</span>, </span>
+<span>             nrow <span class="op">=</span> <span class="fl">5</span>, byrow <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>             dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"Dose"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"50"</span>, <span class="st">"100"</span>, <span class="st">"200"</span>, <span class="st">"300"</span>, <span class="st">"500"</span><span class="op">)</span>,</span>
+<span>                             <span class="st">"effect"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="st">"No"</span><span class="op">)</span><span class="op">)</span></span>
+<span>             <span class="op">)</span></span>
+<span></span>
+<span><span class="va">df</span></span>
+<span><span class="co">##      effect</span></span>
+<span><span class="co">## Dose  Yes  No</span></span>
+<span><span class="co">##   50   13 136</span></span>
+<span><span class="co">##   100  17 125</span></span>
+<span><span class="co">##   200  16 104</span></span>
+<span><span class="co">##   300  32 149</span></span>
+<span><span class="co">##   500   9  45</span></span></code></pre></div>
+<p>首先可以计算一下不同药物剂量下的有效率是多少：</p>
+<div class="sourceCode" id="cb152"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##         50        100        200        300        500 </span></span>
+<span><span class="co">## 0.08724832 0.11971831 0.13333333 0.17679558 0.16666667</span></span></code></pre></div>
+<p>可以看到随着药物剂量增加，有效率整体也是增加的，下面使用CAM检验验证一下。</p>
+<p>使用<code>DescTools</code>包中的<code><a href="https://andrisignorell.github.io/DescTools/reference/CochranArmitageTest.html">CochranArmitageTest()</a></code>函数进行检验：</p>
+<div class="sourceCode" id="cb153"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">DescTools</span><span class="fu">::</span><span class="fu"><a href="https://andrisignorell.github.io/DescTools/reference/CochranArmitageTest.html">CochranArmitageTest</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Cochran-Armitage test for trend</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df</span></span>
+<span><span class="co">## Z = 2.2116, dim = 5, p-value = 0.02699</span></span>
+<span><span class="co">## alternative hypothesis: two.sided</span></span></code></pre></div>
+<p>结果显示P值为p-value = 0.02699，小于0.05，可以认为疗效会随着药物剂量增加而增加。</p>
+<p>现在的<code>df</code>是一个频数统计表类型的数据，我们可以把它变成每行一个患者的数据，然后进行logistic回归看看结果。</p>
+<div class="sourceCode" id="cb154"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu">rstatix</span><span class="fu">::</span><span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/headtail.html">headTail</a></span><span class="op">(</span><span class="va">df1</span><span class="op">)</span></span>
+<span><span class="co">##     Dose effect</span></span>
+<span><span class="co">## 1     50    Yes</span></span>
+<span><span class="co">## 2     50    Yes</span></span>
+<span><span class="co">## 3     50    Yes</span></span>
+<span><span class="co">## 4     50    Yes</span></span>
+<span><span class="co">## ... &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span><span class="co">## 643  500     No</span></span>
+<span><span class="co">## 644  500     No</span></span>
+<span><span class="co">## 645  500     No</span></span>
+<span><span class="co">## 646  500     No</span></span></code></pre></div>
+<p>把<code>Dose</code>变成数值型：</p>
+<div class="sourceCode" id="cb155"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df1</span><span class="op">$</span><span class="va">Dose</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df1</span><span class="op">$</span><span class="va">Dose</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span><span class="va">effect</span><span class="op">~</span><span class="va">Dose</span>, data <span class="op">=</span> <span class="va">df1</span>,family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## glm(formula = effect ~ Dose, family = binomial(), data = df1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Deviance Residuals: </span></span>
+<span><span class="co">##     Min       1Q   Median       3Q      Max  </span></span>
+<span><span class="co">## -2.1762   0.4435   0.4912   0.6001   0.6616  </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error z value Pr(&gt;|z|)    </span></span>
+<span><span class="co">## (Intercept)  2.48493    0.29598   8.396   &lt;2e-16 ***</span></span>
+<span><span class="co">## Dose        -0.21544    0.08985  -2.398   0.0165 *  </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## (Dispersion parameter for binomial family taken to be 1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     Null deviance: 510.57  on 645  degrees of freedom</span></span>
+<span><span class="co">## Residual deviance: 504.71  on 644  degrees of freedom</span></span>
+<span><span class="co">## AIC: 508.71</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Number of Fisher Scoring iterations: 4</span></span></code></pre></div>
+<p>logistic回归的结果也显示，剂量的P值是小于0.05的。</p>
+<p>下面是CMH检验的一个补充。</p>
+<p>默认的CMH检验只能进行3个变量的检验，<code>vcdExtra</code>中的<code>CMHtest()</code>可以进行两个变量的CMH检验。</p>
+<div class="sourceCode" id="cb156"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">vcdExtra</span><span class="fu">::</span><span class="fu"><a href="http://friendly.github.io/vcdExtra/reference/CMHtest.html">CMHtest</a></span><span class="op">(</span><span class="va">df</span>, types <span class="op">=</span> <span class="st">"cor"</span><span class="op">)</span></span>
+<span><span class="co">## Cochran-Mantel-Haenszel Statistics for Dose by effect </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##           AltHypothesis  Chisq Df     Prob</span></span>
+<span><span class="co">## cor Nonzero correlation 5.8217  1 0.015829</span></span></code></pre></div>
+
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></div>
+<div class="next"><a href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav"><li><a class="nav-link" href="#rugnjkdfgl"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li></ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1009-cochranarmitage.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1009-cochranarmitage.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

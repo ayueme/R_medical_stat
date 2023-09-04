@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>5 协方差分析 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T) 协方差分析的使用条件：各变量服从正态分布，各变量相互独立，各样本总体方差齐；各总体客观存在因变量对协变量的线性回归关系且斜率相同（回归线平行）。 ...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="5 协方差分析 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T) 协方差分析的使用条件：各变量服从正态分布，各变量相互独立，各样本总体方差齐；各总体客观存在因变量对协变量的线性回归关系且斜率相同（回归线平行）。 ...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="5 协方差分析 | R语言实战医学统计">
+<meta name="twitter:description" content="library(showtext) ## Loading required package: sysfonts ## Loading required package: showtextdb showtext_auto(enable = T) 协方差分析的使用条件：各变量服从正态分布，各变量相互独立，各样本总体方差齐；各总体客观存在因变量对协变量的线性回归关系且斜率相同（回归线平行）。 ...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="active" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="lasijdlfjd" class="section level1" number="5">
+<h1>
+<span class="header-section-number">5</span> 协方差分析<a class="anchor" aria-label="anchor" href="#lasijdlfjd"><i class="fas fa-link"></i></a>
+</h1>
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yixuan/showtext">showtext</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: sysfonts</span></span>
+<span><span class="co">## Loading required package: showtextdb</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/showtext/man/showtext_auto.html">showtext_auto</a></span><span class="op">(</span>enable <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<p>协方差分析的使用条件：各变量服从正态分布，各变量相互独立，各样本总体方差齐；各总体客观存在因变量对协变量的线性回归关系且斜率相同（回归线平行）。</p>
+<div id="完全随机设计资料的协方差分析" class="section level2" number="5.1">
+<h2>
+<span class="header-section-number">5.1</span> 完全随机设计资料的协方差分析<a class="anchor" aria-label="anchor" href="#%E5%AE%8C%E5%85%A8%E9%9A%8F%E6%9C%BA%E8%AE%BE%E8%AE%A1%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例13-1</strong>的例子。</p>
+<p>首先是读取数据，本次数据手动录入：</p>
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df13_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x1<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10.8</span>,<span class="fl">11.6</span>,<span class="fl">10.6</span>,<span class="fl">9.0</span>,<span class="fl">11.2</span>,<span class="fl">9.9</span>,<span class="fl">10.6</span>,<span class="fl">10.4</span>,<span class="fl">9.6</span>,<span class="fl">10.5</span>,</span>
+<span>                          <span class="fl">10.6</span>,<span class="fl">9.9</span>,<span class="fl">9.5</span>,<span class="fl">9.7</span>,<span class="fl">10.7</span>,<span class="fl">9.2</span>,<span class="fl">10.5</span>,<span class="fl">11.0</span>,<span class="fl">10.1</span>,<span class="fl">10.7</span>,<span class="fl">8.5</span>,</span>
+<span>                          <span class="fl">10.0</span>, <span class="fl">10.4</span>,<span class="fl">9.7</span>,<span class="fl">9.4</span>,<span class="fl">9.2</span>,<span class="fl">10.5</span>,<span class="fl">11.2</span>,<span class="fl">9.6</span>,<span class="fl">8.0</span><span class="op">)</span>,</span>
+<span>                     y1<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9.4</span>,<span class="fl">9.7</span>,<span class="fl">8.7</span>,<span class="fl">7.2</span>,<span class="fl">10.0</span>,<span class="fl">8.5</span>,<span class="fl">8.3</span>,<span class="fl">8.1</span>,<span class="fl">8.5</span>,<span class="fl">9.1</span>,<span class="fl">9.2</span>,<span class="fl">8.4</span>,</span>
+<span>                          <span class="fl">7.6</span>,<span class="fl">7.9</span>,<span class="fl">8.8</span>,<span class="fl">7.4</span>,<span class="fl">8.6</span>,<span class="fl">9.2</span>,<span class="fl">8.0</span>,<span class="fl">8.5</span>,<span class="fl">7.3</span>,<span class="fl">8.3</span>,</span>
+<span>                          <span class="fl">8.6</span>,<span class="fl">8.7</span>,<span class="fl">7.6</span>,<span class="fl">8.0</span>,<span class="fl">8.8</span>,<span class="fl">9.5</span>,<span class="fl">8.2</span>,<span class="fl">7.2</span><span class="op">)</span>,</span>
+<span>                     x2<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10.4</span>,<span class="fl">9.7</span>,<span class="fl">9.9</span>,<span class="fl">9.8</span>,<span class="fl">11.1</span>,<span class="fl">8.2</span>,<span class="fl">8.8</span>,<span class="fl">10.0</span>,<span class="fl">9.0</span>,<span class="fl">9.4</span>,<span class="fl">8.9</span>,</span>
+<span>                          <span class="fl">10.3</span>,<span class="fl">9.3</span>,<span class="fl">9.2</span>,<span class="fl">10.9</span>,<span class="fl">9.2</span>,<span class="fl">9.2</span>,<span class="fl">10.4</span>,<span class="fl">11.2</span>,<span class="fl">11.1</span>,<span class="fl">11.0</span>,</span>
+<span>                          <span class="fl">8.6</span>,<span class="fl">9.3</span>,<span class="fl">10.3</span>,<span class="fl">10.3</span>,<span class="fl">9.8</span>,<span class="fl">10.5</span>,<span class="fl">10.7</span>,<span class="fl">10.4</span>,<span class="fl">9.4</span><span class="op">)</span>,</span>
+<span>                     y2<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9.2</span>,<span class="fl">9.1</span>,<span class="fl">8.9</span>,<span class="fl">8.6</span>,<span class="fl">9.9</span>,<span class="fl">7.1</span>,<span class="fl">7.8</span>,<span class="fl">7.9</span>,<span class="fl">8.0</span>,<span class="fl">9.0</span>,<span class="fl">7.9</span>,<span class="fl">8.9</span>,</span>
+<span>                          <span class="fl">8.9</span>,<span class="fl">8.1</span>,<span class="fl">10.2</span>,<span class="fl">8.5</span>,<span class="fl">9.0</span>,<span class="fl">8.9</span>,<span class="fl">9.8</span>,<span class="fl">10.1</span>,<span class="fl">8.5</span>,<span class="fl">8.1</span>,<span class="fl">8.6</span>,</span>
+<span>                          <span class="fl">8.9</span>,<span class="fl">9.6</span>,<span class="fl">8.1</span>,<span class="fl">9.9</span>,<span class="fl">9.3</span>,<span class="fl">8.7</span>,<span class="fl">8.7</span><span class="op">)</span>,</span>
+<span>                     x3<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9.8</span>,<span class="fl">11.2</span>,<span class="fl">10.7</span>,<span class="fl">9.6</span>,<span class="fl">10.1</span>,<span class="fl">9.8</span>,<span class="fl">10.1</span>,<span class="fl">10.3</span>,<span class="fl">11.0</span>,<span class="fl">10.5</span>,</span>
+<span>                          <span class="fl">9.2</span>,<span class="fl">10.1</span>,<span class="fl">10.4</span>,<span class="fl">10.0</span>,<span class="fl">8.4</span>,<span class="fl">10.1</span>,<span class="fl">9.3</span>,<span class="fl">10.5</span>,<span class="fl">11.1</span>,<span class="fl">10.5</span>,</span>
+<span>                          <span class="fl">9.7</span>,<span class="fl">9.2</span>,<span class="fl">9.3</span>,<span class="fl">10.4</span>,<span class="fl">10.0</span>,<span class="fl">10.3</span>,<span class="fl">9.9</span>,<span class="fl">9.4</span>,<span class="fl">8.3</span>,<span class="fl">9.2</span><span class="op">)</span>,</span>
+<span>                     y3<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7.6</span>,<span class="fl">7.9</span>,<span class="fl">9.0</span>,<span class="fl">7.8</span>,<span class="fl">8.5</span>,<span class="fl">7.5</span>,<span class="fl">8.3</span>,<span class="fl">8.2</span>,<span class="fl">8.4</span>,<span class="fl">8.1</span>,<span class="fl">7.0</span>,<span class="fl">7.7</span>,</span>
+<span>                          <span class="fl">8.0</span>,<span class="fl">6.6</span>,<span class="fl">6.1</span>,<span class="fl">8.1</span>,<span class="fl">7.8</span>,<span class="fl">8.4</span>,<span class="fl">8.2</span>,<span class="fl">8.0</span>,<span class="fl">7.6</span>,<span class="fl">6.9</span>,<span class="fl">6.7</span>,</span>
+<span>                          <span class="fl">8.1</span>,<span class="fl">7.4</span>,<span class="fl">8.2</span>,<span class="fl">7.6</span>,<span class="fl">7.8</span>,<span class="fl">6.6</span>,<span class="fl">7.2</span><span class="op">)</span></span>
+<span>                     <span class="op">)</span></span></code></pre></div>
+<p>看一下数据结构：</p>
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df13_1</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    30 obs. of  6 variables:</span></span>
+<span><span class="co">##  $ x1: num  10.8 11.6 10.6 9 11.2 9.9 10.6 10.4 9.6 10.5 ...</span></span>
+<span><span class="co">##  $ y1: num  9.4 9.7 8.7 7.2 10 8.5 8.3 8.1 8.5 9.1 ...</span></span>
+<span><span class="co">##  $ x2: num  10.4 9.7 9.9 9.8 11.1 8.2 8.8 10 9 9.4 ...</span></span>
+<span><span class="co">##  $ y2: num  9.2 9.1 8.9 8.6 9.9 7.1 7.8 7.9 8 9 ...</span></span>
+<span><span class="co">##  $ x3: num  9.8 11.2 10.7 9.6 10.1 9.8 10.1 10.3 11 10.5 ...</span></span>
+<span><span class="co">##  $ y3: num  7.6 7.9 9 7.8 8.5 7.5 8.3 8.2 8.4 8.1 ...</span></span></code></pre></div>
+<p>可以看到一共6列，和课本上面的一模一样，分别是x1,y1,x2,y2,x3,y3。</p>
+<p>接下来为了进行方差分析，需要<em>变为长数据</em>，把所有的x放在1列，所有的y放在1列，还有一列是组别：</p>
+<p>如果大家还对长宽数据转换不了解的，可以翻看之前的历史推文：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/OLec64wzfMZdJp0O0fIlkA">宽数据变为长数据的5种情况！</a></li>
+<li><a href="https://mp.weixin.qq.com/s/tJvmgJc1Pddzc1cz73UHnA">长数据变为宽数据的7种情况！</a></li>
+<li><a href="https://mp.weixin.qq.com/s/2ywQFPhB6thHSBObs5jIkg">长宽数据转换的特殊情况</a></li>
+</ul>
+<p>这是一个非常重要且使用频率极高的技能！</p>
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df13_11</span> <span class="op">&lt;-</span> <span class="va">df13_1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># 变长</span></span>
+<span>               names_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">".value"</span>,<span class="st">"group"</span><span class="op">)</span>,</span>
+<span>               names_pattern <span class="op">=</span> <span class="st">"(.)(.)"</span></span>
+<span>               <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="co"># 组别变为因子型</span></span>
+<span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">df13_11</span><span class="op">)</span> <span class="co"># 查看数据结构，神奇！</span></span>
+<span><span class="co">## Rows: 90</span></span>
+<span><span class="co">## Columns: 3</span></span>
+<span><span class="co">## $ group &lt;fct&gt; 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1…</span></span>
+<span><span class="co">## $ x     &lt;dbl&gt; 10.8, 10.4, 9.8, 11.6, 9.7, 11.2, 10.6, 9.9, 10.7, 9.0, 9.8, 9.6…</span></span>
+<span><span class="co">## $ y     &lt;dbl&gt; 9.4, 9.2, 7.6, 9.7, 9.1, 7.9, 8.7, 8.9, 9.0, 7.2, 8.6, 7.8, 10.0…</span></span></code></pre></div>
+<p>所有的x放在1列，所有的y放在1列，还有一列是组别！</p>
+<p>然后就是进行单因素协方差分析：</p>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 注意公式的写法，一定是把协变量放在主变量前面！</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df13_11</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value Pr(&gt;F)    </span></span>
+<span><span class="co">## x            1  29.06  29.057  171.20 &lt;2e-16 ***</span></span>
+<span><span class="co">## group        2  19.85   9.925   58.48 &lt;2e-16 ***</span></span>
+<span><span class="co">## Residuals   86  14.60   0.170                   </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>得到的结果和课本是一模一样的，组内ss=14.60, ms=0.170, v=86, 修正均数ss=19.85, ms=9.925, v=2, F=58.48，拒绝H0，接受H1，可以认为在扣除初始（基线）糖化血红蛋白含量的影响后，3组患者的总体降糖均数有差别。</p>
+<p>结果的可视化可以使用<code>HH</code>包：</p>
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">HH</span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: lattice</span></span>
+<span><span class="co">## Loading required package: grid</span></span>
+<span><span class="co">## Loading required package: latticeExtra</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'latticeExtra'</span></span>
+<span><span class="co">## The following object is masked from 'package:ggplot2':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     layer</span></span>
+<span><span class="co">## Loading required package: multcomp</span></span>
+<span><span class="co">## Loading required package: mvtnorm</span></span>
+<span><span class="co">## Loading required package: survival</span></span>
+<span><span class="co">## Loading required package: TH.data</span></span>
+<span><span class="co">## Loading required package: MASS</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'MASS'</span></span>
+<span><span class="co">## The following object is masked from 'package:dplyr':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     select</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'TH.data'</span></span>
+<span><span class="co">## The following object is masked from 'package:MASS':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     geyser</span></span>
+<span><span class="co">## Loading required package: gridExtra</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'gridExtra'</span></span>
+<span><span class="co">## The following object is masked from 'package:dplyr':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     combine</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'HH'</span></span>
+<span><span class="co">## The following object is masked from 'package:purrr':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     transpose</span></span></code></pre></div>
+<p>一行代码即可：</p>
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/HH/man/ancovaplot.html">ancovaplot</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df13_11</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1005-ancova_files/figure-html/unnamed-chunk-7-1.png" width="90%"></div>
+<p>但其实我们也可以用<code>ggplot2</code>来画，可能更好看一点：</p>
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df13_11</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">group</span>,shape<span class="op">=</span><span class="va">group</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>,se<span class="op">=</span><span class="cn">F</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">group</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>y<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df13_11</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>,y<span class="op">=</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">group</span>,shape<span class="op">=</span><span class="va">group</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>,se<span class="op">=</span><span class="cn">F</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color<span class="op">=</span><span class="va">group</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com">patchwork</a></span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'patchwork'</span></span>
+<span><span class="co">## The following object is masked from 'package:MASS':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     area</span></span>
+<span><span class="va">p2</span> <span class="op">+</span> <span class="va">p1</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html">plot_layout</a></span><span class="op">(</span>guides <span class="op">=</span> <span class="st">'collect'</span>,widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## `geom_smooth()` using formula = 'y ~ x'</span></span>
+<span><span class="co">## `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre></div>
+<div class="inline-figure"><img src="1005-ancova_files/figure-html/unnamed-chunk-8-1.png" width="90%"></div>
+<p>好看是好看，但是很明显不如<code>HH</code>简洁啊！</p>
+</div>
+<div id="使用rstatix进行优雅的协方差分析" class="section level2" number="5.2">
+<h2>
+<span class="header-section-number">5.2</span> 使用rstatix进行优雅的协方差分析<a class="anchor" aria-label="anchor" href="#%E4%BD%BF%E7%94%A8rstatix%E8%BF%9B%E8%A1%8C%E4%BC%98%E9%9B%85%E7%9A%84%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/rstatix/">rstatix</a></span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'rstatix'</span></span>
+<span><span class="co">## The following object is masked from 'package:MASS':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     select</span></span>
+<span><span class="co">## The following object is masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     filter</span></span>
+<span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/anova_test.html">anova_test</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df13_11</span>, type <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rpkgs.datanovia.com/rstatix/reference/anova_test.html">get_anova_table</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">## ANOVA Table (type I tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##   Effect DFn DFd       F        p p&lt;.05   ges</span></span>
+<span><span class="co">## 1      x   1  86 171.199 3.64e-22     * 0.666</span></span>
+<span><span class="co">## 2  group   2  86  58.480 9.22e-17     * 0.576</span></span></code></pre></div>
+<p>结果也是一样的！</p>
+</div>
+<div id="随机区组设计资料的协方差分析" class="section level2" number="5.3">
+<h2>
+<span class="header-section-number">5.3</span> 随机区组设计资料的协方差分析<a class="anchor" aria-label="anchor" href="#%E9%9A%8F%E6%9C%BA%E5%8C%BA%E7%BB%84%E8%AE%BE%E8%AE%A1%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例13-2</strong>的数据。</p>
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/例13-02.sav"</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                         reencode <span class="op">=</span> <span class="st">"utf-8"</span><span class="op">)</span></span>
+<span><span class="co">## re-encoding from utf-8</span></span>
+<span><span class="va">df</span><span class="op">$</span><span class="va">block</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">block</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    36 obs. of  4 variables:</span></span>
+<span><span class="co">##  $ x    : num  257 272 210 300 262 ...</span></span>
+<span><span class="co">##  $ y    : num  27 41.7 25 52 14.5 48.8 48 9.5 37 56.5 ...</span></span>
+<span><span class="co">##  $ group: Factor w/ 3 levels "A....","B....",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ block: Factor w/ 12 levels "1","2","3","4",..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr [1:4] "..ʳ.." ".........." "........" "......"</span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr [1:4] "x" "y" "group" "block"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##       x    y group block</span></span>
+<span><span class="co">## 1 256.9 27.0 A....     1</span></span>
+<span><span class="co">## 2 271.6 41.7 A....     2</span></span>
+<span><span class="co">## 3 210.2 25.0 A....     3</span></span>
+<span><span class="co">## 4 300.1 52.0 A....     4</span></span>
+<span><span class="co">## 5 262.2 14.5 A....     5</span></span>
+<span><span class="co">## 6 304.4 48.8 A....     6</span></span></code></pre></div>
+<p>进行随机区组设计的协方差分析：</p>
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="va">block</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span> <span class="co"># 注意顺序</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value  Pr(&gt;F)    </span></span>
+<span><span class="co">## x            1  69073   69073 651.823 &lt; 2e-16 ***</span></span>
+<span><span class="co">## block       11   4024     366   3.452 0.00711 ** </span></span>
+<span><span class="co">## group        2    464     232   2.189 0.13692    </span></span>
+<span><span class="co">## Residuals   21   2225     106                    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: y</span></span>
+<span><span class="co">##           Sum Sq Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## x         6174.2  1 58.2643 1.733e-07 ***</span></span>
+<span><span class="co">## block     3765.3 11  3.2302   0.01009 *  </span></span>
+<span><span class="co">## group      463.9  2  2.1891   0.13692    </span></span>
+<span><span class="co">## Residuals 2225.4 21                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>结果和课本一致。</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></div>
+<div class="next"><a href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#lasijdlfjd"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="nav-link" href="#%E5%AE%8C%E5%85%A8%E9%9A%8F%E6%9C%BA%E8%AE%BE%E8%AE%A1%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><span class="header-section-number">5.1</span> 完全随机设计资料的协方差分析</a></li>
+<li><a class="nav-link" href="#%E4%BD%BF%E7%94%A8rstatix%E8%BF%9B%E8%A1%8C%E4%BC%98%E9%9B%85%E7%9A%84%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><span class="header-section-number">5.2</span> 使用rstatix进行优雅的协方差分析</a></li>
+<li><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%8C%BA%E7%BB%84%E8%AE%BE%E8%AE%A1%E8%B5%84%E6%96%99%E7%9A%84%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><span class="header-section-number">5.3</span> 随机区组设计资料的协方差分析</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1005-ancova.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1005-ancova.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

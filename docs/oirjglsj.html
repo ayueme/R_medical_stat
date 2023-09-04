@@ -4,16 +4,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>前言 | R语言实战医学统计</title>
+<title>15 双变量回归与相关 | R语言实战医学统计</title>
 <meta name="author" content="阿越就是我">
-<meta name="description" content="前言 | R语言实战医学统计，公众号：医学和生信笔记。">
+<meta name="description" content="在R语言里实现非常简单，上文也介绍过使用rstatix进行相关分析。  15.1 两样本相关 使用课本例9-5的数据。 df &lt;- data.frame(  weight = c(43,74,51,58,50,65,54,57,67,69,80,48,38,85,54),  kv =...">
 <meta name="generator" content="bookdown 0.33 with bs4_book()">
-<meta property="og:title" content="前言 | R语言实战医学统计">
+<meta property="og:title" content="15 双变量回归与相关 | R语言实战医学统计">
 <meta property="og:type" content="book">
-<meta property="og:description" content="前言 | R语言实战医学统计，公众号：医学和生信笔记。">
+<meta property="og:description" content="在R语言里实现非常简单，上文也介绍过使用rstatix进行相关分析。  15.1 两样本相关 使用课本例9-5的数据。 df &lt;- data.frame(  weight = c(43,74,51,58,50,65,54,57,67,69,80,48,38,85,54),  kv =...">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="前言 | R语言实战医学统计">
-<meta name="twitter:description" content="前言 | R语言实战医学统计，公众号：医学和生信笔记。">
+<meta name="twitter:title" content="15 双变量回归与相关 | R语言实战医学统计">
+<meta name="twitter:description" content="在R语言里实现非常简单，上文也介绍过使用rstatix进行相关分析。  15.1 两样本相关 使用课本例9-5的数据。 df &lt;- data.frame(  weight = c(43,74,51,58,50,65,54,57,67,69,80,48,38,85,54),  kv =...">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
@@ -44,7 +44,7 @@
 
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
-<li><a class="active" href="index.html">前言</a></li>
+<li><a class="" href="index.html">前言</a></li>
 <li class="book-part">基础统计分析</li>
 <li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
 <li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
@@ -60,7 +60,7 @@
 <li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
 <li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
 <li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
-<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="active" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
 <li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
 <li class="book-part">高级统计分析</li>
 <li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
@@ -98,77 +98,71 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><!--bookdown:title:end--><!--bookdown:title:start--><div id="前言" class="section level1 unnumbered">
-<h1>前言<a class="anchor" aria-label="anchor" href="#%E5%89%8D%E8%A8%80"><i class="fas fa-link"></i></a>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="oirjglsj" class="section level1" number="15">
+<h1>
+<span class="header-section-number">15</span> 双变量回归与相关<a class="anchor" aria-label="anchor" href="#oirjglsj"><i class="fas fa-link"></i></a>
 </h1>
-<div id="本书缘起" class="section level2 unnumbered">
-<h2>本书缘起<a class="anchor" aria-label="anchor" href="#%E6%9C%AC%E4%B9%A6%E7%BC%98%E8%B5%B7"><i class="fas fa-link"></i></a>
+<p>在R语言里实现非常简单，上文也介绍过使用rstatix进行相关分析。</p>
+<div id="两样本相关" class="section level2" number="15.1">
+<h2>
+<span class="header-section-number">15.1</span> 两样本相关<a class="anchor" aria-label="anchor" href="#%E4%B8%A4%E6%A0%B7%E6%9C%AC%E7%9B%B8%E5%85%B3"><i class="fas fa-link"></i></a>
 </h2>
-<p>R语言是一门编程语言，但同时也是一个统计软件，R语言是由统计学家开发的，所以天生就适合做统计。</p>
-<p>很多刚接触R语言的朋友不知道如何入手，只知道目前R语言在临床医学领域很火爆，做统计分析、画图、做生信分析、孟德尔随机化、数据库挖掘等都离不开R语言。</p>
-<p>万事开头难，我非常理解新手面对R语言的痛苦，因为我也是从0开始的，作为从未接触过编程的医学生/医生来说，初学R语言简直就是读天书！我最开始接触R语言是因为偶然间听师兄师姐说R语言可以做统计学，当时的我对SPSS的使用不熟练，觉得SPSS的使用步骤太多，难以记住，于是入了R语言的坑…没想到从此一发不可收拾，打开了新世界的大门。</p>
-<p>这个系列也是我最开始学习R语言时的笔记，在我的公众号：<strong>医学和生信笔记</strong>，都可以找到，现在对原内容进行重新整理，并把数据一起打包，方便有需要的同学学习。</p>
-<p><strong>如果你是刚入门的小白，我首先推荐你了解下R语言的基础知识，比如R语言和R包安装（初学者请参考附录）、Rstudio的界面、R语言中数据类型（向量、矩阵、数据框、列表等）、R语言中的数据导入导出、R语言的基础数据操作等。</strong></p>
-<p>然后你就可以跟着本系列一起学习R语言在医学统计学中的使用。这个系列非常适合初学者，因为是按照课本来的，使用R语言复现课本中的例题，得到结果后可以与课本对照！我使用的课本是孙振球主编的《医学统计学》第4版（第5版和第4版内容变化不大），封面如下：</p>
-<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_12-46-31.png" width="70%" style="display: block; margin: auto;"></div>
-<p>由于R和SPSS在进行统计分析时的一些数学计算方面并不是完全一致，所以导致有些结果和课本中的结果有些出入，但是并不影响结果的正确性。</p>
-<p>限于本人水平等问题，难免会有一些错误，欢迎大家以各种方式批评指正，比如公众号留言、粉丝QQ群、github、个人微信等。</p>
-<p>本书会不定期更新，内容和格式都会不断完善。</p>
-<p><em>更新日志</em>：</p>
-<ul>
-<li>20230905：
-<ul>
-<li>格式升级，改为3列式；</li>
-<li>RCS增加推荐阅读；</li>
-<li>t检验增加正态性检验和方差齐性检验；</li>
-<li>tidy风格医学统计增加秩和检验和计数资料统计分析；</li>
-<li>增加亚组分析和森林图绘制；</li>
-</ul>
-</li>
-<li>20230612：改正样条回归中的一个笔误（age的Nonlinear的P&lt;0.05……）</li>
-<li>20230407：首次上传</li>
-</ul>
-<div class="rmdnote">
-<p>本书实际上是我公众号历史推文的汇总，<strong>书中涉及的所有数据都可以在相关历史推文中免费获取！</strong>历史推文合集链接：<a href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzUzOTQzNzU0NA==&amp;action=getalbum&amp;album_id=2231476971388059661&amp;scene=126#wechat_redirect">医学统计学</a></p>
-<p>我也准备了一个PDF版合集，内容和网页版一致，只是打包了所有的数据，付费获取（10元），介意勿扰！<strong>PDF版合集获取链接</strong>：<a href="https://mp.weixin.qq.com/s/IG-TaO9Vg_YS6o9fKYw5jw">常见医学统计方法R语言实现合集</a></p>
-</div>
-</div>
-<div id="作者简介" class="section level2 unnumbered">
-<h2>作者简介<a class="anchor" aria-label="anchor" href="#%E4%BD%9C%E8%80%85%E7%AE%80%E4%BB%8B"><i class="fas fa-link"></i></a>
-</h2>
-<ul>
-<li>阿越，外科医生，R语言爱好者，长期分享R语言和医学统计学、临床预测模型、生信数据挖掘、R语言机器学习等知识。</li>
-<li>公众号：<strong>医学和生信笔记</strong>
-</li>
-<li>知乎：<a href="https://www.zhihu.com/people/li-xiao-yue-65-90">医学和生信笔记</a>
-</li>
-<li>CSDN：<a href="https://blog.csdn.net/Ayue0616">医学和生信笔记</a>
-</li>
-<li>哔哩哔哩：<a href="https://space.bilibili.com/42460432">阿越就是我</a>
-</li>
-<li>Github：<a href="https://github.com/ayueme">ayueme</a>
-</li>
-</ul>
-</div>
-</div>
+<p>使用课本<strong>例9-5</strong>的数据。</p>
+<div class="sourceCode" id="cb266"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>  weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">43</span>,<span class="fl">74</span>,<span class="fl">51</span>,<span class="fl">58</span>,<span class="fl">50</span>,<span class="fl">65</span>,<span class="fl">54</span>,<span class="fl">57</span>,<span class="fl">67</span>,<span class="fl">69</span>,<span class="fl">80</span>,<span class="fl">48</span>,<span class="fl">38</span>,<span class="fl">85</span>,<span class="fl">54</span><span class="op">)</span>,</span>
+<span>  kv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">217.22</span>,<span class="fl">316.18</span>,<span class="fl">231.11</span>,<span class="fl">220.96</span>,<span class="fl">254.70</span>,<span class="fl">293.84</span>,<span class="fl">263.28</span>,<span class="fl">271.73</span>,<span class="fl">263.46</span>,</span>
+<span>         <span class="fl">276.53</span>,<span class="fl">341.15</span>,<span class="fl">261.00</span>,<span class="fl">213.20</span>,<span class="fl">315.12</span>,<span class="fl">252.08</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    15 obs. of  2 variables:</span></span>
+<span><span class="co">##  $ weight: num  43 74 51 58 50 65 54 57 67 69 ...</span></span>
+<span><span class="co">##  $ kv    : num  217 316 231 221 255 ...</span></span></code></pre></div>
+<p>两变量是否有关联？其方向和密切程度如何？</p>
+<div class="sourceCode" id="cb267"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/cor.test.html">cor.test</a></span><span class="op">(</span><span class="op">~</span> <span class="va">weight</span> <span class="op">+</span> <span class="va">kv</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pearson's product-moment correlation</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  weight and kv</span></span>
+<span><span class="co">## t = 6.5304, df = 13, p-value = 1.911e-05</span></span>
+<span><span class="co">## alternative hypothesis: true correlation is not equal to 0</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  0.6584522 0.9580540</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">##       cor </span></span>
+<span><span class="co">## 0.8754315</span></span></code></pre></div>
+<p>从结果可以看出，两者是正相关，相关系数r = 0.8754，且p痔小于0.05，具有统计学意义！</p>
+<p>可视化结果：</p>
+<div class="sourceCode" id="cb268"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="co">## Warning: package 'ggplot2' was built under R version 4.2.3</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">weight</span>, <span class="va">kv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">## `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre></div>
+<div class="inline-figure"><img src="1015-twocorrelation_files/figure-html/unnamed-chunk-3-1.png" width="90%"></div>
+<p>相关性分析的过程比较简单，在选择方法时要注意是使用pearson相关还是秩相关。</p>
 
-
-
+</div>
+</div>
   <div class="chapter-nav">
-<div class="empty"></div>
-<div class="next"><a href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></div>
+<div class="prev"><a href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></div>
+<div class="next"><a href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
-<li><a class="nav-link" href="#%E5%89%8D%E8%A8%80">前言</a></li>
-<li><a class="nav-link" href="#%E6%9C%AC%E4%B9%A6%E7%BC%98%E8%B5%B7">本书缘起</a></li>
-<li><a class="nav-link" href="#%E4%BD%9C%E8%80%85%E7%AE%80%E4%BB%8B">作者简介</a></li>
+<li><a class="nav-link" href="#oirjglsj"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="nav-link" href="#%E4%B8%A4%E6%A0%B7%E6%9C%AC%E7%9B%B8%E5%85%B3"><span class="header-section-number">15.1</span> 两样本相关</a></li>
 </ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/index.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/index.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1015-twocorrelation.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1015-twocorrelation.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>

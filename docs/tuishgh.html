@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>19 分类变量进行回归分析时的编码方案 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="R语言中的分类变量在进行回归分析时，通常会进行一些编码设置，最常见的是哑变量设置，除了哑变量，还有其他的很多类型。 通常一个有K个类别的分类变量在进入回归分析时，会被自动编码成K-1个序列，然后会得到K-1个回归系数，这些回归系数对应着因变量根据K个类别分组后计算的平均值！这样说起来非常抽象，下面对着例子看可能更简单一点。...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="19 分类变量进行回归分析时的编码方案 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="R语言中的分类变量在进行回归分析时，通常会进行一些编码设置，最常见的是哑变量设置，除了哑变量，还有其他的很多类型。 通常一个有K个类别的分类变量在进入回归分析时，会被自动编码成K-1个序列，然后会得到K-1个回归系数，这些回归系数对应着因变量根据K个类别分组后计算的平均值！这样说起来非常抽象，下面对着例子看可能更简单一点。...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="19 分类变量进行回归分析时的编码方案 | R语言实战医学统计">
+<meta name="twitter:description" content="R语言中的分类变量在进行回归分析时，通常会进行一些编码设置，最常见的是哑变量设置，除了哑变量，还有其他的很多类型。 通常一个有K个类别的分类变量在进入回归分析时，会被自动编码成K-1个序列，然后会得到K-1个回归系数，这些回归系数对应着因变量根据K个类别分组后计算的平均值！这样说起来非常抽象，下面对着例子看可能更简单一点。...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="active" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="tuishgh" class="section level1" number="19">
+<h1>
+<span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案<a class="anchor" aria-label="anchor" href="#tuishgh"><i class="fas fa-link"></i></a>
+</h1>
+<p>R语言中的分类变量在进行回归分析时，通常会进行一些编码设置，最常见的是哑变量设置，除了哑变量，还有其他的很多类型。</p>
+<p><strong>通常一个有K个类别的分类变量在进入回归分析时，会被自动编码成K-1个序列，然后会得到K-1个回归系数，这些回归系数对应着因变量根据K个类别分组后计算的平均值！</strong>这样说起来非常抽象，下面对着例子看可能更简单一点。</p>
+<p>R中的这些编码方案又叫做比较（contrast）矩阵设计，虽然都是默认自动进行的，但是了解它们的工作方式可以帮助我们更好的理解背后的意义，以及如何自定义设置各种方案。比如我们在做逻辑回归时哑变量的设置是如何进行的，重复测量方差分析多重比较中contrast是怎样设置的等。</p>
+<div id="演示数据" class="section level2" number="19.1">
+<h2>
+<span class="header-section-number">19.1</span> 演示数据<a class="anchor" aria-label="anchor" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<code>hsb2</code>数据集进行演示。其中<code>write</code>是数值型因变量，<code>race</code>是其中一个自变量，是无序分类变量，有4个类别：1 = Hispanic, 2 = Asian, 3 = African American and 4 = Caucasian。</p>
+<div class="sourceCode" id="cb330"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"datasets/codingSchemes.rdata"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 把race变为因子型，并放到新的一列中</span></span>
+<span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race</span>, labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Hispanic"</span>, <span class="st">"Asian"</span>, <span class="st">"African-Am"</span>, <span class="st">"Caucasian"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 根据race.f进行分组，计算分组后因变量write的均值</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">write</span>, <span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span>, <span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">##   Hispanic      Asian African-Am  Caucasian </span></span>
+<span><span class="co">##   46.45833   58.00000   48.20000   54.05517</span></span></code></pre></div>
+<p><strong>记住这个均值，很重要，后面要用的！</strong></p>
+</div>
+<div id="dummy-coding" class="section level2" number="19.2">
+<h2>
+<span class="header-section-number">19.2</span> Dummy Coding<a class="anchor" aria-label="anchor" href="#dummy-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>哑变量是最常见的分类变量编码方式，它以其中一个类别为参考，其他所有类别都和参考进行比较。比如，我们设定<code>race</code>中的1为参考，2,3,4都和1进行比较，也就是race=1时，write的均值。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-14-19.png" width="90%"></div>
+<p>这也是R语言中数值型和无序因子型变量的默认编码方式，如果要手动设置，可以使用函数<code><a href="https://rdrr.io/r/stats/contrast.html">contr.treatment()</a></code>，这个函数就是手动进行哑变量设置的函数。</p>
+<div class="sourceCode" id="cb331"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.treatment</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">##   2 3 4</span></span>
+<span><span class="co">## 1 0 0 0</span></span>
+<span><span class="co">## 2 1 0 0</span></span>
+<span><span class="co">## 3 0 1 0</span></span>
+<span><span class="co">## 4 0 0 1</span></span></code></pre></div>
+<p>这是一个比较矩阵，如果有4个类别就是4行，每行代表一个类别，比如第一行，2,3,4都是0，那么就代表类别1,；第二行，2是1,3,4都是0，就是代表类别2，以此类推。</p>
+<p><strong>如果有K个类别，就会有K-1个哑变量，比如我们这个例子，有4个类别，就有3个哑变量，在R中的其他编码方式也是这样的。</strong></p>
+<p>R语言中对不同类型的变量都会有默认的编码方式，可以通过<code><a href="https://rdrr.io/r/stats/contrasts.html">contrasts()</a></code>函数查看，比如对于<code>race.f</code>默认的就是哑变量编码：</p>
+<div class="sourceCode" id="cb332"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 和上面的比较矩阵一模一样的形式</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span></span>
+<span><span class="co">##            Asian African-Am Caucasian</span></span>
+<span><span class="co">## Hispanic       0          0         0</span></span>
+<span><span class="co">## Asian          1          0         0</span></span>
+<span><span class="co">## African-Am     0          1         0</span></span>
+<span><span class="co">## Caucasian      0          0         1</span></span></code></pre></div>
+<p>在前面介绍logistic回归时，多次使用过哑变量编码的方式，因为是默认的，所以并不用手动设置！</p>
+<p>手动设置也可以，和默认是一样的结果，现在我们定义<code>race.f</code>这个变量进入回归模型后使用哑变量编码的方式：</p>
+<div class="sourceCode" id="cb333"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 手动定义变量的编码方式</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.treatment</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 进行回归</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, data <span class="op">=</span> <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)   46.458      1.842  25.218  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f2       11.542      3.286   3.512 0.000552 ***</span></span>
+<span><span class="co">## race.f3        1.742      2.732   0.637 0.524613    </span></span>
+<span><span class="co">## race.f4        7.597      1.989   3.820 0.000179 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>可以看到结果中<code>race.f2/race.f3/race.f4</code>，都是和<code>race.f1</code>进行比较！和不设置的是一模一样的结果。</p>
+<blockquote>
+<p>请注意它们的系数，比如<code>race.f2</code>的系数是11.542，这个系数就是根据<code>race.f</code>进行分组后，race.f=2时write的均值 减去 race.f=1时write的均值，也就是58-46.45833！intercept（截距）的系数就是参考组write的平均值46.45833！</p>
+</blockquote>
+<p>哑变量编码后的数据进入回归分析时的具体操作可以这么理解，比如现在是<code>race.f</code>这个变量设置了哑变量编码的方式，那当它进入回归分析时，这一列就被我们设置的另外3列替代了，也就是原数据中的<code>race.f</code>这一列被另外3列哑变量替代了，当<code>race.f</code>这列的值是<code>Hispanic</code>时，3列哑变量就分别是0,0,0，如果<code>race.f</code>这列的值是<code>Asian</code>时，3列哑变量就分别是1,0,0，不知道大家理解了没有。</p>
+</div>
+<div id="simple-coding" class="section level2" number="19.3">
+<h2>
+<span class="header-section-number">19.3</span> simple coding<a class="anchor" aria-label="anchor" href="#simple-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>简单编码和哑变量编码的唯一不同之处是截距！哑变量的截距是参考组的因变量平均值，简单编码的截距是总的平均值。</p>
+<p>下面这张图是简单编码的方式。简单编码的所有类别编码相加需要等于1。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-15-25.png" width="90%"></div>
+<p>level 1还是参考组，对于race.f1，是类别2比类别1，类别2就被编码为3/4，其他类别都是 -1/4，对于race.f2是类别3比类别1，类别3就别编码为为3/4，其他类别被编码为 -1/4，对于race.f3是类别4比类别1，类别4别编码为3/4，其他类别被编码为 -1/4。</p>
+<p>也就是说，参考组肯定是被编码为 -1/4（和类别个数有关，这里race.f是4个类别），谁和参考组比谁就被编码为 3/4。</p>
+<p>如果变量有K个类别的话，那就是参考组被编码为 -1/k，谁和参考组比谁就被编码为(k-1)/k。</p>
+<p>simple coding在R中并没有提供直接的函数，但是可以通过哑变量进行转换：</p>
+<div class="sourceCode" id="cb334"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 设置simple coding</span></span>
+<span><span class="va">c</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.treatment</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">my.coding</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">12</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">my.simple</span><span class="op">&lt;-</span><span class="va">c</span><span class="op">-</span><span class="va">my.coding</span></span>
+<span><span class="va">my.simple</span></span>
+<span><span class="co">##       2     3     4</span></span>
+<span><span class="co">## 1 -0.25 -0.25 -0.25</span></span>
+<span><span class="co">## 2  0.75 -0.25 -0.25</span></span>
+<span><span class="co">## 3 -0.25  0.75 -0.25</span></span>
+<span><span class="co">## 4 -0.25 -0.25  0.75</span></span></code></pre></div>
+<div class="sourceCode" id="cb335"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 把race.f变成simple coding</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">my.simple</span></span>
+<span></span>
+<span><span class="co"># 进行回归</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, data <span class="op">=</span> <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f2      11.5417     3.2861   3.512 0.000552 ***</span></span>
+<span><span class="co">## race.f3       1.7417     2.7325   0.637 0.524613    </span></span>
+<span><span class="co">## race.f4       7.5968     1.9889   3.820 0.000179 ***</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>可以看到除了截距不一样，其他的系数都是一样的，这里的截距51.6784 = (46.45833 + 58 + 48.2 + 54.05517)/4 。</p>
+</div>
+<div id="deviation-coding" class="section level2" number="19.4">
+<h2>
+<span class="header-section-number">19.4</span> Deviation coding<a class="anchor" aria-label="anchor" href="#deviation-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>这种编码方式比较的是某个类别的因变量的均值和其他所有类别的因变量的均值。它的比较矩阵是下面这种的。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-16-04.png" width="90%"></div>
+<p>第1组是比较类别1和其它所有类别，第2组是比较类别2和其它所有类别，第3组是比较类别3和其它所有类别。</p>
+<p>这种比较矩阵（编码方式）通过赋值1，0，-1实现。第1组中，类别1被设为1（因为是类别1和其他所有类别比较），第2组是类别2被设为1，第3组是类别3倍设为1，而类别4一直是 -1，因为它没和别人比过。</p>
+<p>在R中通过函数<code><a href="https://rdrr.io/r/stats/contrast.html">contr.sum()</a></code>实现这种编码方式（比较矩阵）：</p>
+<div class="sourceCode" id="cb336"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.sum</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">##   [,1] [,2] [,3]</span></span>
+<span><span class="co">## 1    1    0    0</span></span>
+<span><span class="co">## 2    0    1    0</span></span>
+<span><span class="co">## 3    0    0    1</span></span>
+<span><span class="co">## 4   -1   -1   -1</span></span></code></pre></div>
+<p>现在我们把<code>race.f</code>这个变量设置为deviation coding，再次进行回归分析：</p>
+<div class="sourceCode" id="cb337"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.sum</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, data <span class="op">=</span> <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f1      -5.2200     1.6314  -3.200  0.00160 ** </span></span>
+<span><span class="co">## race.f2       6.3216     2.1603   2.926  0.00384 ** </span></span>
+<span><span class="co">## race.f3      -3.4784     1.7323  -2.008  0.04602 *  </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>此时的截距是总的均值，也就是(46.4583 + 58 + 48.2 + 54.0552) / 4 = 51.678375，回归系数是相应类别的均值减去总的均值，比如<code>race.f1</code>的回归系数 -5.2200 = 46.4583 – 51.678375。</p>
+</div>
+<div id="orthogonal-polynomial-coding" class="section level2" number="19.5">
+<h2>
+<span class="header-section-number">19.5</span> Orthogonal Polynomial Coding<a class="anchor" aria-label="anchor" href="#orthogonal-polynomial-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>正交多项式编码，在重复测量方差分析的多重比较中用过，这种编码方式常用于线性趋势检验，检测某自变量的1次项、2次项、3次项等和因变量之间有无线性关系。只用在有序分类变量（有序因子）且不同类别间对因变量影响相同的情况下。</p>
+<p>在R语言中中通过函数<code><a href="https://rdrr.io/r/stats/contrast.html">contr.poly()</a></code>实现对某个变量的正交多项式编码，对于有序因子变量来说，这种编码方式是默认的，不需要手动指定。</p>
+<p>我们使用<code>hsb2</code>数据集中的<code>read</code>这一个变量，把它变成一个有序因子：</p>
+<div class="sourceCode" id="cb338"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 新建一列，根据read转换为有序因子</span></span>
+<span><span class="va">hsb2</span><span class="op">$</span><span class="va">readcat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">read</span>, <span class="fl">4</span>, ordered<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">readcat</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## (28,40] (40,52] (52,64] (64,76] </span></span>
+<span><span class="co">##      22      93      55      30</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">write</span>, <span class="va">hsb2</span><span class="op">$</span><span class="va">readcat</span>, <span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">##  (28,40]  (40,52]  (52,64]  (64,76] </span></span>
+<span><span class="co">## 42.77273 49.97849 56.56364 61.83333</span></span></code></pre></div>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-16-38.png" width="90%"></div>
+<div class="sourceCode" id="cb339"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.poly</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">##              .L   .Q         .C</span></span>
+<span><span class="co">## [1,] -0.6708204  0.5 -0.2236068</span></span>
+<span><span class="co">## [2,] -0.2236068 -0.5  0.6708204</span></span>
+<span><span class="co">## [3,]  0.2236068 -0.5 -0.6708204</span></span>
+<span><span class="co">## [4,]  0.6708204  0.5  0.2236068</span></span></code></pre></div>
+<p>目前我们还未对<code>readcat</code>这个变量进行任何编码设置，但是R语言是有默认编码方式的，可以通过<code><a href="https://rdrr.io/r/stats/contrasts.html">contrasts()</a></code>查看：</p>
+<div class="sourceCode" id="cb340"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 发现默认就是正交多项式编码</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">readcat</span><span class="op">)</span></span>
+<span><span class="co">##              .L   .Q         .C</span></span>
+<span><span class="co">## [1,] -0.6708204  0.5 -0.2236068</span></span>
+<span><span class="co">## [2,] -0.2236068 -0.5  0.6708204</span></span>
+<span><span class="co">## [3,]  0.2236068 -0.5 -0.6708204</span></span>
+<span><span class="co">## [4,]  0.6708204  0.5  0.2236068</span></span></code></pre></div>
+<p>当然也可以手动设置：</p>
+<div class="sourceCode" id="cb341"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">readcat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.poly</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">readcat</span>, data <span class="op">=</span> <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ readcat, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">## -18.979  -5.824   1.227   5.436  17.021 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  52.7870     0.6339  83.268   &lt;2e-16 ***</span></span>
+<span><span class="co">## readcat.L    14.2587     1.4841   9.607   &lt;2e-16 ***</span></span>
+<span><span class="co">## readcat.Q    -0.9680     1.2679  -0.764    0.446    </span></span>
+<span><span class="co">## readcat.C    -0.1554     1.0062  -0.154    0.877    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 7.726 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.3456, Adjusted R-squared:  0.3356 </span></span>
+<span><span class="co">## F-statistic: 34.51 on 3 and 196 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>回归分析结果显示<code>readcat</code>的一次项和因变量有很强的的线性关系，二次项和三次项没有明显的线性关系。</p>
+</div>
+<div id="helmert-coding" class="section level2" number="19.6">
+<h2>
+<span class="header-section-number">19.6</span> Helmert Coding<a class="anchor" aria-label="anchor" href="#helmert-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>Helmert Coding比较的是当前类别下的因变量平均值和后面的类别的因变量平均值。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-18-14.png" width="90%"></div>
+<p>如上图所示，<code>race.f1</code>比较的是类别1的因变量平均值和类别2,3,4的因变量平均值，<code>race.f2</code>比较的是类别2的因变量平均值和类别3,4的因变量平均值，<code>race.f3</code>比较的是类别3的因变量平均值和类别4的因变量平均值。</p>
+<p>R中提供了<code>contr.helmert</code>，但是对应的是 反helmert编码方式。所以如果想要对一个变量使用Helmert coding，需要手动设置：</p>
+<div class="sourceCode" id="cb342"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my.helmert</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">/</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">/</span></span>
+<span>    <span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">my.helmert</span></span>
+<span><span class="co">##       [,1]       [,2] [,3]</span></span>
+<span><span class="co">## [1,]  0.75  0.0000000  0.0</span></span>
+<span><span class="co">## [2,] -0.25  0.6666667  0.0</span></span>
+<span><span class="co">## [3,] -0.25 -0.3333333  0.5</span></span>
+<span><span class="co">## [4,] -0.25 -0.3333333 -0.5</span></span></code></pre></div>
+<p>现在把<code>race.f</code>设置为Helmert coding：</p>
+<div class="sourceCode" id="cb343"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">my.helmert</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f1      -6.9601     2.1752  -3.200  0.00160 ** </span></span>
+<span><span class="co">## race.f2       6.8724     2.9263   2.348  0.01985 *  </span></span>
+<span><span class="co">## race.f3      -5.8552     2.1528  -2.720  0.00712 ** </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p><code>race.f1</code>的回归系数 -6.9601 = 46.4583 – [(58 + 48.2 + 54.0552) / 3]，也就是类别1的因变量平均值减去类别2,3,4的因变量平均值；<code>race.f2</code>和<code>race.f3</code>的系数同理。</p>
+</div>
+<div id="reverse-helmert-coding" class="section level2" number="19.7">
+<h2>
+<span class="header-section-number">19.7</span> Reverse Helmert Coding<a class="anchor" aria-label="anchor" href="#reverse-helmert-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>和Helmert Coding刚好完全相反，每一个类别和它前面的类别比较。</p>
+<p>如下图所示，<code>race.f1</code>比较的是类别2的因变量平均值和类别1的因变量平均值，<code>race.f2</code>比较的是类别3的因变量平均值和类别1,2的因变量平均值，<code>race.f3</code>比较的是类别4的因变量平均值和类别1,2,3的因变量平均值。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-18-56.png" width="90%"></div>
+<p>R中提供了<code>contr.helmert</code>，可以进行Reverse Helmert Coding：</p>
+<div class="sourceCode" id="cb344"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.helmert</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">##   [,1] [,2] [,3]</span></span>
+<span><span class="co">## 1   -1   -1   -1</span></span>
+<span><span class="co">## 2    1   -1   -1</span></span>
+<span><span class="co">## 3    0    2   -1</span></span>
+<span><span class="co">## 4    0    0    3</span></span></code></pre></div>
+<p>把<code>race.f</code>设置为这种编码方式再次进行回归分析：</p>
+<div class="sourceCode" id="cb345"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/contrast.html">contr.helmert</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f1       5.7708     1.6431   3.512 0.000552 ***</span></span>
+<span><span class="co">## race.f2      -1.3431     0.8675  -1.548 0.123170    </span></span>
+<span><span class="co">## race.f3       0.7923     0.3720   2.130 0.034439 *  </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>看完了上面那么多例子，这个回归系数的解读大家应该明白了吧，这里就不再赘述了。</p>
+</div>
+<div id="forward-difference-coding" class="section level2" number="19.8">
+<h2>
+<span class="header-section-number">19.8</span> Forward Difference Coding<a class="anchor" aria-label="anchor" href="#forward-difference-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>这种编码方式比较的是当前类别的因变量均值和它相邻的下一个类别的因变量均值，注意是下一个，Helmert coding是多个。</p>
+<p>如下图所示，<code>race.f1</code>比较的是类别1和类别2，<code>race.f2比较的是类别2和3，</code>race.f3`比较的是类别3和类别4。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-19-34.png" width="90%"></div>
+<p>R语言中并没有默认函数提供此类编码方式，需要手动设置。</p>
+<div class="sourceCode" id="cb346"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my.forward.diff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">/</span></span>
+<span><span class="fl">4</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">3</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">my.forward.diff</span></span>
+<span><span class="co">##       [,1] [,2]  [,3]</span></span>
+<span><span class="co">## [1,]  0.75  0.5  0.25</span></span>
+<span><span class="co">## [2,] -0.25  0.5  0.25</span></span>
+<span><span class="co">## [3,] -0.25 -0.5  0.25</span></span>
+<span><span class="co">## [4,] -0.25 -0.5 -0.75</span></span></code></pre></div>
+<p>把<code>race.f</code>设置为这种编码方式：</p>
+<div class="sourceCode" id="cb347"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">my.forward.diff</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, data <span class="op">=</span> <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f1     -11.5417     3.2861  -3.512 0.000552 ***</span></span>
+<span><span class="co">## race.f2       9.8000     3.3878   2.893 0.004251 ** </span></span>
+<span><span class="co">## race.f3      -5.8552     2.1528  -2.720 0.007118 ** </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p><code>race.f1</code>的截距是类别2和类别1的因变量差值， -11.5417 = 46.4583 – 58，<code>race.f2</code>的截距 是类别3和类别2的因变量差值，9.9 = 58 – 48.2，<code>race.f3</code>的截距是类别4和类别3的因变量差值，-5.8552 = 48.2 – 54.0552。</p>
+</div>
+<div id="backward-difference-coding" class="section level2" number="19.9">
+<h2>
+<span class="header-section-number">19.9</span> Backward Difference Coding<a class="anchor" aria-label="anchor" href="#backward-difference-coding"><i class="fas fa-link"></i></a>
+</h2>
+<p>这种编码方式和前一种刚好相反，比较的是当前类别和它相邻的前一个类别的因变量均值。</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-20-10.png" width="90%"></div>
+<p>在R语言中实现这种编码方式也是需要手动设置的：</p>
+<div class="sourceCode" id="cb348"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my.backward.diff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">/</span><span class="fl">4</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">my.backward.diff</span></span>
+<span><span class="co">##       [,1] [,2]  [,3]</span></span>
+<span><span class="co">## [1,] -0.75 -0.5 -0.25</span></span>
+<span><span class="co">## [2,]  0.25 -0.5 -0.25</span></span>
+<span><span class="co">## [3,]  0.25  0.5 -0.25</span></span>
+<span><span class="co">## [4,]  0.25  0.5  0.75</span></span></code></pre></div>
+<div class="sourceCode" id="cb349"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/contrasts.html">contrasts</a></span><span class="op">(</span><span class="va">hsb2</span><span class="op">$</span><span class="va">race.f</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">my.backward.diff</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">write</span> <span class="op">~</span> <span class="va">race.f</span>, data <span class="op">=</span> <span class="va">hsb2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## lm(formula = write ~ race.f, data = hsb2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residuals:</span></span>
+<span><span class="co">##      Min       1Q   Median       3Q      Max </span></span>
+<span><span class="co">## -23.0552  -5.4583   0.9724   7.0000  18.8000 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Coefficients:</span></span>
+<span><span class="co">##             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">## (Intercept)  51.6784     0.9821  52.619  &lt; 2e-16 ***</span></span>
+<span><span class="co">## race.f1      11.5417     3.2861   3.512 0.000552 ***</span></span>
+<span><span class="co">## race.f2      -9.8000     3.3878  -2.893 0.004251 ** </span></span>
+<span><span class="co">## race.f3       5.8552     2.1528   2.720 0.007118 ** </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Residual standard error: 9.025 on 196 degrees of freedom</span></span>
+<span><span class="co">## Multiple R-squared:  0.1071, Adjusted R-squared:  0.0934 </span></span>
+<span><span class="co">## F-statistic: 7.833 on 3 and 196 DF,  p-value: 5.785e-05</span></span></code></pre></div>
+<p>此时的截距正负号刚好和上面一种情况相反。</p>
+<p>这几种就是常见的R语言中分类变量的编码方式，除了这几个，大家还可以根据自己需要灵活手动设置。</p>
+<p>大家以为这套规则只是R语言中独有的吗？并不是，<strong>在SPSS、SAS等软件中，分类变量的编码方式也是类似的！</strong></p>
+<p>这里只演示了线性回归的，logistic回归、cox回归也是类似的编码方案！</p>
+</div>
+<div id="参考资料-1" class="section level2" number="19.10">
+<h2>
+<span class="header-section-number">19.10</span> 参考资料<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-1"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li><a href="https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/" class="uri">https://stats.oarc.ucla.edu/r/library/r-library-contrast-coding-systems-for-categorical-variables/</a></li>
+</ol>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></div>
+<div class="next"><a href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#tuishgh"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="nav-link" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE"><span class="header-section-number">19.1</span> 演示数据</a></li>
+<li><a class="nav-link" href="#dummy-coding"><span class="header-section-number">19.2</span> Dummy Coding</a></li>
+<li><a class="nav-link" href="#simple-coding"><span class="header-section-number">19.3</span> simple coding</a></li>
+<li><a class="nav-link" href="#deviation-coding"><span class="header-section-number">19.4</span> Deviation coding</a></li>
+<li><a class="nav-link" href="#orthogonal-polynomial-coding"><span class="header-section-number">19.5</span> Orthogonal Polynomial Coding</a></li>
+<li><a class="nav-link" href="#helmert-coding"><span class="header-section-number">19.6</span> Helmert Coding</a></li>
+<li><a class="nav-link" href="#reverse-helmert-coding"><span class="header-section-number">19.7</span> Reverse Helmert Coding</a></li>
+<li><a class="nav-link" href="#forward-difference-coding"><span class="header-section-number">19.8</span> Forward Difference Coding</a></li>
+<li><a class="nav-link" href="#backward-difference-coding"><span class="header-section-number">19.9</span> Backward Difference Coding</a></li>
+<li><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-1"><span class="header-section-number">19.10</span> 参考资料</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1019-rcodecheme.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1019-rcodecheme.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

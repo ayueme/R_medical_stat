@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>10 R语言方差分析注意事项 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="R语言做方差分析很简单，就是一个函数aov()，包括但不限于单因素方差分析、多因素方差分析、协方差分析、重复测量方差分析等，都是这个函数。 R语言做方差分析和SPSS/SAS等传统统计软件不太一样，下面说一下需要注意的地方，主要是2个点： - 3种类型的方差分析 - 单因素协方差分析和two-way anova的区别  10.1 均衡设计和非均衡设计...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="10 R语言方差分析注意事项 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="R语言做方差分析很简单，就是一个函数aov()，包括但不限于单因素方差分析、多因素方差分析、协方差分析、重复测量方差分析等，都是这个函数。 R语言做方差分析和SPSS/SAS等传统统计软件不太一样，下面说一下需要注意的地方，主要是2个点： - 3种类型的方差分析 - 单因素协方差分析和two-way anova的区别  10.1 均衡设计和非均衡设计...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="10 R语言方差分析注意事项 | R语言实战医学统计">
+<meta name="twitter:description" content="R语言做方差分析很简单，就是一个函数aov()，包括但不限于单因素方差分析、多因素方差分析、协方差分析、重复测量方差分析等，都是这个函数。 R语言做方差分析和SPSS/SAS等传统统计软件不太一样，下面说一下需要注意的地方，主要是2个点： - 3种类型的方差分析 - 单因素协方差分析和two-way anova的区别  10.1 均衡设计和非均衡设计...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="active" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ytlrwijj" class="section level1" number="10">
+<h1>
+<span class="header-section-number">10</span> R语言方差分析注意事项<a class="anchor" aria-label="anchor" href="#ytlrwijj"><i class="fas fa-link"></i></a>
+</h1>
+<p>R语言做方差分析很简单，就是一个函数<code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>，包括但不限于单因素方差分析、多因素方差分析、协方差分析、重复测量方差分析等，都是这个函数。</p>
+<p>R语言做方差分析和SPSS/SAS等传统统计软件不太一样，下面说一下需要注意的地方，主要是2个点：
+- 3种类型的方差分析
+- 单因素协方差分析和two-way anova的区别</p>
+<div id="均衡设计和非均衡设计" class="section level2" number="10.1">
+<h2>
+<span class="header-section-number">10.1</span> 均衡设计和非均衡设计<a class="anchor" aria-label="anchor" href="#%E5%9D%87%E8%A1%A1%E8%AE%BE%E8%AE%A1%E5%92%8C%E9%9D%9E%E5%9D%87%E8%A1%A1%E8%AE%BE%E8%AE%A1"><i class="fas fa-link"></i></a>
+</h2>
+<p>均衡设计是指不同组别之间的样本量相等，非均衡设计自然就是指不同组别之间样本量不相同。</p>
+<p>医学研究中大部分都是均衡设计。</p>
+</div>
+<div id="方差分析的3种类型" class="section level2" number="10.2">
+<h2>
+<span class="header-section-number">10.2</span> 方差分析的3种类型<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90%E7%9A%843%E7%A7%8D%E7%B1%BB%E5%9E%8B"><i class="fas fa-link"></i></a>
+</h2>
+<p>在计算方差分析中的平方和时，有3种类型（你可以简单理解为方差分析有3种类型），SPSS/SAS在做方差分析的时候，默认是<strong>类型Ⅲ</strong>，但是R语言中的<code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>函数做方差分析时，默认是<strong>类型Ⅰ</strong>。</p>
+<p>R语言中做方差分析是公式表示的，比如：<code>aov(y ~ A + B + A:B, data = df)</code>。</p>
+<blockquote>
+<p>表达式中效应的顺序在两种情况下会造成影响：(a)因子不止一个，并且是非平衡设计；(b)存在协变量。出现任意一种情况时，等式右边的变量都与其他每个变量相关。此时，我们无法清晰地划分它们对因变量的影响。一般来说，越基础性的效应越需要放在表达式前面。具体来讲，首先是协变量，然后是主效应，接着是双因素的交互项，再接着是三因素的交互项，以此类推。对于主效应，越基础性的变量越应放在表达式前面，因此性别要放在处理方式之前。有一个基本的准则：若研究设计不是正交的（也就是说，因子和/或协变量相关），一定要谨慎设置效应的顺序。–《R语言实战》</p>
+</blockquote>
+<p>也就是说：</p>
+<ul>
+<li>如果是均衡设计，3种类型的方差分析没有差别，这也是为什么之前的演示全都和SPSS结果一样的原因！</li>
+<li>如果是非均衡设计，但是只存在组别因素（比如完全随机设计的方差分析），结果也是没有差别的！</li>
+<li>如果是非均衡设计并且有多个因素，或者存在协变量时，3种类型方差分析的结果是不一样的！</li>
+</ul>
+<p>3种类型的区别可以参考下面这张图：</p>
+<div class="sourceCode" id="cb157"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">include_graphics</a></span><span class="op">(</span><span class="st">"figs/Snipaste_2023-04-05_13-42-24.png"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_13-42-24.png" width="90%"></div>
+<p>R语言的<code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>函数不能更改类型，但是我们通过其他R包实现更改类型。比如<code><a href="https://rdrr.io/pkg/car/man/Anova.html">car::Anova()</a></code>或者<code>rstatix</code>包。</p>
+</div>
+<div id="示例" class="section level2" number="10.3">
+<h2>
+<span class="header-section-number">10.3</span> 示例<a class="anchor" aria-label="anchor" href="#%E7%A4%BA%E4%BE%8B"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用3个简单的小例子进行演示。</p>
+<div id="one-way-anova" class="section level3" number="10.3.1">
+<h3>
+<span class="header-section-number">10.3.1</span> one-way anova<a class="anchor" aria-label="anchor" href="#one-way-anova"><i class="fas fa-link"></i></a>
+</h3>
+<p>首先是一个单因素（one-way anova）均衡设计的例子，来自课本<strong>例4-2</strong>。</p>
+<div class="sourceCode" id="cb158"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trt</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group1"</span>,<span class="fl">30</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group2"</span>,<span class="fl">30</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group3"</span>,<span class="fl">30</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group4"</span>,<span class="fl">30</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">weight</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.53</span>,<span class="fl">4.59</span>,<span class="fl">4.34</span>,<span class="fl">2.66</span>,<span class="fl">3.59</span>,<span class="fl">3.13</span>,<span class="fl">3.30</span>,<span class="fl">4.04</span>,<span class="fl">3.53</span>,<span class="fl">3.56</span>,<span class="fl">3.85</span>,<span class="fl">4.07</span>,<span class="fl">1.37</span>,</span>
+<span>          <span class="fl">3.93</span>,<span class="fl">2.33</span>,<span class="fl">2.98</span>,<span class="fl">4.00</span>,<span class="fl">3.55</span>,<span class="fl">2.64</span>,<span class="fl">2.56</span>,<span class="fl">3.50</span>,<span class="fl">3.25</span>,<span class="fl">2.96</span>,<span class="fl">4.30</span>,<span class="fl">3.52</span>,<span class="fl">3.93</span>,</span>
+<span>          <span class="fl">4.19</span>,<span class="fl">2.96</span>,<span class="fl">4.16</span>,<span class="fl">2.59</span>,<span class="fl">2.42</span>,<span class="fl">3.36</span>,<span class="fl">4.32</span>,<span class="fl">2.34</span>,<span class="fl">2.68</span>,<span class="fl">2.95</span>,<span class="fl">2.36</span>,<span class="fl">2.56</span>,<span class="fl">2.52</span>,</span>
+<span>          <span class="fl">2.27</span>,<span class="fl">2.98</span>,<span class="fl">3.72</span>,<span class="fl">2.65</span>,<span class="fl">2.22</span>,<span class="fl">2.90</span>,<span class="fl">1.98</span>,<span class="fl">2.63</span>,<span class="fl">2.86</span>,<span class="fl">2.93</span>,<span class="fl">2.17</span>,<span class="fl">2.72</span>,<span class="fl">1.56</span>,</span>
+<span>          <span class="fl">3.11</span>,<span class="fl">1.81</span>,<span class="fl">1.77</span>,<span class="fl">2.80</span>,<span class="fl">3.57</span>,<span class="fl">2.97</span>,<span class="fl">4.02</span>,<span class="fl">2.31</span>,<span class="fl">2.86</span>,<span class="fl">2.28</span>,<span class="fl">2.39</span>,<span class="fl">2.28</span>,<span class="fl">2.48</span>,</span>
+<span>          <span class="fl">2.28</span>,<span class="fl">3.48</span>,<span class="fl">2.42</span>,<span class="fl">2.41</span>,<span class="fl">2.66</span>,<span class="fl">3.29</span>,<span class="fl">2.70</span>,<span class="fl">2.66</span>,<span class="fl">3.68</span>,<span class="fl">2.65</span>,<span class="fl">2.66</span>,<span class="fl">2.32</span>,<span class="fl">2.61</span>,</span>
+<span>          <span class="fl">3.64</span>,<span class="fl">2.58</span>,<span class="fl">3.65</span>,<span class="fl">3.21</span>,<span class="fl">2.23</span>,<span class="fl">2.32</span>,<span class="fl">2.68</span>,<span class="fl">3.04</span>,<span class="fl">2.81</span>,<span class="fl">3.02</span>,<span class="fl">1.97</span>,<span class="fl">1.68</span>,<span class="fl">0.89</span>,</span>
+<span>          <span class="fl">1.06</span>,<span class="fl">1.08</span>,<span class="fl">1.27</span>,<span class="fl">1.63</span>,<span class="fl">1.89</span>,<span class="fl">1.31</span>,<span class="fl">2.51</span>,<span class="fl">1.88</span>,<span class="fl">1.41</span>,<span class="fl">3.19</span>,<span class="fl">1.92</span>,<span class="fl">0.94</span>,<span class="fl">2.11</span>,</span>
+<span>          <span class="fl">2.81</span>,<span class="fl">1.98</span>,<span class="fl">1.74</span>,<span class="fl">2.16</span>,<span class="fl">3.37</span>,<span class="fl">2.97</span>,<span class="fl">1.69</span>,<span class="fl">1.19</span>,<span class="fl">2.17</span>,<span class="fl">2.28</span>,<span class="fl">1.72</span>,<span class="fl">2.47</span>,<span class="fl">1.02</span>,</span>
+<span>          <span class="fl">2.52</span>,<span class="fl">2.10</span>,<span class="fl">3.71</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">trt</span>,<span class="va">weight</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    120 obs. of  2 variables:</span></span>
+<span><span class="co">##  $ trt   : chr  "group1" "group1" "group1" "group1" ...</span></span>
+<span><span class="co">##  $ weight: num  3.53 4.59 4.34 2.66 3.59 3.13 3.3 4.04 3.53 3.56 ...</span></span></code></pre></div>
+<p>R语言中的方差分析结果比较：</p>
+<div class="sourceCode" id="cb159"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1型</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">weight</span> <span class="op">~</span> <span class="va">trt</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##              Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## trt           3  32.16  10.719   24.88 1.67e-12 ***</span></span>
+<span><span class="co">## Residuals   116  49.97   0.431                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 2型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span>, type<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##           Sum Sq  Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## trt       32.156   3  24.884 1.674e-12 ***</span></span>
+<span><span class="co">## Residuals 49.967 116                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 3型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span>, type<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type III tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##             Sum Sq  Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## (Intercept) 353.02   1 819.537 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">## trt          32.16   3  24.884 1.674e-12 ***</span></span>
+<span><span class="co">## Residuals    49.97 116                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>可以看到3种类型的结果是完全一样的，没有差别~</p>
+<p>下面我们更改一下样本数量，使其变成非均衡设计（还是one-way anova）：</p>
+<div class="sourceCode" id="cb160"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 每组样本数量改一下</span></span>
+<span><span class="va">trt</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group1"</span>,<span class="fl">10</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group2"</span>,<span class="fl">50</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group3"</span>,<span class="fl">35</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"group4"</span>,<span class="fl">25</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">weight</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.53</span>,<span class="fl">4.59</span>,<span class="fl">4.34</span>,<span class="fl">2.66</span>,<span class="fl">3.59</span>,<span class="fl">3.13</span>,<span class="fl">3.30</span>,<span class="fl">4.04</span>,<span class="fl">3.53</span>,<span class="fl">3.56</span>,<span class="fl">3.85</span>,<span class="fl">4.07</span>,<span class="fl">1.37</span>,</span>
+<span>          <span class="fl">3.93</span>,<span class="fl">2.33</span>,<span class="fl">2.98</span>,<span class="fl">4.00</span>,<span class="fl">3.55</span>,<span class="fl">2.64</span>,<span class="fl">2.56</span>,<span class="fl">3.50</span>,<span class="fl">3.25</span>,<span class="fl">2.96</span>,<span class="fl">4.30</span>,<span class="fl">3.52</span>,<span class="fl">3.93</span>,</span>
+<span>          <span class="fl">4.19</span>,<span class="fl">2.96</span>,<span class="fl">4.16</span>,<span class="fl">2.59</span>,<span class="fl">2.42</span>,<span class="fl">3.36</span>,<span class="fl">4.32</span>,<span class="fl">2.34</span>,<span class="fl">2.68</span>,<span class="fl">2.95</span>,<span class="fl">2.36</span>,<span class="fl">2.56</span>,<span class="fl">2.52</span>,</span>
+<span>          <span class="fl">2.27</span>,<span class="fl">2.98</span>,<span class="fl">3.72</span>,<span class="fl">2.65</span>,<span class="fl">2.22</span>,<span class="fl">2.90</span>,<span class="fl">1.98</span>,<span class="fl">2.63</span>,<span class="fl">2.86</span>,<span class="fl">2.93</span>,<span class="fl">2.17</span>,<span class="fl">2.72</span>,<span class="fl">1.56</span>,</span>
+<span>          <span class="fl">3.11</span>,<span class="fl">1.81</span>,<span class="fl">1.77</span>,<span class="fl">2.80</span>,<span class="fl">3.57</span>,<span class="fl">2.97</span>,<span class="fl">4.02</span>,<span class="fl">2.31</span>,<span class="fl">2.86</span>,<span class="fl">2.28</span>,<span class="fl">2.39</span>,<span class="fl">2.28</span>,<span class="fl">2.48</span>,</span>
+<span>          <span class="fl">2.28</span>,<span class="fl">3.48</span>,<span class="fl">2.42</span>,<span class="fl">2.41</span>,<span class="fl">2.66</span>,<span class="fl">3.29</span>,<span class="fl">2.70</span>,<span class="fl">2.66</span>,<span class="fl">3.68</span>,<span class="fl">2.65</span>,<span class="fl">2.66</span>,<span class="fl">2.32</span>,<span class="fl">2.61</span>,</span>
+<span>          <span class="fl">3.64</span>,<span class="fl">2.58</span>,<span class="fl">3.65</span>,<span class="fl">3.21</span>,<span class="fl">2.23</span>,<span class="fl">2.32</span>,<span class="fl">2.68</span>,<span class="fl">3.04</span>,<span class="fl">2.81</span>,<span class="fl">3.02</span>,<span class="fl">1.97</span>,<span class="fl">1.68</span>,<span class="fl">0.89</span>,</span>
+<span>          <span class="fl">1.06</span>,<span class="fl">1.08</span>,<span class="fl">1.27</span>,<span class="fl">1.63</span>,<span class="fl">1.89</span>,<span class="fl">1.31</span>,<span class="fl">2.51</span>,<span class="fl">1.88</span>,<span class="fl">1.41</span>,<span class="fl">3.19</span>,<span class="fl">1.92</span>,<span class="fl">0.94</span>,<span class="fl">2.11</span>,</span>
+<span>          <span class="fl">2.81</span>,<span class="fl">1.98</span>,<span class="fl">1.74</span>,<span class="fl">2.16</span>,<span class="fl">3.37</span>,<span class="fl">2.97</span>,<span class="fl">1.69</span>,<span class="fl">1.19</span>,<span class="fl">2.17</span>,<span class="fl">2.28</span>,<span class="fl">1.72</span>,<span class="fl">2.47</span>,<span class="fl">1.02</span>,</span>
+<span>          <span class="fl">2.52</span>,<span class="fl">2.10</span>,<span class="fl">3.71</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">trt</span>,<span class="va">weight</span><span class="op">)</span></span></code></pre></div>
+<p>然后再来看一下3种类型方差分析的结果：</p>
+<div class="sourceCode" id="cb161"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1型</span></span>
+<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">weight</span> <span class="op">~</span> <span class="va">trt</span>, data <span class="op">=</span> <span class="va">df1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit1</span><span class="op">)</span></span>
+<span><span class="co">##              Df Sum Sq Mean Sq F value   Pr(&gt;F)    </span></span>
+<span><span class="co">## trt           3  22.03   7.343   14.17 6.23e-08 ***</span></span>
+<span><span class="co">## Residuals   116  60.09   0.518                     </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 2型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit1</span>, type <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##           Sum Sq  Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## trt       22.029   3  14.174 6.228e-08 ***</span></span>
+<span><span class="co">## Residuals 60.094 116                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 3型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit1</span>, type <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type III tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##              Sum Sq  Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## (Intercept) 131.551   1 253.933 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">## trt          22.029   3  14.174 6.228e-08 ***</span></span>
+<span><span class="co">## Residuals    60.094 116                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>可以看到3种类型的结果也是一样的哦！</p>
+</div>
+<div id="two-way-anova" class="section level3" number="10.3.2">
+<h3>
+<span class="header-section-number">10.3.2</span> two-way anova<a class="anchor" aria-label="anchor" href="#two-way-anova"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用一个随机区组设计的方差分析进行演示，示例数据来自课本<strong>例4-3</strong>的数据。</p>
+<p>首先也是均衡设计的情况：</p>
+<div class="sourceCode" id="cb162"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.82</span>,<span class="fl">0.65</span>,<span class="fl">0.51</span>,<span class="fl">0.73</span>,<span class="fl">0.54</span>,<span class="fl">0.23</span>,<span class="fl">0.43</span>,<span class="fl">0.34</span>,<span class="fl">0.28</span>,<span class="fl">0.41</span>,<span class="fl">0.21</span>,</span>
+<span>            <span class="fl">0.31</span>,<span class="fl">0.68</span>,<span class="fl">0.43</span>,<span class="fl">0.24</span><span class="op">)</span></span>
+<span><span class="va">block</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>,<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span><span class="op">)</span>,each<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>,<span class="st">"B"</span>,<span class="st">"C"</span><span class="op">)</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data4_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">weight</span>,<span class="va">block</span>,<span class="va">group</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">data4_4</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    15 obs. of  3 variables:</span></span>
+<span><span class="co">##  $ weight: num  0.82 0.65 0.51 0.73 0.54 0.23 0.43 0.34 0.28 0.41 ...</span></span>
+<span><span class="co">##  $ block : chr  "1" "1" "1" "2" ...</span></span>
+<span><span class="co">##  $ group : chr  "A" "B" "C" "A" ...</span></span></code></pre></div>
+<p>下面是3种类型方差分析的结果，由于是均衡设计，3种类型没有任何区别，并且即使你把区组因素和分组因素的位置互换，也不会有任何差别哦！</p>
+<div class="sourceCode" id="cb163"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1型</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">weight</span> <span class="op">~</span> <span class="va">block</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">data4_4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value  Pr(&gt;F)   </span></span>
+<span><span class="co">## block        4 0.2284 0.05709   5.978 0.01579 * </span></span>
+<span><span class="co">## group        2 0.2280 0.11400  11.937 0.00397 **</span></span>
+<span><span class="co">## Residuals    8 0.0764 0.00955                   </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 2型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##            Sum Sq Df F value   Pr(&gt;F)   </span></span>
+<span><span class="co">## block     0.22836  4   5.978 0.015787 * </span></span>
+<span><span class="co">## group     0.22800  2  11.937 0.003968 **</span></span>
+<span><span class="co">## Residuals 0.07640  8                    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 3型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type III tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##              Sum Sq Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## (Intercept) 1.44086  1 150.875 1.794e-06 ***</span></span>
+<span><span class="co">## block       0.22836  4   5.978  0.015787 *  </span></span>
+<span><span class="co">## group       0.22800  2  11.937  0.003968 ** </span></span>
+<span><span class="co">## Residuals   0.07640  8                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>下面给它改成非均衡设计：</p>
+<div class="sourceCode" id="cb164"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">weight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.82</span>,<span class="fl">0.65</span>,<span class="fl">0.51</span>,<span class="fl">0.73</span>,<span class="fl">0.54</span>,<span class="fl">0.23</span>,<span class="fl">0.43</span>,<span class="fl">0.34</span>,<span class="fl">0.28</span>,<span class="fl">0.41</span>,<span class="fl">0.21</span>,</span>
+<span>            <span class="fl">0.31</span>,<span class="fl">0.68</span>,<span class="fl">0.43</span>,<span class="fl">0.24</span><span class="op">)</span></span>
+<span><span class="va">block</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>,<span class="st">"2"</span>,<span class="st">"3"</span>,<span class="st">"4"</span>,<span class="st">"5"</span><span class="op">)</span>,each<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 每组样本量不一样</span></span>
+<span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"B"</span>,<span class="fl">9</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"C"</span>,<span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data4_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">weight</span>,<span class="va">block</span>,<span class="va">group</span><span class="op">)</span></span></code></pre></div>
+<p>下面再看一下3种类型方差分析的结果：</p>
+<div class="sourceCode" id="cb165"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1型</span></span>
+<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">weight</span> <span class="op">~</span> <span class="va">block</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">data4_4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value  Pr(&gt;F)   </span></span>
+<span><span class="co">## block        4 0.2284 0.05709   5.978 0.01579 * </span></span>
+<span><span class="co">## group        2 0.2280 0.11400  11.937 0.00397 **</span></span>
+<span><span class="co">## Residuals    8 0.0764 0.00955                   </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 2型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit1</span>, type <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##             Sum Sq Df F value Pr(&gt;F)</span></span>
+<span><span class="co">## block     0.079789  4  0.5896 0.6798</span></span>
+<span><span class="co">## group     0.033750  2  0.4988 0.6250</span></span>
+<span><span class="co">## Residuals 0.270650  8</span></span>
+<span></span>
+<span><span class="co"># 3型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit1</span>, type <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type III tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: weight</span></span>
+<span><span class="co">##              Sum Sq Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## (Intercept) 1.08045  1 31.9364 0.0004807 ***</span></span>
+<span><span class="co">## block       0.07979  4  0.5896 0.6798021    </span></span>
+<span><span class="co">## group       0.03375  2  0.4988 0.6249619    </span></span>
+<span><span class="co">## Residuals   0.27065  8                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>可以看到结果完全不一样了哦！</p>
+</div>
+<div id="协方差分析" class="section level3" number="10.3.3">
+<h3>
+<span class="header-section-number">10.3.3</span> 协方差分析<a class="anchor" aria-label="anchor" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h3>
+<p>就用一个简单的完全随机设计资料的协方差分析进行演示，示例数据来自课本<strong>例13-1</strong>。</p>
+<div class="sourceCode" id="cb166"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df13_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x1<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10.8</span>,<span class="fl">11.6</span>,<span class="fl">10.6</span>,<span class="fl">9.0</span>,<span class="fl">11.2</span>,<span class="fl">9.9</span>,<span class="fl">10.6</span>,<span class="fl">10.4</span>,<span class="fl">9.6</span>,<span class="fl">10.5</span>,</span>
+<span>                          <span class="fl">10.6</span>,<span class="fl">9.9</span>,<span class="fl">9.5</span>,<span class="fl">9.7</span>,<span class="fl">10.7</span>,<span class="fl">9.2</span>,<span class="fl">10.5</span>,<span class="fl">11.0</span>,<span class="fl">10.1</span>,<span class="fl">10.7</span>,<span class="fl">8.5</span>,<span class="fl">10.0</span>,</span>
+<span>                          <span class="fl">10.4</span>,<span class="fl">9.7</span>,<span class="fl">9.4</span>,<span class="fl">9.2</span>,<span class="fl">10.5</span>,<span class="fl">11.2</span>,<span class="fl">9.6</span>,<span class="fl">8.0</span><span class="op">)</span>,</span>
+<span>                     y1<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9.4</span>,<span class="fl">9.7</span>,<span class="fl">8.7</span>,<span class="fl">7.2</span>,<span class="fl">10.0</span>,<span class="fl">8.5</span>,<span class="fl">8.3</span>,<span class="fl">8.1</span>,<span class="fl">8.5</span>,<span class="fl">9.1</span>,<span class="fl">9.2</span>,<span class="fl">8.4</span>,</span>
+<span>                          <span class="fl">7.6</span>,<span class="fl">7.9</span>,<span class="fl">8.8</span>,<span class="fl">7.4</span>,<span class="fl">8.6</span>,<span class="fl">9.2</span>,<span class="fl">8.0</span>,<span class="fl">8.5</span>,<span class="fl">7.3</span>,</span>
+<span>                          <span class="fl">8.3</span>,<span class="fl">8.6</span>,<span class="fl">8.7</span>,<span class="fl">7.6</span>,<span class="fl">8.0</span>,<span class="fl">8.8</span>,<span class="fl">9.5</span>,<span class="fl">8.2</span>,<span class="fl">7.2</span><span class="op">)</span>,</span>
+<span>                     x2<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10.4</span>,<span class="fl">9.7</span>,<span class="fl">9.9</span>,<span class="fl">9.8</span>,<span class="fl">11.1</span>,<span class="fl">8.2</span>,<span class="fl">8.8</span>,<span class="fl">10.0</span>,<span class="fl">9.0</span>,<span class="fl">9.4</span>,</span>
+<span>                          <span class="fl">8.9</span>,<span class="fl">10.3</span>,<span class="fl">9.3</span>,<span class="fl">9.2</span>,<span class="fl">10.9</span>,<span class="fl">9.2</span>,<span class="fl">9.2</span>,<span class="fl">10.4</span>,<span class="fl">11.2</span>,</span>
+<span>                          <span class="fl">11.1</span>,<span class="fl">11.0</span>,<span class="fl">8.6</span>,<span class="fl">9.3</span>,<span class="fl">10.3</span>,<span class="fl">10.3</span>,<span class="fl">9.8</span>,<span class="fl">10.5</span>,<span class="fl">10.7</span>,<span class="fl">10.4</span>,<span class="fl">9.4</span><span class="op">)</span>,</span>
+<span>                     y2<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9.2</span>,<span class="fl">9.1</span>,<span class="fl">8.9</span>,<span class="fl">8.6</span>,<span class="fl">9.9</span>,<span class="fl">7.1</span>,<span class="fl">7.8</span>,<span class="fl">7.9</span>,<span class="fl">8.0</span>,<span class="fl">9.0</span>,<span class="fl">7.9</span>,<span class="fl">8.9</span>,</span>
+<span>                          <span class="fl">8.9</span>,<span class="fl">8.1</span>,<span class="fl">10.2</span>,<span class="fl">8.5</span>,<span class="fl">9.0</span>,<span class="fl">8.9</span>,<span class="fl">9.8</span>,<span class="fl">10.1</span>,<span class="fl">8.5</span>,</span>
+<span>                          <span class="fl">8.1</span>,<span class="fl">8.6</span>,<span class="fl">8.9</span>,<span class="fl">9.6</span>,<span class="fl">8.1</span>,<span class="fl">9.9</span>,<span class="fl">9.3</span>,<span class="fl">8.7</span>,<span class="fl">8.7</span><span class="op">)</span>,</span>
+<span>                     x3<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9.8</span>,<span class="fl">11.2</span>,<span class="fl">10.7</span>,<span class="fl">9.6</span>,<span class="fl">10.1</span>,<span class="fl">9.8</span>,<span class="fl">10.1</span>,<span class="fl">10.3</span>,<span class="fl">11.0</span>,<span class="fl">10.5</span>,<span class="fl">9.2</span>,</span>
+<span>                          <span class="fl">10.1</span>,<span class="fl">10.4</span>,<span class="fl">10.0</span>,<span class="fl">8.4</span>,<span class="fl">10.1</span>,<span class="fl">9.3</span>,<span class="fl">10.5</span>,<span class="fl">11.1</span>,<span class="fl">10.5</span>,</span>
+<span>                          <span class="fl">9.7</span>,<span class="fl">9.2</span>,<span class="fl">9.3</span>,<span class="fl">10.4</span>,<span class="fl">10.0</span>,<span class="fl">10.3</span>,<span class="fl">9.9</span>,<span class="fl">9.4</span>,<span class="fl">8.3</span>,<span class="fl">9.2</span><span class="op">)</span>,</span>
+<span>                     y3<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7.6</span>,<span class="fl">7.9</span>,<span class="fl">9.0</span>,<span class="fl">7.8</span>,<span class="fl">8.5</span>,<span class="fl">7.5</span>,<span class="fl">8.3</span>,<span class="fl">8.2</span>,<span class="fl">8.4</span>,<span class="fl">8.1</span>,<span class="fl">7.0</span>,<span class="fl">7.7</span>,<span class="fl">8.0</span>,</span>
+<span>                          <span class="fl">6.6</span>,<span class="fl">6.1</span>,<span class="fl">8.1</span>,<span class="fl">7.8</span>,<span class="fl">8.4</span>,<span class="fl">8.2</span>,<span class="fl">8.0</span>,<span class="fl">7.6</span>,<span class="fl">6.9</span>,</span>
+<span>                          <span class="fl">6.7</span>,<span class="fl">8.1</span>,<span class="fl">7.4</span>,<span class="fl">8.2</span>,<span class="fl">7.6</span>,<span class="fl">7.8</span>,<span class="fl">6.6</span>,<span class="fl">7.2</span><span class="op">)</span></span>
+<span>                     <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df13_11</span> <span class="op">&lt;-</span> <span class="va">df13_1</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># 变长</span></span>
+<span>               names_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">".value"</span>,<span class="st">"group"</span><span class="op">)</span>,</span>
+<span>               names_pattern <span class="op">=</span> <span class="st">"(.)(.)"</span></span>
+<span>               <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span><span class="op">)</span> <span class="co"># 组别变为因子型</span></span>
+<span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">df13_11</span><span class="op">)</span></span>
+<span><span class="co">## Rows: 90</span></span>
+<span><span class="co">## Columns: 3</span></span>
+<span><span class="co">## $ group &lt;fct&gt; 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1…</span></span>
+<span><span class="co">## $ x     &lt;dbl&gt; 10.8, 10.4, 9.8, 11.6, 9.7, 11.2, 10.6, 9.9, 10.7, 9.0, 9.8, 9.6…</span></span>
+<span><span class="co">## $ y     &lt;dbl&gt; 9.4, 9.2, 7.6, 9.7, 9.1, 7.9, 8.7, 8.9, 9.0, 7.2, 8.6, 7.8, 10.0…</span></span></code></pre></div>
+<p><code>group</code>是分组因素，<code>x</code>是协变量，<code>y</code>是因变量。</p>
+<p>下面进行3种类型的协方差分析：</p>
+<div class="sourceCode" id="cb167"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1型</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aov.html">aov</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">+</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df13_11</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##             Df Sum Sq Mean Sq F value Pr(&gt;F)    </span></span>
+<span><span class="co">## x            1  29.06  29.057  171.20 &lt;2e-16 ***</span></span>
+<span><span class="co">## group        2  19.85   9.925   58.48 &lt;2e-16 ***</span></span>
+<span><span class="co">## Residuals   86  14.60   0.170                   </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 2型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type II tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: y</span></span>
+<span><span class="co">##           Sum Sq Df F value    Pr(&gt;F)    </span></span>
+<span><span class="co">## x         30.183  1  177.83 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">## group     19.851  2   58.48 &lt; 2.2e-16 ***</span></span>
+<span><span class="co">## Residuals 14.596 86                      </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span></span>
+<span><span class="co"># 3型</span></span>
+<span><span class="fu">car</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/car/man/Anova.html">Anova</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">## Anova Table (Type III tests)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Response: y</span></span>
+<span><span class="co">##              Sum Sq Df  F value Pr(&gt;F)    </span></span>
+<span><span class="co">## (Intercept)  0.3818  1   2.2493 0.1373    </span></span>
+<span><span class="co">## x           30.1830  1 177.8346 &lt;2e-16 ***</span></span>
+<span><span class="co">## group       19.8510  2  58.4798 &lt;2e-16 ***</span></span>
+<span><span class="co">## Residuals   14.5963 86                    </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+<p>可以看到在有协变量的情况下，即使是均衡设计，1型和2型、3型之间的平方及F值也是有差异的。</p>
+<p>如果你很细心，你可能会发现R中进行单因素协方差分析（ANCOVA）的公式写法和two-way anova一模一样！那R语言怎么知道我们是要进行ancova还是two-way anova呢？</p>
+<p>很简单，在这里<code>x</code>作为协变量，是数值型，所以R默认会进行ancova，如果是因子型或者字符型，R会默认进行two-way anova，比如上面那个随机区组的例子！</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></div>
+<div class="next"><a href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ytlrwijj"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="nav-link" href="#%E5%9D%87%E8%A1%A1%E8%AE%BE%E8%AE%A1%E5%92%8C%E9%9D%9E%E5%9D%87%E8%A1%A1%E8%AE%BE%E8%AE%A1"><span class="header-section-number">10.1</span> 均衡设计和非均衡设计</a></li>
+<li><a class="nav-link" href="#%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90%E7%9A%843%E7%A7%8D%E7%B1%BB%E5%9E%8B"><span class="header-section-number">10.2</span> 方差分析的3种类型</a></li>
+<li>
+<a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="header-section-number">10.3</span> 示例</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#one-way-anova"><span class="header-section-number">10.3.1</span> one-way anova</a></li>
+<li><a class="nav-link" href="#two-way-anova"><span class="header-section-number">10.3.2</span> two-way anova</a></li>
+<li><a class="nav-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><span class="header-section-number">10.3.3</span> 协方差分析</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1010-anovaattention.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1010-anovaattention.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

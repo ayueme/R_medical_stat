@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>21 R语言聚类分析 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content='主要介绍使用R语言进行层次聚类、划分聚类（K均值聚类和PAM）。  21.1 系统聚类（层次聚类,Hierarchical clustering） # 没安装flexclust包的需要先安装 data(nutrient, package = "flexclust") row.names(nutrient) &lt;- tolower(row.names(nutrient))...'>
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="21 R语言聚类分析 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content='主要介绍使用R语言进行层次聚类、划分聚类（K均值聚类和PAM）。  21.1 系统聚类（层次聚类,Hierarchical clustering） # 没安装flexclust包的需要先安装 data(nutrient, package = "flexclust") row.names(nutrient) &lt;- tolower(row.names(nutrient))...'>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="21 R语言聚类分析 | R语言实战医学统计">
+<meta name="twitter:description" content='主要介绍使用R语言进行层次聚类、划分聚类（K均值聚类和PAM）。  21.1 系统聚类（层次聚类,Hierarchical clustering） # 没安装flexclust包的需要先安装 data(nutrient, package = "flexclust") row.names(nutrient) &lt;- tolower(row.names(nutrient))...'>
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="active" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="lksdjgljdsl" class="section level1" number="21">
+<h1>
+<span class="header-section-number">21</span> R语言聚类分析<a class="anchor" aria-label="anchor" href="#lksdjgljdsl"><i class="fas fa-link"></i></a>
+</h1>
+<p>主要介绍使用R语言进行层次聚类、划分聚类（K均值聚类和PAM）。</p>
+<div id="系统聚类层次聚类hierarchical-clustering" class="section level2" number="21.1">
+<h2>
+<span class="header-section-number">21.1</span> 系统聚类（层次聚类,Hierarchical clustering）<a class="anchor" aria-label="anchor" href="#%E7%B3%BB%E7%BB%9F%E8%81%9A%E7%B1%BB%E5%B1%82%E6%AC%A1%E8%81%9A%E7%B1%BBhierarchical-clustering"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb366"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 没安装flexclust包的需要先安装</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">nutrient</span>, package <span class="op">=</span> <span class="st">"flexclust"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">nutrient</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/row.names.html">row.names</a></span><span class="op">(</span><span class="va">nutrient</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">nutrient</span><span class="op">)</span> <span class="co"># 27行5列</span></span>
+<span><span class="co">## [1] 27  5</span></span>
+<span></span>
+<span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/headtail.html">headTail</a></span><span class="op">(</span><span class="va">nutrient</span><span class="op">)</span></span>
+<span><span class="co">##                 energy protein fat calcium iron</span></span>
+<span><span class="co">## beef braised       340      20  28       9  2.6</span></span>
+<span><span class="co">## hamburger          245      21  17       9  2.7</span></span>
+<span><span class="co">## beef roast         420      15  39       7    2</span></span>
+<span><span class="co">## beef steak         375      19  32       9  2.6</span></span>
+<span><span class="co">## ...                ...     ... ...     ...  ...</span></span>
+<span><span class="co">## salmon canned      120      17   5     159  0.7</span></span>
+<span><span class="co">## sardines canned    180      22   9     367  2.5</span></span>
+<span><span class="co">## tuna canned        170      25   7       7  1.2</span></span>
+<span><span class="co">## shrimp canned      110      23   1      98  2.6</span></span></code></pre></div>
+<p>层次聚类在R语言中非常简单，通过<code>hclust</code>实现。</p>
+<div class="sourceCode" id="cb367"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 聚类前先进行标准化</span></span>
+<span><span class="va">nutrient.scaled</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">nutrient</span><span class="op">)</span></span>
+<span><span class="va">h.clust</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/hclust.html">hclust</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="va">nutrient.scaled</span>,method <span class="op">=</span> <span class="st">"euclidean"</span><span class="op">)</span>, <span class="co"># 计算距离有不同方法</span></span>
+<span>                  method <span class="op">=</span> <span class="st">"average"</span> <span class="co"># 层次聚类有不同方法</span></span>
+<span>                  <span class="op">)</span></span></code></pre></div>
+<p>下面就是画图，简单点可以直接用<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>。</p>
+<div class="sourceCode" id="cb368"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h.clust</span>,hang <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,main <span class="op">=</span> <span class="st">"层次聚类"</span>, sub<span class="op">=</span><span class="st">""</span>, </span>
+<span>     xlab<span class="op">=</span><span class="st">""</span>, cex.lab <span class="op">=</span> <span class="fl">1.0</span>, cex.axis <span class="op">=</span> <span class="fl">1.0</span>, cex.main <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-4-1.png" width="90%"></div>
+<p>关于更加精细化的细节修改，下面会介绍。或者可以借助其他R包快速绘制好看的聚类分析图形。</p>
+<p>如何选择聚类的个数呢？</p>
+<p>可以通过R包<code>NbClust</code>实现。</p>
+<div class="sourceCode" id="cb369"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sites.google.com/site/malikacharrad/research/nbclust-package">NbClust</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NbClust/man/NbClust.html">NbClust</a></span><span class="op">(</span><span class="va">nutrient.scaled</span>, distance <span class="op">=</span> <span class="st">"euclidean"</span>,</span>
+<span>              min.nc <span class="op">=</span> <span class="fl">2</span>, <span class="co"># 最小聚类数</span></span>
+<span>              max.nc <span class="op">=</span> <span class="fl">10</span>, <span class="co"># 最大聚类树</span></span>
+<span>              method <span class="op">=</span> <span class="st">"average"</span></span>
+<span>              <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-5-1.png" width="90%"></div>
+<pre><code>## *** : The Hubert index is a graphical method of determining the number of clusters.
+##                 In the plot of Hubert index, we seek a significant knee that corresponds to a 
+##                 significant increase of the value of the measure i.e the significant peak in Hubert
+##                 index second differences plot. 
+## </code></pre>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-5-2.png" width="90%"></div>
+<pre><code>## *** : The D index is a graphical method of determining the number of clusters. 
+##                 In the plot of D index, we seek a significant knee (the significant peak in Dindex
+##                 second differences plot) that corresponds to a significant increase of the value of
+##                 the measure. 
+##  
+## ******************************************************************* 
+## * Among all indices:                                                
+## * 5 proposed 2 as the best number of clusters 
+## * 5 proposed 3 as the best number of clusters 
+## * 2 proposed 4 as the best number of clusters 
+## * 4 proposed 5 as the best number of clusters 
+## * 1 proposed 8 as the best number of clusters 
+## * 1 proposed 9 as the best number of clusters 
+## * 5 proposed 10 as the best number of clusters 
+## 
+##                    ***** Conclusion *****                            
+##  
+## * According to the majority rule, the best number of clusters is  2 
+##  
+##  
+## *******************************************************************</code></pre>
+<p>输出日志里给出了评判准则以及最终结果：Hubert index和D index使用图形的方式判断最佳聚类个数，拐点明显的可视作最佳聚类个数。</p>
+<p>它给出的结论是最佳聚类数是2。我们也可以通过条形图查看这些评判准则的具体数量。</p>
+<div class="sourceCode" id="cb372"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/barplot.html">barplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">nc</span><span class="op">$</span><span class="va">Best.nc</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>,</span>
+<span>        xlab <span class="op">=</span> <span class="st">"聚类数目"</span>,</span>
+<span>        ylab <span class="op">=</span> <span class="st">"评判准则个数"</span></span>
+<span>        <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-6-1.png" width="90%"></div>
+<p>从条形图中可以看出，聚类数目为2,3,5,10时，评判准则个数最多，为5个，这里我们可以选择5个。</p>
+<div class="sourceCode" id="cb373"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 把聚类树划分为5类</span></span>
+<span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cutree.html">cutree</a></span><span class="op">(</span><span class="va">h.clust</span>, k<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 查看每一类有多少例</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span></span>
+<span><span class="co">## cluster</span></span>
+<span><span class="co">##  1  2  3  4  5 </span></span>
+<span><span class="co">##  7 16  1  2  1</span></span></code></pre></div>
+<p>把最终结果画出来：</p>
+<div class="sourceCode" id="cb374"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h.clust</span>, hang <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,main <span class="op">=</span> <span class="st">""</span>,xlab <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/rect.hclust.html">rect.hclust</a></span><span class="op">(</span><span class="va">h.clust</span>, k<span class="op">=</span><span class="fl">5</span><span class="op">)</span> <span class="co"># 添加矩形，方便观察</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-8-1.png" width="90%"></div>
+</div>
+<div id="聚类分析可视化" class="section level2" number="21.2">
+<h2>
+<span class="header-section-number">21.2</span> 聚类分析可视化<a class="anchor" aria-label="anchor" href="#%E8%81%9A%E7%B1%BB%E5%88%86%E6%9E%90%E5%8F%AF%E8%A7%86%E5%8C%96"><i class="fas fa-link"></i></a>
+</h2>
+<p>上面使用默认的<code>plot</code>函数进行聚类树的可视化，下面继续扩展聚类树的可视化。</p>
+<p>默认的聚类树可视化函数已经非常好用，有非常多的自定义设置，可以轻松实现好看的聚类树可视化。</p>
+<div class="sourceCode" id="cb375"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>bg <span class="op">=</span> <span class="st">"grey90"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h.clust</span>, main <span class="op">=</span> <span class="st">"层次聚类"</span>, sub<span class="op">=</span><span class="st">""</span>, xlab <span class="op">=</span> <span class="st">""</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"#487AA1"</span>, col.main <span class="op">=</span> <span class="st">"#45ADA8"</span>, col.lab <span class="op">=</span> <span class="st">"#7C8071"</span>,</span>
+<span>     col.axis <span class="op">=</span> <span class="st">"#F38630"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, lty <span class="op">=</span> <span class="fl">1</span>, hang <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, axes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># add axis</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html">axis</a></span><span class="op">(</span>side <span class="op">=</span> <span class="fl">2</span>, at <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, col <span class="op">=</span> <span class="st">"#F38630"</span>,</span>
+<span>     labels <span class="op">=</span> <span class="cn">FALSE</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co"># add text in margin</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, side <span class="op">=</span> <span class="fl">2</span>, at <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>      line <span class="op">=</span> <span class="fl">1</span>, col <span class="op">=</span> <span class="st">"#A38630"</span>, las <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-9-1.png" width="90%"></div>
+<div class="sourceCode" id="cb376"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></code></pre></div>
+<p>如果对默认的可视化效果不满意，可以先用<code><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram()</a></code>转化一下，再画图可以指定更多细节。</p>
+<div class="sourceCode" id="cb377"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dhc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">as.dendrogram</a></span><span class="op">(</span><span class="va">h.clust</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dhc</span>,type <span class="op">=</span> <span class="st">"triangle"</span><span class="op">)</span> <span class="co"># 比如换个类型</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-10-1.png" width="90%"></div>
+<p>可以提取部分树进行查看，使用<code>cut</code>指定某个高度以上或以下的树进行查看。</p>
+<div class="sourceCode" id="cb378"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 高度在3以上的树</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span><span class="va">dhc</span>, h <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">$</span><span class="va">upper</span>, main <span class="op">=</span> <span class="st">"Upper tree of cut at h=3"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 高度在3以下的树</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span><span class="va">dhc</span>, h <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">$</span><span class="va">lower</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Second branch of lower tree with cut at h=3"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-11-1.png" width="90%"></div>
+<div class="sourceCode" id="cb379"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></code></pre></div>
+<p>每一个节点都有不同的属性，比如颜色、形状等，我们可以用函数修改每个节点的属性。</p>
+<p>比如修改标签的颜色。</p>
+<div class="sourceCode" id="cb380"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 按照上面画出来的结果，我们可以分为5类，所以准备好5个颜色</span></span>
+<span><span class="va">labelColors</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#CDB380"</span>, <span class="st">"#036564"</span>, <span class="st">"#EB6841"</span>, <span class="st">"#EDC951"</span>, <span class="st">"#487AA1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 把聚类树分为5个类</span></span>
+<span><span class="va">clusMember</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cutree.html">cutree</a></span><span class="op">(</span><span class="va">h.clust</span>,k<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 给标签增加不同的颜色</span></span>
+<span><span class="va">colLab</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/dendrogram.html">is.leaf</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span>    <span class="va">labCol</span> <span class="op">&lt;-</span> <span class="va">labelColors</span><span class="op">[</span><span class="va">clusMember</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">clusMember</span><span class="op">)</span> <span class="op">==</span> <span class="va">a</span><span class="op">$</span><span class="va">label</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">n</span>, <span class="st">"nodePar"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">nodePar</span>,</span>
+<span>                            <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>cex<span class="op">=</span><span class="fl">1.5</span>, <span class="co"># 节点形状大小</span></span>
+<span>                                 pch<span class="op">=</span><span class="fl">20</span>, <span class="co"># 节点形状</span></span>
+<span>                                 col<span class="op">=</span><span class="va">labCol</span>, <span class="co"># 节点颜色</span></span>
+<span>                                 lab.col<span class="op">=</span><span class="va">labCol</span>, <span class="co"># 标签颜色</span></span>
+<span>                                 lab.font<span class="op">=</span><span class="fl">2</span>, <span class="co"># 标签字体，粗体斜体粗斜体</span></span>
+<span>                                 lab.cex<span class="op">=</span><span class="fl">1</span> <span class="co"># 标签大小</span></span>
+<span>                                 <span class="op">)</span></span>
+<span>                            <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">n</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># 把自定义标签颜色应用到聚类树中</span></span>
+<span><span class="va">diyDendro</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/dendrapply.html">dendrapply</a></span><span class="op">(</span><span class="va">dhc</span>, <span class="va">colLab</span><span class="op">)</span>    </span>
+<span></span>
+<span><span class="co"># 画图</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">diyDendro</span>, main <span class="op">=</span> <span class="st">"DIY Dendrogram"</span><span class="op">)</span>  </span>
+<span></span>
+<span><span class="co"># 加图例</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, </span>
+<span>     legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Cluster 1"</span>,<span class="st">"Cluster 2"</span>,<span class="st">"Cluster 3"</span>,<span class="st">"Cluster 4"</span>,<span class="st">"Cluster 5"</span><span class="op">)</span>, </span>
+<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#CDB380"</span>, <span class="st">"#036564"</span>, <span class="st">"#EB6841"</span>, <span class="st">"#EDC951"</span>, <span class="st">"#487AA1"</span><span class="op">)</span>, </span>
+<span>     pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">20</span>,<span class="fl">20</span>,<span class="fl">20</span>,<span class="fl">20</span><span class="op">)</span>, bty <span class="op">=</span> <span class="st">"n"</span>, pt.cex <span class="op">=</span> <span class="fl">2</span>, cex <span class="op">=</span> <span class="fl">1</span> , </span>
+<span>     text.col <span class="op">=</span> <span class="st">"black"</span>, horiz <span class="op">=</span> <span class="cn">FALSE</span>, inset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-12-1.png" width="90%"></div>
+<p>如果想要更加精美的聚类分析可视化，可以参考之前的几篇推文：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/YPz9pL2fDQ7cFX9_Fyw1yg">又是聚类分析可视化</a></li>
+<li><a href="https://mp.weixin.qq.com/s/6ISVHQD5KdSbTEdZSXrrkA">R语言可视化聚类树</a></li>
+<li><a href="https://mp.weixin.qq.com/s/mKlgE43h5XDz1td71lF-AQ">R语言画好看的聚类树</a></li>
+</ul>
+<p>参考资料：</p>
+<ol style="list-style-type: decimal">
+<li>R帮助文档</li>
+<li><a href="https://r-graph-gallery.com/31-custom-colors-in-dendrogram.html" class="uri">https://r-graph-gallery.com/31-custom-colors-in-dendrogram.html</a></li>
+<li><a href="https://www.gastonsanchez.com/visually-enforced/how-to/2012/10/0/Dendrograms/" class="uri">https://www.gastonsanchez.com/visually-enforced/how-to/2012/10/0/Dendrograms/</a></li>
+</ol>
+</div>
+<div id="快速聚类划分聚类partitioning-clustering" class="section level2" number="21.3">
+<h2>
+<span class="header-section-number">21.3</span> 快速聚类（划分聚类,partitioning clustering）<a class="anchor" aria-label="anchor" href="#%E5%BF%AB%E9%80%9F%E8%81%9A%E7%B1%BB%E5%88%92%E5%88%86%E8%81%9A%E7%B1%BBpartitioning-clustering"><i class="fas fa-link"></i></a>
+</h2>
+<div id="k-means聚类" class="section level3" number="21.3.1">
+<h3>
+<span class="header-section-number">21.3.1</span> K-means聚类<a class="anchor" aria-label="anchor" href="#k-means%E8%81%9A%E7%B1%BB"><i class="fas fa-link"></i></a>
+</h3>
+<p>K-means聚类，K均值聚类，是快速聚类的一种。比层次聚类更适合大样本的数据。在R语言中可以通过<code><a href="https://rdrr.io/r/stats/kmeans.html">kmeans()</a></code>实现K均值聚类。</p>
+<p>使用K均值聚类处理178种葡萄酒中13种化学成分的数据集。</p>
+<div class="sourceCode" id="cb381"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">wine</span>, package <span class="op">=</span> <span class="st">"rattle"</span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/scale.html">scale</a></span><span class="op">(</span><span class="va">wine</span><span class="op">[</span>,<span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/headtail.html">headTail</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##     Alcohol Malic   Ash Alcalinity Magnesium Phenols Flavanoids Nonflavanoids</span></span>
+<span><span class="co">## 1      1.51 -0.56  0.23      -1.17      1.91    0.81       1.03         -0.66</span></span>
+<span><span class="co">## 2      0.25  -0.5 -0.83      -2.48      0.02    0.57       0.73         -0.82</span></span>
+<span><span class="co">## 3       0.2  0.02  1.11      -0.27      0.09    0.81       1.21          -0.5</span></span>
+<span><span class="co">## 4      1.69 -0.35  0.49      -0.81      0.93    2.48       1.46         -0.98</span></span>
+<span><span class="co">## ...     ...   ...   ...        ...       ...     ...        ...           ...</span></span>
+<span><span class="co">## 175    0.49  1.41  0.41       1.05      0.16   -0.79      -1.28          0.55</span></span>
+<span><span class="co">## 176    0.33  1.74 -0.39       0.15      1.42   -1.13      -1.34          0.55</span></span>
+<span><span class="co">## 177    0.21  0.23  0.01       0.15      1.42   -1.03      -1.35          1.35</span></span>
+<span><span class="co">## 178    1.39  1.58  1.36        1.5     -0.26   -0.39      -1.27          1.59</span></span>
+<span><span class="co">##     Proanthocyanins Color   Hue Dilution Proline</span></span>
+<span><span class="co">## 1              1.22  0.25  0.36     1.84    1.01</span></span>
+<span><span class="co">## 2             -0.54 -0.29   0.4     1.11    0.96</span></span>
+<span><span class="co">## 3              2.13  0.27  0.32     0.79    1.39</span></span>
+<span><span class="co">## 4              1.03  1.18 -0.43     1.18    2.33</span></span>
+<span><span class="co">## ...             ...   ...   ...      ...     ...</span></span>
+<span><span class="co">## 175           -0.32  0.97 -1.13    -1.48    0.01</span></span>
+<span><span class="co">## 176           -0.42  2.22 -1.61    -1.48    0.28</span></span>
+<span><span class="co">## 177           -0.23  1.83 -1.56     -1.4     0.3</span></span>
+<span><span class="co">## 178           -0.42  1.79 -1.52    -1.42   -0.59</span></span></code></pre></div>
+<p>进行K均值聚类时，需要在一开始就指定聚类的个数，我们也可以通过<code>NbClust</code>包实现这个过程。</p>
+<div class="sourceCode" id="cb382"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sites.google.com/site/malikacharrad/research/nbclust-package">NbClust</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/NbClust/man/NbClust.html">NbClust</a></span><span class="op">(</span><span class="va">df</span>, min.nc <span class="op">=</span> <span class="fl">2</span>, max.nc <span class="op">=</span> <span class="fl">15</span>, method <span class="op">=</span> <span class="st">"kmeans"</span><span class="op">)</span><span class="co"># 方法选择kmeans</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-14-1.png" width="90%"></div>
+<pre><code>## *** : The Hubert index is a graphical method of determining the number of clusters.
+##                 In the plot of Hubert index, we seek a significant knee that corresponds to a 
+##                 significant increase of the value of the measure i.e the significant peak in Hubert
+##                 index second differences plot. 
+## </code></pre>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-14-2.png" width="90%"></div>
+<pre><code>## *** : The D index is a graphical method of determining the number of clusters. 
+##                 In the plot of D index, we seek a significant knee (the significant peak in Dindex
+##                 second differences plot) that corresponds to a significant increase of the value of
+##                 the measure. 
+##  
+## ******************************************************************* 
+## * Among all indices:                                                
+## * 2 proposed 2 as the best number of clusters 
+## * 19 proposed 3 as the best number of clusters 
+## * 1 proposed 14 as the best number of clusters 
+## * 1 proposed 15 as the best number of clusters 
+## 
+##                    ***** Conclusion *****                            
+##  
+## * According to the majority rule, the best number of clusters is  3 
+##  
+##  
+## *******************************************************************</code></pre>
+<p>结果中给出了划分依据以及最佳的聚类数目为3个，可以画图查看结果：</p>
+<div class="sourceCode" id="cb385"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">nc</span><span class="op">$</span><span class="va">Best.nc</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  0  1  2  3 14 15 </span></span>
+<span><span class="co">##  2  1  2 19  1  1</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/barplot.html">barplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">nc</span><span class="op">$</span><span class="va">Best.nc</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span><span class="op">)</span>,</span>
+<span>        xlab <span class="op">=</span> <span class="st">"聚类数目"</span>,</span>
+<span>        ylab <span class="op">=</span> <span class="st">"评判准则个数"</span></span>
+<span>        <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-15-1.png" width="90%"></div>
+<p>可以看到聚类数目为3是最佳的选择。</p>
+<p>确定最佳聚类个数过程也可以通过非常好用的R包<code>factoextra</code>实现。</p>
+<div class="sourceCode" id="cb386"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra">factoextra</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: ggplot2</span></span>
+<span><span class="co">## Welcome! Want to learn more? See two factoextra-related books at https://goo.gl/ve3WBa</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_nbclust.html">fviz_nbclust</a></span><span class="op">(</span><span class="va">df</span>, <span class="va">kmeans</span>, k.max <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-16-1.png" width="90%"></div>
+<p>这个结果给出的最佳聚类个数也是3个。</p>
+<p>下面进行K均值聚类，聚类数目设为3.</p>
+<div class="sourceCode" id="cb387"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">fit.km</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html">kmeans</a></span><span class="op">(</span><span class="va">df</span>, centers <span class="op">=</span> <span class="fl">3</span>, nstart <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
+<span><span class="va">fit.km</span></span>
+<span><span class="co">## K-means clustering with 3 clusters of sizes 51, 62, 65</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Cluster means:</span></span>
+<span><span class="co">##      Alcohol      Malic        Ash Alcalinity   Magnesium     Phenols</span></span>
+<span><span class="co">## 1  0.1644436  0.8690954  0.1863726  0.5228924 -0.07526047 -0.97657548</span></span>
+<span><span class="co">## 2  0.8328826 -0.3029551  0.3636801 -0.6084749  0.57596208  0.88274724</span></span>
+<span><span class="co">## 3 -0.9234669 -0.3929331 -0.4931257  0.1701220 -0.49032869 -0.07576891</span></span>
+<span><span class="co">##    Flavanoids Nonflavanoids Proanthocyanins      Color        Hue   Dilution</span></span>
+<span><span class="co">## 1 -1.21182921    0.72402116     -0.77751312  0.9388902 -1.1615122 -1.2887761</span></span>
+<span><span class="co">## 2  0.97506900   -0.56050853      0.57865427  0.1705823  0.4726504  0.7770551</span></span>
+<span><span class="co">## 3  0.02075402   -0.03343924      0.05810161 -0.8993770  0.4605046  0.2700025</span></span>
+<span><span class="co">##      Proline</span></span>
+<span><span class="co">## 1 -0.4059428</span></span>
+<span><span class="co">## 2  1.1220202</span></span>
+<span><span class="co">## 3 -0.7517257</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Clustering vector:</span></span>
+<span><span class="co">##   [1] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span></span>
+<span><span class="co">##  [38] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 1 3 3 3 3 3 3 3 3 3 3 3 2</span></span>
+<span><span class="co">##  [75] 3 3 3 3 3 3 3 3 3 1 3 3 3 3 3 3 3 3 3 3 3 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span></span>
+<span><span class="co">## [112] 3 3 3 3 3 3 3 1 3 3 2 3 3 3 3 3 3 3 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
+<span><span class="co">## [149] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Within cluster sum of squares by cluster:</span></span>
+<span><span class="co">## [1] 326.3537 385.6983 558.6971</span></span>
+<span><span class="co">##  (between_SS / total_SS =  44.8 %)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Available components:</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [1] "cluster"      "centers"      "totss"        "withinss"     "tot.withinss"</span></span>
+<span><span class="co">## [6] "betweenss"    "size"         "iter"         "ifault"</span></span></code></pre></div>
+<p>结果很详细，K均值聚类聚为3类，每一类数量分别是51,62,65。然后还给出了聚类中心，每一个观测分别属于哪一个类。</p>
+<p>不管是哪一种聚类方法，<code>factoextra</code>配合<code>factomineR</code>都可以给出非常好看的可视化结果。</p>
+<div class="sourceCode" id="cb388"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_cluster.html">fviz_cluster</a></span><span class="op">(</span><span class="va">fit.km</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-18-1.png" width="90%"></div>
+<p>有非常多的细节可以调整，大家在使用的时候可以自己尝试，和之前推文中介绍的PCA美化一样，也是支持<code>ggplot2</code>语法的。</p>
+<div class="sourceCode" id="cb389"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_cluster.html">fviz_cluster</a></span><span class="op">(</span><span class="va">fit.km</span>, data <span class="op">=</span> <span class="va">df</span>, </span>
+<span>             ellipse <span class="op">=</span> <span class="cn">T</span>, <span class="co"># 增加椭圆</span></span>
+<span>             ellipse.type <span class="op">=</span> <span class="st">"t"</span>, <span class="co"># 椭圆类型</span></span>
+<span>             geom <span class="op">=</span> <span class="st">"point"</span>, <span class="co"># 只显示点不要文字</span></span>
+<span>             palette <span class="op">=</span> <span class="st">"lancet"</span>, <span class="co"># 支持超多配色方案</span></span>
+<span>             ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># 支持更换主题</span></span>
+<span>             <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-19-1.png" width="90%"></div>
+</div>
+<div id="围绕中心点的划分pam" class="section level3" number="21.3.2">
+<h3>
+<span class="header-section-number">21.3.2</span> 围绕中心点的划分PAM<a class="anchor" aria-label="anchor" href="#%E5%9B%B4%E7%BB%95%E4%B8%AD%E5%BF%83%E7%82%B9%E7%9A%84%E5%88%92%E5%88%86pam"><i class="fas fa-link"></i></a>
+</h3>
+<p>K均值聚类是基于均值的，所以对异常值很敏感。一个更稳健的方法是围绕中心点的划分（PAM）。用一个最有代表性的观测值代表这一类(有点类似于主成分)。K均值聚类一般使用欧几里得距离，而PAM可以使用任意的距离来计算。因此，PAM可以容纳混合数据类型，并且不仅限于连续变量。</p>
+<p>我们还是用葡萄酒数据进行演示。PAM聚类可以通过<code>cluster</code>包中的<code><a href="https://rdrr.io/pkg/cluster/man/pam.html">pam()</a></code>实现。</p>
+<div class="sourceCode" id="cb390"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/cluster/">cluster</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">fit.pam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/cluster/man/pam.html">pam</a></span><span class="op">(</span><span class="va">wine</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span>,<span class="op">]</span>, k<span class="op">=</span><span class="fl">3</span> <span class="co"># 聚为3类</span></span>
+<span>               , stand <span class="op">=</span> <span class="cn">T</span> <span class="co"># 聚类前进行标准化</span></span>
+<span>               <span class="op">)</span></span>
+<span><span class="va">fit.pam</span></span>
+<span><span class="co">## Medoids:</span></span>
+<span><span class="co">##      ID Type Alcohol Malic  Ash Alcalinity Magnesium Phenols Flavanoids</span></span>
+<span><span class="co">## 36   35    1   13.48  1.81 2.41       20.5       100    2.70       2.98</span></span>
+<span><span class="co">## 107 106    2   12.25  1.73 2.12       19.0        80    1.65       2.03</span></span>
+<span><span class="co">## 149 148    3   13.32  3.24 2.38       21.5        92    1.93       0.76</span></span>
+<span><span class="co">##     Nonflavanoids Proanthocyanins Color  Hue Dilution Proline</span></span>
+<span><span class="co">## 36           0.26            1.86  5.10 1.04     3.47     920</span></span>
+<span><span class="co">## 107          0.37            1.63  3.40 1.00     3.17     510</span></span>
+<span><span class="co">## 149          0.45            1.25  8.42 0.55     1.62     650</span></span>
+<span><span class="co">## Clustering vector:</span></span>
+<span><span class="co">##   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21 </span></span>
+<span><span class="co">##   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 </span></span>
+<span><span class="co">##  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36  37  38  39  40  41 </span></span>
+<span><span class="co">##   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1 </span></span>
+<span><span class="co">##  42  43  44  45  46  47  48  49  50  51  52  53  54  55  56  57  58  59  60  61 </span></span>
+<span><span class="co">##   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   1   2   2 </span></span>
+<span><span class="co">##  62  63  64  65  66  67  68  69  70  71  72  73  74  75  76  77  78  79  80  81 </span></span>
+<span><span class="co">##   2   2   1   2   1   2   2   2   1   2   1   2   1   1   2   2   2   2   1   2 </span></span>
+<span><span class="co">##  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96  97  98  99 100 101 </span></span>
+<span><span class="co">##   2   2   3   2   2   2   2   2   2   2   2   2   2   2   1   1   2   1   2   2 </span></span>
+<span><span class="co">## 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 </span></span>
+<span><span class="co">##   2   2   2   2   2   2   2   2   1   2   2   2   2   2   2   2   2   2   2   2 </span></span>
+<span><span class="co">## 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 </span></span>
+<span><span class="co">##   1   2   2   2   2   2   2   2   2   3   3   3   3   3   3   3   3   3   3   3 </span></span>
+<span><span class="co">## 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 </span></span>
+<span><span class="co">##   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 </span></span>
+<span><span class="co">## 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 </span></span>
+<span><span class="co">##   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3   3 </span></span>
+<span><span class="co">## Objective function:</span></span>
+<span><span class="co">##    build     swap </span></span>
+<span><span class="co">## 3.537365 3.504175 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Available components:</span></span>
+<span><span class="co">##  [1] "medoids"    "id.med"     "clustering" "objective"  "isolation" </span></span>
+<span><span class="co">##  [6] "clusinfo"   "silinfo"    "diss"       "call"       "data"</span></span></code></pre></div>
+<p><code>Medoids</code>给出了中心点，用第35个观测代表第1类，第107个观测代表第2类，第149个观测代表第3类。<code>Clustering vector</code>给出了每一个观测分别属于哪一个类。结果可以画出来：</p>
+<div class="sourceCode" id="cb391"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/cluster/man/clusplot.partition.html">clusplot</a></span><span class="op">(</span><span class="va">fit.pam</span>, main <span class="op">=</span> <span class="st">"PAM cluster"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-21-1.png" width="90%"></div>
+<p>同样也可以用<code>factoextra</code>包实现可视化。</p>
+<div class="sourceCode" id="cb392"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/factoextra/man/fviz_cluster.html">fviz_cluster</a></span><span class="op">(</span><span class="va">fit.pam</span>, </span>
+<span>             ellipse <span class="op">=</span> <span class="cn">T</span>, <span class="co"># 增加椭圆</span></span>
+<span>             ellipse.type <span class="op">=</span> <span class="st">"t"</span>, <span class="co"># 椭圆类型</span></span>
+<span>             geom <span class="op">=</span> <span class="st">"point"</span>, <span class="co"># 只显示点不要文字</span></span>
+<span>             palette <span class="op">=</span> <span class="st">"aaas"</span>, <span class="co"># 支持超多配色方案</span></span>
+<span>             ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># 支持更换主题</span></span>
+<span>             <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1021-cluster_files/figure-html/unnamed-chunk-22-1.png" width="90%"></div>
+<p>以后会给大家带来<code>factoextra</code>和<code>factomineR</code>包的详细介绍。</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></div>
+<div class="next"><a href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#lksdjgljdsl"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%81%9A%E7%B1%BB%E5%B1%82%E6%AC%A1%E8%81%9A%E7%B1%BBhierarchical-clustering"><span class="header-section-number">21.1</span> 系统聚类（层次聚类,Hierarchical clustering）</a></li>
+<li><a class="nav-link" href="#%E8%81%9A%E7%B1%BB%E5%88%86%E6%9E%90%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="header-section-number">21.2</span> 聚类分析可视化</a></li>
+<li>
+<a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E8%81%9A%E7%B1%BB%E5%88%92%E5%88%86%E8%81%9A%E7%B1%BBpartitioning-clustering"><span class="header-section-number">21.3</span> 快速聚类（划分聚类,partitioning clustering）</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#k-means%E8%81%9A%E7%B1%BB"><span class="header-section-number">21.3.1</span> K-means聚类</a></li>
+<li><a class="nav-link" href="#%E5%9B%B4%E7%BB%95%E4%B8%AD%E5%BF%83%E7%82%B9%E7%9A%84%E5%88%92%E5%88%86pam"><span class="header-section-number">21.3.2</span> 围绕中心点的划分PAM</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1021-cluster.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1021-cluster.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>33 R语言超详细的生存曲线可视化 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="survminer是专门用来进行生存分析可视化的R包，主要函数如下： 生存曲线 ggsurvplot(): arrange_ggsurvplots(): ggsurvevents(): surv_summary(): surv_cutpoint(): pairwise_survdiff(): Cox模型的诊断 ggcoxzph(): ggcoxdiagnostics():...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="33 R语言超详细的生存曲线可视化 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="survminer是专门用来进行生存分析可视化的R包，主要函数如下： 生存曲线 ggsurvplot(): arrange_ggsurvplots(): ggsurvevents(): surv_summary(): surv_cutpoint(): pairwise_survdiff(): Cox模型的诊断 ggcoxzph(): ggcoxdiagnostics():...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="33 R语言超详细的生存曲线可视化 | R语言实战医学统计">
+<meta name="twitter:description" content="survminer是专门用来进行生存分析可视化的R包，主要函数如下： 生存曲线 ggsurvplot(): arrange_ggsurvplots(): ggsurvevents(): surv_summary(): surv_cutpoint(): pairwise_survdiff(): Cox模型的诊断 ggcoxzph(): ggcoxdiagnostics():...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="active" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="oiewjrtsjl" class="section level1" number="33">
+<h1>
+<span class="header-section-number">33</span> R语言超详细的生存曲线可视化<a class="anchor" aria-label="anchor" href="#oiewjrtsjl"><i class="fas fa-link"></i></a>
+</h1>
+<p><code>survminer</code>是专门用来进行生存分析可视化的R包，主要函数如下：</p>
+<ul>
+<li>生存曲线
+<ul>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/arrange_ggsurvplots.html">arrange_ggsurvplots()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggsurvevents.html">ggsurvevents()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/surv_summary.html">surv_summary()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/surv_cutpoint.html">surv_cutpoint()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/pairwise_survdiff.html">pairwise_survdiff()</a></code>:</li>
+</ul>
+</li>
+<li>Cox模型的诊断
+<ul>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggcoxzph.html">ggcoxzph()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggcoxdiagnostics.html">ggcoxdiagnostics()</a></code>:</li>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggcoxfunctional.html">ggcoxfunctional()</a></code>:</li>
+</ul>
+</li>
+<li>Cox模型总汇总
+<ul>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggforest.html">ggforest()</a></code>:</li>
+<li>
+<code>ggcoxadjustedcurves()</code>:</li>
+</ul>
+</li>
+<li>竞争风险模型
+<ul>
+<li>
+<code><a href="https://rdrr.io/pkg/survminer/man/ggcompetingrisks.html">ggcompetingrisks()</a></code>:</li>
+</ul>
+</li>
+</ul>
+<p>关于Cox模型诊断和汇总在之前的推文中已经进行过详细的讲解。本次主要介绍生存曲线的绘制及细节。</p>
+<div id="演示数据-2" class="section level2" number="33.1">
+<h2>
+<span class="header-section-number">33.1</span> 演示数据<a class="anchor" aria-label="anchor" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-2"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<code>survival</code>包中的<code>lung</code>数据集用于演示，这是一份关于肺癌患者的生存数据。<code>time</code>是生存时间，以天为单位，<code>status</code>是生存状态，1代表删失，2代表死亡。</p>
+<div class="sourceCode" id="cb541"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html">survminer</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: ggplot2</span></span>
+<span><span class="co">## Loading required package: ggpubr</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'survminer'</span></span>
+<span><span class="co">## The following object is masked from 'package:survival':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     myeloma</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">lung</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span><span class="co">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span><span class="co">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span><span class="co">##  $ status   : num  2 2 1 2 2 1 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span><span class="co">##  $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span><span class="co">##  $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...</span></span>
+<span><span class="co">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span><span class="co">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span><span class="co">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span><span class="co">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span>, data <span class="op">=</span> <span class="va">lung</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="基本的生存曲线" class="section level2" number="33.2">
+<h2>
+<span class="header-section-number">33.2</span> 基本的生存曲线<a class="anchor" aria-label="anchor" href="#%E5%9F%BA%E6%9C%AC%E7%9A%84%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF"><i class="fas fa-link"></i></a>
+</h2>
+<p>最基本的生存曲线：</p>
+<div class="sourceCode" id="cb542"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-2-1.png" width="90%"></div>
+<p>删失数据的形状可以更改，默认是<code>+</code>，我们可以改成自己喜欢的：</p>
+<div class="sourceCode" id="cb543"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 更改删失数据的形状、大小</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>, censor.shape<span class="op">=</span><span class="st">"|"</span>, censor.size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-3-1.png" width="90%"></div>
+<p><strong>字体都是可以进行更改的！</strong></p>
+<div class="sourceCode" id="cb544"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>           surv.median.line <span class="op">=</span> <span class="st">"hv"</span>, <span class="co"># 中位生存时间</span></span>
+<span>   title <span class="op">=</span> <span class="st">"Survival curves"</span>, </span>
+<span>   subtitle <span class="op">=</span> <span class="st">"Based on Kaplan-Meier estimates"</span>,</span>
+<span>   caption <span class="op">=</span> <span class="st">"created with survminer"</span>,</span>
+<span>   font.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="st">"bold"</span>, <span class="st">"darkblue"</span><span class="op">)</span>, <span class="co"># 大小、粗细、颜色</span></span>
+<span>   font.subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="st">"bold.italic"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
+<span>   font.caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"plain"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
+<span>   font.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
+<span>   font.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"darkred"</span><span class="op">)</span>,</span>
+<span>   font.tickslab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="st">"plain"</span>, <span class="st">"darkgreen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-4-1.png" width="90%"></div>
+<p>累积风险曲线：</p>
+<div class="sourceCode" id="cb545"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>,</span>
+<span>           fun <span class="op">=</span> <span class="st">"cumhaz"</span>, </span>
+<span>           conf.int <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># 可信区间</span></span>
+<span>           palette <span class="op">=</span> <span class="st">"lancet"</span>, <span class="co"># 支持ggsci配色，自定义颜色，brewer palettes中的配色，等</span></span>
+<span>           ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># 支持ggplot2及其扩展包的主题</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-5-1.png" width="90%"></div>
+<p>累积事件曲线：</p>
+<div class="sourceCode" id="cb546"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>,</span>
+<span>           fun <span class="op">=</span> <span class="st">"event"</span>, </span>
+<span>           conf.int <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># 可信区间</span></span>
+<span>           palette <span class="op">=</span> <span class="st">"grey"</span>,</span>
+<span>           ggtheme <span class="op">=</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_pubclean</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-6-1.png" width="90%"></div>
+</div>
+<div id="增加-risk-table" class="section level2" number="33.3">
+<h2>
+<span class="header-section-number">33.3</span> 增加 risk table<a class="anchor" aria-label="anchor" href="#%E5%A2%9E%E5%8A%A0-risk-table"><i class="fas fa-link"></i></a>
+</h2>
+<p>增加多种自定义选项：</p>
+<div class="sourceCode" id="cb547"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>  size <span class="op">=</span> <span class="fl">1</span>,                 <span class="co"># 更改线条粗细</span></span>
+<span>  <span class="co"># 配色方案，支持ggsci配色，自定义颜色，brewer palettes中的配色，等</span></span>
+<span>  palette <span class="op">=</span> <span class="st">"lancet"</span>,</span>
+<span>  conf.int <span class="op">=</span> <span class="cn">TRUE</span>,          <span class="co"># 可信区间</span></span>
+<span>  pval <span class="op">=</span> <span class="cn">TRUE</span>,              <span class="co"># log-rank P值，也可以提供一个数值</span></span>
+<span>  <span class="co">#计算P值的方法，</span></span>
+<span>  pval.method <span class="op">=</span> <span class="cn">TRUE</span>,       </span>
+<span>  log.rank.weights <span class="op">=</span> <span class="st">"1"</span>,</span>
+<span>  risk.table <span class="op">=</span> <span class="cn">TRUE</span>,        <span class="co"># 增加risk table</span></span>
+<span>  risk.table.col <span class="op">=</span> <span class="st">"strata"</span>,<span class="co"># risk table根据分组使用不同颜色</span></span>
+<span>  legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Male"</span>, <span class="st">"Female"</span><span class="op">)</span>,    <span class="co"># 图例标签</span></span>
+<span>  risk.table.height <span class="op">=</span> <span class="fl">0.25</span>, <span class="co"># risk table高度</span></span>
+<span>  ggtheme <span class="op">=</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/theme_pubr.html">theme_classic2</a></span><span class="op">(</span><span class="op">)</span>      <span class="co"># 主题，支持ggplot2及其扩展包的主题</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-7-1.png" width="90%"></div>
+<p>计算P值的方法，可参考https://rpkgs.datanovia.com/survminer/articles/Specifiying_weights_in_log-rank_comparisons.html</p>
+<div class="sourceCode" id="cb548"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span></span>
+<span>   <span class="va">fit</span>,                     </span>
+<span>   data <span class="op">=</span> <span class="va">lung</span>,             </span>
+<span>   risk.table <span class="op">=</span> <span class="cn">TRUE</span>,       </span>
+<span>   pval <span class="op">=</span> <span class="cn">TRUE</span>,             </span>
+<span>   conf.int <span class="op">=</span> <span class="cn">TRUE</span>,         </span>
+<span>   xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">500</span><span class="op">)</span>,         <span class="co"># 横坐标轴范围，相当于局部放大</span></span>
+<span>   xlab <span class="op">=</span> <span class="st">"Time in days"</span>,   <span class="co"># 横坐标标题</span></span>
+<span>   break.time.by <span class="op">=</span> <span class="fl">100</span>,     <span class="co"># 横坐标刻度</span></span>
+<span>   ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>   risk.table.y.text.col <span class="op">=</span> <span class="cn">T</span>, <span class="co"># risk table文字注释颜色</span></span>
+<span>   risk.table.y.text <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># risk table显示条形而不是文字</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-8-1.png" width="90%"></div>
+<p><strong>risk table的各种字体也都是可以更改的！</strong></p>
+<div class="sourceCode" id="cb549"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>   title <span class="op">=</span> <span class="st">"Survival curves"</span>, subtitle <span class="op">=</span> <span class="st">"Based on Kaplan-Meier estimates"</span>,</span>
+<span>   caption <span class="op">=</span> <span class="st">"created with survminer"</span>,</span>
+<span>   font.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="st">"bold"</span>, <span class="st">"darkblue"</span><span class="op">)</span>,</span>
+<span>   font.subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="st">"bold.italic"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
+<span>   font.caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"plain"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
+<span>   font.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
+<span>   font.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"darkred"</span><span class="op">)</span>,</span>
+<span>   font.tickslab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="st">"plain"</span>, <span class="st">"darkgreen"</span><span class="op">)</span>,</span>
+<span>   <span class="co">########## risk table #########,</span></span>
+<span>   risk.table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>   risk.table.title <span class="op">=</span> <span class="st">"Note the risk set sizes"</span>,</span>
+<span>   risk.table.subtitle <span class="op">=</span> <span class="st">"and remember about censoring."</span>,</span>
+<span>   risk.table.caption <span class="op">=</span> <span class="st">"source code: website.com"</span>,</span>
+<span>   risk.table.height <span class="op">=</span> <span class="fl">0.45</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-9-1.png" width="90%"></div>
+</div>
+<div id="增加删失时间表ncensor-plot" class="section level2" number="33.4">
+<h2>
+<span class="header-section-number">33.4</span> 增加删失时间表ncensor plot<a class="anchor" aria-label="anchor" href="#%E5%A2%9E%E5%8A%A0%E5%88%A0%E5%A4%B1%E6%97%B6%E9%97%B4%E8%A1%A8ncensor-plot"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb550"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>, risk.table <span class="op">=</span> <span class="cn">TRUE</span>, ncensor.plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-10-1.png" width="90%"></div>
+<p><strong>ncensor plot的字体也是支持各种设置的。</strong></p>
+<div class="sourceCode" id="cb551"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>   title <span class="op">=</span> <span class="st">"Survival curves"</span>, subtitle <span class="op">=</span> <span class="st">"Based on Kaplan-Meier estimates"</span>,</span>
+<span>   caption <span class="op">=</span> <span class="st">"created with survminer"</span>,</span>
+<span>   font.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="st">"bold"</span>, <span class="st">"darkblue"</span><span class="op">)</span>,</span>
+<span>   font.subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="st">"bold.italic"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
+<span>   font.caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"plain"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
+<span>   font.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
+<span>   font.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"darkred"</span><span class="op">)</span>,</span>
+<span>   font.tickslab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="st">"plain"</span>, <span class="st">"darkgreen"</span><span class="op">)</span>,</span>
+<span>   <span class="co">########## risk table #########,</span></span>
+<span>   risk.table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>   risk.table.title <span class="op">=</span> <span class="st">"Note the risk set sizes"</span>,</span>
+<span>   risk.table.subtitle <span class="op">=</span> <span class="st">"and remember about censoring."</span>,</span>
+<span>   risk.table.caption <span class="op">=</span> <span class="st">"source code: website.com"</span>,</span>
+<span>   risk.table.height <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>   <span class="co">## ncensor plot ##</span></span>
+<span>   ncensor.plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>   ncensor.plot.title <span class="op">=</span> <span class="st">"Number of censorings"</span>,</span>
+<span>   ncensor.plot.subtitle <span class="op">=</span> <span class="st">"over the time."</span>,</span>
+<span>   ncensor.plot.caption <span class="op">=</span> <span class="st">"data available at data.com"</span>,</span>
+<span>   ncensor.plot.height <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-11-1.png" width="90%"></div>
+</div>
+<div id="超级无敌精细化自定设置" class="section level2" number="33.5">
+<h2>
+<span class="header-section-number">33.5</span> 超级无敌精细化自定设置<a class="anchor" aria-label="anchor" href="#%E8%B6%85%E7%BA%A7%E6%97%A0%E6%95%8C%E7%B2%BE%E7%BB%86%E5%8C%96%E8%87%AA%E5%AE%9A%E8%AE%BE%E7%BD%AE"><i class="fas fa-link"></i></a>
+</h2>
+<p>首先设置好自己的默认样式：</p>
+<div class="sourceCode" id="cb552"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ggsurv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span></span>
+<span>           <span class="va">fit</span>,                     </span>
+<span>           data <span class="op">=</span> <span class="va">lung</span>,             </span>
+<span>           risk.table <span class="op">=</span> <span class="cn">TRUE</span>,       </span>
+<span>           pval <span class="op">=</span> <span class="cn">TRUE</span>,             </span>
+<span>           conf.int <span class="op">=</span> <span class="cn">TRUE</span>,         </span>
+<span>           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span><span class="op">)</span>,</span>
+<span>           xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">500</span><span class="op">)</span>,         </span>
+<span>           xlab <span class="op">=</span> <span class="st">"Time in days"</span>,   </span>
+<span>           break.time.by <span class="op">=</span> <span class="fl">100</span>,     </span>
+<span>           ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_light</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>          risk.table.y.text.col <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>          risk.table.height <span class="op">=</span> <span class="fl">0.25</span>, </span>
+<span>          risk.table.y.text <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>          ncensor.plot <span class="op">=</span> <span class="cn">TRUE</span>,      </span>
+<span>          ncensor.plot.height <span class="op">=</span> <span class="fl">0.25</span>,</span>
+<span>          conf.int.style <span class="op">=</span> <span class="st">"step"</span>,  <span class="co"># customize style of confidence intervals</span></span>
+<span>          surv.median.line <span class="op">=</span> <span class="st">"hv"</span>,  </span>
+<span>          legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Male"</span>, <span class="st">"Female"</span><span class="op">)</span>    </span>
+<span>        <span class="op">)</span></span>
+<span><span class="va">ggsurv</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-12-1.png" width="90%"></div>
+<p>自定义一个函数，用来更改各种样式：</p>
+<div class="sourceCode" id="cb553"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">customize_labels</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span><span class="va">p</span>, <span class="va">font.title</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                              <span class="va">font.subtitle</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">font.caption</span> <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                              <span class="va">font.x</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">font.y</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">font.xtickslab</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">font.ytickslab</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">{</span></span>
+<span>  <span class="va">original.p</span> <span class="op">&lt;-</span> <span class="va">p</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/is.ggplot.html">is.ggplot</a></span><span class="op">(</span><span class="va">original.p</span><span class="op">)</span><span class="op">)</span> <span class="va">list.plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">original.p</span><span class="op">)</span></span>
+<span>  <span class="kw">else</span> <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">is.list</a></span><span class="op">(</span><span class="va">original.p</span><span class="op">)</span><span class="op">)</span> <span class="va">list.plots</span> <span class="op">&lt;-</span> <span class="va">original.p</span></span>
+<span>  <span class="kw">else</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Can't handle an object of class "</span>, <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span> <span class="op">(</span><span class="va">original.p</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">.set_font</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">font</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">font</span> <span class="op">&lt;-</span> <span class="fu">ggpubr</span><span class="fu">:::</span><span class="fu">.parse_font</span><span class="op">(</span><span class="va">font</span><span class="op">)</span></span>
+<span>    <span class="fu">ggtext</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/ggtext/reference/element_markdown.html">element_markdown</a></span> <span class="op">(</span>size <span class="op">=</span> <span class="va">font</span><span class="op">$</span><span class="va">size</span>, face <span class="op">=</span> <span class="va">font</span><span class="op">$</span><span class="va">face</span>, colour <span class="op">=</span> <span class="va">font</span><span class="op">$</span><span class="va">color</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">list.plots</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">list.plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/is.ggplot.html">is.ggplot</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.title</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.title</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.subtitle</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>plot.subtitle <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.subtitle</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.caption</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>plot.caption <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.caption</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.x</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.title.x <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.x</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.y</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.title.y <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.y</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.xtickslab</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.xtickslab</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">font.ytickslab</span><span class="op">)</span><span class="op">)</span> <span class="va">p</span> <span class="op">&lt;-</span> <span class="va">p</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>axis.text.y <span class="op">=</span> <span class="fu">.set_font</span><span class="op">(</span><span class="va">font.ytickslab</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="va">list.plots</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">p</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/is.ggplot.html">is.ggplot</a></span><span class="op">(</span><span class="va">original.p</span><span class="op">)</span><span class="op">)</span> <span class="va">list.plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="kw">else</span> <span class="va">list.plots</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>然后分别对上面图形的3个部分（生存曲线、risk table、ncensor plot）进行个性化自定义</p>
+<div class="sourceCode" id="cb554"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 更改生存曲线的标签</span></span>
+<span><span class="va">ggsurv</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="va">ggsurv</span><span class="op">$</span><span class="va">plot</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>  title    <span class="op">=</span> <span class="st">"Survival curves"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="st">"Based on Kaplan-Meier estimates"</span>,</span>
+<span>  caption  <span class="op">=</span> <span class="st">"created with survminer"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 更改risk table的标签</span></span>
+<span><span class="va">ggsurv</span><span class="op">$</span><span class="va">table</span> <span class="op">&lt;-</span> <span class="va">ggsurv</span><span class="op">$</span><span class="va">table</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>  title    <span class="op">=</span> <span class="st">"Note the risk set sizes"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="st">"and remember about censoring."</span>,</span>
+<span>  caption  <span class="op">=</span> <span class="st">"source code: website.com"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 更改ncensor plot的标签 </span></span>
+<span><span class="va">ggsurv</span><span class="op">$</span><span class="va">ncensor.plot</span> <span class="op">&lt;-</span> <span class="va">ggsurv</span><span class="op">$</span><span class="va">ncensor.plot</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>  title    <span class="op">=</span> <span class="st">"Number of censorings"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="st">"over the time."</span>,</span>
+<span>  caption  <span class="op">=</span> <span class="st">"source code: website.com"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 更改生存曲线，risk table，ncensor plot的字体大小、类型、颜色</span></span>
+<span></span>
+<span><span class="va">ggsurv</span> <span class="op">&lt;-</span> <span class="fu">customize_labels</span><span class="op">(</span></span>
+<span>  <span class="va">ggsurv</span>,</span>
+<span>  font.title    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="st">"bold"</span>, <span class="st">"darkblue"</span><span class="op">)</span>,</span>
+<span>  font.subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="st">"bold.italic"</span>, <span class="st">"purple"</span><span class="op">)</span>,</span>
+<span>  font.caption  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"plain"</span>, <span class="st">"orange"</span><span class="op">)</span>,</span>
+<span>  font.x        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
+<span>  font.y        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"darkred"</span><span class="op">)</span>,</span>
+<span>  font.xtickslab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="st">"plain"</span>, <span class="st">"darkgreen"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ggsurv</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-14-1.png" width="90%"></div>
+</div>
+<div id="多个组的生存曲线" class="section level2" number="33.6">
+<h2>
+<span class="header-section-number">33.6</span> 多个组的生存曲线<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E7%BB%84%E7%9A%84%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF"><i class="fas fa-link"></i></a>
+</h2>
+<p>如果你的分类变量是多个组别的（常见的都是两组比较的），会自动画出多条生存曲线。如果你有多个分类自变量，会自动画出所有组合的生存曲线。</p>
+<p>使用<code>colon</code>数据集，其中<code>time</code>是时间，<code>status</code>是生存状态，1为发生终点事件，0为删失，<code>rx</code>是治疗方式，有三种：observation、Levamisole、Levamisole+5-FU，<code>obstruct</code>是肿瘤是否阻塞结肠，有为1，无为0，<code>adhere</code>是肿瘤是否粘附附近器官，有为1，无为0。</p>
+<div class="sourceCode" id="cb555"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html">survminer</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/headtail.html">headTail</a></span><span class="op">(</span><span class="va">colon</span><span class="op">)</span></span>
+<span><span class="co">##       id study      rx sex age obstruct perfor adhere nodes status differ</span></span>
+<span><span class="co">## 1      1     1 Lev+5FU   1  43        0      0      0     5      1      2</span></span>
+<span><span class="co">## 2      1     1 Lev+5FU   1  43        0      0      0     5      1      2</span></span>
+<span><span class="co">## 3      2     1 Lev+5FU   1  63        0      0      0     1      0      2</span></span>
+<span><span class="co">## 4      2     1 Lev+5FU   1  63        0      0      0     1      0      2</span></span>
+<span><span class="co">## ...  ...   ...    &lt;NA&gt; ... ...      ...    ...    ...   ...    ...    ...</span></span>
+<span><span class="co">## 1855 928     1 Lev+5FU   0  48        1      0      0     4      0      2</span></span>
+<span><span class="co">## 1856 928     1 Lev+5FU   0  48        1      0      0     4      0      2</span></span>
+<span><span class="co">## 1857 929     1     Lev   0  66        1      0      0     1      0      2</span></span>
+<span><span class="co">## 1858 929     1     Lev   0  66        1      0      0     1      0      2</span></span>
+<span><span class="co">##      extent surg node4 time etype</span></span>
+<span><span class="co">## 1         3    0     1 1521     2</span></span>
+<span><span class="co">## 2         3    0     1  968     1</span></span>
+<span><span class="co">## 3         3    0     0 3087     2</span></span>
+<span><span class="co">## 4         3    0     0 3087     1</span></span>
+<span><span class="co">## ...     ...  ...   ...  ...   ...</span></span>
+<span><span class="co">## 1855      3    1     1 2072     2</span></span>
+<span><span class="co">## 1856      3    1     1 2072     1</span></span>
+<span><span class="co">## 1857      3    0     0 1820     2</span></span>
+<span><span class="co">## 1858      3    0     0 1820     1</span></span>
+<span></span>
+<span><span class="co"># 两个分类变量</span></span>
+<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">rx</span> <span class="op">+</span> <span class="va">obstruct</span>, data <span class="op">=</span> <span class="va">colon</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 结果会给出所有组合的生存曲线</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit2</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>           risk.table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>           risk.table.height <span class="op">=</span> <span class="fl">0.3</span></span>
+<span>           <span class="op">)</span> </span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-15-1.png" width="90%"></div>
+</div>
+<div id="多个分类变量分面绘制" class="section level2" number="33.7">
+<h2>
+<span class="header-section-number">33.7</span> 多个分类变量分面绘制<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E5%88%86%E7%B1%BB%E5%8F%98%E9%87%8F%E5%88%86%E9%9D%A2%E7%BB%98%E5%88%B6"><i class="fas fa-link"></i></a>
+</h2>
+<p>还是以<code>colon</code>数据集为例，这次我们用3个变量：<code>sex/rx/adhere</code>，这3个都是分类变量。</p>
+<p>首先构建生存函数：</p>
+<div class="sourceCode" id="cb556"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">rx</span> <span class="op">+</span> <span class="va">adhere</span>, data <span class="op">=</span> <span class="va">colon</span> <span class="op">)</span></span></code></pre></div>
+<p>然后把生存曲线保存为一个对象：</p>
+<div class="sourceCode" id="cb557"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ggsurv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit3</span>, data <span class="op">=</span> <span class="va">colon</span>,</span>
+<span>  fun <span class="op">=</span> <span class="st">"cumhaz"</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  risk.table <span class="op">=</span> <span class="cn">TRUE</span>, risk.table.col<span class="op">=</span><span class="st">"strata"</span>,</span>
+<span>  ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>接下来就可以分别提取生存曲线（这里是cumhaz，累积风险曲线）、risk table、删失事件表，根据不同的变量进行分面即可：</p>
+<div class="sourceCode" id="cb558"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 分面累积风险曲线</span></span>
+<span><span class="va">curv_facet</span> <span class="op">&lt;-</span> <span class="va">ggsurv</span><span class="op">$</span><span class="va">plot</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span><span class="op">(</span><span class="va">rx</span> <span class="op">~</span> <span class="va">adhere</span><span class="op">)</span></span>
+<span><span class="va">curv_facet</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-18-1.png" width="90%"></div>
+<div class="sourceCode" id="cb559"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 分面risk table，和上面的累积风险曲线分面方法一样</span></span>
+<span><span class="va">ggsurv</span><span class="op">$</span><span class="va">table</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span><span class="op">(</span><span class="va">rx</span> <span class="op">~</span> <span class="va">adhere</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span><span class="op">+</span></span>
+<span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-19-1.png" width="90%"></div>
+<div class="sourceCode" id="cb560"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># risk table另一种分面方法，由于有3个分类变量，可以选择自己需要的分面方法</span></span>
+<span><span class="va">tbl_facet</span> <span class="op">&lt;-</span> <span class="va">ggsurv</span><span class="op">$</span><span class="va">table</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html">facet_grid</a></span><span class="op">(</span><span class="va">.</span><span class="op">~</span> <span class="va">adhere</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span>
+<span><span class="va">tbl_facet</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-20-1.png" width="90%"></div>
+<div class="sourceCode" id="cb561"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 重新安排下布局，把生存曲线和risk table画在一起</span></span>
+<span><span class="va">g2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplotGrob.html">ggplotGrob</a></span><span class="op">(</span><span class="va">curv_facet</span><span class="op">)</span></span>
+<span><span class="va">g3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplotGrob.html">ggplotGrob</a></span><span class="op">(</span><span class="va">tbl_facet</span><span class="op">)</span></span>
+<span><span class="va">min_ncol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">g2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">g3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/bind.html">gtable_rbind</a></span><span class="op">(</span><span class="va">g2</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="va">min_ncol</span><span class="op">]</span>, <span class="va">g3</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="va">min_ncol</span><span class="op">]</span>, size<span class="op">=</span><span class="st">"last"</span><span class="op">)</span></span>
+<span><span class="va">g</span><span class="op">$</span><span class="va">widths</span> <span class="op">&lt;-</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.pmin.html">unit.pmax</a></span><span class="op">(</span><span class="va">g2</span><span class="op">$</span><span class="va">widths</span>, <span class="va">g3</span><span class="op">$</span><span class="va">widths</span><span class="op">)</span></span>
+<span><span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/grid.newpage.html">grid.newpage</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/grid.draw.html">grid.draw</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-21-1.png" width="90%"></div>
+<p>如果想根据某个变量进行分组绘制生存曲线，然后分面展示，也可以用<code><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_facet.html">ggsurvplot_facet()</a></code>实现：</p>
+<div class="sourceCode" id="cb562"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span>, data <span class="op">=</span> <span class="va">colon</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 根据rx进行分组，展示每个组内的生存曲线</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_facet.html">ggsurvplot_facet</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">colon</span>, </span>
+<span>                 facet.by <span class="op">=</span> <span class="st">"rx"</span>,</span>
+<span>                 palette <span class="op">=</span> <span class="st">"jco"</span>, </span>
+<span>                 pval <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-22-1.png" width="90%"></div>
+<p>还可以根据多个变量进行分面展示：</p>
+<div class="sourceCode" id="cb563"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_facet.html">ggsurvplot_facet</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">colon</span>, facet.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"rx"</span>, <span class="st">"adhere"</span><span class="op">)</span>,</span>
+<span>                palette <span class="op">=</span> <span class="st">"jco"</span>, pval <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-23-1.png" width="90%"></div>
+<div class="sourceCode" id="cb564"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">rx</span>, data <span class="op">=</span> <span class="va">colon</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_facet.html">ggsurvplot_facet</a></span><span class="op">(</span><span class="va">fit2</span>, <span class="va">colon</span>, facet.by <span class="op">=</span> <span class="st">"adhere"</span>,</span>
+<span>                palette <span class="op">=</span> <span class="st">"jco"</span>, pval <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-24-1.png" width="90%"></div>
+</div>
+<div id="同时绘制多个生存函数" class="section level2" number="33.8">
+<h2>
+<span class="header-section-number">33.8</span> 同时绘制多个生存函数<a class="anchor" aria-label="anchor" href="#%E5%90%8C%E6%97%B6%E7%BB%98%E5%88%B6%E5%A4%9A%E4%B8%AA%E7%94%9F%E5%AD%98%E5%87%BD%E6%95%B0"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb565"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">colon</span><span class="op">)</span></span>
+<span><span class="va">f1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">adhere</span>, data <span class="op">=</span> <span class="va">colon</span><span class="op">)</span></span>
+<span><span class="va">f2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">rx</span>, data <span class="op">=</span> <span class="va">colon</span><span class="op">)</span></span>
+<span><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sex <span class="op">=</span> <span class="va">f1</span>, rx <span class="op">=</span> <span class="va">f2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 一下子画好！在循环出图时有用处</span></span>
+<span><span class="va">legend.title</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"sex"</span>, <span class="st">"rx"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_list.html">ggsurvplot_list</a></span><span class="op">(</span><span class="va">fits</span>, <span class="va">colon</span>, legend.title <span class="op">=</span> <span class="va">legend.title</span><span class="op">)</span></span>
+<span><span class="co">## $sex</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-25-1.png" width="90%"></div>
+<pre><code>## 
+## $rx</code></pre>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-25-2.png" width="90%"></div>
+<pre><code>## 
+## attr(,"class")
+## [1] "list"            "ggsurvplot_list"</code></pre>
+</div>
+<div id="根据某一个变量分组绘制" class="section level2" number="33.9">
+<h2>
+<span class="header-section-number">33.9</span> 根据某一个变量分组绘制<a class="anchor" aria-label="anchor" href="#%E6%A0%B9%E6%8D%AE%E6%9F%90%E4%B8%80%E4%B8%AA%E5%8F%98%E9%87%8F%E5%88%86%E7%BB%84%E7%BB%98%E5%88%B6"><i class="fas fa-link"></i></a>
+</h2>
+<p>比如以<code>colon</code>数据为例，我们想以<code>rx</code>（治疗方式）进行分组，然后看每个组内的生存曲线，可以通过<code><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_group_by.html">ggsurvplot_group_by()</a></code>实现。</p>
+<div class="sourceCode" id="cb568"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span>, data <span class="op">=</span> <span class="va">colon</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize: grouped by treatment rx</span></span>
+<span><span class="co">#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::</span></span>
+<span><span class="va">ggsurv.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_group_by.html">ggsurvplot_group_by</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">colon</span>, group.by <span class="op">=</span> <span class="st">"rx"</span>, risk.table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                 pval <span class="op">=</span> <span class="cn">TRUE</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span>, palette <span class="op">=</span> <span class="st">"jco"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">ggsurv.list</span><span class="op">)</span></span>
+<span><span class="co">## [1] "rx.Obs::sex"     "rx.Lev::sex"     "rx.Lev+5FU::sex"</span></span></code></pre></div>
+<p>这个图形和上面的分面展示中的<code>ggsurvplot_facet</code>画出来的图形是一样的，区别就是一个是分面，这个是分开多个图形！</p>
+<p>可以根据多个变量进行分组，比如下面这个情况，会分别绘制6张生存曲线图：</p>
+<div class="sourceCode" id="cb569"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Visualize: grouped by treatment rx and adhere</span></span>
+<span><span class="va">ggsurv.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_group_by.html">ggsurvplot_group_by</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">colon</span>, group.by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"rx"</span>, <span class="st">"adhere"</span><span class="op">)</span>,</span>
+<span>                                 risk.table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                                 pval <span class="op">=</span> <span class="cn">TRUE</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span>, palette <span class="op">=</span> <span class="st">"jco"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 6张图的名字，图没有画出来，感兴趣的可以自己试试看</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">ggsurv.list</span><span class="op">)</span></span>
+<span><span class="co">## [1] "rx:Obs, adhere:0::sex"     "rx:Obs, adhere:1::sex"    </span></span>
+<span><span class="co">## [3] "rx:Lev, adhere:0::sex"     "rx:Lev, adhere:1::sex"    </span></span>
+<span><span class="co">## [5] "rx:Lev+5FU, adhere:0::sex" "rx:Lev+5FU, adhere:1::sex"</span></span></code></pre></div>
+</div>
+<div id="在原有生存曲线的基础上增加" class="section level2" number="33.10">
+<h2>
+<span class="header-section-number">33.10</span> 在原有生存曲线的基础上增加<a class="anchor" aria-label="anchor" href="#%E5%9C%A8%E5%8E%9F%E6%9C%89%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF%E7%9A%84%E5%9F%BA%E7%A1%80%E4%B8%8A%E5%A2%9E%E5%8A%A0"><i class="fas fa-link"></i></a>
+</h2>
+<p>先画好一个生存曲线图，然后在原图的基础上添加新的生存曲线图，类似于base r中常用的<code>add = T</code>，比如在这篇推文中介绍的：<strong>多个时间点和多指标生存曲线</strong></p>
+<div class="sourceCode" id="cb570"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 注意这里的surv_fit，是survfit的封装</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/surv_fit.html">surv_fit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span>, data <span class="op">=</span> <span class="va">lung</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Visualize survival curves</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>          risk.table <span class="op">=</span> <span class="cn">TRUE</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>          surv.median.line <span class="op">=</span> <span class="st">"hv"</span>, palette <span class="op">=</span> <span class="st">"jco"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-28-1.png" width="90%"></div>
+<p>在上面图形的基础上添加所有人的总的生存曲线：</p>
+<div class="sourceCode" id="cb571"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Add survival curves of pooled patients (Null model)</span></span>
+<span><span class="co"># Use add.all = TRUE option</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>          risk.table <span class="op">=</span> <span class="cn">TRUE</span>, pval <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>          surv.median.line <span class="op">=</span> <span class="st">"hv"</span>, palette <span class="op">=</span> <span class="st">"jco"</span>,</span>
+<span>          add.all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-29-1.png" width="90%"></div>
+</div>
+<div id="多个生存函数画在一起" class="section level2" number="33.11">
+<h2>
+<span class="header-section-number">33.11</span> 多个生存函数画在一起<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E7%94%9F%E5%AD%98%E5%87%BD%E6%95%B0%E7%94%BB%E5%9C%A8%E4%B8%80%E8%B5%B7"><i class="fas fa-link"></i></a>
+</h2>
+<p>比如把PFS和OS的生存曲线画在一张图上。</p>
+<div class="sourceCode" id="cb572"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># 构建一个示例数据集</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">demo.data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span></span>
+<span>   os.time <span class="op">=</span> <span class="va">colon</span><span class="op">$</span><span class="va">time</span>,</span>
+<span>   os.status <span class="op">=</span> <span class="va">colon</span><span class="op">$</span><span class="va">status</span>,</span>
+<span>   pfs.time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">colon</span><span class="op">$</span><span class="va">time</span><span class="op">)</span>,</span>
+<span>   pfs.status <span class="op">=</span> <span class="va">colon</span><span class="op">$</span><span class="va">status</span>,</span>
+<span>   sex <span class="op">=</span> <span class="va">colon</span><span class="op">$</span><span class="va">sex</span>, rx <span class="op">=</span> <span class="va">colon</span><span class="op">$</span><span class="va">rx</span>, adhere <span class="op">=</span> <span class="va">colon</span><span class="op">$</span><span class="va">adhere</span></span>
+<span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 总体的PFS和OS生存曲线</span></span>
+<span><span class="va">pfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">pfs.time</span>, <span class="va">pfs.status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">demo.data</span><span class="op">)</span></span>
+<span><span class="va">os</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">os.time</span>, <span class="va">os.status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">demo.data</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Combine on the same plot</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>PFS <span class="op">=</span> <span class="va">pfs</span>, OS <span class="op">=</span> <span class="va">os</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_combine.html">ggsurvplot_combine</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">demo.data</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-30-1.png" width="90%"></div>
+<p>这个情况你用<code>ggsurvplot_list</code>也能画，不过就是分开的两个图形了！</p>
+<p>如果是分类变量会自动画出多条生存曲线：</p>
+<div class="sourceCode" id="cb573"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">pfs.time</span>, <span class="va">pfs.status</span><span class="op">)</span> <span class="op">~</span> <span class="va">rx</span>, data <span class="op">=</span> <span class="va">demo.data</span><span class="op">)</span></span>
+<span><span class="va">os</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">os.time</span>, <span class="va">os.status</span><span class="op">)</span> <span class="op">~</span> <span class="va">rx</span>, data <span class="op">=</span> <span class="va">demo.data</span><span class="op">)</span></span>
+<span><span class="co"># Combine on the same plot</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>PFS <span class="op">=</span> <span class="va">pfs</span>, OS <span class="op">=</span> <span class="va">os</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot_combine.html">ggsurvplot_combine</a></span><span class="op">(</span><span class="va">fit</span>, <span class="va">demo.data</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1033-survivalvisiualization_files/figure-html/unnamed-chunk-31-1.png" width="90%"></div>
+</div>
+<div id="参考资料-3" class="section level2" number="33.12">
+<h2>
+<span class="header-section-number">33.12</span> 参考资料<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-3"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>survminer包帮助文档</li>
+</ol>
+</div>
+</div>
+
+
+
+  <div class="chapter-nav">
+<div class="prev"><a href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></div>
+<div class="next"><a href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#oiewjrtsjl"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li><a class="nav-link" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-2"><span class="header-section-number">33.1</span> 演示数据</a></li>
+<li><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%9A%84%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF"><span class="header-section-number">33.2</span> 基本的生存曲线</a></li>
+<li><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0-risk-table"><span class="header-section-number">33.3</span> 增加 risk table</a></li>
+<li><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E5%88%A0%E5%A4%B1%E6%97%B6%E9%97%B4%E8%A1%A8ncensor-plot"><span class="header-section-number">33.4</span> 增加删失时间表ncensor plot</a></li>
+<li><a class="nav-link" href="#%E8%B6%85%E7%BA%A7%E6%97%A0%E6%95%8C%E7%B2%BE%E7%BB%86%E5%8C%96%E8%87%AA%E5%AE%9A%E8%AE%BE%E7%BD%AE"><span class="header-section-number">33.5</span> 超级无敌精细化自定设置</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E7%BB%84%E7%9A%84%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF"><span class="header-section-number">33.6</span> 多个组的生存曲线</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E5%88%86%E7%B1%BB%E5%8F%98%E9%87%8F%E5%88%86%E9%9D%A2%E7%BB%98%E5%88%B6"><span class="header-section-number">33.7</span> 多个分类变量分面绘制</a></li>
+<li><a class="nav-link" href="#%E5%90%8C%E6%97%B6%E7%BB%98%E5%88%B6%E5%A4%9A%E4%B8%AA%E7%94%9F%E5%AD%98%E5%87%BD%E6%95%B0"><span class="header-section-number">33.8</span> 同时绘制多个生存函数</a></li>
+<li><a class="nav-link" href="#%E6%A0%B9%E6%8D%AE%E6%9F%90%E4%B8%80%E4%B8%AA%E5%8F%98%E9%87%8F%E5%88%86%E7%BB%84%E7%BB%98%E5%88%B6"><span class="header-section-number">33.9</span> 根据某一个变量分组绘制</a></li>
+<li><a class="nav-link" href="#%E5%9C%A8%E5%8E%9F%E6%9C%89%E7%94%9F%E5%AD%98%E6%9B%B2%E7%BA%BF%E7%9A%84%E5%9F%BA%E7%A1%80%E4%B8%8A%E5%A2%9E%E5%8A%A0"><span class="header-section-number">33.10</span> 在原有生存曲线的基础上增加</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E7%94%9F%E5%AD%98%E5%87%BD%E6%95%B0%E7%94%BB%E5%9C%A8%E4%B8%80%E8%B5%B7"><span class="header-section-number">33.11</span> 多个生存函数画在一起</a></li>
+<li><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-3"><span class="header-section-number">33.12</span> 参考资料</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1033-survivalvisiualization.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1033-survivalvisiualization.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

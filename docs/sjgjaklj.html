@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="上面的文章中介绍了ROC曲线的本质以及两面性，并详细介绍了如何手动计算真阳性率/假阳性率，以及怎样计算多个，并把点连接成线，变成ROC曲线。 这些现在都有成熟的R包可以帮我们搞定，不需要我们手动计算。 不过这些包在计算AUC时，默认是计算阳性结果的AUC，这在实际情况中有时会遇到问题，大家在使用时最好手动指定，到底是计算谁的AUC，关于ROC的两面性，可以参考上面的推文。...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="上面的文章中介绍了ROC曲线的本质以及两面性，并详细介绍了如何手动计算真阳性率/假阳性率，以及怎样计算多个，并把点连接成线，变成ROC曲线。 这些现在都有成熟的R包可以帮我们搞定，不需要我们手动计算。 不过这些包在计算AUC时，默认是计算阳性结果的AUC，这在实际情况中有时会遇到问题，大家在使用时最好手动指定，到底是计算谁的AUC，关于ROC的两面性，可以参考上面的推文。...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="30 R语言计算AUC(ROC)注意事项 | R语言实战医学统计">
+<meta name="twitter:description" content="上面的文章中介绍了ROC曲线的本质以及两面性，并详细介绍了如何手动计算真阳性率/假阳性率，以及怎样计算多个，并把点连接成线，变成ROC曲线。 这些现在都有成熟的R包可以帮我们搞定，不需要我们手动计算。 不过这些包在计算AUC时，默认是计算阳性结果的AUC，这在实际情况中有时会遇到问题，大家在使用时最好手动指定，到底是计算谁的AUC，关于ROC的两面性，可以参考上面的推文。...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="active" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="sjgjaklj" class="section level1" number="30">
+<h1>
+<span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项<a class="anchor" aria-label="anchor" href="#sjgjaklj"><i class="fas fa-link"></i></a>
+</h1>
+<p>上面的文章中介绍了ROC曲线的本质以及两面性，并详细介绍了如何手动计算真阳性率/假阳性率，以及怎样计算多个，并把点连接成线，变成ROC曲线。</p>
+<p>这些现在都有成熟的R包可以帮我们搞定，不需要我们手动计算。</p>
+<p>不过这些包在计算AUC时，默认是计算阳性结果的AUC，这在实际情况中有时会遇到问题，大家在使用时最好手动指定，到底是计算谁的AUC，关于ROC的两面性，可以参考上面的推文。</p>
+<p>这里以我最常用的<code>ROCR</code>和<code>pROC</code>进行演示。</p>
+<div id="准备数据-1" class="section level2" number="30.1">
+<h2>
+<span class="header-section-number">30.1</span> 准备数据<a class="anchor" aria-label="anchor" href="#%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>假如我们要用ca125的值预测患者是不是癌症，虚构一个数据：</p>
+<div class="sourceCode" id="cb495"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">20220840</span><span class="op">)</span></span>
+<span><span class="va">ca125_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">80</span>,<span class="fl">20</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">50</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ca125_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">20</span>,<span class="fl">20</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">70</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">class</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">0</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tumor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"癌症"</span>,<span class="st">"非癌症"</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>`class`<span class="op">=</span><span class="va">class</span>,`ca125_1`<span class="op">=</span><span class="va">ca125_1</span>,`ca125_2`<span class="op">=</span><span class="va">ca125_2</span>,</span>
+<span>                 `tumor`<span class="op">=</span><span class="va">tumor</span></span>
+<span>                 <span class="op">)</span></span>
+<span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/headtail.html">headTail</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##     class ca125_1 ca125_2  tumor</span></span>
+<span><span class="co">## 1       1   51.88    5.96   癌症</span></span>
+<span><span class="co">## 2       1   82.46   10.59   癌症</span></span>
+<span><span class="co">## 3       1  113.67  -19.22   癌症</span></span>
+<span><span class="co">## 4       1   63.49    6.08   癌症</span></span>
+<span><span class="co">## ...   ...     ...     ...   &lt;NA&gt;</span></span>
+<span><span class="co">## 27      0   53.33   74.34 非癌症</span></span>
+<span><span class="co">## 28      0   59.92   51.11 非癌症</span></span>
+<span><span class="co">## 29      0   46.46   64.21 非癌症</span></span>
+<span><span class="co">## 30      0   30.03    66.5 非癌症</span></span></code></pre></div>
+</div>
+<div id="rocr" class="section level2" number="30.2">
+<h2>
+<span class="header-section-number">30.2</span> ROCR<a class="anchor" aria-label="anchor" href="#rocr"><i class="fas fa-link"></i></a>
+</h2>
+<p><code>ROCR</code>的使用非常简单，两步完成，需要提供用来预测结果的指标以及真实结果。</p>
+<p>关于这个包计算的阳性结果的AUC还是阴性结果的AUC，它的规则是这样的：</p>
+<blockquote>
+<p><code>ROCR</code>默认计算顺序靠后的类别的AUC。如果提供给<code>labels</code>的值是有序因子型变量，排在前面的默认是阴性结果（negtive），排在后面的默认是阳性结果（positive），默认计算阳性结果（排序靠后）的AUC。如果是无序因子、数值、字符、逻辑型变量，会按照R语言的默认排序，比如按照数字大小、首字母顺序等，也是计算排序靠后的类别的AUC。</p>
+</blockquote>
+<p>比如我们这个<code>df</code>数据集，其中的<code>tumor</code>这一列是字符型，默认的顺序是：癌症，非癌症，是按照首字母顺序排列的，因此在计算AUC时，默认是计算的非癌症的AUC。</p>
+<div class="sourceCode" id="cb496"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ipa-tys.github.io/ROCR/">ROCR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/prediction.html">prediction</a></span><span class="op">(</span>predictions <span class="op">=</span> <span class="va">ca125_1</span>, <span class="co"># 预测指标</span></span>
+<span>                   labels <span class="op">=</span> <span class="va">tumor</span> <span class="co"># 真实结果</span></span>
+<span>                   <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"auc"</span><span class="op">)</span><span class="op">@</span><span class="va">y.values</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">## [1] 0.075</span></span></code></pre></div>
+<p>但是大多数时候我们需要的都是阳性结果（比如这里我们想计算癌症的AUC，而不是非癌症）的AUC，所以我建议大家在使用R包计算AUC或者画ROC曲线时，手动指定顺序！</p>
+<div class="sourceCode" id="cb497"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/prediction.html">prediction</a></span><span class="op">(</span>predictions <span class="op">=</span> <span class="va">ca125_1</span>, <span class="co"># 预测指标</span></span>
+<span>                   labels <span class="op">=</span> <span class="va">tumor</span> <span class="co"># 真实结果</span></span>
+<span>                   ,label.ordering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"非癌症"</span>,<span class="st">"癌症"</span><span class="op">)</span> <span class="co"># 此时就是计算癌症的AUC</span></span>
+<span>                   <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"auc"</span><span class="op">)</span><span class="op">@</span><span class="va">y.values</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">## [1] 0.925</span></span></code></pre></div>
+</div>
+<div id="proc" class="section level2" number="30.3">
+<h2>
+<span class="header-section-number">30.3</span> pROC<a class="anchor" aria-label="anchor" href="#proc"><i class="fas fa-link"></i></a>
+</h2>
+<pre><code>## Type 'citation("pROC")' for a citation.
+## 
+## Attaching package: 'pROC'
+## The following objects are masked from 'package:stats':
+## 
+##     cov, smooth, var</code></pre>
+<p><code>pROC</code>包计算AUC也需要：用来预测结果的指标以及真实结果。</p>
+<p>这个包计算<code>pROC</code>略有不同，它是根据中位数来的，谁的中位数大，就计算谁的AUC，比如我们的这个例子，计算下中位数看看：</p>
+<div class="sourceCode" id="cb499"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 把ca125_1按照tumor的两个类别进行分组，然后分别计算中位数</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span><span class="op">(</span><span class="va">ca125_1</span>, <span class="va">tumor</span>, <span class="va">median</span><span class="op">)</span></span>
+<span><span class="co">##     癌症   非癌症 </span></span>
+<span><span class="co">## 81.34426 49.99926</span></span></code></pre></div>
+<p>结果是癌症组的中位数＞非癌症组的中位数，所以是计算癌症的AUC。</p>
+<p>计算AUC：</p>
+<div class="sourceCode" id="cb500"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/roc.html">roc</a></span><span class="op">(</span>response<span class="op">=</span><span class="va">tumor</span>, predictor<span class="op">=</span><span class="va">ca125_1</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = 癌症, case = 非癌症</span></span>
+<span><span class="co">## Setting direction: controls &gt; cases</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## roc.default(response = tumor, predictor = ca125_1)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Data: ca125_1 in 10 controls (tumor 癌症) &gt; 20 cases (tumor 非癌症).</span></span>
+<span><span class="co">## Area under the curve: 0.925</span></span></code></pre></div>
+<p>再来看看ca125_2这一列指标：</p>
+<div class="sourceCode" id="cb501"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 把ca125_2按照tumor的两个类别进行分组，然后分别计算中位数</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/tapply.html">tapply</a></span><span class="op">(</span><span class="va">ca125_2</span>, <span class="va">tumor</span>, <span class="va">median</span><span class="op">)</span></span>
+<span><span class="co">##     癌症   非癌症 </span></span>
+<span><span class="co">## 13.52771 69.69272</span></span></code></pre></div>
+<p>结果是癌症组的中位数＜非癌症组，所以是计算非癌症的AUC。</p>
+<div class="sourceCode" id="cb502"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/roc.html">roc</a></span><span class="op">(</span>response<span class="op">=</span><span class="va">tumor</span>, predictor<span class="op">=</span><span class="va">ca125_2</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = 癌症, case = 非癌症</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## roc.default(response = tumor, predictor = ca125_2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Data: ca125_2 in 10 controls (tumor 癌症) &lt; 20 cases (tumor 非癌症).</span></span>
+<span><span class="co">## Area under the curve: 0.9</span></span></code></pre></div>
+<p>如果想要手动指定，需要设置<code>levels</code>和<code>direction</code>：</p>
+<div class="sourceCode" id="cb503"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 此时计算的就是癌症的AUC</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/roc.html">roc</a></span><span class="op">(</span>response<span class="op">=</span><span class="va">tumor</span>, predictor<span class="op">=</span><span class="va">ca125_2</span>,</span>
+<span>    levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"非癌症"</span>, <span class="st">"癌症"</span><span class="op">)</span>, <span class="co"># 这个顺序随便设定，重要的是direction</span></span>
+<span>    direction <span class="op">=</span> <span class="st">"&lt;"</span> <span class="co"># 手动设定非癌症 &lt; 癌症</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## roc.default(response = tumor, predictor = ca125_2, levels = c("非癌症",     "癌症"), direction = "&lt;")</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Data: ca125_2 in 20 controls (tumor 非癌症) &lt; 10 cases (tumor 癌症).</span></span>
+<span><span class="co">## Area under the curve: 0.1</span></span></code></pre></div>
+</div>
+<div id="yardstick" class="section level2" number="30.4">
+<h2>
+<span class="header-section-number">30.4</span> yardstick<a class="anchor" aria-label="anchor" href="#yardstick"><i class="fas fa-link"></i></a>
+</h2>
+<p>最后给大家演示下<code>yardstick</code>包的做法，其中<code>truth</code>必须提供因子型，使用<code>event_level</code>指定到底是计算谁的AUC：</p>
+<div class="sourceCode" id="cb504"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">yardstick</span><span class="fu">::</span><span class="fu"><a href="https://yardstick.tidymodels.org/reference/roc_auc.html">roc_auc</a></span><span class="op">(</span><span class="va">df</span>, </span>
+<span>                   truth<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">tumor</span>,levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"癌症"</span>,<span class="st">"非癌症"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   estimate<span class="op">=</span><span class="va">ca125_1</span>,</span>
+<span>                   event_level<span class="op">=</span><span class="st">"first"</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 1 × 3</span></span>
+<span><span class="co">##   .metric .estimator .estimate</span></span>
+<span><span class="co">##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span><span class="co">## 1 roc_auc binary         0.925</span></span></code></pre></div>
+<p>画ROC曲线：</p>
+<div class="sourceCode" id="cb505"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">yardstick</span><span class="fu">::</span><span class="fu"><a href="https://yardstick.tidymodels.org/reference/roc_curve.html">roc_curve</a></span><span class="op">(</span><span class="va">df</span>, truth<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">tumor</span>,levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"癌症"</span>,<span class="st">"非癌症"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   estimate<span class="op">=</span><span class="va">ca125_1</span>,</span>
+<span>                   event_level<span class="op">=</span><span class="st">"first"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1030-rocattention_files/figure-html/unnamed-chunk-11-1.png" width="90%"></div>
+<p>R语言中的ROC曲线R包都有这样的<strong>潜规则</strong>，大家在使用的时候一定要注意哦~</p>
+<p>示例数据还提供了用数值表示的结果变量<code>class</code>，感兴趣的可以试试看，是不是和我说的一样！</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></div>
+<div class="next"><a href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#sjgjaklj"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE-1"><span class="header-section-number">30.1</span> 准备数据</a></li>
+<li><a class="nav-link" href="#rocr"><span class="header-section-number">30.2</span> ROCR</a></li>
+<li><a class="nav-link" href="#proc"><span class="header-section-number">30.3</span> pROC</a></li>
+<li><a class="nav-link" href="#yardstick"><span class="header-section-number">30.4</span> yardstick</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1030-rocattention.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1030-rocattention.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

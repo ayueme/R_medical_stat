@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>24 二分类资料ROC曲线绘制 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="ROC曲线是评价模型的重要工具，曲线下面积AUC可能是大家最常见的模型评价指标之一，无论是在临床预测模型，还是在机器学习/医学统计中，都是非常重要的内容。 如果你还不太了解关于ROC曲线中的各种指标，请看下面这两张图，有你需要的一切（建议保存）： 首先是混淆矩阵以及由混下矩阵计算的各种指标： 然后是各种常见指标的计算方法：...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="ROC曲线是评价模型的重要工具，曲线下面积AUC可能是大家最常见的模型评价指标之一，无论是在临床预测模型，还是在机器学习/医学统计中，都是非常重要的内容。 如果你还不太了解关于ROC曲线中的各种指标，请看下面这两张图，有你需要的一切（建议保存）： 首先是混淆矩阵以及由混下矩阵计算的各种指标： 然后是各种常见指标的计算方法：...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="24 二分类资料ROC曲线绘制 | R语言实战医学统计">
+<meta name="twitter:description" content="ROC曲线是评价模型的重要工具，曲线下面积AUC可能是大家最常见的模型评价指标之一，无论是在临床预测模型，还是在机器学习/医学统计中，都是非常重要的内容。 如果你还不太了解关于ROC曲线中的各种指标，请看下面这两张图，有你需要的一切（建议保存）： 首先是混淆矩阵以及由混下矩阵计算的各种指标： 然后是各种常见指标的计算方法：...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="active" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="ljhgjsj" class="section level1" number="24">
+<h1>
+<span class="header-section-number">24</span> 二分类资料ROC曲线绘制<a class="anchor" aria-label="anchor" href="#ljhgjsj"><i class="fas fa-link"></i></a>
+</h1>
+<p>ROC曲线是评价模型的重要工具，曲线下面积AUC可能是大家最常见的模型评价指标之一，无论是在临床预测模型，还是在机器学习/医学统计中，都是非常重要的内容。</p>
+<p>如果你还不太了解关于ROC曲线中的各种指标，请看下面这两张图，有你需要的一切（建议保存）：</p>
+<p>首先是混淆矩阵以及由混下矩阵计算的各种指标：</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-01_18-19-50.png" width="90%" style="display: block; margin: auto;"></div>
+<p>然后是各种常见指标的计算方法：</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-01_18-20-16.png" width="90%" style="display: block; margin: auto;"></div>
+<p>R语言中有非常多的方法可以实现ROC曲线，但是基本上都是至少需要2列数据，一列是真实结果，另一列是预测值，有了这两列数据，就可以轻松使用各种方法画出ROC曲线并计算AUC。</p>
+<p>这篇文章带大家介绍最常见的并且好用的二分类变量的ROC曲线画法。</p>
+<div id="方法1-1" class="section level2" number="24.1">
+<h2>
+<span class="header-section-number">24.1</span> 方法1<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%B3%951-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<code>pROC</code>包，不过使用这个包需要注意，一定要指定<em>direction</em>，否则可能会得出错误的结果。</p>
+<p>这个R包计算AUC是基于中位数的，哪一组的中位数大就计算哪一组的AUC，在计算时千万要注意！</p>
+<p>使用<code>pROC</code>包的<code>aSAH</code>数据，其中<code>outcome</code>列是结果变量，1代表Good，2代表Poor。</p>
+<div class="sourceCode" id="cb441"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://expasy.org/tools/pROC/">pROC</a></span><span class="op">)</span></span>
+<span><span class="co">## Type 'citation("pROC")' for a citation.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'pROC'</span></span>
+<span><span class="co">## The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     cov, smooth, var</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">)</span></span>
+<span><span class="co">## [1] 113   7</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    113 obs. of  7 variables:</span></span>
+<span><span class="co">##  $ gos6   : Ord.factor w/ 5 levels "1"&lt;"2"&lt;"3"&lt;"4"&lt;..: 5 5 5 5 1 1 4 1 5 4 ...</span></span>
+<span><span class="co">##  $ outcome: Factor w/ 2 levels "Good","Poor": 1 1 1 1 2 2 1 2 1 1 ...</span></span>
+<span><span class="co">##  $ gender : Factor w/ 2 levels "Male","Female": 2 2 2 2 2 1 1 1 2 2 ...</span></span>
+<span><span class="co">##  $ age    : int  42 37 42 27 42 48 57 41 49 75 ...</span></span>
+<span><span class="co">##  $ wfns   : Ord.factor w/ 5 levels "1"&lt;"2"&lt;"3"&lt;"4"&lt;..: 1 1 1 1 3 2 5 4 1 2 ...</span></span>
+<span><span class="co">##  $ s100b  : num  0.13 0.14 0.1 0.04 0.13 0.1 0.47 0.16 0.18 0.1 ...</span></span>
+<span><span class="co">##  $ ndka   : num  3.01 8.54 8.09 10.42 17.4 ...</span></span></code></pre></div>
+<p>计算AUC及可信区间：</p>
+<div class="sourceCode" id="cb442"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/roc.html">roc</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span>,<span class="va">aSAH</span><span class="op">$</span><span class="va">s100b</span>,ci<span class="op">=</span><span class="cn">T</span>,auc<span class="op">=</span><span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = Good, case = Poor</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span><span class="va">res</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## roc.default(response = aSAH$outcome, predictor = aSAH$s100b,     auc = T, ci = T)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Data: aSAH$s100b in 72 controls (aSAH$outcome Good) &lt; 41 cases (aSAH$outcome Poor).</span></span>
+<span><span class="co">## Area under the curve: 0.7314</span></span>
+<span><span class="co">## 95% CI: 0.6301-0.8326 (DeLong)</span></span></code></pre></div>
+<div class="sourceCode" id="cb443"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span>,legacy.axes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-5-1.png" width="90%"></div>
+<p>可以显示最佳截点，比如AUC最大的点：</p>
+<div class="sourceCode" id="cb444"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res</span>,</span>
+<span>     legacy.axes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>     thresholds<span class="op">=</span><span class="st">"best"</span>, <span class="co"># AUC最大的点</span></span>
+<span>     print.thres<span class="op">=</span><span class="st">"best"</span><span class="op">)</span> </span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-6-1.png" width="90%"></div>
+<p>可以显示AUC的可信区间：</p>
+<div class="sourceCode" id="cb445"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rocobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot.roc</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span>, <span class="va">aSAH</span><span class="op">$</span><span class="va">s100b</span>,</span>
+<span>                   main<span class="op">=</span><span class="st">"Confidence intervals"</span>, </span>
+<span>                   percent<span class="op">=</span><span class="cn">TRUE</span>,ci<span class="op">=</span><span class="cn">TRUE</span>, </span>
+<span>                   print.auc<span class="op">=</span><span class="cn">TRUE</span></span>
+<span>                   <span class="op">)</span> </span>
+<span><span class="co">## Setting levels: control = Good, case = Poor</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span></span>
+<span><span class="va">ciobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/ci.se.html">ci.se</a></span><span class="op">(</span><span class="va">rocobj</span>,</span>
+<span>               specificities<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span>               <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ciobj</span>, type<span class="op">=</span><span class="st">"shape"</span>, col<span class="op">=</span><span class="st">"#1c61b6AA"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/pROC/man/ci.html">ci</a></span><span class="op">(</span><span class="va">rocobj</span>, of<span class="op">=</span><span class="st">"thresholds"</span>, thresholds<span class="op">=</span><span class="st">"best"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-7-1.png" width="90%"></div>
+<p>多条ROC曲线画在一起：</p>
+<div class="sourceCode" id="cb446"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rocobj1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot.roc</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span>, <span class="va">aSAH</span><span class="op">$</span><span class="va">s100</span>,percent<span class="op">=</span><span class="cn">TRUE</span>, col<span class="op">=</span><span class="st">"#1c61b6"</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = Good, case = Poor</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span><span class="va">rocobj2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/lines.roc.html">lines.roc</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span>, <span class="va">aSAH</span><span class="op">$</span><span class="va">ndka</span>, percent<span class="op">=</span><span class="cn">TRUE</span>, col<span class="op">=</span><span class="st">"#008600"</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = Good, case = Poor</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"bottomright"</span>, legend<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S100B"</span>, <span class="st">"NDKA"</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#1c61b6"</span>, <span class="st">"#008600"</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-8-1.png" width="90%"></div>
+<p>两条ROC曲线的比较，可以添加P值：</p>
+<div class="sourceCode" id="cb447"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rocobj1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/plot.roc.html">plot.roc</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span>, <span class="va">aSAH</span><span class="op">$</span><span class="va">s100</span>,percent<span class="op">=</span><span class="cn">TRUE</span>, col<span class="op">=</span><span class="st">"#1c61b6"</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = Good, case = Poor</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span><span class="va">rocobj2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/lines.roc.html">lines.roc</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span>, <span class="va">aSAH</span><span class="op">$</span><span class="va">ndka</span>, percent<span class="op">=</span><span class="cn">TRUE</span>, col<span class="op">=</span><span class="st">"#008600"</span><span class="op">)</span></span>
+<span><span class="co">## Setting levels: control = Good, case = Poor</span></span>
+<span><span class="co">## Setting direction: controls &lt; cases</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"bottomright"</span>, legend<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"S100B"</span>, <span class="st">"NDKA"</span><span class="op">)</span>, col<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#1c61b6"</span>, <span class="st">"#008600"</span><span class="op">)</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">testobj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/pROC/man/roc.test.html">roc.test</a></span><span class="op">(</span><span class="va">rocobj1</span>, <span class="va">rocobj2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span>, labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"p-value ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.pval.html">format.pval</a></span><span class="op">(</span><span class="va">testobj</span><span class="op">$</span><span class="va">p.value</span><span class="op">)</span><span class="op">)</span>, adj<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-9-1.png" width="90%"></div>
+</div>
+<div id="方法2-1" class="section level2" number="24.2">
+<h2>
+<span class="header-section-number">24.2</span> 方法2<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%B3%952-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<code>ROCR</code>，如果你只是为了画一条ROC曲线，这是我最推荐的方法了，美观又简单！</p>
+<div class="sourceCode" id="cb448"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ipa-tys.github.io/ROCR/">ROCR</a></span><span class="op">)</span></span></code></pre></div>
+<p>使用非常简单，3句代码，其中第2句是关键，可以更改各种参数，然后就可以画出各种不同的图形：</p>
+<div class="sourceCode" id="cb449"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/prediction.html">prediction</a></span><span class="op">(</span><span class="va">aSAH</span><span class="op">$</span><span class="va">s100b</span>,<span class="va">aSAH</span><span class="op">$</span><span class="va">outcome</span><span class="op">)</span></span>
+<span><span class="va">perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"tpr"</span>,<span class="st">"fpr"</span><span class="op">)</span></span>
+<span><span class="va">auc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"auc"</span><span class="op">)</span><span class="op">@</span><span class="va">y.values</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf</span>,lwd<span class="op">=</span><span class="fl">2</span>,col<span class="op">=</span><span class="st">"tomato"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"bottomright"</span>, legend<span class="op">=</span><span class="st">"AUC of s100b: 0.7314"</span>, col<span class="op">=</span><span class="st">"tomato"</span>, lwd<span class="op">=</span><span class="fl">2</span>,bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-11-1.png" width="90%"></div>
+<p>添加箱线图：</p>
+<div class="sourceCode" id="cb450"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"tpr"</span>, <span class="st">"fpr"</span><span class="op">)</span></span>
+<span><span class="va">perf</span></span>
+<span><span class="co">## A performance instance</span></span>
+<span><span class="co">##   'False positive rate' vs. 'True positive rate' (alpha: 'Cutoff')</span></span>
+<span><span class="co">##   with 51 data points</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf</span>,</span>
+<span>     avg<span class="op">=</span><span class="st">"threshold"</span>,</span>
+<span>     spread.estimate<span class="op">=</span><span class="st">"boxplot"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-12-1.png" width="90%"></div>
+<p>还可以绘制PR曲线，召回率recall为横坐标，精确率precision 为纵坐标：</p>
+<div class="sourceCode" id="cb451"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"prec"</span>, <span class="st">"rec"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf</span>,</span>
+<span>     avg<span class="op">=</span> <span class="st">"threshold"</span>,</span>
+<span>     colorize<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>     lwd<span class="op">=</span> <span class="fl">3</span>,</span>
+<span>     main<span class="op">=</span> <span class="st">"Precision-Recall plot"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf</span>,</span>
+<span>     lty<span class="op">=</span><span class="fl">3</span>,</span>
+<span>     col<span class="op">=</span><span class="st">"grey78"</span>,</span>
+<span>     add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-13-1.png" width="90%"></div>
+<p>还可以把特异度为横坐标，灵敏度为纵坐标：</p>
+<div class="sourceCode" id="cb452"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="http://ipa-tys.github.io/ROCR/reference/performance.html">performance</a></span><span class="op">(</span><span class="va">pred</span>, <span class="st">"sens"</span>, <span class="st">"spec"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf</span>,</span>
+<span>     avg<span class="op">=</span> <span class="st">"threshold"</span>,</span>
+<span>     colorize<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>     lwd<span class="op">=</span> <span class="fl">3</span>,</span>
+<span>     main<span class="op">=</span><span class="st">"Sensitivity/Specificity plots"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">perf</span>,</span>
+<span>     lty<span class="op">=</span><span class="fl">3</span>,</span>
+<span>     col<span class="op">=</span><span class="st">"grey78"</span>,</span>
+<span>     add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-14-1.png" width="90%"></div>
+<p>这个包还可以计算非常多其他的指标，各种图都能画，大家可以自己探索。</p>
+</div>
+<div id="方法3" class="section level2" number="24.3">
+<h2>
+<span class="header-section-number">24.3</span> 方法3<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E6%B3%953"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<code>tidymodels</code>。这个包很有来头，它是R中专门做机器学习的，可以到公众号：医学和生信笔记中查看更多关于它的教程，它也是目前R语言机器学习领域两大当红辣子鸡之一！另一个是<code>mlr3</code>。</p>
+<div class="sourceCode" id="cb453"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidymodels.tidymodels.org">tidymodels</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## Warning: package 'tidymodels' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'dplyr' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'ggplot2' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'recipes' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'tibble' was built under R version 4.2.3</span></span>
+<span><span class="co">## Warning: package 'yardstick' was built under R version 4.2.3</span></span></code></pre></div>
+<p>它很优雅，如果你要计算AUC，那么就是<code>roc_auc()</code>函数：</p>
+<div class="sourceCode" id="cb454"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">aSAH</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">roc_auc</span><span class="op">(</span><span class="va">outcome</span>, <span class="va">s100b</span>,event_level<span class="op">=</span><span class="st">"second"</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 1 × 3</span></span>
+<span><span class="co">##   .metric .estimator .estimate</span></span>
+<span><span class="co">##   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></span>
+<span><span class="co">## 1 roc_auc binary         0.731</span></span></code></pre></div>
+<p>如果你是要画ROC曲线，那么就是<code>roc_curve()</code>函数：</p>
+<div class="sourceCode" id="cb455"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">aSAH</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">roc_curve</span><span class="op">(</span><span class="va">outcome</span>, <span class="va">s100b</span>,event_level<span class="op">=</span><span class="st">"second"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="va">specificity</span>, y <span class="op">=</span> <span class="va">sensitivity</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_path</a></span><span class="op">(</span>size<span class="op">=</span><span class="fl">1.2</span>,color<span class="op">=</span><span class="st">"firebrick"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html">coord_equal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1024-rocbinomial_files/figure-html/unnamed-chunk-17-1.png" width="90%"></div>
+<p>还有太多方法可以画ROC了，不过<code>pROC</code>和<code>ROCR</code>基本上技能解决99%的问题了。</p>
+<p>最后，给大家看看cran中比较常见的画ROC曲线的包，大家有兴趣可以自己探索：</p>
+<div class="sourceCode" id="cb456"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-hub/pkgsearch">pkgsearch</a></span><span class="op">)</span> </span>
+<span><span class="co">## Warning: package 'pkgsearch' was built under R version 4.2.3</span></span>
+<span></span>
+<span><span class="va">rocPkg</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://r-hub.github.io/pkgsearch/reference/pkg_search.html">pkg_search</a></span><span class="op">(</span>query<span class="op">=</span><span class="st">"ROC"</span>,size<span class="op">=</span><span class="fl">200</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rocPkgShort</span> <span class="op">&lt;-</span> <span class="va">rocPkg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>               <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">maintainer_name</span> <span class="op">!=</span> <span class="st">"ORPHANED"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>               <span class="fu"><a href="https://rdrr.io/pkg/MASS/man/lm.ridge.html">select</a></span><span class="op">(</span><span class="va">score</span>, <span class="va">package</span>, <span class="va">downloads_last_month</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>               <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">downloads_last_month</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">rocPkgShort</span>,<span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">## # A data frame: 20 × 3</span></span>
+<span><span class="co">##      score package         downloads_last_month</span></span>
+<span><span class="co">##  *   &lt;dbl&gt; &lt;chr&gt;                          &lt;int&gt;</span></span>
+<span><span class="co">##  1 11647.  pROC                           95912</span></span>
+<span><span class="co">##  2  4461.  caTools                        82322</span></span>
+<span><span class="co">##  3   956.  ROCR                           41731</span></span>
+<span><span class="co">##  4  2606.  PRROC                           6969</span></span>
+<span><span class="co">##  5   383.  riskRegression                  6734</span></span>
+<span><span class="co">##  6  2265.  cvAUC                           3349</span></span>
+<span><span class="co">##  7  1850.  survivalROC                     2575</span></span>
+<span><span class="co">##  8  1654.  plotROC                         2391</span></span>
+<span><span class="co">##  9   383.  PresenceAbsence                 2331</span></span>
+<span><span class="co">## 10   209.  logcondens                      2162</span></span>
+<span><span class="co">## 11  1580.  timeROC                         2009</span></span>
+<span><span class="co">## 12  1634.  precrec                         1930</span></span>
+<span><span class="co">## 13   179.  WVPlots                         1641</span></span>
+<span><span class="co">## 14   115.  RcmdrPlugin.EZR                 1552</span></span>
+<span><span class="co">## 15   302.  mlr3viz                         1472</span></span>
+<span><span class="co">## 16    51.2 wrProteo                        1347</span></span>
+<span><span class="co">## 17   458.  ROCit                           1067</span></span>
+<span><span class="co">## 18   152.  MLeval                           823</span></span>
+<span><span class="co">## 19   154.  PredictABEL                      807</span></span>
+<span><span class="co">## 20   163.  cubfits                          657</span></span></code></pre></div>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></div>
+<div class="next"><a href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#ljhgjsj"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="nav-link" href="#%E6%96%B9%E6%B3%951-1"><span class="header-section-number">24.1</span> 方法1</a></li>
+<li><a class="nav-link" href="#%E6%96%B9%E6%B3%952-1"><span class="header-section-number">24.2</span> 方法2</a></li>
+<li><a class="nav-link" href="#%E6%96%B9%E6%B3%953"><span class="header-section-number">24.3</span> 方法3</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1024-rocbinomial.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1024-rocbinomial.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

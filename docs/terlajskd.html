@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>11 样本量计算 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="样本量计算也是医学统计学中的一块重要内容，但是在课本中并没有详细介绍，今天我们说一下常见的研究设计的样本量计算。 通常样本量计算大家可能知道PASS软件，这是一个专门用来计算样本量的软件，但是也是付费的，并且没有mac版，而R语言免费，谁都可以用，不过！计算样本量我还是推荐使用PASS，因为简单好用！除了PASS外，大家还可以用gpower计算样本量哦~...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="11 样本量计算 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="样本量计算也是医学统计学中的一块重要内容，但是在课本中并没有详细介绍，今天我们说一下常见的研究设计的样本量计算。 通常样本量计算大家可能知道PASS软件，这是一个专门用来计算样本量的软件，但是也是付费的，并且没有mac版，而R语言免费，谁都可以用，不过！计算样本量我还是推荐使用PASS，因为简单好用！除了PASS外，大家还可以用gpower计算样本量哦~...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="11 样本量计算 | R语言实战医学统计">
+<meta name="twitter:description" content="样本量计算也是医学统计学中的一块重要内容，但是在课本中并没有详细介绍，今天我们说一下常见的研究设计的样本量计算。 通常样本量计算大家可能知道PASS软件，这是一个专门用来计算样本量的软件，但是也是付费的，并且没有mac版，而R语言免费，谁都可以用，不过！计算样本量我还是推荐使用PASS，因为简单好用！除了PASS外，大家还可以用gpower计算样本量哦~...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="active" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="terlajskd" class="section level1" number="11">
+<h1>
+<span class="header-section-number">11</span> 样本量计算<a class="anchor" aria-label="anchor" href="#terlajskd"><i class="fas fa-link"></i></a>
+</h1>
+<p>样本量计算也是医学统计学中的一块重要内容，但是在课本中并没有详细介绍，今天我们说一下常见的研究设计的样本量计算。</p>
+<p>通常样本量计算大家可能知道PASS软件，这是一个专门用来计算样本量的软件，但是也是付费的，并且没有mac版，而R语言免费，谁都可以用，不过！计算样本量我还是推荐使用PASS，因为简单好用！除了PASS外，大家还可以用gpower计算样本量哦~</p>
+<p>在R语言中，样本量计算这一问题被称为<strong>功效分析</strong>。</p>
+<p>在功效分析中，我们通常关注4个值：</p>
+<ul>
+<li>样本量</li>
+<li>显著性水平，也称为α（阿尔法）值，一类错误的概率</li>
+<li>功效（power），1 - 二类错误的概率，也就是1-β（贝塔）</li>
+<li>效应值（effect size）</li>
+</ul>
+<p>计算样本量就是解方程的过程，知道其中3个就可以算出最后一个，不同研究设计用的公式是不一样的，说白了样本量计算就是套公式而已！不怕复杂的直接用计算器也能算出来。</p>
+<p>而各种软件包括R语言不过是帮我们简化了过程，但是R语言并没有帮助我们简化效应值的计算…这个效应值计算很烦，这也是我更推荐PASS的重要原因，点点点就出来了，谁不喜欢呢？</p>
+<p>在R语言中一般使用<code>pwr</code>包进行功效分析，没安装的小伙伴自行安装一下即可。</p>
+<div id="t检验的样本量计算" class="section level2" number="11.1">
+<h2>
+<span class="header-section-number">11.1</span> t检验的样本量计算<a class="anchor" aria-label="anchor" href="#t%E6%A3%80%E9%AA%8C%E7%9A%84%E6%A0%B7%E6%9C%AC%E9%87%8F%E8%AE%A1%E7%AE%97"><i class="fas fa-link"></i></a>
+</h2>
+<p>对于t检验，可以使用<code>pwr.t.test(n= , d= , sig.level= , power= , type= , alternative= )</code>计算样本量，其中：
+- n：样本量
+- d：效应值，即标准化的均值之差，d = (μ1 - μ2) / σ，也就是（组1均值 - 组2均值）/ 标准差
+- sig.level：显著性水平，默认值0.05
+- power：功效
+- type：检验类型：两样本t检验（two.sample），单样本t检验（one.sample），配对t检验（paired），默认两样本t检验
+- alternative：双侧检验还是单侧检验，双侧（two.sided），单侧（less或者greater），默认双侧检验</p>
+<div id="单样本t检验样本均数和已知总体均数比较" class="section level3" number="11.1.1">
+<h3>
+<span class="header-section-number">11.1.1</span> 单样本t检验（样本均数和已知总体均数比较）<a class="anchor" aria-label="anchor" href="#%E5%8D%95%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C%E6%A0%B7%E6%9C%AC%E5%9D%87%E6%95%B0%E5%92%8C%E5%B7%B2%E7%9F%A5%E6%80%BB%E4%BD%93%E5%9D%87%E6%95%B0%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本例36-3的例子。</p>
+<p>用某药治疗矽肺患者，估计可增加尿矽排出量，其标准差为25mg/L，若要求以α=0.05，β=0.1的概率，能辨别出尿矽排出量平均增加10mg/L，问需要多少矽肺患者做实验？</p>
+<div class="sourceCode" id="cb168"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heliosdrm/pwr">pwr</a></span><span class="op">)</span></span>
+<span><span class="co">## Warning: package 'pwr' was built under R version 4.2.3</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/pwr.t.test.html">pwr.t.test</a></span><span class="op">(</span>d <span class="op">=</span> <span class="fl">10</span><span class="op">/</span><span class="fl">25</span>, </span>
+<span>           sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>           power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span>,</span>
+<span>           type <span class="op">=</span> <span class="st">"one.sample"</span>,</span>
+<span>           alternative <span class="op">=</span> <span class="st">"greater"</span></span>
+<span>           <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      One-sample t test power calculation </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               n = 54.90553</span></span>
+<span><span class="co">##               d = 0.4</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = greater</span></span></code></pre></div>
+<p>n = 54.90553，结果和课本一模一样！是不是非常简单？</p>
+<p>单样本t检验也可以使用R自带的函数进行计算：</p>
+<div class="sourceCode" id="cb169"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/power.t.test.html">power.t.test</a></span><span class="op">(</span>delta <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>             sd <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>             sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>             power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span>,</span>
+<span>             type <span class="op">=</span> <span class="st">"one.sample"</span>,</span>
+<span>             alternative <span class="op">=</span> <span class="st">"one.sided"</span></span>
+<span>             <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      One-sample t test power calculation </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               n = 54.90553</span></span>
+<span><span class="co">##           delta = 10</span></span>
+<span><span class="co">##              sd = 25</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = one.sided</span></span></code></pre></div>
+<p>结果都是一样的~</p>
+</div>
+<div id="两样本t检验两样本均数比较" class="section level3" number="11.1.2">
+<h3>
+<span class="header-section-number">11.1.2</span> 两样本t检验（两样本均数比较）<a class="anchor" aria-label="anchor" href="#%E4%B8%A4%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C%E4%B8%A4%E6%A0%B7%E6%9C%AC%E5%9D%87%E6%95%B0%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本例36-4的例子</p>
+<p>在做两种处理动物冠状静脉窦的血流量实验时，比较A处理动物和B处理动物的平均血流量增加，设两处理的标准差相等。若要求以α=0.05，β=0.1的概率，达到能辨别出两者增加的差别是其标准差的60%，需要多少实验动物？</p>
+<p>感觉和小学做应用题差不多… <strong>两者增加的差别是其标准差的60%，也就是 (μ1 - μ2) / σ = 0.6</strong>。</p>
+<div class="sourceCode" id="cb170"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/heliosdrm/pwr">pwr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/pwr.t.test.html">pwr.t.test</a></span><span class="op">(</span>d <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>           sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>           power <span class="op">=</span> <span class="fl">1</span> <span class="op">-</span> <span class="fl">0.1</span>,</span>
+<span>           type <span class="op">=</span> <span class="st">"two.sample"</span>,</span>
+<span>           alternative <span class="op">=</span> <span class="st">"two.sided"</span></span>
+<span>           <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      Two-sample t test power calculation </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               n = 59.35155</span></span>
+<span><span class="co">##               d = 0.6</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = two.sided</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## NOTE: n is number in *each* group</span></span></code></pre></div>
+<p>n = 59.35155，和课本结果一模一样，每组需要大约60例！</p>
+<p>两样本t检验也可以使用R自带的函数<code><a href="https://rdrr.io/r/stats/power.t.test.html">power.t.test()</a></code>进行计算，但是例题中的这种情况刚好没有给出具体的两组间差值和标准差，所以就不能用了。</p>
+</div>
+</div>
+<div id="多样本均数比较" class="section level2" number="11.2">
+<h2>
+<span class="header-section-number">11.2</span> 多样本均数比较<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E6%A0%B7%E6%9C%AC%E5%9D%87%E6%95%B0%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例36-5的例子。</p>
+<p>拟用4种方法治疗贫血患者，估计治疗后血红蛋白增加的均数分别为18,13,16,10，标准差分别为10,9,9,8，设α=0.05，β=0.1，若要得出有差别的结论，每组需要多少例？</p>
+<p>这是一个完全随机设计多样本比较的方差分析的例子，相信大家都能看出来！</p>
+<p>但是，<em>在R里面计算种类型的样本量非常困难，原因在于效应量effect size很难计算出来</em>，最终结果也和课本上面的公式计算出来的样本量不一样，所以我推荐用PASS软件，点点点即可！</p>
+<p>这种情况使用函数<code>pwr.anova.test(k= , n= , f= , sig.level= , power= )</code>计算，其中
+f是效应量effect size，计算方法如下：</p>
+<div class="sourceCode" id="cb171"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">include_graphics</a></span><span class="op">(</span><span class="st">"figs/Snipaste_2023-04-05_13-45-36.png"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_13-45-36.png" width="90%"></div>
+<p>k是组数，其余的和t检验的相同。</p>
+<p>首先我们要计算f值，但是根据这个公式，很明显是计算不出来的！</p>
+<p>如果使用R自带函数<code>power.anova.test(groups = NULL, n = NULL, between.var = NULL, within.var = NULL,sig.level = 0.05, power = NULL)</code>函数计算，因为无法计算<code>within.var</code>，所以也是行不通的。</p>
+<p>还是乖乖用PASS吧…</p>
+<p>如果有大佬知道怎么计算，欢迎留言告知~</p>
+</div>
+<div id="样本率和已知总体率的比较" class="section level2" number="11.3">
+<h2>
+<span class="header-section-number">11.3</span> 样本率和已知总体率的比较<a class="anchor" aria-label="anchor" href="#%E6%A0%B7%E6%9C%AC%E7%8E%87%E5%92%8C%E5%B7%B2%E7%9F%A5%E6%80%BB%E4%BD%93%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例36-6的例子。</p>
+<p>已知常规方法治疗某种病的有效率是80%，现试验一种新的额治疗方法，预计有效率是90%，设α=0.05，β=0.1，问需要多少病例才能发现两种方法的有效率有10%的差别？</p>
+<div class="sourceCode" id="cb172"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 首先计算h值（effect size），pwr包自带了函数，根据两个率可计算，</span></span>
+<span><span class="co"># h的计算使用的是这个公式：2*asin(sqrt(0.9))-2*asin(sqrt(0.8))</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/ES.h.html">ES.h</a></span><span class="op">(</span><span class="fl">0.9</span>,<span class="fl">0.8</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.2837941</span></span>
+<span></span>
+<span><span class="co"># 然后进行样本量计算</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/pwr.p.test.html">pwr.p.test</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/pwr/man/ES.h.html">ES.h</a></span><span class="op">(</span><span class="fl">0.9</span>,<span class="fl">0.8</span><span class="op">)</span>,</span>
+<span>           sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>           power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span>,</span>
+<span>           alternative <span class="op">=</span> <span class="st">"greater"</span></span>
+<span>           <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      proportion power calculation for binomial distribution (arcsine transformation) </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               h = 0.2837941</span></span>
+<span><span class="co">##               n = 106.3315</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = greater</span></span></code></pre></div>
+<p>得到的结果和课本差别有点大，课本是137.1，而我们的结果是106，主要是由于计算方法不同，建议对于此类设计的样本量计算，还是直接套课本公式或者使用PASS软件。</p>
+</div>
+<div id="两独立样本率的比较" class="section level2" number="11.4">
+<h2>
+<span class="header-section-number">11.4</span> 两独立样本率的比较<a class="anchor" aria-label="anchor" href="#%E4%B8%A4%E7%8B%AC%E7%AB%8B%E6%A0%B7%E6%9C%AC%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例36-7的例子。</p>
+<p>初步观察甲乙两药对某病的疗效，甲药有效率为60%。乙药有效率为85%，现拟进一步做治疗实验，设α=0.05,1-β=0.9，问每组需要多少病例？</p>
+<p>下面演示使用<code>pwr</code>包计算：</p>
+<div class="sourceCode" id="cb173"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 首先计算h值，pwr包自带了函数，根据两个率可计算</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/ES.h.html">ES.h</a></span><span class="op">(</span><span class="fl">0.85</span>,<span class="fl">0.60</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.5740396</span></span>
+<span></span>
+<span><span class="co"># 然后进行样本量计算</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/pwr.2p.test.html">pwr.2p.test</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/pwr/man/ES.h.html">ES.h</a></span><span class="op">(</span><span class="fl">0.85</span>,<span class="fl">0.60</span><span class="op">)</span>,</span>
+<span>           sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>           power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span>,</span>
+<span>           alternative <span class="op">=</span> <span class="st">"two.sided"</span></span>
+<span>           <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      Difference of proportion power calculation for binomial distribution (arcsine transformation) </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               h = 0.5740396</span></span>
+<span><span class="co">##               n = 63.77382</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = two.sided</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## NOTE: same sample sizes</span></span></code></pre></div>
+<p>n = 63.77382，和课本是一模一样的结果！</p>
+<p>这种情况下用R自带的``也是很好用的：</p>
+<div class="sourceCode" id="cb174"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/power.prop.test.html">power.prop.test</a></span><span class="op">(</span>p1 <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>                p2 <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>                sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>                power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span>,</span>
+<span>                alternative <span class="op">=</span> <span class="st">"two.sided"</span></span>
+<span>                <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      Two-sample comparison of proportions power calculation </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               n = 64.93465</span></span>
+<span><span class="co">##              p1 = 0.85</span></span>
+<span><span class="co">##              p2 = 0.6</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = two.sided</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## NOTE: n is number in *each* group</span></span></code></pre></div>
+<p>算出来结果是64.93465，和课本差别不大~</p>
+</div>
+<div id="多样本率的比较" class="section level2" number="11.5">
+<h2>
+<span class="header-section-number">11.5</span> 多样本率的比较<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E6%A0%B7%E6%9C%AC%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例36-8的例子。</p>
+<p>拟观察3种方法治疗消化性溃疡的效果，初步估计甲法有效率为40%，乙法50%，丙法65%，设α=0.05，β=0.1，试估计样本量？</p>
+<p>很明显属于<em>行x列表资料的卡方检验</em>！所以我们使用<code><a href="https://rdrr.io/pkg/pwr/man/pwr.chisq.test.html">pwr.chisq.test()</a></code>函数进行计算样本量。</p>
+<p>首先我们要计算<code>effect size</code>：</p>
+<div class="sourceCode" id="cb175"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#               甲法 乙法 丙法</span></span>
+<span><span class="va">prob</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.65</span><span class="op">)</span>, <span class="co"># 有效率</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="fl">0.35</span><span class="op">)</span><span class="op">)</span> <span class="co"># 无效率</span></span>
+<span></span>
+<span><span class="co"># pwr包自带的这个函数专门用于此种情况的effect size计算</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/ES.w2.html">ES.w2</a></span><span class="op">(</span><span class="va">prob</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span> <span class="co"># 有几组就除以几，这里需要理解列联表资料的一些指标计算</span></span>
+<span><span class="co">## [1] 0.2055947</span></span></code></pre></div>
+<p>这样我们就得到effect size了，然后就可以计算样本量了。</p>
+<div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/pwr.chisq.test.html">pwr.chisq.test</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/pwr/man/ES.w2.html">ES.w2</a></span><span class="op">(</span><span class="va">prob</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span>, <span class="co"># effect size</span></span>
+<span>               df <span class="op">=</span> <span class="fl">2</span>, <span class="co">#（3-1）*（2-1）= 2</span></span>
+<span>               sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>               power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span></span>
+<span>               <span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      Chi squared power calculation </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               w = 0.2055947</span></span>
+<span><span class="co">##               N = 299.3655</span></span>
+<span><span class="co">##              df = 2</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## NOTE: N is the number of observations</span></span></code></pre></div>
+<p>最终得到的结果是一共需要299例，课本是297例，基本一样~</p>
+</div>
+<div id="直线相关分析" class="section level2" number="11.6">
+<h2>
+<span class="header-section-number">11.6</span> 直线相关分析<a class="anchor" aria-label="anchor" href="#%E7%9B%B4%E7%BA%BF%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例36-9的例子。</p>
+<p>根据以往经验，血硒与发硒含量间直线相关系数为0.8，若想在α=0.05，β=0.1的水平上得到相关系数有统计学意义的结论，应调查多少人？</p>
+<div class="sourceCode" id="cb177"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/pwr/man/pwr.r.test.html">pwr.r.test</a></span><span class="op">(</span>r<span class="op">=</span><span class="fl">0.8</span>,</span>
+<span>           sig.level <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>           power <span class="op">=</span> <span class="fl">1</span><span class="op">-</span><span class="fl">0.1</span>,</span>
+<span>           alternative <span class="op">=</span> <span class="st">"two.sided"</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##      approximate correlation power calculation (arctangh transformation) </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               n = 11.16238</span></span>
+<span><span class="co">##               r = 0.8</span></span>
+<span><span class="co">##       sig.level = 0.05</span></span>
+<span><span class="co">##           power = 0.9</span></span>
+<span><span class="co">##     alternative = two.sided</span></span></code></pre></div>
+<p>n = 11.16238，结果和课本一样~</p>
+<p>OK，以上就是使用R语言计算样本量的例子。可以看到大部分都是可以很简单的计算出来，但是在方便快捷性上还是差PASS软件太远了，对于此类样本量计算的问题，可能PASS是更好的选择。</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></div>
+<div class="next"><a href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#terlajskd"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li>
+<a class="nav-link" href="#t%E6%A3%80%E9%AA%8C%E7%9A%84%E6%A0%B7%E6%9C%AC%E9%87%8F%E8%AE%A1%E7%AE%97"><span class="header-section-number">11.1</span> t检验的样本量计算</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E5%8D%95%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C%E6%A0%B7%E6%9C%AC%E5%9D%87%E6%95%B0%E5%92%8C%E5%B7%B2%E7%9F%A5%E6%80%BB%E4%BD%93%E5%9D%87%E6%95%B0%E6%AF%94%E8%BE%83"><span class="header-section-number">11.1.1</span> 单样本t检验（样本均数和已知总体均数比较）</a></li>
+<li><a class="nav-link" href="#%E4%B8%A4%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C%E4%B8%A4%E6%A0%B7%E6%9C%AC%E5%9D%87%E6%95%B0%E6%AF%94%E8%BE%83"><span class="header-section-number">11.1.2</span> 两样本t检验（两样本均数比较）</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E5%A4%9A%E6%A0%B7%E6%9C%AC%E5%9D%87%E6%95%B0%E6%AF%94%E8%BE%83"><span class="header-section-number">11.2</span> 多样本均数比较</a></li>
+<li><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E7%8E%87%E5%92%8C%E5%B7%B2%E7%9F%A5%E6%80%BB%E4%BD%93%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><span class="header-section-number">11.3</span> 样本率和已知总体率的比较</a></li>
+<li><a class="nav-link" href="#%E4%B8%A4%E7%8B%AC%E7%AB%8B%E6%A0%B7%E6%9C%AC%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><span class="header-section-number">11.4</span> 两独立样本率的比较</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E6%A0%B7%E6%9C%AC%E7%8E%87%E7%9A%84%E6%AF%94%E8%BE%83"><span class="header-section-number">11.5</span> 多样本率的比较</a></li>
+<li><a class="nav-link" href="#%E7%9B%B4%E7%BA%BF%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90"><span class="header-section-number">11.6</span> 直线相关分析</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1011-samplesize.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1011-samplesize.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

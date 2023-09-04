@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>32 R语言生存分析 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="生存分析是临床常用统计方法，一旦和时间扯上关系，分析就变得复杂多了，此时不再是单一的因变量，还需要考虑时间给因变量和自变量带来的各种影响。 本次主要演示R语言做生存分析的一些方法。比如寿命表、K-M曲线、logrank检验。...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="32 R语言生存分析 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="生存分析是临床常用统计方法，一旦和时间扯上关系，分析就变得复杂多了，此时不再是单一的因变量，还需要考虑时间给因变量和自变量带来的各种影响。 本次主要演示R语言做生存分析的一些方法。比如寿命表、K-M曲线、logrank检验。...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="32 R语言生存分析 | R语言实战医学统计">
+<meta name="twitter:description" content="生存分析是临床常用统计方法，一旦和时间扯上关系，分析就变得复杂多了，此时不再是单一的因变量，还需要考虑时间给因变量和自变量带来的各种影响。 本次主要演示R语言做生存分析的一些方法。比如寿命表、K-M曲线、logrank检验。...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="active" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="djgkas" class="section level1" number="32">
+<h1>
+<span class="header-section-number">32</span> R语言生存分析<a class="anchor" aria-label="anchor" href="#djgkas"><i class="fas fa-link"></i></a>
+</h1>
+<p>生存分析是临床常用统计方法，一旦和时间扯上关系，分析就变得复杂多了，此时不再是单一的因变量，还需要考虑时间给因变量和自变量带来的各种影响。</p>
+<p>本次主要演示R语言做生存分析的一些方法。比如寿命表、K-M曲线、logrank检验。</p>
+<p>本推文不涉及理论，只有实操，想要了解生存分析的理论的请自行学习。不涉及理论，并不代表理论不重要，在以后的机器学习和临床预测模型的相关推文中，会经常用到这些理论，建议大家学习一下。</p>
+<div id="生存过程的描述" class="section level2" number="32.1">
+<h2>
+<span class="header-section-number">32.1</span> 生存过程的描述<a class="anchor" aria-label="anchor" href="#%E7%94%9F%E5%AD%98%E8%BF%87%E7%A8%8B%E7%9A%84%E6%8F%8F%E8%BF%B0"><i class="fas fa-link"></i></a>
+</h2>
+<div class="sourceCode" id="cb511"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html">survminer</a></span><span class="op">)</span></span>
+<span><span class="co">## Loading required package: ggplot2</span></span>
+<span><span class="co">## Loading required package: ggpubr</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Attaching package: 'survminer'</span></span>
+<span><span class="co">## The following object is masked from 'package:survival':</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##     myeloma</span></span></code></pre></div>
+<p>使用<code>survival</code>包中的<code>lung</code>数据集用于演示，这是一份关于肺癌患者的生存数据。<code>time</code>是生存时间，以天为单位，<code>status</code>是生存状态，1代表删失，2代表死亡。但是一般在生存分析中我们喜欢用1代表死亡，用0代表删失，所以我们更改一下（其实不改也可以，你记住就行）。</p>
+<div class="sourceCode" id="cb512"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">lung</span></span>
+<span><span class="va">df</span><span class="op">$</span><span class="va">status</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">status</span> <span class="op">==</span> <span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span><span class="co">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span><span class="co">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span><span class="co">##  $ status   : num  1 1 0 1 1 0 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span><span class="co">##  $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span><span class="co">##  $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...</span></span>
+<span><span class="co">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span><span class="co">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span><span class="co">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span><span class="co">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span></code></pre></div>
+<p>首先把生存时间和生存状态用<code><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv()</a></code>放到一起，可以看到有<code>+</code>的就是截尾数据。</p>
+<div class="sourceCode" id="cb513"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span>time <span class="op">=</span> <span class="va">lung</span><span class="op">$</span><span class="va">time</span>, event <span class="op">=</span> <span class="va">lung</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
+<span><span class="co">##   [1]  306   455  1010+  210   883  1022+  310   361   218   166   170   654 </span></span>
+<span><span class="co">##  [13]  728    71   567   144   613   707    61    88   301    81   624   371 </span></span>
+<span><span class="co">##  [25]  394   520   574   118   390    12   473    26   533   107    53   122 </span></span>
+<span><span class="co">##  [37]  814   965+   93   731   460   153   433   145   583    95   303   519 </span></span>
+<span><span class="co">##  [49]  643   765   735   189    53   246   689    65     5   132   687   345 </span></span>
+<span><span class="co">##  [61]  444   223   175    60   163    65   208   821+  428   230   840+  305 </span></span>
+<span><span class="co">##  [73]   11   132   226   426   705   363    11   176   791    95   196+  167 </span></span>
+<span><span class="co">##  [85]  806+  284   641   147   740+  163   655   239    88   245   588+   30 </span></span>
+<span><span class="co">##  [97]  179   310   477   166   559+  450   364   107   177   156   529+   11 </span></span>
+<span><span class="co">## [109]  429   351    15   181   283   201   524    13   212   524   288   363 </span></span>
+<span><span class="co">## [121]  442   199   550    54   558   207    92    60   551+  543+  293   202 </span></span>
+<span><span class="co">## [133]  353   511+  267   511+  371   387   457   337   201   404+  222    62 </span></span>
+<span><span class="co">## [145]  458+  356+  353   163    31   340   229   444+  315+  182   156   329 </span></span>
+<span><span class="co">## [157]  364+  291   179   376+  384+  268   292+  142   413+  266+  194   320 </span></span>
+<span><span class="co">## [169]  181   285   301+  348   197   382+  303+  296+  180   186   145   269+</span></span>
+<span><span class="co">## [181]  300+  284+  350   272+  292+  332+  285   259+  110   286   270    81 </span></span>
+<span><span class="co">## [193]  131   225+  269   225+  243+  279+  276+  135    79    59   240+  202+</span></span>
+<span><span class="co">## [205]  235+  105   224+  239   237+  173+  252+  221+  185+   92+   13   222+</span></span>
+<span><span class="co">## [217]  192+  183   211+  175+  197+  203+  116   188+  191+  105+  174+  177+</span></span></code></pre></div>
+<p>如果只是想要描述一下这份生存数据，可以使用寿命表法或者K-M曲线，在R中可以通过<code><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit()</a></code>实现。</p>
+<div class="sourceCode" id="cb514"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 构建生存曲线</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 寿命表，surv_summary比默认的summary()更好</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/surv_summary.html">surv_summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">##     time n.risk n.event n.censor       surv     std.err     upper      lower</span></span>
+<span><span class="co">## 1      5    228       1        0 0.99561404 0.004395615 1.0000000 0.98707342</span></span>
+<span><span class="co">## 2     11    227       3        0 0.98245614 0.008849904 0.9996460 0.96556190</span></span>
+<span><span class="co">## 3     12    224       1        0 0.97807018 0.009916654 0.9972662 0.95924368</span></span>
+<span><span class="co">## 4     13    223       2        0 0.96929825 0.011786516 0.9919508 0.94716300</span></span>
+<span><span class="co">## 5     15    221       1        0 0.96491228 0.012628921 0.9890941 0.94132171</span></span>
+<span><span class="co">## 6     26    220       1        0 0.96052632 0.013425540 0.9861367 0.93558107</span></span>
+<span><span class="co">## 7     30    219       1        0 0.95614035 0.014184183 0.9830945 0.92992527</span></span>
+<span><span class="co">## 8     31    218       1        0 0.95175439 0.014910735 0.9799794 0.92434234</span></span>
+<span><span class="co">## 9     53    217       2        0 0.94298246 0.016284897 0.9735659 0.91335978</span></span>
+<span><span class="co">## 10    54    215       1        0 0.93859649 0.016939076 0.9702809 0.90794671</span></span>
+<span><span class="co">## 11    59    214       1        0 0.93421053 0.017574720 0.9669508 0.90257880</span></span>
+<span><span class="co">## 12    60    213       2        0 0.92543860 0.018798180 0.9601711 0.89196244</span></span>
+<span><span class="co">## 13    61    211       1        0 0.92105263 0.019389168 0.9567281 0.88670745</span></span>
+<span><span class="co">## 14    62    210       1        0 0.91666667 0.019968077 0.9532533 0.88148430</span></span>
+<span><span class="co">## 15    65    209       2        0 0.90789474 0.021093908 0.9462168 0.87112471</span></span>
+<span><span class="co">## 16    71    207       1        0 0.90350877 0.021642644 0.9426590 0.86598451</span></span>
+<span><span class="co">## 17    79    206       1        0 0.89912281 0.022182963 0.9390770 0.86086855</span></span>
+<span><span class="co">## 18    81    205       2        0 0.89035088 0.023240987 0.9318456 0.85070391</span></span>
+<span><span class="co">## 19    88    203       2        0 0.88157895 0.024272607 0.9245323 0.84062118</span></span>
+<span><span class="co">## 20    92    201       1        1 0.87719298 0.024779731 0.9208475 0.83560803</span></span>
+<span><span class="co">## 21    93    199       1        0 0.87278498 0.025286647 0.9171308 0.83058337</span></span>
+<span><span class="co">## 22    95    198       2        0 0.86396897 0.026285933 0.9096467 0.82058489</span></span>
+<span><span class="co">## 23   105    196       1        1 0.85956096 0.026778995 0.9058807 0.81560966</span></span>
+<span><span class="co">## 24   107    194       2        0 0.85069951 0.027763443 0.8982733 0.80564534</span></span>
+<span><span class="co">## 25   110    192       1        0 0.84626878 0.028250266 0.8944478 0.80068492</span></span>
+<span><span class="co">## 26   116    191       1        0 0.84183806 0.028733836 0.8906085 0.79573831</span></span>
+<span><span class="co">## 27   118    190       1        0 0.83740733 0.029214392 0.8867559 0.79080503</span></span>
+<span><span class="co">## 28   122    189       1        0 0.83297660 0.029692160 0.8828904 0.78588462</span></span>
+<span><span class="co">## 29   131    188       1        0 0.82854588 0.030167350 0.8790125 0.78097668</span></span>
+<span><span class="co">## 30   132    187       2        0 0.81968442 0.031110783 0.8712208 0.77119665</span></span>
+<span><span class="co">## 31   135    185       1        0 0.81525370 0.031579392 0.8673077 0.76632386</span></span>
+<span><span class="co">## 32   142    184       1        0 0.81082297 0.032046159 0.8633836 0.76146212</span></span>
+<span><span class="co">## 33   144    183       1        0 0.80639224 0.032511243 0.8594487 0.75661112</span></span>
+<span><span class="co">## 34   145    182       2        0 0.79753079 0.033436970 0.8515479 0.74694024</span></span>
+<span><span class="co">## 35   147    180       1        0 0.79310006 0.033897900 0.8475824 0.74211984</span></span>
+<span><span class="co">## 36   153    179       1        0 0.78866934 0.034357720 0.8436072 0.73730913</span></span>
+<span><span class="co">## 37   156    178       2        0 0.77980788 0.035274546 0.8356287 0.72771592</span></span>
+<span><span class="co">## 38   163    176       3        0 0.76651570 0.036644539 0.8235936 0.71339353</span></span>
+<span><span class="co">## 39   166    173       2        0 0.75765425 0.037555674 0.8155273 0.70388809</span></span>
+<span><span class="co">## 40   167    171       1        0 0.75322352 0.038010898 0.8114818 0.69914771</span></span>
+<span><span class="co">## 41   170    170       1        0 0.74879280 0.038466026 0.8074284 0.69441536</span></span>
+<span><span class="co">## 42   173    169       0        1 0.74879280 0.038466026 0.8074284 0.69441536</span></span>
+<span><span class="co">## 43   174    168       0        1 0.74879280 0.038466026 0.8074284 0.69441536</span></span>
+<span><span class="co">## 44   175    167       1        1 0.74430901 0.038932090 0.8033269 0.68962694</span></span>
+<span><span class="co">## 45   176    165       1        0 0.73979804 0.039403839 0.7991969 0.68481391</span></span>
+<span><span class="co">## 46   177    164       1        1 0.73528708 0.039875693 0.7950587 0.68000904</span></span>
+<span><span class="co">## 47   179    162       2        0 0.72620946 0.040831745 0.7867159 0.67035655</span></span>
+<span><span class="co">## 48   180    160       1        0 0.72167065 0.041310284 0.7825326 0.66554231</span></span>
+<span><span class="co">## 49   181    159       2        0 0.71259304 0.042268879 0.7741425 0.65593716</span></span>
+<span><span class="co">## 50   182    157       1        0 0.70805423 0.042749126 0.7699360 0.65114603</span></span>
+<span><span class="co">## 51   183    156       1        0 0.70351542 0.043230132 0.7657221 0.64636237</span></span>
+<span><span class="co">## 52   185    155       0        1 0.70351542 0.043230132 0.7657221 0.64636237</span></span>
+<span><span class="co">## 53   186    154       1        0 0.69894713 0.043718251 0.7614780 0.64155115</span></span>
+<span><span class="co">## 54   188    153       0        1 0.69894713 0.043718251 0.7614780 0.64155115</span></span>
+<span><span class="co">## 55   189    152       1        0 0.69434880 0.044213739 0.7572033 0.63671178</span></span>
+<span><span class="co">## 56   191    151       0        1 0.69434880 0.044213739 0.7572033 0.63671178</span></span>
+<span><span class="co">## 57   192    150       0        1 0.69434880 0.044213739 0.7572033 0.63671178</span></span>
+<span><span class="co">## 58   194    149       1        0 0.68968874 0.044723618 0.7528734 0.63180684</span></span>
+<span><span class="co">## 59   196    148       0        1 0.68968874 0.044723618 0.7528734 0.63180684</span></span>
+<span><span class="co">## 60   197    147       1        1 0.68499698 0.045241530 0.7485112 0.62687218</span></span>
+<span><span class="co">## 61   199    145       1        0 0.68027286 0.045767770 0.7441162 0.62190715</span></span>
+<span><span class="co">## 62   201    144       2        0 0.67082463 0.046824116 0.7353020 0.61200115</span></span>
+<span><span class="co">## 63   202    142       1        1 0.66610051 0.047354439 0.7308831 0.60705997</span></span>
+<span><span class="co">## 64   203    140       0        1 0.66610051 0.047354439 0.7308831 0.60705997</span></span>
+<span><span class="co">## 65   207    139       1        0 0.66130842 0.047901723 0.7264037 0.60204649</span></span>
+<span><span class="co">## 66   208    138       1        0 0.65651633 0.048450680 0.7219163 0.59704112</span></span>
+<span><span class="co">## 67   210    137       1        0 0.65172424 0.049001423 0.7174208 0.59204373</span></span>
+<span><span class="co">## 68   211    136       0        1 0.65172424 0.049001423 0.7174208 0.59204373</span></span>
+<span><span class="co">## 69   212    135       1        0 0.64689665 0.049562270 0.7128898 0.58701260</span></span>
+<span><span class="co">## 70   218    134       1        0 0.64206907 0.050125134 0.7083507 0.58198951</span></span>
+<span><span class="co">## 71   221    133       0        1 0.64206907 0.050125134 0.7083507 0.58198951</span></span>
+<span><span class="co">## 72   222    132       1        1 0.63720491 0.050698710 0.7037752 0.57693155</span></span>
+<span><span class="co">## 73   223    130       1        0 0.63230333 0.051283424 0.6991623 0.57183791</span></span>
+<span><span class="co">## 74   224    129       0        1 0.63230333 0.051283424 0.6991623 0.57183791</span></span>
+<span><span class="co">## 75   225    128       0        2 0.63230333 0.051283424 0.6991623 0.57183791</span></span>
+<span><span class="co">## 76   226    126       1        0 0.62728505 0.051898763 0.6944504 0.56661573</span></span>
+<span><span class="co">## 77   229    125       1        0 0.62226677 0.052516642 0.6897296 0.56140253</span></span>
+<span><span class="co">## 78   230    124       1        0 0.61724849 0.053137208 0.6849999 0.55619818</span></span>
+<span><span class="co">## 79   235    123       0        1 0.61724849 0.053137208 0.6849999 0.55619818</span></span>
+<span><span class="co">## 80   237    122       0        1 0.61724849 0.053137208 0.6849999 0.55619818</span></span>
+<span><span class="co">## 81   239    121       2        0 0.60704604 0.054428498 0.6753847 0.54562217</span></span>
+<span><span class="co">## 82   240    119       0        1 0.60704604 0.054428498 0.6753847 0.54562217</span></span>
+<span><span class="co">## 83   243    118       0        1 0.60704604 0.054428498 0.6753847 0.54562217</span></span>
+<span><span class="co">## 84   245    117       1        0 0.60185761 0.055101203 0.6704957 0.54024596</span></span>
+<span><span class="co">## 85   246    116       1        0 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span><span class="co">## 86   252    115       0        1 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span><span class="co">## 87   259    114       0        1 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span><span class="co">## 88   266    113       0        1 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span><span class="co">## 89   267    112       1        0 0.59134178 0.056493740 0.6605811 0.52935986</span></span>
+<span><span class="co">## 90   268    111       1        0 0.58601437 0.057214008 0.6555547 0.52385081</span></span>
+<span><span class="co">## 91   269    110       1        1 0.58068697 0.057938291 0.6505179 0.51835217</span></span>
+<span><span class="co">## 92   270    108       1        0 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span><span class="co">## 93   272    107       0        1 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span><span class="co">## 94   276    106       0        1 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span><span class="co">## 95   279    105       0        1 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span><span class="co">## 96   283    104       1        0 0.56977841 0.059470446 0.6402172 0.50708954</span></span>
+<span><span class="co">## 97   284    103       1        1 0.56424658 0.060265393 0.6349901 0.50138454</span></span>
+<span><span class="co">## 98   285    101       2        0 0.55307338 0.061902647 0.6244165 0.48988160</span></span>
+<span><span class="co">## 99   286     99       1        0 0.54748678 0.062729652 0.6191120 0.48414791</span></span>
+<span><span class="co">## 100  288     98       1        0 0.54190018 0.063562614 0.6137958 0.47842592</span></span>
+<span><span class="co">## 101  291     97       1        0 0.53631358 0.064401818 0.6084680 0.47271553</span></span>
+<span><span class="co">## 102  292     96       0        2 0.53631358 0.064401818 0.6084680 0.47271553</span></span>
+<span><span class="co">## 103  293     94       1        0 0.53060812 0.065283876 0.6030365 0.46687880</span></span>
+<span><span class="co">## 104  296     93       0        1 0.53060812 0.065283876 0.6030365 0.46687880</span></span>
+<span><span class="co">## 105  300     92       0        1 0.53060812 0.065283876 0.6030365 0.46687880</span></span>
+<span><span class="co">## 106  301     91       1        1 0.52477726 0.066212421 0.5974962 0.46090869</span></span>
+<span><span class="co">## 107  303     89       1        1 0.51888089 0.067169680 0.5918922 0.45487570</span></span>
+<span><span class="co">## 108  305     87       1        0 0.51291674 0.068157318 0.5862225 0.44877769</span></span>
+<span><span class="co">## 109  306     86       1        0 0.50695259 0.069153590 0.5805384 0.44269407</span></span>
+<span><span class="co">## 110  310     85       2        0 0.49502429 0.071173772 0.5691277 0.43056952</span></span>
+<span><span class="co">## 111  315     83       0        1 0.49502429 0.071173772 0.5691277 0.43056952</span></span>
+<span><span class="co">## 112  320     82       1        0 0.48898741 0.072223700 0.5633452 0.42444435</span></span>
+<span><span class="co">## 113  329     81       1        0 0.48295053 0.073284268 0.5575481 0.41833381</span></span>
+<span><span class="co">## 114  332     80       0        1 0.48295053 0.073284268 0.5575481 0.41833381</span></span>
+<span><span class="co">## 115  337     79       1        0 0.47683723 0.074383257 0.5516775 0.41214973</span></span>
+<span><span class="co">## 116  340     78       1        0 0.47072393 0.075494166 0.5457918 0.40598083</span></span>
+<span><span class="co">## 117  345     77       1        0 0.46461064 0.076617562 0.5398911 0.39982704</span></span>
+<span><span class="co">## 118  348     76       1        0 0.45849734 0.077754031 0.5339753 0.39368826</span></span>
+<span><span class="co">## 119  350     75       1        0 0.45238404 0.078904180 0.5280446 0.38756443</span></span>
+<span><span class="co">## 120  351     74       1        0 0.44627074 0.080068634 0.5220991 0.38145549</span></span>
+<span><span class="co">## 121  353     73       2        0 0.43404415 0.082443090 0.5101637 0.36928207</span></span>
+<span><span class="co">## 122  356     71       0        1 0.43404415 0.082443090 0.5101637 0.36928207</span></span>
+<span><span class="co">## 123  361     70       1        0 0.42784352 0.083689321 0.5041055 0.36311858</span></span>
+<span><span class="co">## 124  363     69       2        0 0.41544226 0.086235271 0.4919424 0.35083836</span></span>
+<span><span class="co">## 125  364     67       1        1 0.40924162 0.087536643 0.4858376 0.34472158</span></span>
+<span><span class="co">## 126  371     65       2        0 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span><span class="co">## 127  376     63       0        1 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span><span class="co">## 128  382     62       0        1 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span><span class="co">## 129  384     61       0        1 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span><span class="co">## 130  387     60       1        0 0.39003875 0.091834363 0.4669574 0.32579034</span></span>
+<span><span class="co">## 131  390     59       1        0 0.38342792 0.093411868 0.4604644 0.31927978</span></span>
+<span><span class="co">## 132  394     58       1        0 0.37681710 0.095017143 0.4539514 0.31278928</span></span>
+<span><span class="co">## 133  404     57       0        1 0.37681710 0.095017143 0.4539514 0.31278928</span></span>
+<span><span class="co">## 134  413     56       0        1 0.37681710 0.095017143 0.4539514 0.31278928</span></span>
+<span><span class="co">## 135  426     55       1        0 0.36996588 0.096772712 0.4472339 0.30604732</span></span>
+<span><span class="co">## 136  428     54       1        0 0.36311466 0.098561472 0.4404935 0.29932852</span></span>
+<span><span class="co">## 137  429     53       1        0 0.35626344 0.100385300 0.4337299 0.29263289</span></span>
+<span><span class="co">## 138  433     52       1        0 0.34941222 0.102246185 0.4269433 0.28596045</span></span>
+<span><span class="co">## 139  442     51       1        0 0.34256100 0.104146240 0.4201335 0.27931128</span></span>
+<span><span class="co">## 140  444     50       1        1 0.33570978 0.106087711 0.4133006 0.27268545</span></span>
+<span><span class="co">## 141  450     48       1        0 0.32871582 0.108156668 0.4063345 0.26592397</span></span>
+<span><span class="co">## 142  455     47       1        0 0.32172187 0.110274202 0.3993431 0.25918807</span></span>
+<span><span class="co">## 143  457     46       1        0 0.31472792 0.112443281 0.3923261 0.25247790</span></span>
+<span><span class="co">## 144  458     45       0        1 0.31472792 0.112443281 0.3923261 0.25247790</span></span>
+<span><span class="co">## 145  460     44       1        0 0.30757501 0.114769476 0.3851616 0.24561738</span></span>
+<span><span class="co">## 146  473     43       1        0 0.30042210 0.117156914 0.3779689 0.23878538</span></span>
+<span><span class="co">## 147  477     42       1        0 0.29326919 0.119609626 0.3707476 0.23198214</span></span>
+<span><span class="co">## 148  511     41       0        2 0.29326919 0.119609626 0.3707476 0.23198214</span></span>
+<span><span class="co">## 149  519     39       1        0 0.28574947 0.122397820 0.3632207 0.22480203</span></span>
+<span><span class="co">## 150  520     38       1        0 0.27822975 0.125269565 0.3556585 0.21765764</span></span>
+<span><span class="co">## 151  524     37       2        0 0.26319030 0.131289244 0.3404266 0.20347744</span></span>
+<span><span class="co">## 152  529     35       0        1 0.26319030 0.131289244 0.3404266 0.20347744</span></span>
+<span><span class="co">## 153  533     34       1        0 0.25544941 0.134640748 0.3325916 0.19619977</span></span>
+<span><span class="co">## 154  543     33       0        1 0.25544941 0.134640748 0.3325916 0.19619977</span></span>
+<span><span class="co">## 155  550     32       1        0 0.24746662 0.138333639 0.3245387 0.18869779</span></span>
+<span><span class="co">## 156  551     31       0        1 0.24746662 0.138333639 0.3245387 0.18869779</span></span>
+<span><span class="co">## 157  558     30       1        0 0.23921773 0.142427599 0.3162481 0.18095008</span></span>
+<span><span class="co">## 158  559     29       0        1 0.23921773 0.142427599 0.3162481 0.18095008</span></span>
+<span><span class="co">## 159  567     28       1        0 0.23067424 0.146997865 0.3076975 0.17293157</span></span>
+<span><span class="co">## 160  574     27       1        0 0.22213075 0.151765851 0.2990832 0.16497774</span></span>
+<span><span class="co">## 161  583     26       1        0 0.21358726 0.156752465 0.2904045 0.15708959</span></span>
+<span><span class="co">## 162  588     25       0        1 0.21358726 0.156752465 0.2904045 0.15708959</span></span>
+<span><span class="co">## 163  613     24       1        0 0.20468779 0.162428228 0.2814175 0.14887877</span></span>
+<span><span class="co">## 164  624     23       1        0 0.19578832 0.168401942 0.2723521 0.14074818</span></span>
+<span><span class="co">## 165  641     22       1        0 0.18688885 0.174710378 0.2632068 0.13269961</span></span>
+<span><span class="co">## 166  643     21       1        0 0.17798938 0.181396440 0.2539797 0.12473524</span></span>
+<span><span class="co">## 167  654     20       1        0 0.16908991 0.188510603 0.2446686 0.11685766</span></span>
+<span><span class="co">## 168  655     19       1        0 0.16019044 0.196112784 0.2352708 0.10906995</span></span>
+<span><span class="co">## 169  687     18       1        0 0.15129097 0.204274810 0.2257834 0.10137573</span></span>
+<span><span class="co">## 170  689     17       1        0 0.14239151 0.213083712 0.2162028 0.09377928</span></span>
+<span><span class="co">## 171  705     16       1        0 0.13349204 0.222646211 0.2065248 0.08628565</span></span>
+<span><span class="co">## 172  707     15       1        0 0.12459257 0.233094916 0.1967446 0.07890080</span></span>
+<span><span class="co">## 173  728     14       1        0 0.11569310 0.244597108 0.1868568 0.07163182</span></span>
+<span><span class="co">## 174  731     13       1        0 0.10679363 0.257367445 0.1768548 0.06448724</span></span>
+<span><span class="co">## 175  735     12       1        0 0.09789416 0.271686878 0.1667313 0.05747732</span></span>
+<span><span class="co">## 176  740     11       0        1 0.09789416 0.271686878 0.1667313 0.05747732</span></span>
+<span><span class="co">## 177  765     10       1        0 0.08810474 0.291418720 0.1559751 0.04976720</span></span>
+<span><span class="co">## 178  791      9       1        0 0.07831533 0.314346559 0.1450170 0.04229358</span></span>
+<span><span class="co">## 179  806      8       0        1 0.07831533 0.314346559 0.1450170 0.04229358</span></span>
+<span><span class="co">## 180  814      7       1        0 0.06712742 0.350176075 0.1333431 0.03379322</span></span>
+<span><span class="co">## 181  821      6       0        1 0.06712742 0.350176075 0.1333431 0.03379322</span></span>
+<span><span class="co">## 182  840      5       0        1 0.06712742 0.350176075 0.1333431 0.03379322</span></span>
+<span><span class="co">## 183  883      4       1        0 0.05034557 0.453824434 0.1225342 0.02068546</span></span>
+<span><span class="co">## 184  965      3       0        1 0.05034557 0.453824434 0.1225342 0.02068546</span></span>
+<span><span class="co">## 185 1010      2       0        1 0.05034557 0.453824434 0.1225342 0.02068546</span></span>
+<span><span class="co">## 186 1022      1       0        1 0.05034557 0.453824434 0.1225342 0.02068546</span></span></code></pre></div>
+<p>画出生存曲线，横坐标是生存时间，纵坐标是生存率。</p>
+<div class="sourceCode" id="cb515"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>,</span>
+<span>           conf.int <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># 可信区间</span></span>
+<span>           palette<span class="op">=</span> <span class="st">'blue'</span>, <span class="co"># 更改配色</span></span>
+<span>           surv.median.line <span class="op">=</span> <span class="st">"hv"</span>, <span class="co"># 中位生存时间</span></span>
+<span>           ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># 更改主题</span></span>
+<span>           </span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-5-1.png" width="90%"></div>
+</div>
+<div id="生存过程的比较" class="section level2" number="32.2">
+<h2>
+<span class="header-section-number">32.2</span> 生存过程的比较<a class="anchor" aria-label="anchor" href="#%E7%94%9F%E5%AD%98%E8%BF%87%E7%A8%8B%E7%9A%84%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h2>
+<p>如果通过某个变量把数据分为多组，然后检验不同组别之间的生存时间（生存曲线）有无差别，则可以通过logrank检验或者breslow检验。</p>
+<p>在R语言中通过<code><a href="https://rdrr.io/pkg/survival/man/survdiff.html">survdiff()</a></code>实现logrank检验。</p>
+<div class="sourceCode" id="cb516"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survdiff.html">survdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
+<span><span class="va">fit</span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## survdiff(formula = Surv(time, status) ~ sex, data = df)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##         N Observed Expected (O-E)^2/E (O-E)^2/V</span></span>
+<span><span class="co">## sex=1 138      112     91.6      4.55      10.3</span></span>
+<span><span class="co">## sex=2  90       53     73.4      5.68      10.3</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Chisq= 10.3  on 1 degrees of freedom, p= 0.001</span></span></code></pre></div>
+<p>可以用神包<code>broom</code>提取数据：</p>
+<div class="sourceCode" id="cb517"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 2 × 4</span></span>
+<span><span class="co">##   sex       N   obs   exp</span></span>
+<span><span class="co">##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">## 1 1       138   112  91.6</span></span>
+<span><span class="co">## 2 2        90    53  73.4</span></span>
+<span><span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/glance.html">glance</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 1 × 3</span></span>
+<span><span class="co">##   statistic    df p.value</span></span>
+<span><span class="co">##       &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span><span class="co">## 1      10.3     1 0.00131</span></span></code></pre></div>
+<p>对于不同组别之间生存曲线的检验，也可以通过K-M图示的方法：</p>
+<div class="sourceCode" id="cb518"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit.logrank</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 这一步输出太多，我注释掉了，可以自己运行看看</span></span>
+<span><span class="co"># surv_summary(fit.logrank) # 可以查看寿命表</span></span></code></pre></div>
+<p>通过<code><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot()</a></code>进行可视化，非常多的细节可以修改，超级详细的教程可以参考我的另一篇推文：<a href="https://mp.weixin.qq.com/s/HUz644esLu4kRBOMZcdOOw">R语言生存曲线的可视化(超详细)</a></p>
+<div class="sourceCode" id="cb519"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit.logrank</span>, </span>
+<span>           data <span class="op">=</span> <span class="va">df</span>,</span>
+<span>           surv.median.line <span class="op">=</span> <span class="st">"hv"</span>, <span class="co"># Add medians survival</span></span>
+<span>           </span>
+<span>           <span class="co"># Change legends: title &amp; labels</span></span>
+<span>           legend.title <span class="op">=</span> <span class="st">"Sex"</span>,</span>
+<span>           legend.labs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Male"</span>, <span class="st">"Female"</span><span class="op">)</span>,</span>
+<span>           </span>
+<span>           <span class="co"># Add p-value and tervals</span></span>
+<span>           pval <span class="op">=</span> <span class="cn">TRUE</span>, <span class="co"># 这里P值直接写数字也行</span></span>
+<span>           conf.int <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>           </span>
+<span>           <span class="co"># Add risk table</span></span>
+<span>           risk.table <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>           tables.height <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>           tables.theme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvtheme.html">theme_cleantable</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>           </span>
+<span>           ncensor.plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>           </span>
+<span>           <span class="co"># Color palettes. Use custom color: c("#E7B800", "#2E9FDF"),</span></span>
+<span>           <span class="co"># or brewer color (e.g.: "Dark2"), or ggsci color (e.g.: "jco")</span></span>
+<span>           palette <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span><span class="op">)</span>,</span>
+<span>           ggtheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># Change ggplot2 theme</span></span>
+<span>           </span>
+<span>           <span class="co"># Change font size, style and color</span></span>
+<span>           main <span class="op">=</span> <span class="st">"Survival curve"</span>,</span>
+<span>           font.main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="st">"bold"</span>, <span class="st">"darkblue"</span><span class="op">)</span>,</span>
+<span>           font.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"red"</span><span class="op">)</span>,</span>
+<span>           font.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"darkred"</span><span class="op">)</span>,</span>
+<span>           font.tickslab <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="st">"plain"</span>, <span class="st">"darkgreen"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-9-1.png" width="90%"></div>
+<p>自带的<code><a href="https://rdrr.io/pkg/survminer/man/surv_cutpoint.html">surv_cutpoint()</a></code>可用于寻找最佳切点，但是只能用于连续性数据。</p>
+<p>使用<code>myeloma</code>数据进行演示。</p>
+<div class="sourceCode" id="cb520"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 0. Load some data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">myeloma</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">myeloma</span><span class="op">)</span></span>
+<span><span class="co">##          molecular_group chr1q21_status treatment event  time   CCND1 CRIM1</span></span>
+<span><span class="co">## GSM50986      Cyclin D-1       3 copies       TT2     0 69.24  9908.4 420.9</span></span>
+<span><span class="co">## GSM50988      Cyclin D-2       2 copies       TT2     0 66.43 16698.8  52.0</span></span>
+<span><span class="co">## GSM50989           MMSET       2 copies       TT2     0 66.50   294.5 617.9</span></span>
+<span><span class="co">## GSM50990           MMSET       3 copies       TT2     1 42.67   241.9  11.9</span></span>
+<span><span class="co">## GSM50991             MAF           &lt;NA&gt;       TT2     0 65.00   472.6  38.8</span></span>
+<span><span class="co">## GSM50992    Hyperdiploid       2 copies       TT2     0 65.20   664.1  16.9</span></span>
+<span><span class="co">##          DEPDC1    IRF4   TP53   WHSC1</span></span>
+<span><span class="co">## GSM50986  523.5 16156.5   10.0   261.9</span></span>
+<span><span class="co">## GSM50988   21.1 16946.2 1056.9   363.8</span></span>
+<span><span class="co">## GSM50989  192.9  8903.9 1762.8 10042.9</span></span>
+<span><span class="co">## GSM50990  184.7 11894.7  946.8  4931.0</span></span>
+<span><span class="co">## GSM50991  212.0  7563.1  361.4   165.0</span></span>
+<span><span class="co">## GSM50992  341.6 16023.4 2096.3   569.2</span></span></code></pre></div>
+<p>寻找最佳切点：</p>
+<div class="sourceCode" id="cb521"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1. Determine the optimal cutpoint of variables</span></span>
+<span><span class="va">res.cut</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/surv_cutpoint.html">surv_cutpoint</a></span><span class="op">(</span><span class="va">myeloma</span>, time <span class="op">=</span> <span class="st">"time"</span>, event <span class="op">=</span> <span class="st">"event"</span>,</span>
+<span>                         variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DEPDC1"</span>, <span class="st">"WHSC1"</span>, <span class="st">"CRIM1"</span><span class="op">)</span> <span class="co"># 找这3个变量的最佳切点</span></span>
+<span>                         <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">res.cut</span><span class="op">)</span></span>
+<span><span class="co">##        cutpoint statistic</span></span>
+<span><span class="co">## DEPDC1    279.8  4.275452</span></span>
+<span><span class="co">## WHSC1    3205.6  3.361330</span></span>
+<span><span class="co">## CRIM1      82.3  1.968317</span></span></code></pre></div>
+<p>查看根据最佳切点进行分组后的数据分布情况：</p>
+<div class="sourceCode" id="cb522"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 2. Plot cutpoint for DEPDC1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">res.cut</span>, <span class="st">"DEPDC1"</span>, palette <span class="op">=</span> <span class="st">"npg"</span><span class="op">)</span></span>
+<span><span class="co">## $DEPDC1</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-12-1.png" width="90%"></div>
+<p>根据最佳切点重新划分数据，这样数据就根据最佳切点变成了高表达/低表达组。</p>
+<div class="sourceCode" id="cb523"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 3. Categorize variables</span></span>
+<span><span class="va">res.cat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survminer/man/surv_cutpoint.html">surv_categorize</a></span><span class="op">(</span><span class="va">res.cut</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">res.cat</span><span class="op">)</span></span>
+<span><span class="co">##           time event DEPDC1 WHSC1 CRIM1</span></span>
+<span><span class="co">## GSM50986 69.24     0   high   low  high</span></span>
+<span><span class="co">## GSM50988 66.43     0    low   low   low</span></span>
+<span><span class="co">## GSM50989 66.50     0    low  high  high</span></span>
+<span><span class="co">## GSM50990 42.67     1    low  high   low</span></span>
+<span><span class="co">## GSM50991 65.00     0    low   low   low</span></span>
+<span><span class="co">## GSM50992 65.20     0   high   low   low</span></span></code></pre></div>
+<p>根据最佳切点绘制生存曲线：</p>
+<div class="sourceCode" id="cb524"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 4. Fit survival curves and visualize</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/therneau/survival">"survival"</a></span><span class="op">)</span></span>
+<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survfit.html">survfit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">event</span><span class="op">)</span> <span class="op">~</span><span class="va">DEPDC1</span>, data <span class="op">=</span> <span class="va">res.cat</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggsurvplot.html">ggsurvplot</a></span><span class="op">(</span><span class="va">fit</span>, data <span class="op">=</span> <span class="va">res.cat</span>, risk.table <span class="op">=</span> <span class="cn">TRUE</span>, conf.int <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-14-1.png" width="90%"></div>
+<p>确定最佳切点的R包还有非常多，其他的后续会再介绍。</p>
+<p>下次继续介绍Cox回归。</p>
+</div>
+<div id="cox回归" class="section level2" number="32.3">
+<h2>
+<span class="header-section-number">32.3</span> Cox回归<a class="anchor" aria-label="anchor" href="#cox%E5%9B%9E%E5%BD%92"><i class="fas fa-link"></i></a>
+</h2>
+<p>上次介绍了生存分析中的寿命表、K-M曲线、logrank检验、最佳切点的寻找等，本次主要介绍Cox回归。</p>
+<p>本推文不涉及理论，只有实操，想要了解生存分析的理论的请自行学习。</p>
+<p>使用<code>survival</code>包中的<code>lung</code>数据集用于演示，这是一份关于肺癌患者的生存数据。<code>time</code>是生存时间，以天为单位，<code>status</code>是生存状态，1代表删失，2代表死亡。</p>
+<div class="sourceCode" id="cb525"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html">survminer</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">lung</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span><span class="co">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span><span class="co">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span><span class="co">##  $ status   : num  2 2 1 2 2 1 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span><span class="co">##  $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span><span class="co">##  $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...</span></span>
+<span><span class="co">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span><span class="co">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span><span class="co">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span><span class="co">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span></code></pre></div>
+<p>可以使用cox回归探索危险因素。分类变量需要变为因子型，这样在进行回归时会自动进行哑变量设置。</p>
+<div class="sourceCode" id="cb526"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lung</span><span class="op">$</span><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">lung</span><span class="op">$</span><span class="va">sex</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"female"</span>,<span class="st">"male"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">lung</span><span class="op">$</span><span class="va">ph.ecog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">lung</span><span class="op">$</span><span class="va">ph.ecog</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"asymptomatic"</span>, <span class="st">"symptomatic"</span>,</span>
+<span>                                                <span class="st">'in bed &lt;50%'</span>,<span class="st">'in bed &gt;50%'</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">lung</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span><span class="co">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span><span class="co">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span><span class="co">##  $ status   : num  2 2 1 2 2 1 2 2 2 2 ...</span></span>
+<span><span class="co">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span><span class="co">##  $ sex      : Factor w/ 2 levels "female","male": 1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span><span class="co">##  $ ph.ecog  : Factor w/ 4 levels "asymptomatic",..: 2 1 1 2 1 2 3 3 2 3 ...</span></span>
+<span><span class="co">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span><span class="co">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span><span class="co">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span><span class="co">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span></code></pre></div>
+<p>拟合多因素Cox回归模型，这里我们只用<code>sex/age</code>两个变量做演示：</p>
+<div class="sourceCode" id="cb527"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit.cox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">ph.karno</span>, data <span class="op">=</span> <span class="va">lung</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 查看结果</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit.cox</span><span class="op">)</span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## coxph(formula = Surv(time, status) ~ sex + age + ph.karno, data = lung)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##   n= 227, number of events= 164 </span></span>
+<span><span class="co">##    (1 observation deleted due to missingness)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##               coef exp(coef)  se(coef)      z Pr(&gt;|z|)   </span></span>
+<span><span class="co">## sexmale  -0.497170  0.608249  0.167713 -2.964  0.00303 **</span></span>
+<span><span class="co">## age       0.012375  1.012452  0.009405  1.316  0.18821   </span></span>
+<span><span class="co">## ph.karno -0.013322  0.986767  0.005880 -2.266  0.02348 * </span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##          exp(coef) exp(-coef) lower .95 upper .95</span></span>
+<span><span class="co">## sexmale     0.6082     1.6441    0.4378    0.8450</span></span>
+<span><span class="co">## age         1.0125     0.9877    0.9940    1.0313</span></span>
+<span><span class="co">## ph.karno    0.9868     1.0134    0.9755    0.9982</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Concordance= 0.637  (se = 0.025 )</span></span>
+<span><span class="co">## Likelihood ratio test= 18.81  on 3 df,   p=3e-04</span></span>
+<span><span class="co">## Wald test            = 18.73  on 3 df,   p=3e-04</span></span>
+<span><span class="co">## Score (logrank) test = 19.05  on 3 df,   p=3e-04</span></span></code></pre></div>
+<p>结果解读和logistic回归的结果解读类似：<a href="https://mp.weixin.qq.com/s/3A8ZiegbsQRjOSw2T3jldg">R语言logistic回归的细节解读</a></p>
+<ul>
+<li>
+<code>coef</code>是回归系数，</li>
+<li>
+<code>exp(coef)</code>是HR值，</li>
+<li>
+<code>se(coef)</code>是回归系数的标准误，</li>
+<li>
+<code>z</code>是Wald检验的z值，</li>
+<li>
+<code>Pr(&gt;|z|)</code>是回归系数的P值，</li>
+<li>
+<code>lower .95/upper .95</code>是HR值的95%可信区间。</li>
+</ul>
+<p><code>Concordance= 0.645</code>是Cox回归的C-index，最后给出了<code>Likelihood ratio test</code>似然比检验的统计量、自由度、P值；<code>Wald test</code>的统计量、自由度、P值；<code>Score (logrank) test</code>的统计量、自由度、P值。</p>
+<p>想获得<em>整洁的结果</em>不需要自己提取，只要用神包<code>broom</code>即可：</p>
+<div class="sourceCode" id="cb528"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">broom</span><span class="fu">::</span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">fit.cox</span>, exponentiate <span class="op">=</span> <span class="cn">T</span>, conf.int <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## # A tibble: 3 × 7</span></span>
+<span><span class="co">##   term     estimate std.error statistic p.value conf.low conf.high</span></span>
+<span><span class="co">##   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">## 1 sexmale     0.608   0.168       -2.96 0.00303    0.438     0.845</span></span>
+<span><span class="co">## 2 age         1.01    0.00940      1.32 0.188      0.994     1.03 </span></span>
+<span><span class="co">## 3 ph.karno    0.987   0.00588     -2.27 0.0235     0.975     0.998</span></span></code></pre></div>
+<ul>
+<li>
+<code>estimate</code>：HR值（exp(coef)）</li>
+<li>
+<code>std.error</code>：回归系数的标准误（se(coef)）</li>
+<li>
+<code>statistic</code>：Wald检验的z值</li>
+<li>
+<code>p.value</code>：回归系数的P值</li>
+<li>
+<code>conf.low/conf.high</code>：HR的95%的可信区间</li>
+</ul>
+<p>构建好Cox回归后，也可以用函数单独提取想要的结果，以下图片展示了可用于提取模型信息的函数，和logistic回归差不多：</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-45-39.png" width="90%"></div>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-46-10.png" width="90%"></div>
+<p>进行Cox回归必须要符合等比例风险假设，关于什么是等比例风险假设，可以参考郑老师的这篇文章：<a href="https://mp.weixin.qq.com/s/l1Sd_nB9XY11FZMuda7xBg">生存分析COX回归，小心你的数据不符合应用条件</a></p>
+<p>等比例风险的检验可以通过很多方法进行，比如K-M曲线，一般如果有交叉，那么可能不符合等比例风险假设，还可以通过各种残差分布来检验。</p>
+<p>下面是Cox回归的等比例风险假设检验，检验方法是基于Schoenfeld残差：</p>
+<div class="sourceCode" id="cb529"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ftest</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/cox.zph.html">cox.zph</a></span><span class="op">(</span><span class="va">fit.cox</span><span class="op">)</span></span>
+<span><span class="va">ftest</span></span>
+<span><span class="co">##           chisq df      p</span></span>
+<span><span class="co">## sex       3.085  1 0.0790</span></span>
+<span><span class="co">## age       0.478  1 0.4892</span></span>
+<span><span class="co">## ph.karno  8.017  1 0.0046</span></span>
+<span><span class="co">## GLOBAL   10.359  3 0.0157</span></span></code></pre></div>
+<p>可以看到<code>ph.karno</code>的P值是小于0.05的，其实是不满足等比例风险假设的，下一篇推文会说到不符合等比例风险假设时该怎么办。</p>
+<p>这种方法是基于Schoenfeld残差，检验结果可以通过图示画出来：</p>
+<div class="sourceCode" id="cb530"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/survminer/index.html">survminer</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggcoxzph.html">ggcoxzph</a></span><span class="op">(</span><span class="va">ftest</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-22-1.png" width="90%"></div>
+<p>可以看到<code>sex</code>和<code>age</code>的回归系数随着时间变化基本没啥变化，稳定在0水平线上，和上面的检验结果一样。</p>
+<p>还可以通过以下方式查看残差的变化：</p>
+<div class="sourceCode" id="cb531"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggcoxdiagnostics.html">ggcoxdiagnostics</a></span><span class="op">(</span><span class="va">fit.cox</span>, type <span class="op">=</span> <span class="st">"schoenfeld"</span><span class="op">)</span></span>
+<span><span class="co">## `geom_smooth()` using formula = 'y ~ x'</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-23-1.png" width="90%"></div>
+<p>这张图反映的也是回归系数随时间的变化趋势，和上面的图意思一样，如果符合比例风险假设，那么结果应该是一条水平线，从图示来看，这3个变量都是有点问题的，但是真实数据往往不可能是完美的，很少有完全符合要求的数据。</p>
+<p>除了Schoenfeld残差外，<code><a href="https://rdrr.io/pkg/survminer/man/ggcoxdiagnostics.html">ggcoxdiagnostics()</a></code>还支持其他类型，比如：“martingale”, “deviance”, “score”,“dfbetas” and “scaledsch”在，只需要在<code>type</code>参数中提供合适的类型即可。</p>
+<p><code>cox</code>回归也是回归分析的一种，可以计算出回归系数和95%的可信区间，因此结果可以通过森林图展示：</p>
+<div class="sourceCode" id="cb532"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 为了森林图好看点，多选几个变量</span></span>
+<span><span class="va">fit.cox</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span> , data <span class="op">=</span> <span class="va">lung</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/survminer/man/ggforest.html">ggforest</a></span><span class="op">(</span><span class="va">fit.cox</span>, data <span class="op">=</span> <span class="va">lung</span>,</span>
+<span>         main <span class="op">=</span> <span class="st">"Hazard ratio"</span>,</span>
+<span>         cpositions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.15</span>, <span class="fl">0.35</span><span class="op">)</span>, <span class="co"># 更改前三列的相对位置</span></span>
+<span>         fontsize <span class="op">=</span> <span class="fl">0.7</span>,</span>
+<span>         refLabel <span class="op">=</span> <span class="st">"reference"</span>,</span>
+<span>         noDigits <span class="op">=</span> <span class="fl">2</span></span>
+<span>         <span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-24-1.png" width="90%"></div>
+<p>这个结果如果你觉得不好看，或者你还有其他的森林图想做到统一的样式，可以考虑我公众号中介绍的画森林图的方法进行个性化定制:</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/nc1c4WpAcPPga_TPE8P0zw">画一个好看的森林图</a></li>
+<li><a href="https://mp.weixin.qq.com/s/TLXBPzDMB3-HjlqlRgclbA">用更简单的方式画森林图</a></li>
+<li><a href="https://mp.weixin.qq.com/s/9C2DbxdKT9Q5mgbHBjgQrQ">R语言画森林图系列3</a></li>
+<li><a href="https://mp.weixin.qq.com/s/6woCHlYQQDTVDPeTQrlleQ">R语言画森林图系列4</a></li>
+<li><a href="https://mp.weixin.qq.com/s/jxeQwxtdljWktRqYID-NWw">ggplot2绘制森林图(有亚组和没亚组)</a></li>
+</ul>
+<p>以上是Cox回归的主要内容，大家有问题可以加群或者评论区留言。</p>
+</div>
+<div id="时间依存协变量的cox回归和时间依存系数cox回归" class="section level2" number="32.4">
+<h2>
+<span class="header-section-number">32.4</span> 时间依存协变量的Cox回归和时间依存系数Cox回归<a class="anchor" aria-label="anchor" href="#%E6%97%B6%E9%97%B4%E4%BE%9D%E5%AD%98%E5%8D%8F%E5%8F%98%E9%87%8F%E7%9A%84cox%E5%9B%9E%E5%BD%92%E5%92%8C%E6%97%B6%E9%97%B4%E4%BE%9D%E5%AD%98%E7%B3%BB%E6%95%B0cox%E5%9B%9E%E5%BD%92"><i class="fas fa-link"></i></a>
+</h2>
+<p>之前分别介绍了生存分析中的寿命表法、K-M曲线、logrank检验，以及Cox回归的构建、可视化以及比例风险检验的内容。</p>
+<p>本次主要介绍如果数据不符合PH假设时采取的方法。</p>
+<p>关于时依协变量、时依系数的基础知识，大家可以参考这几篇文章：</p>
+<ul>
+<li>survival包的案例介绍：<a href="https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf">Using Time Dependent Covariates and Time Dependent
+Coefcients in the Cox Model</a>
+</li>
+<li>医咖会：<a href="https://mp.weixin.qq.com/s/CSwO42ucfeKipHl32NoOCA">一文详解时依协变量</a>
+</li>
+<li>7code：<a href="https://mp.weixin.qq.com/s/sBJ8Xg_e3uBfUnDOIPoxug">含时依协变量的Cox回归</a>
+</li>
+</ul>
+<p>如果不能满足PH假设，可以考虑使用时依协变量或者时依系数Cox回归，时依协变量和时依系数是两个概念，简单来说就是如果一个协变量本身会随着时间而改变，这种叫时依协变量，如果是协变量的系数随着时间改变，这种叫时依系数。</p>
+<p>这里以survival包的veteran数据集为例，演示如何处理此类不符合PH检验的情况。</p>
+<div class="sourceCode" id="cb533"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival">survival</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">veteran</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    137 obs. of  8 variables:</span></span>
+<span><span class="co">##  $ trt     : num  1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ celltype: Factor w/ 4 levels "squamous","smallcell",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">##  $ time    : num  72 411 228 126 118 10 82 110 314 100 ...</span></span>
+<span><span class="co">##  $ status  : num  1 1 1 1 1 1 1 1 1 0 ...</span></span>
+<span><span class="co">##  $ karno   : num  60 70 60 60 70 20 40 80 50 70 ...</span></span>
+<span><span class="co">##  $ diagtime: num  7 5 3 9 11 5 10 29 18 6 ...</span></span>
+<span><span class="co">##  $ age     : num  69 64 38 63 65 49 69 68 43 70 ...</span></span>
+<span><span class="co">##  $ prior   : num  0 10 0 10 10 0 10 0 0 0 ...</span></span></code></pre></div>
+<p>这个数据集中的变量解释如下图：</p>
+<div class="inline-figure"><img src="figs/Snipaste_2023-04-05_16-49-39.png" width="90%"></div>
+<p>首先构建普通的Cox回归，进行等比例风险假设，这里只选择了<code>trt/prior/karno</code>3个变量，而且<code>trt/prior</code>作为分类变量并没有转换为因子型，因为二分类变量数值型和因子型的结果是一样的，转不转换没啥影响！</p>
+<div class="sourceCode" id="cb534"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="va">karno</span>, data <span class="op">=</span> <span class="va">veteran</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 进行PH检验</span></span>
+<span><span class="va">zp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/cox.zph.html">cox.zph</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">zp</span></span>
+<span><span class="co">##         chisq df       p</span></span>
+<span><span class="co">## trt     0.288  1 0.59125</span></span>
+<span><span class="co">## prior   2.168  1 0.14087</span></span>
+<span><span class="co">## karno  12.138  1 0.00049</span></span>
+<span><span class="co">## GLOBAL 18.073  3 0.00042</span></span></code></pre></div>
+<p>可以看到变量<code>karno</code>的P值小于0.05，是不满足PH假设的。</p>
+<p>通过图形化方法查看PH检验的结果：</p>
+<div class="sourceCode" id="cb535"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#op &lt;- par(mfrow=c(1,3))</span></span>
+<span><span class="co">#plot(zp)</span></span>
+<span><span class="co">#par(op)</span></span>
+<span><span class="co">#ggcoxdiagnostics(fit, type = "schoenfeld")</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">zp</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span> <span class="co"># 0水平线</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">coef</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, col<span class="op">=</span><span class="st">"green"</span>, lwd<span class="op">=</span><span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span> </span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-28-1.png" width="90%"></div>
+<p>黑色实线以及两侧的虚线是<code>karno</code>的系数随着时间变化的曲线，绿色虚线是假设<code>karno</code>符合PH检验时的总体估计线，红色实线是参考线。</p>
+<p>这张图反映了<code>karno</code>变量的系数随着时间的改变，<code>karno</code>偏离的比较厉害（上面注释掉的代码可以都运行看看其他变量的情况），系数最开始接近-0.05，然后逐渐趋于0，最后又开始趋向-0.05，所以它的系数是一致在随着时间改变的，不符合比例风险假设。</p>
+<div id="对时间分层" class="section level3" number="32.4.1">
+<h3>
+<span class="header-section-number">32.4.1</span> 对时间分层<a class="anchor" aria-label="anchor" href="#%E5%AF%B9%E6%97%B6%E9%97%B4%E5%88%86%E5%B1%82"><i class="fas fa-link"></i></a>
+</h3>
+<p>这种情况下一个比较简单的解决方式是<strong>对时间使用分层函数</strong>。根据上面的图示我们知道<code>karno</code>的系数大概分为3层（3段），可以根据两个拐点进行分层，通过<code>survival</code>中的<code><a href="https://rdrr.io/pkg/survival/man/survSplit.html">survSplit()</a></code>实现。</p>
+<div class="sourceCode" id="cb536"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">vet2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/survSplit.html">survSplit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, data<span class="op">=</span> <span class="va">veteran</span>, </span>
+<span>                  cut<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">90</span>, <span class="fl">180</span><span class="op">)</span>, <span class="co"># 两个拐点把时间分为3层（3段）</span></span>
+<span>                  episode<span class="op">=</span> <span class="st">"tgroup"</span>, </span>
+<span>                  id<span class="op">=</span><span class="st">"id"</span><span class="op">)</span></span>
+<span><span class="va">vet2</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>, <span class="st">"tstart"</span>, <span class="st">"time"</span>, <span class="st">"status"</span>, <span class="st">"tgroup"</span>, <span class="st">"age"</span>, <span class="st">"karno"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">##   id tstart time status tgroup age karno</span></span>
+<span><span class="co">## 1  1      0   72      1      1  69    60</span></span>
+<span><span class="co">## 2  2      0   90      0      1  64    70</span></span>
+<span><span class="co">## 3  2     90  180      0      2  64    70</span></span>
+<span><span class="co">## 4  2    180  411      1      3  64    70</span></span>
+<span><span class="co">## 5  3      0   90      0      1  38    60</span></span>
+<span><span class="co">## 6  3     90  180      0      2  38    60</span></span>
+<span><span class="co">## 7  3    180  228      1      3  38    60</span></span></code></pre></div>
+<p>结果多了两列：<code>tstart/tgroup</code>。</p>
+<p>受试者1（id编号为1）在第72天的时候死了，所以数据和之前一样。受试者2和3（id为2和3）虽然时间在变，但是直到第3层才死去，<code>karno</code>的值没有变化。</p>
+<p>重新拟合Cox模型，此时<code>tgroup</code>是分好的层，所以要用<code><a href="https://rdrr.io/pkg/survival/man/strata.html">strata()</a></code>，另外<code>karno</code>会随着时间变化，和时间有交互，所以用<code>karno:strata(tgroup)</code>。</p>
+<div class="sourceCode" id="cb537"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 注意此时Surv()的用法！</span></span>
+<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">tstart</span>, <span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="va">karno</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/strata.html">strata</a></span><span class="op">(</span><span class="va">tgroup</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">vet2</span><span class="op">)</span></span>
+<span><span class="va">fit2</span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## coxph(formula = Surv(tstart, time, status) ~ trt + prior + karno:strata(tgroup), </span></span>
+<span><span class="co">##     data = vet2)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                                   coef exp(coef)  se(coef)      z        p</span></span>
+<span><span class="co">## trt                          -0.011025  0.989035  0.189062 -0.058    0.953</span></span>
+<span><span class="co">## prior                        -0.006107  0.993912  0.020355 -0.300    0.764</span></span>
+<span><span class="co">## karno:strata(tgroup)tgroup=1 -0.048755  0.952414  0.006222 -7.836 4.64e-15</span></span>
+<span><span class="co">## karno:strata(tgroup)tgroup=2  0.008050  1.008083  0.012823  0.628    0.530</span></span>
+<span><span class="co">## karno:strata(tgroup)tgroup=3 -0.008349  0.991686  0.014620 -0.571    0.568</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Likelihood ratio test=63.04  on 5 df, p=2.857e-12</span></span>
+<span><span class="co">## n= 225, number of events= 128</span></span></code></pre></div>
+<p>结果表明<code>karno</code>这个变量只有在<code>tgroup=1</code>（第1层，前3个月）才有意义，后面两层是没有意义的。</p>
+<p>再次进行PH检验：</p>
+<div class="sourceCode" id="cb538"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/cox.zph.html">cox.zph</a></span><span class="op">(</span><span class="va">fit2</span><span class="op">)</span></span>
+<span><span class="co">##                      chisq df     p</span></span>
+<span><span class="co">## trt                   1.72  1 0.189</span></span>
+<span><span class="co">## prior                 3.81  1 0.051</span></span>
+<span><span class="co">## karno:strata(tgroup)  3.04  3 0.385</span></span>
+<span><span class="co">## GLOBAL                8.03  5 0.154</span></span></code></pre></div>
+<p>这时<code>karno:strata(tgroup)</code>就满足了等比例风险假设。</p>
+</div>
+<div id="连续性时依系数变换" class="section level3" number="32.4.2">
+<h3>
+<span class="header-section-number">32.4.2</span> 连续性时依系数变换<a class="anchor" aria-label="anchor" href="#%E8%BF%9E%E7%BB%AD%E6%80%A7%E6%97%B6%E4%BE%9D%E7%B3%BB%E6%95%B0%E5%8F%98%E6%8D%A2"><i class="fas fa-link"></i></a>
+</h3>
+<p>除了对时间进行分层外，还有一种解决方法。</p>
+<p>上面的图中我们可以看出<code>karno</code>系数随时间变化的曲线明显不是线性的，我们可以通过数据变换把它变成类似线性的，比如取<code>log</code>，这种变换通过<code>tt(time transform)</code>函数实现。</p>
+<p>这种方法实际上是通过<code>tt()</code>函数构建了一个时依协变量，但是这样做是为了解决系数随着时间改变的问题（也就是为了解决时依系数的问题）。</p>
+<div class="sourceCode" id="cb539"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">trt</span> <span class="op">+</span> <span class="va">prior</span> <span class="op">+</span> <span class="va">karno</span> <span class="op">+</span> <span class="fu">tt</span><span class="op">(</span><span class="va">karno</span><span class="op">)</span>, <span class="co"># 对karno进行变换</span></span>
+<span>              data <span class="op">=</span> <span class="va">veteran</span>, </span>
+<span>              tt <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">t</span>, <span class="va">...</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">t</span><span class="op">+</span><span class="fl">20</span><span class="op">)</span> <span class="co"># 具体变换方式</span></span>
+<span>              <span class="op">)</span></span>
+<span><span class="va">fit3</span></span>
+<span><span class="co">## Call:</span></span>
+<span><span class="co">## coxph(formula = Surv(time, status) ~ trt + prior + karno + tt(karno), </span></span>
+<span><span class="co">##     data = veteran, tt = function(x, t, ...) x * log(t + 20))</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                coef exp(coef)  se(coef)      z        p</span></span>
+<span><span class="co">## trt        0.016478  1.016614  0.190707  0.086  0.93115</span></span>
+<span><span class="co">## prior     -0.009317  0.990726  0.020296 -0.459  0.64619</span></span>
+<span><span class="co">## karno     -0.124662  0.882795  0.028785 -4.331 1.49e-05</span></span>
+<span><span class="co">## tt(karno)  0.021310  1.021538  0.006607  3.225  0.00126</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Likelihood ratio test=53.84  on 4 df, p=5.698e-11</span></span>
+<span><span class="co">## n= 137, number of events= 128</span></span></code></pre></div>
+<p>此时<code>karno</code>的时依系数估计为：-0.124662 * log(t + 20)。</p>
+<p>在构建时依协变量时，可以选择<strong>x * t、x * log(t)、x * log(t + 20)、x * log(t + 200)等等</strong>，没有明确的规定，要结合结果和图示进行选择，可以参考冯国双老师的文章：<a href="https://mp.weixin.qq.com/s/CSwO42ucfeKipHl32NoOCA" title="医咖会时依协变量">一文详解时依协变量</a>。</p>
+<p>我们可以把现在的时依系数估计和经过变换后的的PH检验画在一起，看看变换后的效果：</p>
+<div class="sourceCode" id="cb540"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 变换后的PH检验</span></span>
+<span><span class="va">zp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/cox.zph.html">cox.zph</a></span><span class="op">(</span><span class="va">fit</span>, transform <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">time</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">time</span> <span class="op">+</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 画图</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">zp</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span> <span class="co"># 0水平线</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>h<span class="op">=</span><span class="va">fit</span><span class="op">$</span><span class="va">coef</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, col<span class="op">=</span><span class="st">"green"</span>, lwd<span class="op">=</span><span class="fl">2</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="co"># 整体估计</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">fit3</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,lwd<span class="op">=</span><span class="fl">2</span>,lty<span class="op">=</span><span class="fl">3</span>,col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span> <span class="co"># 现在的估计</span></span></code></pre></div>
+<div class="inline-figure"><img src="1032-survivalanalysis_files/figure-html/unnamed-chunk-33-1.png" width="90%"></div>
+<p>可以看到变换后结果好多了（蓝色虚线，和黑色曲线相比较），虽然还是有一点倾斜。</p>
+<p>以上是两种处理不满足PH假设的方法，实际还有很多种方法，比较常用的是对时间进行分层，其他方法有机会继续介绍。</p>
+</div>
+</div>
+<div id="参考资料-2" class="section level2" number="32.5">
+<h2>
+<span class="header-section-number">32.5</span> 参考资料<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-2"><i class="fas fa-link"></i></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li><a href="http://www.sthda.com/english/wiki/survival-analysis-basics" class="uri">http://www.sthda.com/english/wiki/survival-analysis-basics</a></li>
+<li><a href="https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html" class="uri">https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html</a></li>
+<li>survival包帮助文档</li>
+<li><a href="https://mp.weixin.qq.com/s/2rwxeaF_M0UnqPi2F9JNxA" class="uri">https://mp.weixin.qq.com/s/2rwxeaF_M0UnqPi2F9JNxA</a></li>
+</ol>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></div>
+<div class="next"><a href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#djgkas"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="nav-link" href="#%E7%94%9F%E5%AD%98%E8%BF%87%E7%A8%8B%E7%9A%84%E6%8F%8F%E8%BF%B0"><span class="header-section-number">32.1</span> 生存过程的描述</a></li>
+<li><a class="nav-link" href="#%E7%94%9F%E5%AD%98%E8%BF%87%E7%A8%8B%E7%9A%84%E6%AF%94%E8%BE%83"><span class="header-section-number">32.2</span> 生存过程的比较</a></li>
+<li><a class="nav-link" href="#cox%E5%9B%9E%E5%BD%92"><span class="header-section-number">32.3</span> Cox回归</a></li>
+<li>
+<a class="nav-link" href="#%E6%97%B6%E9%97%B4%E4%BE%9D%E5%AD%98%E5%8D%8F%E5%8F%98%E9%87%8F%E7%9A%84cox%E5%9B%9E%E5%BD%92%E5%92%8C%E6%97%B6%E9%97%B4%E4%BE%9D%E5%AD%98%E7%B3%BB%E6%95%B0cox%E5%9B%9E%E5%BD%92"><span class="header-section-number">32.4</span> 时间依存协变量的Cox回归和时间依存系数Cox回归</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E5%AF%B9%E6%97%B6%E9%97%B4%E5%88%86%E5%B1%82"><span class="header-section-number">32.4.1</span> 对时间分层</a></li>
+<li><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E6%80%A7%E6%97%B6%E4%BE%9D%E7%B3%BB%E6%95%B0%E5%8F%98%E6%8D%A2"><span class="header-section-number">32.4.2</span> 连续性时依系数变换</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99-2"><span class="header-section-number">32.5</span> 参考资料</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1032-survivalanalysis.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1032-survivalanalysis.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

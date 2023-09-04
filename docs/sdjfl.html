@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>1 t检验 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="t检验主要适用于1组或2组的均数的比较，要求数据符合正态性和方差齐性。关于t检验的本质问题本文不做过多探讨，只是学习如何用R语言实现t检验！...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="1 t检验 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="t检验主要适用于1组或2组的均数的比较，要求数据符合正态性和方差齐性。关于t检验的本质问题本文不做过多探讨，只是学习如何用R语言实现t检验！...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="1 t检验 | R语言实战医学统计">
+<meta name="twitter:description" content="t检验主要适用于1组或2组的均数的比较，要求数据符合正态性和方差齐性。关于t检验的本质问题本文不做过多探讨，只是学习如何用R语言实现t检验！...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="active" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="sdjfl" class="section level1" number="1">
+<h1>
+<span class="header-section-number">1</span> t检验<a class="anchor" aria-label="anchor" href="#sdjfl"><i class="fas fa-link"></i></a>
+</h1>
+<p>t检验主要适用于1组或2组的均数的比较，要求数据符合正态性和方差齐性。关于t检验的本质问题本文不做过多探讨，只是学习如何用R语言实现t检验！</p>
+<p>在R中进行t检验非常简单，就是<code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code>函数，不管是单样本、两样本都是这一个函数。使用R语言进行统计学比SPSS好的一点是，当你需要使用某种检验时，直接打出这个检验的名字一般就会跳出来相关的函数，而我在学习使用SPSS进行各种统计检验时，可能更多的是关注如何点点点（鼠标点击菜单），不利于记住哪种情况使用什么方法。</p>
+<div id="单样本t检验" class="section level2" number="1.1">
+<h2>
+<span class="header-section-number">1.1</span> 单样本t检验<a class="anchor" aria-label="anchor" href="#%E5%8D%95%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例3-5的数据。</p>
+<p>首先是读取数据，可以自己录入，也可以使用课本光盘里的数据，我这里直接使用了光盘里的数据。</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 使用foreign包读取SPSS数据</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">'datasets/例03-05.sav'</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##   no  hb</span></span>
+<span><span class="co">## 1  1 112</span></span>
+<span><span class="co">## 2  2 137</span></span>
+<span><span class="co">## 3  3 129</span></span>
+<span><span class="co">## 4  4 126</span></span>
+<span><span class="co">## 5  5  88</span></span>
+<span><span class="co">## 6  6  90</span></span></code></pre></div>
+<p>进行单样本t检验，与140进行比较：</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">st</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">hb</span>,mu<span class="op">=</span><span class="fl">140</span>,alternative <span class="op">=</span> <span class="st">'two.sided'</span><span class="op">)</span> <span class="co"># 双侧检验</span></span>
+<span></span>
+<span><span class="va">st</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  One Sample t-test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df$hb</span></span>
+<span><span class="co">## t = -2.1367, df = 35, p-value = 0.03969</span></span>
+<span><span class="co">## alternative hypothesis: true mean is not equal to 140</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  122.1238 139.5428</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## mean of x </span></span>
+<span><span class="co">##  130.8333</span></span></code></pre></div>
+<p>结果显示t=-2.1367，自由度df=35，p=0.03969,和课本一致。</p>
+</div>
+<div id="配对样本t检验" class="section level2" number="1.2">
+<h2>
+<span class="header-section-number">1.2</span> 配对样本t检验<a class="anchor" aria-label="anchor" href="#%E9%85%8D%E5%AF%B9%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用<strong>课本例3-6</strong>的数据，首先是读取数据。</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">'datasets/例03-06.sav'</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##   no    x1    x2</span></span>
+<span><span class="co">## 1  1 0.840 0.580</span></span>
+<span><span class="co">## 2  2 0.591 0.509</span></span>
+<span><span class="co">## 3  3 0.674 0.500</span></span>
+<span><span class="co">## 4  4 0.632 0.316</span></span>
+<span><span class="co">## 5  5 0.687 0.337</span></span>
+<span><span class="co">## 6  6 0.978 0.517</span></span></code></pre></div>
+<p>数据一共3列10行，第1列是样本编号，第2列和第3列是要比较的值。</p>
+<p>进行配对样本t检验：</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">x1</span>,<span class="va">df</span><span class="op">$</span><span class="va">x2</span>,paired <span class="op">=</span> <span class="cn">T</span>,var.equal <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">pt</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Paired t-test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df$x1 and df$x2</span></span>
+<span><span class="co">## t = 7.926, df = 9, p-value = 2.384e-05</span></span>
+<span><span class="co">## alternative hypothesis: true mean difference is not equal to 0</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  0.1946542 0.3501458</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## mean difference </span></span>
+<span><span class="co">##          0.2724</span></span></code></pre></div>
+<p>结果显示t=7.926，自由度df=9，p&lt;0.001，结果和课本一致。</p>
+<p>如果数据格式是两列数据，R语言也支持formula的形式，比如这样：</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">df.l</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="fl">2</span><span class="op">:</span><span class="fl">3</span>,names_to <span class="op">=</span> <span class="st">"group"</span>,values_to <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 数据一列是分组，另一列是数值，还有一列id没什么用</span></span>
+<span><span class="va">df.l</span></span>
+<span><span class="co">## # A tibble: 20 × 3</span></span>
+<span><span class="co">##       no group     x</span></span>
+<span><span class="co">##    &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">##  1     1 x1    0.84 </span></span>
+<span><span class="co">##  2     1 x2    0.58 </span></span>
+<span><span class="co">##  3     2 x1    0.591</span></span>
+<span><span class="co">##  4     2 x2    0.509</span></span>
+<span><span class="co">##  5     3 x1    0.674</span></span>
+<span><span class="co">##  6     3 x2    0.5  </span></span>
+<span><span class="co">##  7     4 x1    0.632</span></span>
+<span><span class="co">##  8     4 x2    0.316</span></span>
+<span><span class="co">##  9     5 x1    0.687</span></span>
+<span><span class="co">## 10     5 x2    0.337</span></span>
+<span><span class="co">## 11     6 x1    0.978</span></span>
+<span><span class="co">## 12     6 x2    0.517</span></span>
+<span><span class="co">## 13     7 x1    0.75 </span></span>
+<span><span class="co">## 14     7 x2    0.454</span></span>
+<span><span class="co">## 15     8 x1    0.73 </span></span>
+<span><span class="co">## 16     8 x2    0.512</span></span>
+<span><span class="co">## 17     9 x1    1.2  </span></span>
+<span><span class="co">## 18     9 x2    0.997</span></span>
+<span><span class="co">## 19    10 x1    0.87 </span></span>
+<span><span class="co">## 20    10 x2    0.506</span></span></code></pre></div>
+<p>这时可以用formula形式：</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df.l</span>, paired <span class="op">=</span> <span class="cn">T</span>, var.equal <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Paired t-test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  x by group</span></span>
+<span><span class="co">## t = 7.926, df = 9, p-value = 2.384e-05</span></span>
+<span><span class="co">## alternative hypothesis: true mean difference is not equal to 0</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  0.1946542 0.3501458</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## mean difference </span></span>
+<span><span class="co">##          0.2724</span></span></code></pre></div>
+<p>结果也是一模一样的。</p>
+<blockquote>
+<p>在R语言中，绝大多数统计检验函数都是支持多种形式的输入样式的，需要自己注意。</p>
+</blockquote>
+</div>
+<div id="两样本t检验" class="section level2" number="1.3">
+<h2>
+<span class="header-section-number">1.3</span> 两样本t检验<a class="anchor" aria-label="anchor" href="#%E4%B8%A4%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本例3-7的数据。</p>
+<p>首先是读取数据.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">'datasets/例03-07.sav'</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">df</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">'阿卡波糖'</span>,<span class="fl">20</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">'拜糖平'</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##   no    x    group</span></span>
+<span><span class="co">## 1  1 -0.7 阿卡波糖</span></span>
+<span><span class="co">## 2  2 -5.6 阿卡波糖</span></span>
+<span><span class="co">## 3  3  2.0 阿卡波糖</span></span>
+<span><span class="co">## 4  4  2.8 阿卡波糖</span></span>
+<span><span class="co">## 5  5  0.7 阿卡波糖</span></span>
+<span><span class="co">## 6  6  3.5 阿卡波糖</span></span></code></pre></div>
+<p>一共有3列40行，第1列是编号，第2列是血糖值，第3列是组别（阿卡波糖组和拜糖平组，每组20个人）。</p>
+<p>进行两样本t检验：</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df</span>, paired <span class="op">=</span> <span class="cn">F</span>, var.equal <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">tt</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Two Sample t-test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  x by group</span></span>
+<span><span class="co">## t = -0.64187, df = 38, p-value = 0.5248</span></span>
+<span><span class="co">## alternative hypothesis: true difference in means between group 阿卡波糖 and group 拜糖平 is not equal to 0</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  -2.326179  1.206179</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## mean in group 阿卡波糖   mean in group 拜糖平 </span></span>
+<span><span class="co">##                  2.065                  2.625</span></span></code></pre></div>
+<p>结果显示t=-0.64187，自由度df=38，p=0.5248，结果和课本一致。</p>
+<p>例3-8</p>
+<p>假如两样本方差不等，使用近似t检验，或者使用Mann-Whitney-U检验</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/t.test.html">t.test</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df</span>, paired <span class="op">=</span> <span class="cn">F</span>, var.equal <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="co">#这里指定方差不等即可</span></span>
+<span><span class="va">tt</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Welch Two Sample t-test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  x by group</span></span>
+<span><span class="co">## t = -0.64187, df = 36.086, p-value = 0.525</span></span>
+<span><span class="co">## alternative hypothesis: true difference in means between group 阿卡波糖 and group 拜糖平 is not equal to 0</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  -2.32926  1.20926</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## mean in group 阿卡波糖   mean in group 拜糖平 </span></span>
+<span><span class="co">##                  2.065                  2.625</span></span></code></pre></div>
+</div>
+<div id="正态性检验和两样本方差比较的f检验" class="section level2" number="1.4">
+<h2>
+<span class="header-section-number">1.4</span> 正态性检验和两样本方差比较的F检验<a class="anchor" aria-label="anchor" href="#%E6%AD%A3%E6%80%81%E6%80%A7%E6%A3%80%E9%AA%8C%E5%92%8C%E4%B8%A4%E6%A0%B7%E6%9C%AC%E6%96%B9%E5%B7%AE%E6%AF%94%E8%BE%83%E7%9A%84f%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<div id="正态性检验" class="section level3" number="1.4.1">
+<h3>
+<span class="header-section-number">1.4.1</span> 正态性检验<a class="anchor" aria-label="anchor" href="#%E6%AD%A3%E6%80%81%E6%80%A7%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>例3-9</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 使用foreign包读取SPSS数据</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">'datasets/例03-01.sav'</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##   no   mean   sd</span></span>
+<span><span class="co">## 1  1 167.41 2.74</span></span>
+<span><span class="co">## 2  2 165.56 6.57</span></span>
+<span><span class="co">## 3  3 168.20 5.36</span></span>
+<span><span class="co">## 4  4 166.67 4.81</span></span>
+<span><span class="co">## 5  5 164.89 5.41</span></span>
+<span><span class="co">## 6  6 166.36 4.50</span></span></code></pre></div>
+<p>进行Shapiro-Wilk正态性检验：</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Shapiro-Wilk normality test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df$mean</span></span>
+<span><span class="co">## W = 0.99409, p-value = 0.9444</span></span></code></pre></div>
+<p>计算偏度和峰度：</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://www.r-project.org">moments</a></span><span class="op">)</span> <span class="co"># psych</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/moments/man/skewness.html">skewness</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">## [1] 0.1423707</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/moments/man/kurtosis.html">kurtosis</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">## [1] 3.045566</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/moments/man/agostino.test.html">agostino.test</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  D'Agostino skewness test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df$mean</span></span>
+<span><span class="co">## skew = 0.14237, z = 0.61614, p-value = 0.5378</span></span>
+<span><span class="co">## alternative hypothesis: data have a skewness</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/moments/man/anscombe.test.html">anscombe.test</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">mean</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Anscombe-Glynn kurtosis test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df$mean</span></span>
+<span><span class="co">## kurt = 3.04557, z = 0.41992, p-value = 0.6745</span></span>
+<span><span class="co">## alternative hypothesis: kurtosis is not equal to 3</span></span></code></pre></div>
+</div>
+<div id="方差齐性检验" class="section level3" number="1.4.2">
+<h3>
+<span class="header-section-number">1.4.2</span> 方差齐性检验<a class="anchor" aria-label="anchor" href="#%E6%96%B9%E5%B7%AE%E9%BD%90%E6%80%A7%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>F检验</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">'datasets/例03-07.sav'</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">df</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">'阿卡波糖'</span>,<span class="fl">20</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">'拜糖平'</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html">attributes</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##   no    x    group</span></span>
+<span><span class="co">## 1  1 -0.7 阿卡波糖</span></span>
+<span><span class="co">## 2  2 -5.6 阿卡波糖</span></span>
+<span><span class="co">## 3  3  2.0 阿卡波糖</span></span>
+<span><span class="co">## 4  4  2.8 阿卡波糖</span></span>
+<span><span class="co">## 5  5  0.7 阿卡波糖</span></span>
+<span><span class="co">## 6  6  3.5 阿卡波糖</span></span></code></pre></div>
+<p>进行F检验：</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/var.test.html">var.test</a></span><span class="op">(</span><span class="va">x</span> <span class="op">~</span> <span class="va">group</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  F test to compare two variances</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  x by group</span></span>
+<span><span class="co">## F = 1.5984, num df = 19, denom df = 19, p-value = 0.3153</span></span>
+<span><span class="co">## alternative hypothesis: true ratio of variances is not equal to 1</span></span>
+<span><span class="co">## 95 percent confidence interval:</span></span>
+<span><span class="co">##  0.6326505 4.0381795</span></span>
+<span><span class="co">## sample estimates:</span></span>
+<span><span class="co">## ratio of variances </span></span>
+<span><span class="co">##           1.598361</span></span></code></pre></div>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="index.html">前言</a></div>
+<div class="next"><a href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#sdjfl"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="nav-link" href="#%E5%8D%95%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><span class="header-section-number">1.1</span> 单样本t检验</a></li>
+<li><a class="nav-link" href="#%E9%85%8D%E5%AF%B9%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><span class="header-section-number">1.2</span> 配对样本t检验</a></li>
+<li><a class="nav-link" href="#%E4%B8%A4%E6%A0%B7%E6%9C%ACt%E6%A3%80%E9%AA%8C"><span class="header-section-number">1.3</span> 两样本t检验</a></li>
+<li>
+<a class="nav-link" href="#%E6%AD%A3%E6%80%81%E6%80%A7%E6%A3%80%E9%AA%8C%E5%92%8C%E4%B8%A4%E6%A0%B7%E6%9C%AC%E6%96%B9%E5%B7%AE%E6%AF%94%E8%BE%83%E7%9A%84f%E6%A3%80%E9%AA%8C"><span class="header-section-number">1.4</span> 正态性检验和两样本方差比较的F检验</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E6%AD%A3%E6%80%81%E6%80%A7%E6%A3%80%E9%AA%8C"><span class="header-section-number">1.4.1</span> 正态性检验</a></li>
+<li><a class="nav-link" href="#%E6%96%B9%E5%B7%AE%E9%BD%90%E6%80%A7%E6%A3%80%E9%AA%8C"><span class="header-section-number">1.4.2</span> 方差齐性检验</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1001-ttest.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1001-ttest.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

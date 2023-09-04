@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>23 R语言因子分析 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="因子分析可以看做是主成分分析的进一步扩展，主成分分析重点在综合原始变量的信息，而因子分析重在解释原始变量之间的关系。 主成分并没有实际的意义，只是原始变量的线性组合，但是因子有明确的意义，是可以解释的。 因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，KMO检验和Bartlett球形检验等，这里不再介绍。...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="23 R语言因子分析 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="因子分析可以看做是主成分分析的进一步扩展，主成分分析重点在综合原始变量的信息，而因子分析重在解释原始变量之间的关系。 主成分并没有实际的意义，只是原始变量的线性组合，但是因子有明确的意义，是可以解释的。 因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，KMO检验和Bartlett球形检验等，这里不再介绍。...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="23 R语言因子分析 | R语言实战医学统计">
+<meta name="twitter:description" content="因子分析可以看做是主成分分析的进一步扩展，主成分分析重点在综合原始变量的信息，而因子分析重在解释原始变量之间的关系。 主成分并没有实际的意义，只是原始变量的线性组合，但是因子有明确的意义，是可以解释的。 因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，KMO检验和Bartlett球形检验等，这里不再介绍。...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="active" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="iurgsdh" class="section level1" number="23">
+<h1>
+<span class="header-section-number">23</span> R语言因子分析<a class="anchor" aria-label="anchor" href="#iurgsdh"><i class="fas fa-link"></i></a>
+</h1>
+<p>因子分析可以看做是主成分分析的进一步扩展，主成分分析重点在综合原始变量的信息，而因子分析重在解释原始变量之间的关系。</p>
+<p>主成分并没有实际的意义，只是原始变量的线性组合，但是因子有明确的意义，是可以解释的。</p>
+<p>因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，<strong>KMO检验和Bartlett球形检验</strong>等，这里不再介绍。</p>
+<p>只有数据之间的相关性好，才有可能提炼出公共因子，建议大家相关性分析和两个检验不要忘记。</p>
+<div id="演示数据-1" class="section level2" number="23.1">
+<h2>
+<span class="header-section-number">23.1</span> 演示数据<a class="anchor" aria-label="anchor" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>数据来自于孙振球医学统计学第4版例22-2.</p>
+<p>某医院为了评价医疗工作质量，收集了三年的门诊人次、出院人数、病床利用率、病床周转次数、平均住院天数、治愈好转率、病死率、诊断符合率、抢救成功率9个指标，采用因子分析方法，探讨其综合评价体系。</p>
+<div class="sourceCode" id="cb433"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/例22-02.sav"</span>,to.data.frame <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                         reencode <span class="op">=</span> <span class="st">"utf-8"</span><span class="op">)</span></span>
+<span><span class="co">## re-encoding from utf-8</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"年"</span>,<span class="st">"月"</span>,<span class="st">"门诊人次"</span>,<span class="st">"出院人数"</span>,<span class="st">"病床利用率"</span>,<span class="st">"病床周转次数"</span>,</span>
+<span>               <span class="st">"平均住院天数"</span>,<span class="st">"治愈好转率"</span>,<span class="st">"病死率"</span>,<span class="st">"诊断符合率"</span>,<span class="st">"抢救成功率"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    36 obs. of  11 variables:</span></span>
+<span><span class="co">##  $ 年          : num  1991 1991 1991 1991 1991 ...</span></span>
+<span><span class="co">##  $ 月          : num  1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span><span class="co">##  $ 门诊人次    : num  4.34 3.45 4.38 4.18 4.32 4.13 4.57 4.31 4.06 4.43 ...</span></span>
+<span><span class="co">##  $ 出院人数    : num  389 271 385 377 378 349 361 209 425 458 ...</span></span>
+<span><span class="co">##  $ 病床利用率  : num  99.1 88.3 104 99.5 102 ...</span></span>
+<span><span class="co">##  $ 病床周转次数: num  1.23 0.85 1.21 1.19 1.19 1.1 1.14 0.52 0.93 0.95 ...</span></span>
+<span><span class="co">##  $ 平均住院天数: num  25.5 23.6 26.5 26.9 27.6 ...</span></span>
+<span><span class="co">##  $ 治愈好转率  : num  93.2 94.3 92.5 93.9 93.2 ...</span></span>
+<span><span class="co">##  $ 病死率      : num  3.56 2.44 4.02 2.92 1.99 4.38 2.73 3.65 3.09 4.21 ...</span></span>
+<span><span class="co">##  $ 诊断符合率  : num  97.5 97.9 98.5 99.4 99.7 ...</span></span>
+<span><span class="co">##  $ 抢救成功率  : num  61.7 73.3 76.8 63.2 80 ...</span></span>
+<span><span class="co">##  - attr(*, "variable.labels")= Named chr [1:11] "" "" "" "" ...</span></span>
+<span><span class="co">##   ..- attr(*, "names")= chr [1:11] "...." ".·." ".....˴." "..Ժ...." ...</span></span>
+<span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/headtail.html">headTail</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##       年  月 门诊人次 出院人数 病床利用率 病床周转次数 平均住院天数 治愈好转率</span></span>
+<span><span class="co">## 1   1991   1     4.34      389      99.06         1.23        25.46      93.15</span></span>
+<span><span class="co">## 2   1991   2     3.45      271      88.28         0.85        23.55      94.31</span></span>
+<span><span class="co">## 3   1991   3     4.38      385     103.97         1.21        26.54      92.53</span></span>
+<span><span class="co">## 4   1991   4     4.18      377      99.48         1.19        26.89      93.86</span></span>
+<span><span class="co">## ...  ... ...      ...      ...        ...          ...          ...        ...</span></span>
+<span><span class="co">## 33  1993   9      3.9      555      80.58          1.1        23.08      94.38</span></span>
+<span><span class="co">## 34  1993  10     3.62      554      87.21          1.1         22.5      92.43</span></span>
+<span><span class="co">## 35  1993  11     3.75      586      90.31         1.12        23.73      92.47</span></span>
+<span><span class="co">## 36  1993  12     3.77      627      86.47         1.24        23.22      91.17</span></span>
+<span><span class="co">##     病死率 诊断符合率 抢救成功率</span></span>
+<span><span class="co">## 1     3.56      97.51      61.66</span></span>
+<span><span class="co">## 2     2.44      97.94      73.33</span></span>
+<span><span class="co">## 3     4.02      98.48      76.79</span></span>
+<span><span class="co">## 4     2.92      99.41      63.16</span></span>
+<span><span class="co">## ...    ...        ...        ...</span></span>
+<span><span class="co">## 33    2.06      96.82      91.79</span></span>
+<span><span class="co">## 34    3.22      97.16      87.77</span></span>
+<span><span class="co">## 35    2.07      97.74      93.89</span></span>
+<span><span class="co">## 36     3.4      98.98       89.8</span></span></code></pre></div>
+</div>
+<div id="判断需要提取的因子个数" class="section level2" number="23.2">
+<h2>
+<span class="header-section-number">23.2</span> 判断需要提取的因子个数<a class="anchor" aria-label="anchor" href="#%E5%88%A4%E6%96%AD%E9%9C%80%E8%A6%81%E6%8F%90%E5%8F%96%E7%9A%84%E5%9B%A0%E5%AD%90%E4%B8%AA%E6%95%B0"><i class="fas fa-link"></i></a>
+</h2>
+<p>R中自带了<code><a href="https://rdrr.io/r/stats/factanal.html">factanal()</a></code>进行因子分析，不过不如<code>psych</code>包好用，我们这里使用<code>psych</code>包演示。</p>
+<div class="sourceCode" id="cb434"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 只用后面9列数据</span></span>
+<span><span class="va">df.use</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span>,<span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://personality-project.org/r/psych/">psych</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 碎石图</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/fa.parallel.html">fa.parallel</a></span><span class="op">(</span><span class="va">df.use</span>, fa <span class="op">=</span> <span class="st">"both"</span>,fm<span class="op">=</span><span class="st">"ml"</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-2-1.png" width="90%"></div>
+<pre><code>## Parallel analysis suggests that the number of factors =  2  and the number of components =  2</code></pre>
+<p>通过参数<code>fa = "both"</code>同时给出了PCA和因子分析的碎石图，根据因子分析碎石图的结果，建议我们提取3个因子。</p>
+<p>但是提取几个因子并没有绝对的标准，我们可以结合多种方法或专业知识，和提取主成分的方法类似，可以参考之前的介绍的方法：<a href="https://mp.weixin.qq.com/s/B_RD4pAemEE7pHkr2VfDwA">R语言主成分分析</a></p>
+<p>除此之外，还可以结合特征值大小、累计贡献率来确定使用几个因子。</p>
+<p>下面我们首先用9个因子进行因子分析，看看结果再说。</p>
+<p><code>rotate</code>参数确定旋转方法，有多种不同的选择，比如不旋转、正交旋转法（比如最大方差法）、斜交旋转法等，</p>
+<p><code>fm</code>参数选择因子计算方法，比如最大似然法ml、主轴迭代法pa、加权最小二乘wls、广义加权最小二乘gls、最小残差minres，等。</p>
+<div class="sourceCode" id="cb436"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 进行因子分析，首先9个因子用一下看看结果再说，最大似然法，不旋转</span></span>
+<span><span class="va">fa.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/psych/man/fa.html">fa</a></span><span class="op">(</span><span class="va">df.use</span>, nfactors <span class="op">=</span> <span class="fl">9</span>, rotate <span class="op">=</span> <span class="st">"none"</span>, fm<span class="op">=</span><span class="st">"ml"</span><span class="op">)</span></span>
+<span><span class="va">fa.res</span></span>
+<span><span class="co">## Factor Analysis using method =  ml</span></span>
+<span><span class="co">## Call: fa(r = df.use, nfactors = 9, rotate = "none", fm = "ml")</span></span>
+<span><span class="co">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span><span class="co">##                ML1   ML2   ML3   ML4   ML5   ML6 ML7 ML8 ML9   h2   u2 com</span></span>
+<span><span class="co">## 门诊人次      0.14  0.68  0.09  0.37 -0.06 -0.03   0   0   0 0.63 0.37 1.7</span></span>
+<span><span class="co">## 出院人数      0.68 -0.30  0.19  0.32  0.06  0.03   0   0   0 0.69 0.31 2.1</span></span>
+<span><span class="co">## 病床利用率    0.58  0.52 -0.09 -0.31  0.04  0.05   0   0   0 0.71 0.29 2.6</span></span>
+<span><span class="co">## 病床周转次数  0.90  0.20 -0.01 -0.01  0.01 -0.01   0   0   0 0.85 0.15 1.1</span></span>
+<span><span class="co">## 平均住院天数 -0.53  0.43  0.38  0.05  0.02  0.09   0   0   0 0.62 0.38 2.9</span></span>
+<span><span class="co">## 治愈好转率   -0.03 -0.07  0.69 -0.18  0.13 -0.02   0   0   0 0.53 0.47 1.2</span></span>
+<span><span class="co">## 病死率       -0.33  0.08 -0.46  0.18  0.24  0.09   0   0   0 0.42 0.58 2.9</span></span>
+<span><span class="co">## 诊断符合率   -0.31  0.54  0.02  0.02 -0.15  0.07   0   0   0 0.41 0.59 1.8</span></span>
+<span><span class="co">## 抢救成功率    0.41 -0.64  0.07 -0.03 -0.12  0.10   0   0   0 0.60 0.40 1.9</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                        ML1  ML2  ML3  ML4  ML5  ML6  ML7  ML8  ML9</span></span>
+<span><span class="co">## SS loadings           2.27 1.75 0.89 0.40 0.12 0.04 0.00 0.00 0.00</span></span>
+<span><span class="co">## Proportion Var        0.25 0.19 0.10 0.04 0.01 0.00 0.00 0.00 0.00</span></span>
+<span><span class="co">## Cumulative Var        0.25 0.45 0.55 0.59 0.60 0.61 0.61 0.61 0.61</span></span>
+<span><span class="co">## Proportion Explained  0.41 0.32 0.16 0.07 0.02 0.01 0.00 0.00 0.00</span></span>
+<span><span class="co">## Cumulative Proportion 0.41 0.74 0.90 0.97 0.99 1.00 1.00 1.00 1.00</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Mean item complexity =  2</span></span>
+<span><span class="co">## Test of the hypothesis that 9 factors are sufficient.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The degrees of freedom for the null model are  36  and the objective function was  3.82 with Chi Square of  119.03</span></span>
+<span><span class="co">## The degrees of freedom for the model are -9  and the objective function was  0.46 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span><span class="co">## The df corrected root mean square of the residuals is  NA </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The harmonic number of observations is  36 with the empirical chi square  3.42  with prob &lt;  NA </span></span>
+<span><span class="co">## The total number of observations was  36  with Likelihood Chi Square =  11.69  with prob &lt;  NA </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Tucker Lewis Index of factoring reliability =  2.377</span></span>
+<span><span class="co">## Fit based upon off diagonal values = 0.99</span></span>
+<span><span class="co">## Measures of factor score adequacy             </span></span>
+<span><span class="co">##                                                    ML1  ML2  ML3   ML4   ML5</span></span>
+<span><span class="co">## Correlation of (regression) scores with factors   0.94 0.90 0.79  0.70  0.42</span></span>
+<span><span class="co">## Multiple R square of scores with factors          0.88 0.80 0.63  0.50  0.18</span></span>
+<span><span class="co">## Minimum correlation of possible factor scores     0.77 0.61 0.26 -0.01 -0.65</span></span>
+<span><span class="co">##                                                     ML6 ML7 ML8 ML9</span></span>
+<span><span class="co">## Correlation of (regression) scores with factors    0.26   0   0   0</span></span>
+<span><span class="co">## Multiple R square of scores with factors           0.07   0   0   0</span></span>
+<span><span class="co">## Minimum correlation of possible factor scores     -0.86  -1  -1  -1</span></span></code></pre></div>
+<p>h2是公因子方差，表示因子对每个变量的解释度，u2=1-h2，表示不能被因子解释的比例。</p>
+<p>看结果中的<code>Cumulative Var</code>，累积方差解释，可以看到在使用3个因子时，累计贡献度是0.55,4个因子是0.59，结合碎石图，我们选择用4个因子。</p>
+</div>
+<div id="进行因子分析" class="section level2" number="23.3">
+<h2>
+<span class="header-section-number">23.3</span> 进行因子分析<a class="anchor" aria-label="anchor" href="#%E8%BF%9B%E8%A1%8C%E5%9B%A0%E5%AD%90%E5%88%86%E6%9E%90"><i class="fas fa-link"></i></a>
+</h2>
+<p>选择4个因子</p>
+<div class="sourceCode" id="cb437"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 选择4个因子，不旋转，最大似然法</span></span>
+<span><span class="va">fa.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/psych/man/fa.html">fa</a></span><span class="op">(</span><span class="va">df.use</span>, nfactors <span class="op">=</span> <span class="fl">4</span>, rotate <span class="op">=</span> <span class="st">"none"</span>, fm<span class="op">=</span><span class="st">"ml"</span><span class="op">)</span></span>
+<span><span class="va">fa.res</span></span>
+<span><span class="co">## Factor Analysis using method =  ml</span></span>
+<span><span class="co">## Call: fa(r = df.use, nfactors = 4, rotate = "none", fm = "ml")</span></span>
+<span><span class="co">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span><span class="co">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
+<span><span class="co">## 门诊人次      0.61  0.78  0.11 -0.01 1.00 0.005 1.9</span></span>
+<span><span class="co">## 出院人数     -0.40  0.31  0.34 -0.59 0.72 0.276 3.1</span></span>
+<span><span class="co">## 病床利用率   -0.30  0.56  0.25  0.49 0.71 0.289 2.9</span></span>
+<span><span class="co">## 病床周转次数 -0.55  0.75  0.35  0.01 1.00 0.005 2.3</span></span>
+<span><span class="co">## 平均住院天数  0.67 -0.13  0.16  0.26 0.57 0.435 1.5</span></span>
+<span><span class="co">## 治愈好转率    0.15 -0.39  0.91  0.00 1.00 0.005 1.4</span></span>
+<span><span class="co">## 病死率        0.14 -0.07 -0.47  0.10 0.26 0.743 1.3</span></span>
+<span><span class="co">## 诊断符合率    0.45  0.11 -0.10  0.36 0.36 0.642 2.2</span></span>
+<span><span class="co">## 抢救成功率   -0.56 -0.12  0.05 -0.46 0.55 0.455 2.1</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                        ML3  ML1  ML2  ML4</span></span>
+<span><span class="co">## SS loadings           1.94 1.79 1.40 1.02</span></span>
+<span><span class="co">## Proportion Var        0.22 0.20 0.16 0.11</span></span>
+<span><span class="co">## Cumulative Var        0.22 0.41 0.57 0.68</span></span>
+<span><span class="co">## Proportion Explained  0.32 0.29 0.23 0.17</span></span>
+<span><span class="co">## Cumulative Proportion 0.32 0.61 0.83 1.00</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Mean item complexity =  2.1</span></span>
+<span><span class="co">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The degrees of freedom for the null model are  36  and the objective function was  3.82 with Chi Square of  119.03</span></span>
+<span><span class="co">## The degrees of freedom for the model are 6  and the objective function was  0.24 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span><span class="co">## The df corrected root mean square of the residuals is  0.09 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The harmonic number of observations is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
+<span><span class="co">## The total number of observations was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
+<span><span class="co">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
+<span><span class="co">## BIC =  -14.67</span></span>
+<span><span class="co">## Fit based upon off diagonal values = 0.99</span></span>
+<span><span class="co">## Measures of factor score adequacy             </span></span>
+<span><span class="co">##                                                    ML3  ML1  ML2  ML4</span></span>
+<span><span class="co">## Correlation of (regression) scores with factors   1.00 1.00 1.00 0.87</span></span>
+<span><span class="co">## Multiple R square of scores with factors          0.99 1.00 0.99 0.75</span></span>
+<span><span class="co">## Minimum correlation of possible factor scores     0.99 0.99 0.99 0.50</span></span></code></pre></div>
+<p>选择4个因子，最终的累积方差解释是0.68，再看因子载荷矩阵，因子1（ML1）在病床周转、门诊人次、病床利用率等具有较高的载荷，因子2在治愈好转率方面具有很大的载荷，因子3在门诊人次，平均住院天数、抢救成功率具有较高的载荷，因子4在出院人数具有较高的载荷。</p>
+<p>从专业角度来看，并没有发现什么规律，好像不能很好的解释专业意义。</p>
+<p>所以我们需要进行因子旋转！</p>
+</div>
+<div id="因子旋转" class="section level2" number="23.4">
+<h2>
+<span class="header-section-number">23.4</span> 因子旋转<a class="anchor" aria-label="anchor" href="#%E5%9B%A0%E5%AD%90%E6%97%8B%E8%BD%AC"><i class="fas fa-link"></i></a>
+</h2>
+<p>通过因子旋转我们可以更容易找到内在规律，使得结果更加容易结合专业背景进行解释。</p>
+<div class="sourceCode" id="cb438"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 选择4个因子，最大方差旋转，最大似然法</span></span>
+<span><span class="va">fa.res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/psych/man/fa.html">fa</a></span><span class="op">(</span><span class="va">df.use</span>, nfactors <span class="op">=</span> <span class="fl">4</span>, rotate <span class="op">=</span> <span class="st">"varimax"</span>, fm<span class="op">=</span><span class="st">"ml"</span><span class="op">)</span></span>
+<span><span class="va">fa.res</span></span>
+<span><span class="co">## Factor Analysis using method =  ml</span></span>
+<span><span class="co">## Call: fa(r = df.use, nfactors = 4, rotate = "varimax", fm = "ml")</span></span>
+<span><span class="co">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span><span class="co">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
+<span><span class="co">## 门诊人次     -0.31  0.23 -0.03  0.92 1.00 0.005 1.4</span></span>
+<span><span class="co">## 出院人数      0.75  0.16  0.24  0.27 0.72 0.276 1.6</span></span>
+<span><span class="co">## 病床利用率   -0.10  0.83  0.03  0.07 0.71 0.289 1.0</span></span>
+<span><span class="co">## 病床周转次数  0.46  0.84  0.09  0.26 1.00 0.005 1.8</span></span>
+<span><span class="co">## 平均住院天数 -0.64 -0.23  0.24  0.21 0.57 0.435 1.8</span></span>
+<span><span class="co">## 治愈好转率   -0.09 -0.09  0.98 -0.10 1.00 0.005 1.1</span></span>
+<span><span class="co">## 病死率       -0.20 -0.18 -0.42 -0.06 0.26 0.743 1.9</span></span>
+<span><span class="co">## 诊断符合率   -0.56  0.02 -0.10  0.18 0.36 0.642 1.3</span></span>
+<span><span class="co">## 抢救成功率    0.70 -0.04  0.04 -0.21 0.55 0.455 1.2</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##                        ML3  ML1  ML2  ML4</span></span>
+<span><span class="co">## SS loadings           2.15 1.58 1.29 1.12</span></span>
+<span><span class="co">## Proportion Var        0.24 0.18 0.14 0.12</span></span>
+<span><span class="co">## Cumulative Var        0.24 0.41 0.56 0.68</span></span>
+<span><span class="co">## Proportion Explained  0.35 0.26 0.21 0.18</span></span>
+<span><span class="co">## Cumulative Proportion 0.35 0.61 0.82 1.00</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Mean item complexity =  1.4</span></span>
+<span><span class="co">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The degrees of freedom for the null model are  36  and the objective function was  3.82 with Chi Square of  119.03</span></span>
+<span><span class="co">## The degrees of freedom for the model are 6  and the objective function was  0.24 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span><span class="co">## The df corrected root mean square of the residuals is  0.09 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## The harmonic number of observations is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
+<span><span class="co">## The total number of observations was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
+<span><span class="co">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
+<span><span class="co">## BIC =  -14.67</span></span>
+<span><span class="co">## Fit based upon off diagonal values = 0.99</span></span>
+<span><span class="co">## Measures of factor score adequacy             </span></span>
+<span><span class="co">##                                                    ML3  ML1  ML2  ML4</span></span>
+<span><span class="co">## Correlation of (regression) scores with factors   0.93 0.96 1.00 0.98</span></span>
+<span><span class="co">## Multiple R square of scores with factors          0.86 0.92 0.99 0.96</span></span>
+<span><span class="co">## Minimum correlation of possible factor scores     0.72 0.85 0.99 0.91</span></span></code></pre></div>
+<p>此时我们再看因子载荷阵，因子3在门诊人次、出院人数、病床周转、平均住院天数、诊断符合率、抢救成功率等多个指标上具有较大的载荷，因子2在治愈好转率、病死率上载荷最大，因子1在病床利用率、病床周转率这两个指标上载荷最高，因子4在门诊人次、出院人数这两个指标的载荷最大。</p>
+<p>因此可以认为因子3反映了反映了医疗工作质量各个方面的情况，称为综合因子；因子1反应病床利用情况，可以成为病床利用因子；因子2反映了医疗水平，称为水平因子；因子4反应了就诊患者数量，称为数量因子。</p>
+<p>可以把结果可视化：</p>
+<div class="sourceCode" id="cb439"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/fa.diagram.html">fa.diagram</a></span><span class="op">(</span><span class="va">fa.res</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-6-1.png" width="90%"></div>
+<div class="sourceCode" id="cb440"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/cluster.plot.html">factor.plot</a></span><span class="op">(</span><span class="va">fa.res</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-7-1.png" width="90%"></div>
+<p>关于因子分析，我并没有找到好用的可视化R包，如果大家知道，欢迎评论区留言。</p>
+
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></div>
+<div class="next"><a href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#iurgsdh"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="nav-link" href="#%E6%BC%94%E7%A4%BA%E6%95%B0%E6%8D%AE-1"><span class="header-section-number">23.1</span> 演示数据</a></li>
+<li><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E9%9C%80%E8%A6%81%E6%8F%90%E5%8F%96%E7%9A%84%E5%9B%A0%E5%AD%90%E4%B8%AA%E6%95%B0"><span class="header-section-number">23.2</span> 判断需要提取的因子个数</a></li>
+<li><a class="nav-link" href="#%E8%BF%9B%E8%A1%8C%E5%9B%A0%E5%AD%90%E5%88%86%E6%9E%90"><span class="header-section-number">23.3</span> 进行因子分析</a></li>
+<li><a class="nav-link" href="#%E5%9B%A0%E5%AD%90%E6%97%8B%E8%BD%AC"><span class="header-section-number">23.4</span> 因子旋转</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1023-factoranalysis.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1023-factoranalysis.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>7 秩和检验 | R语言实战医学统计</title>
+<meta name="author" content="阿越就是我">
+<meta name="description" content="7.1 配对样本比较的Wilcoxon符号秩检验 使用课本例8-1的数据，自己手动摘录： test1&lt;-c(60,142,195,80,242,220,190,25,198,38,236,95) test2&lt;-c(76,152,243,82,240,220,205,38,243,44,190,100) 两列数据，和配对t检验的数据结果完全一样。 简单看一下数据情况：...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="7 秩和检验 | R语言实战医学统计">
+<meta property="og:type" content="book">
+<meta property="og:description" content="7.1 配对样本比较的Wilcoxon符号秩检验 使用课本例8-1的数据，自己手动摘录： test1&lt;-c(60,142,195,80,242,220,190,25,198,38,236,95) test2&lt;-c(76,152,243,82,240,220,205,38,243,44,190,100) 两列数据，和配对t检验的数据结果完全一样。 简单看一下数据情况：...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="7 秩和检验 | R语言实战医学统计">
+<meta name="twitter:description" content="7.1 配对样本比较的Wilcoxon符号秩检验 使用课本例8-1的数据，自己手动摘录： test1&lt;-c(60,142,195,80,242,220,190,25,198,38,236,95) test2&lt;-c(76,152,243,82,240,220,205,38,243,44,190,100) 两列数据，和配对t检验的数据结果完全一样。 简单看一下数据情况：...">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<link rel="stylesheet" href="bs4_style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">R语言实战医学统计</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">前言</a></li>
+<li class="book-part">基础统计分析</li>
+<li><a class="" href="sdjfl.html"><span class="header-section-number">1</span> t检验</a></li>
+<li><a class="" href="xnclg.html"><span class="header-section-number">2</span> 多样本均数比较的方差分析</a></li>
+<li><a class="" href="njlkga.html"><span class="header-section-number">3</span> 多因素方差分析</a></li>
+<li><a class="" href="iegljgk.html"><span class="header-section-number">4</span> 重复测量方差分析</a></li>
+<li><a class="" href="lasijdlfjd.html"><span class="header-section-number">5</span> 协方差分析</a></li>
+<li><a class="" href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></li>
+<li><a class="active" href="lidukj.html"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="" href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></li>
+<li><a class="" href="rugnjkdfgl.html"><span class="header-section-number">9</span> R语言Cochran Armitage检验</a></li>
+<li><a class="" href="ytlrwijj.html"><span class="header-section-number">10</span> R语言方差分析注意事项</a></li>
+<li><a class="" href="terlajskd.html"><span class="header-section-number">11</span> 样本量计算</a></li>
+<li><a class="" href="ytsgs.html"><span class="header-section-number">12</span> 随机分组</a></li>
+<li><a class="" href="yaiehfkjasd.html"><span class="header-section-number">13</span> R语言tidy风格医学统计学</a></li>
+<li><a class="" href="tjslrkjga.html"><span class="header-section-number">14</span> R语言多个变量同时进行t检验</a></li>
+<li><a class="" href="oirjglsj.html"><span class="header-section-number">15</span> 双变量回归与相关</a></li>
+<li><a class="" href="jhgkjahdj.html"><span class="header-section-number">16</span> 偏相关和典型相关</a></li>
+<li class="book-part">高级统计分析</li>
+<li><a class="" href="raljflksdj.html"><span class="header-section-number">17</span> 多元线性回归</a></li>
+<li><a class="" href="rlkdfjj.html"><span class="header-section-number">18</span> Logistic回归</a></li>
+<li><a class="" href="tuishgh.html"><span class="header-section-number">19</span> 分类变量进行回归分析时的编码方案</a></li>
+<li><a class="" href="erutgjdflk.html"><span class="header-section-number">20</span> R语言判别分析</a></li>
+<li><a class="" href="lksdjgljdsl.html"><span class="header-section-number">21</span> R语言聚类分析</a></li>
+<li><a class="" href="ejtlj.html"><span class="header-section-number">22</span> R语言主成分分析</a></li>
+<li><a class="" href="iurgsdh.html"><span class="header-section-number">23</span> R语言因子分析</a></li>
+<li><a class="" href="ljhgjsj.html"><span class="header-section-number">24</span> 二分类资料ROC曲线绘制</a></li>
+<li><a class="" href="xlkjgj.html"><span class="header-section-number">25</span> 生存资料ROC曲线绘制</a></li>
+<li><a class="" href="lsjdglj.html"><span class="header-section-number">26</span> 生存资料ROC曲线的最佳截点和平滑曲线</a></li>
+<li><a class="" href="oljgja.html"><span class="header-section-number">27</span> ROC曲线的显著性检验</a></li>
+<li><a class="" href="uxijsjg.html"><span class="header-section-number">28</span> ROC阴性结果还是阳性结果</a></li>
+<li><a class="" href="yrlhksdg.html"><span class="header-section-number">29</span> ROC曲线ggplot2绘制</a></li>
+<li><a class="" href="sjgjaklj.html"><span class="header-section-number">30</span> R语言计算AUC(ROC)注意事项</a></li>
+<li><a class="" href="oljgji.html"><span class="header-section-number">31</span> 多指标联合诊断的ROC曲线</a></li>
+<li><a class="" href="djgkas.html"><span class="header-section-number">32</span> R语言生存分析</a></li>
+<li><a class="" href="oiewjrtsjl.html"><span class="header-section-number">33</span> R语言超详细的生存曲线可视化</a></li>
+<li class="book-part">文献中常用的统计方法</li>
+<li><a class="" href="lxjjgjja.html"><span class="header-section-number">34</span> Fine-Gray检验、竞争风险模型列线图绘制</a></li>
+<li><a class="" href="ysdkfjhsjk.html"><span class="header-section-number">35</span> R语言倾向性评分：匹配</a></li>
+<li><a class="" href="yxkskjhfk.html"><span class="header-section-number">36</span> R语言倾向性评分：回归和分层</a></li>
+<li><a class="" href="yplksjhfk.html"><span class="header-section-number">37</span> R语言倾向性评分：加权</a></li>
+<li><a class="" href="qdkjfgj.html"><span class="header-section-number">38</span> p for trend/ p for interaction/ per 1 sd 的R语言实现</a></li>
+<li><a class="" href="jddsfsdf.html"><span class="header-section-number">39</span> R语言多项式拟合及样条回归</a></li>
+<li><a class="" href="subgroupanalysis.html"><span class="header-section-number">40</span> R语言亚组分析及森林图绘制</a></li>
+<li class="book-part">附录</li>
+<li class="book-part">附录</li>
+<li><a class="" href="jdkhfgjad.html"><span class="header-section-number">A</span> 软件安装和其他合集</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ayueme/ayueme.github.io">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="lidukj" class="section level1" number="7">
+<h1>
+<span class="header-section-number">7</span> 秩和检验<a class="anchor" aria-label="anchor" href="#lidukj"><i class="fas fa-link"></i></a>
+</h1>
+<div id="配对样本比较的wilcoxon符号秩检验" class="section level2" number="7.1">
+<h2>
+<span class="header-section-number">7.1</span> 配对样本比较的Wilcoxon符号秩检验<a class="anchor" aria-label="anchor" href="#%E9%85%8D%E5%AF%B9%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84wilcoxon%E7%AC%A6%E5%8F%B7%E7%A7%A9%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>使用课本<strong>例8-1</strong>的数据，自己手动摘录：</p>
+<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">test1</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">60</span>,<span class="fl">142</span>,<span class="fl">195</span>,<span class="fl">80</span>,<span class="fl">242</span>,<span class="fl">220</span>,<span class="fl">190</span>,<span class="fl">25</span>,<span class="fl">198</span>,<span class="fl">38</span>,<span class="fl">236</span>,<span class="fl">95</span><span class="op">)</span></span>
+<span><span class="va">test2</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">76</span>,<span class="fl">152</span>,<span class="fl">243</span>,<span class="fl">82</span>,<span class="fl">240</span>,<span class="fl">220</span>,<span class="fl">205</span>,<span class="fl">38</span>,<span class="fl">243</span>,<span class="fl">44</span>,<span class="fl">190</span>,<span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<p>两列数据，和配对t检验的数据结果完全一样。</p>
+<p>简单看一下数据情况：</p>
+<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">test1</span>,<span class="va">test2</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1007-wilcoxn_files/figure-html/unnamed-chunk-2-1.png" width="90%"></div>
+<p>进行秩和检验：</p>
+<div class="sourceCode" id="cb128"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/wilcox.test.html">wilcox.test</a></span><span class="op">(</span><span class="va">test1</span>,<span class="va">test2</span>,paired <span class="op">=</span> <span class="cn">T</span>,alternative <span class="op">=</span> <span class="st">"two.sided"</span>,</span>
+<span>            exact <span class="op">=</span> <span class="cn">F</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Wilcoxon signed rank test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  test1 and test2</span></span>
+<span><span class="co">## V = 11.5, p-value = 0.05581</span></span>
+<span><span class="co">## alternative hypothesis: true location shift is not equal to 0</span></span></code></pre></div>
+<p>结果和课本一致！</p>
+</div>
+<div id="两独立样本比较的wilcoxon符号秩检验" class="section level2" number="7.2">
+<h2>
+<span class="header-section-number">7.2</span> 两独立样本比较的Wilcoxon符号秩检验<a class="anchor" aria-label="anchor" href="#%E4%B8%A4%E7%8B%AC%E7%AB%8B%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84wilcoxon%E7%AC%A6%E5%8F%B7%E7%A7%A9%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<p>和两样本t检验的数据格式完全一样！</p>
+<p>使用课本<strong>例8-3</strong>的数据，自己手动摘录。。</p>
+<div class="sourceCode" id="cb129"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">RD1</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.78</span>,<span class="fl">3.23</span>,<span class="fl">4.20</span>,<span class="fl">4.87</span>,<span class="fl">5.12</span>,<span class="fl">6.21</span>,<span class="fl">7.18</span>,<span class="fl">8.05</span>,<span class="fl">8.56</span>,<span class="fl">9.60</span><span class="op">)</span></span>
+<span><span class="va">RD2</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.23</span>,<span class="fl">3.50</span>,<span class="fl">4.04</span>,<span class="fl">4.15</span>,<span class="fl">4.28</span>,<span class="fl">4.34</span>,<span class="fl">4.47</span>,<span class="fl">4.64</span>,<span class="fl">4.75</span>,<span class="fl">4.82</span>,<span class="fl">4.95</span>,<span class="fl">5.10</span><span class="op">)</span></span></code></pre></div>
+<p>进行两独立样本比较的Wilcoxon符号秩检验：</p>
+<div class="sourceCode" id="cb130"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/wilcox.test.html">wilcox.test</a></span><span class="op">(</span><span class="va">RD1</span>,<span class="va">RD2</span>,paired <span class="op">=</span> <span class="cn">F</span>, correct <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span><span class="co">## Warning in wilcox.test.default(RD1, RD2, paired = F, correct = F): cannot</span></span>
+<span><span class="co">## compute exact p-value with ties</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Wilcoxon rank sum test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  RD1 and RD2</span></span>
+<span><span class="co">## W = 86.5, p-value = 0.08049</span></span>
+<span><span class="co">## alternative hypothesis: true location shift is not equal to 0</span></span></code></pre></div>
+<p>结果取单侧检验，还是和课本一致！</p>
+</div>
+<div id="完全随机设计多个样本比较的-kruskal-wallis-h-检验" class="section level2" number="7.3">
+<h2>
+<span class="header-section-number">7.3</span> 完全随机设计多个样本比较的 Kruskal-Wallis H 检验<a class="anchor" aria-label="anchor" href="#%E5%AE%8C%E5%85%A8%E9%9A%8F%E6%9C%BA%E8%AE%BE%E8%AE%A1%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84-kruskal-wallis-h-%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<div id="多样本比较的kruskal-wallis-h检验" class="section level3" number="7.3.1">
+<h3>
+<span class="header-section-number">7.3.1</span> 多样本比较的kruskal-wallis H检验<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84kruskal-wallis-h%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本<strong>例8-5</strong>的数据，手动摘录：</p>
+<div class="sourceCode" id="cb131"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">death_rate</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">32.5</span>,<span class="fl">35.5</span>,<span class="fl">40.5</span>,<span class="fl">46</span>,<span class="fl">49</span>,<span class="fl">16</span>,<span class="fl">20.5</span>,<span class="fl">22.5</span>,<span class="fl">29</span>,<span class="fl">36</span>,<span class="fl">6.5</span>,</span>
+<span>                <span class="fl">9.0</span>,<span class="fl">12.5</span>,<span class="fl">18</span>,<span class="fl">24</span><span class="op">)</span></span>
+<span><span class="va">drug</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Drug_A"</span>,<span class="st">"drug_B"</span>,<span class="st">"drug_C"</span><span class="op">)</span>,each<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">death_rate</span>,<span class="va">drug</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    15 obs. of  2 variables:</span></span>
+<span><span class="co">##  $ death_rate: num  32.5 35.5 40.5 46 49 16 20.5 22.5 29 36 ...</span></span>
+<span><span class="co">##  $ drug      : chr  "Drug_A" "Drug_A" "Drug_A" "Drug_A" ...</span></span></code></pre></div>
+<p>数据一共2列，第1列是死亡率，第2列是药物（3种）。</p>
+<p>简单看下数据：</p>
+<div class="sourceCode" id="cb132"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">death_rate</span> <span class="op">~</span> <span class="va">drug</span>, data <span class="op">=</span> <span class="va">mydata</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1007-wilcoxn_files/figure-html/unnamed-chunk-7-1.png" width="90%"></div>
+<p>进行 Kruskal-Wallis H 检验：</p>
+<div class="sourceCode" id="cb133"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/kruskal.test.html">kruskal.test</a></span><span class="op">(</span><span class="va">death_rate</span> <span class="op">~</span> <span class="va">drug</span>, data <span class="op">=</span> <span class="va">mydata</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Kruskal-Wallis rank sum test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  death_rate by drug</span></span>
+<span><span class="co">## Kruskal-Wallis chi-squared = 9.74, df = 2, p-value = 0.007673</span></span></code></pre></div>
+<p>算出来结果和课本一致！</p>
+</div>
+<div id="kruskal-wallis-h检验后的多重比较" class="section level3" number="7.3.2">
+<h3>
+<span class="header-section-number">7.3.2</span> kruskal-Wallis H检验后的多重比较<a class="anchor" aria-label="anchor" href="#kruskal-wallis-h%E6%A3%80%E9%AA%8C%E5%90%8E%E7%9A%84%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><i class="fas fa-link"></i></a>
+</h3>
+<p>课本上是使用的 Nemenyi检验，我们使用非参数检验的全能R包：PMCMRplus实现。</p>
+<div class="sourceCode" id="cb134"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">PMCMRplus</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 首先要把分类变量因子化</span></span>
+<span><span class="va">mydata</span><span class="op">$</span><span class="va">drug</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">drug</span><span class="op">)</span></span></code></pre></div>
+<p>下面就可以使用 Nemenyi检验了。</p>
+<div class="sourceCode" id="cb135"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 也可以把kwh检验的结果作为输入</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/PMCMRplus/man/kwAllPairsNemenyiTest.html">kwAllPairsNemenyiTest</a></span><span class="op">(</span><span class="va">death_rate</span> <span class="op">~</span> <span class="va">drug</span>, data <span class="op">=</span> <span class="va">mydata</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pairwise comparisons using Tukey-Kramer-Nemenyi all-pairs test with Tukey-Dist approximation</span></span>
+<span><span class="co">## data: death_rate by drug</span></span>
+<span><span class="co">## alternative hypothesis: two.sided</span></span>
+<span><span class="co">## P value adjustment method: single-step</span></span>
+<span><span class="co">## H0</span></span>
+<span><span class="co">##                      q value  Pr(&gt;|q|)   </span></span>
+<span><span class="co">## drug_B - Drug_A == 0     2.5 0.1805089   </span></span>
+<span><span class="co">## drug_C - Drug_A == 0     4.4 0.0052932 **</span></span>
+<span><span class="co">## drug_C - drug_B == 0     1.9 0.3710425</span></span>
+<span><span class="co">## ---</span></span>
+<span><span class="co">## Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div>
+</div>
+</div>
+<div id="随记区组设计多个样本比较的-friedman-m-检验" class="section level2" number="7.4">
+<h2>
+<span class="header-section-number">7.4</span> 随记区组设计多个样本比较的 Friedman M 检验<a class="anchor" aria-label="anchor" href="#%E9%9A%8F%E8%AE%B0%E5%8C%BA%E7%BB%84%E8%AE%BE%E8%AE%A1%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84-friedman-m-%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h2>
+<div id="多个相关样本比较的friedman-m检验" class="section level3" number="7.4.1">
+<h3>
+<span class="header-section-number">7.4.1</span> 多个相关样本比较的Friedman M检验<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E7%9B%B8%E5%85%B3%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84friedman-m%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>使用课本<strong>例8-9</strong>的数据：</p>
+<div class="sourceCode" id="cb136"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">foreign</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.spss.html">read.spss</a></span><span class="op">(</span><span class="st">"datasets/例08-09.sav"</span>, to.data.frame <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## 'data.frame':    8 obs. of  4 variables:</span></span>
+<span><span class="co">##  $ a: num  8.4 11.6 9.4 9.8 8.3 8.6 8.9 7.8</span></span>
+<span><span class="co">##  $ b: num  9.6 12.7 9.1 8.7 8 9.8 9 8.2</span></span>
+<span><span class="co">##  $ c: num  9.8 11.8 10.4 9.9 8.6 9.6 10.6 8.5</span></span>
+<span><span class="co">##  $ d: num  11.7 12 9.8 12 8.6 10.6 11.4 10.8</span></span>
+<span><span class="co">##  - attr(*, "codepage")= int 65001</span></span></code></pre></div>
+<p>数据一共4列，分别是4中不同频率下的反应率。</p>
+<p>简单看下数据：</p>
+<div class="sourceCode" id="cb137"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html">boxplot</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">a</span>,<span class="va">df</span><span class="op">$</span><span class="va">b</span>,<span class="va">df</span><span class="op">$</span><span class="va">c</span>,<span class="va">df</span><span class="op">$</span><span class="va">d</span><span class="op">)</span></span></code></pre></div>
+<div class="inline-figure"><img src="1007-wilcoxn_files/figure-html/unnamed-chunk-12-1.png" width="90%"></div>
+<p>进行 Friedman M 检验前先把数据格式转换一下：</p>
+<div class="sourceCode" id="cb138"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">M</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="co"># 变成矩阵</span></span></code></pre></div>
+<p>进行 Friedman M 检验：</p>
+<div class="sourceCode" id="cb139"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/friedman.test.html">friedman.test</a></span><span class="op">(</span><span class="va">M</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Friedman rank sum test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  M</span></span>
+<span><span class="co">## Friedman chi-squared = 15.152, df = 3, p-value = 0.001691</span></span></code></pre></div>
+<p>结果和课本一致！</p>
+</div>
+<div id="多个相关样本两两比较的q检验" class="section level3" number="7.4.2">
+<h3>
+<span class="header-section-number">7.4.2</span> 多个相关样本两两比较的q检验<a class="anchor" aria-label="anchor" href="#%E5%A4%9A%E4%B8%AA%E7%9B%B8%E5%85%B3%E6%A0%B7%E6%9C%AC%E4%B8%A4%E4%B8%A4%E6%AF%94%E8%BE%83%E7%9A%84q%E6%A3%80%E9%AA%8C"><i class="fas fa-link"></i></a>
+</h3>
+<p>P126页，多个相关样本两两比较的q检验。课本上说的这个q检验，应该是<strong>quade tes</strong>。</p>
+<p>接下来就是使用R语言实现<code>quade-test</code>。但是自带的 <code><a href="https://rdrr.io/r/stats/quade.test.html">quade.test()</a></code>函数不能进行两两比较，还是要借助第三方包。</p>
+<div class="sourceCode" id="cb140"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 准备数据，也是用的课本例8-9的数据</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8.4</span>, <span class="fl">11.6</span>, <span class="fl">9.4</span>, <span class="fl">9.8</span>, <span class="fl">8.3</span>, <span class="fl">8.6</span>, <span class="fl">8.9</span>, <span class="fl">7.8</span>,</span>
+<span>    <span class="fl">9.6</span>, <span class="fl">12.7</span>, <span class="fl">9.1</span>, <span class="fl">8.7</span>, <span class="fl">8</span>, <span class="fl">9.8</span>, <span class="fl">9</span>, <span class="fl">8.2</span>,</span>
+<span>    <span class="fl">9.8</span>, <span class="fl">11.8</span>, <span class="fl">10.4</span>, <span class="fl">9.9</span>, <span class="fl">8.6</span>, <span class="fl">9.6</span>, <span class="fl">10.6</span>, <span class="fl">8.5</span>,</span>
+<span>    <span class="fl">11.7</span>, <span class="fl">12</span>, <span class="fl">9.8</span>, <span class="fl">12</span>, <span class="fl">8.6</span>, <span class="fl">10.6</span>, <span class="fl">11.4</span>, <span class="fl">10.8</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>  byrow <span class="op">=</span> <span class="cn">F</span>, nrow <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span>,<span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">##      A    B    C    D</span></span>
+<span><span class="co">## 1  8.4  9.6  9.8 11.7</span></span>
+<span><span class="co">## 2 11.6 12.7 11.8 12.0</span></span>
+<span><span class="co">## 3  9.4  9.1 10.4  9.8</span></span>
+<span><span class="co">## 4  9.8  8.7  9.9 12.0</span></span>
+<span><span class="co">## 5  8.3  8.0  8.6  8.6</span></span>
+<span><span class="co">## 6  8.6  9.8  9.6 10.6</span></span>
+<span><span class="co">## 7  8.9  9.0 10.6 11.4</span></span>
+<span><span class="co">## 8  7.8  8.2  8.5 10.8</span></span></code></pre></div>
+<p>先进行 Friedman M检验看看：</p>
+<div class="sourceCode" id="cb141"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/friedman.test.html">friedman.test</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Friedman rank sum test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  df</span></span>
+<span><span class="co">## Friedman chi-squared = 15.152, df = 3, p-value = 0.001691</span></span></code></pre></div>
+<p>接下来进行quade检验：</p>
+<div class="sourceCode" id="cb142"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">PMCMRplus</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/PMCMRplus/man/quadeAllPairsTest.html">quadeAllPairsTest</a></span><span class="op">(</span><span class="va">df</span>, dist <span class="op">=</span> <span class="st">"Normal"</span><span class="op">)</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">##  Pairwise comparisons using Quade's test with standard-normal approximation</span></span>
+<span><span class="co">## data: df</span></span>
+<span><span class="co">##   A       B       C     </span></span>
+<span><span class="co">## B 0.2200  -       -     </span></span>
+<span><span class="co">## C 0.0017  0.0644  -     </span></span>
+<span><span class="co">## D 1.7e-07 7.7e-05 0.0860</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## P value adjustment method: holm</span></span></code></pre></div>
+<p>当然也可以有更加详细的结果：</p>
+<div class="sourceCode" id="cb143"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/PMCMRplus/man/quadeAllPairsTest.html">quadeAllPairsTest</a></span><span class="op">(</span><span class="va">df</span>,dist <span class="op">=</span> <span class="st">"Normal"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/PMCMRplus/man/toTidy.html">toTidy</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">##   group1 group2 statistic      p.value alternative</span></span>
+<span><span class="co">## 1      B      A  1.226488 2.200150e-01   two.sided</span></span>
+<span><span class="co">## 2      C      A  3.526154 1.686568e-03   two.sided</span></span>
+<span><span class="co">## 3      C      B  2.299666 6.440153e-02   two.sided</span></span>
+<span><span class="co">## 4      D      A  5.549859 1.715396e-07   two.sided</span></span>
+<span><span class="co">## 5      D      B  4.323371 7.683144e-05   two.sided</span></span>
+<span><span class="co">## 6      D      C  2.023706 8.600089e-02   two.sided</span></span>
+<span><span class="co">##                                           method distribution p.adjust.method</span></span>
+<span><span class="co">## 1 Quade's testwith standard-normal approximation            z            holm</span></span>
+<span><span class="co">## 2 Quade's testwith standard-normal approximation            z            holm</span></span>
+<span><span class="co">## 3 Quade's testwith standard-normal approximation            z            holm</span></span>
+<span><span class="co">## 4 Quade's testwith standard-normal approximation            z            holm</span></span>
+<span><span class="co">## 5 Quade's testwith standard-normal approximation            z            holm</span></span>
+<span><span class="co">## 6 Quade's testwith standard-normal approximation            z            holm</span></span></code></pre></div>
+<p>这个结果和课本上也不是完全一样，不过不影响结果。还有很多其他的方法可以选择，除了这个quade检验，还可以用Nemenyi等检验方法。</p>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="aspljsffjd.html"><span class="header-section-number">6</span> 卡方检验</a></div>
+<div class="next"><a href="yruugkjh.html"><span class="header-section-number">8</span> 球对称检验</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#lidukj"><span class="header-section-number">7</span> 秩和检验</a></li>
+<li><a class="nav-link" href="#%E9%85%8D%E5%AF%B9%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84wilcoxon%E7%AC%A6%E5%8F%B7%E7%A7%A9%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.1</span> 配对样本比较的Wilcoxon符号秩检验</a></li>
+<li><a class="nav-link" href="#%E4%B8%A4%E7%8B%AC%E7%AB%8B%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84wilcoxon%E7%AC%A6%E5%8F%B7%E7%A7%A9%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.2</span> 两独立样本比较的Wilcoxon符号秩检验</a></li>
+<li>
+<a class="nav-link" href="#%E5%AE%8C%E5%85%A8%E9%9A%8F%E6%9C%BA%E8%AE%BE%E8%AE%A1%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84-kruskal-wallis-h-%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.3</span> 完全随机设计多个样本比较的 Kruskal-Wallis H 检验</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E5%A4%9A%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84kruskal-wallis-h%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.3.1</span> 多样本比较的kruskal-wallis H检验</a></li>
+<li><a class="nav-link" href="#kruskal-wallis-h%E6%A3%80%E9%AA%8C%E5%90%8E%E7%9A%84%E5%A4%9A%E9%87%8D%E6%AF%94%E8%BE%83"><span class="header-section-number">7.3.2</span> kruskal-Wallis H检验后的多重比较</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#%E9%9A%8F%E8%AE%B0%E5%8C%BA%E7%BB%84%E8%AE%BE%E8%AE%A1%E5%A4%9A%E4%B8%AA%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84-friedman-m-%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.4</span> 随记区组设计多个样本比较的 Friedman M 检验</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E7%9B%B8%E5%85%B3%E6%A0%B7%E6%9C%AC%E6%AF%94%E8%BE%83%E7%9A%84friedman-m%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.4.1</span> 多个相关样本比较的Friedman M检验</a></li>
+<li><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E7%9B%B8%E5%85%B3%E6%A0%B7%E6%9C%AC%E4%B8%A4%E4%B8%A4%E6%AF%94%E8%BE%83%E7%9A%84q%E6%A3%80%E9%AA%8C"><span class="header-section-number">7.4.2</span> 多个相关样本两两比较的q检验</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ayueme/ayueme.github.io/blob/main/1007-wilcoxn.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ayueme/ayueme.github.io/edit/main/1007-wilcoxn.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>R语言实战医学统计</strong>" was written by 阿越就是我. It was last built on 2023-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.302">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>R语言实战医学统计 - 33&nbsp; R语言生存分析</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./1033-survivalvis.html" rel="next">
+<link href="./多分类数据的ROC曲线.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1017-multireg.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1032-survival.html"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">R语言生存分析</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R语言实战医学统计</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ayueme/R_medical_stat" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">基础统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1001-ttest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">t检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1002-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">多样本均数比较的方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1003-dysanova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1004-repeatedanova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1005-ancova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1006-chisq.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1007-wilcoxon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">秩和检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1008-mauchly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1009-cochranarmitage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">R语言Cochran Armitage检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1010-anovaattention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">R语言方差分析注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1011-samplesize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1012-randomgroup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1013-rstatix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">R语言tidy风格医学统计学</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1014-batchttest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">R语言多个变量同时进行t检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1015-twocorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1016-partialcorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">偏相关和典型相关</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">高级统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1017-multireg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1018-logistic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1019-codescheme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">分类变量进行回归分析时的编码方案</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1020-discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">R语言判别分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1021-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">R语言聚类分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1022-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1023-factoranalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言因子分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-binominal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">二分类资料ROC曲线绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-survive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">生存资料ROC曲线绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-bestcut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">ROC曲线的最佳截点</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-smooth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">平滑ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-compare.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">ROC曲线的显著性检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">R语言计算AUC(ROC)注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-many.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">多指标联合诊断的ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">bootstrap ROC/AUC</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多分类数据的ROC曲线.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">多分类数据的ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1032-survival.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">R语言生存分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1033-survivalvis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">R语言生存曲线可视化</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">文献常见统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1034-finegray.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型列线图</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1035-psm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">R语言倾向性评分：匹配</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1036-pssc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">R语言倾向性评分：回归和分层</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1037-psw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">R语言倾向性评分：加权</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1038-p4trend.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd R语言实现</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1039-nonlinear.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">R语言多项式拟合</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1040-rcs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">R语言样条回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1041-subgroupanalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">R语言亚组分析及森林图绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1042-subgroup1code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./亚组分析和多因素回归的森林图.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./comparegroups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">compareGroups绘制三线表</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tableone.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">tableone绘制三线表</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./table1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">table1绘制三线表</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">gt绘制表格</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gtExtra.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">gtExtras美化表格</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gtsummary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">gtsummary绘制表格</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9999-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">其他合集</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#生存过程的描述" id="toc-生存过程的描述" class="nav-link active" data-scroll-target="#生存过程的描述"><span class="header-section-number">33.1</span> 生存过程的描述</a></li>
+  <li><a href="#生存过程的比较" id="toc-生存过程的比较" class="nav-link" data-scroll-target="#生存过程的比较"><span class="header-section-number">33.2</span> 生存过程的比较</a></li>
+  <li><a href="#cox回归" id="toc-cox回归" class="nav-link" data-scroll-target="#cox回归"><span class="header-section-number">33.3</span> Cox回归</a></li>
+  <li><a href="#时间依存协变量的cox回归和时间依存系数cox回归" id="toc-时间依存协变量的cox回归和时间依存系数cox回归" class="nav-link" data-scroll-target="#时间依存协变量的cox回归和时间依存系数cox回归"><span class="header-section-number">33.4</span> 时间依存协变量的Cox回归和时间依存系数Cox回归</a>
+  <ul class="collapse">
+  <li><a href="#对时间分层" id="toc-对时间分层" class="nav-link" data-scroll-target="#对时间分层"><span class="header-section-number">33.4.1</span> 对时间分层</a></li>
+  <li><a href="#连续性时依系数变换" id="toc-连续性时依系数变换" class="nav-link" data-scroll-target="#连续性时依系数变换"><span class="header-section-number">33.4.2</span> 连续性时依系数变换</a></li>
+  </ul></li>
+  <li><a href="#参考资料" id="toc-参考资料" class="nav-link" data-scroll-target="#参考资料"><span class="header-section-number">33.5</span> 参考资料</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ayueme/R_medical_stat/edit/main/1032-survival.qmd" class="toc-action">编辑该页面</a></p><p><a href="https://github.com/ayueme/R_medical_stat/issues/new" class="toc-action">报告问题</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">R语言生存分析</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>生存分析是临床常用统计方法，一旦和时间扯上关系，分析就变得复杂多了，此时不再是单一的因变量，还需要考虑时间给因变量和自变量带来的各种影响。</p>
+<p>本次主要演示R语言做生存分析的一些方法。比如寿命表、K-M曲线、logrank检验。</p>
+<p>本推文不涉及理论，只有实操，想要了解生存分析的理论的请自行学习。不涉及理论，并不代表理论不重要，在以后的机器学习和临床预测模型的相关推文中，会经常用到这些理论，建议大家学习一下。</p>
+<section id="生存过程的描述" class="level2" data-number="33.1">
+<h2 data-number="33.1" class="anchored" data-anchor-id="生存过程的描述"><span class="header-section-number">33.1</span> 生存过程的描述</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survminer)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: ggplot2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package 'ggplot2' was built under R version 4.2.3</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: ggpubr</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: 'survminer'</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from 'package:survival':</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="do">##     myeloma</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>使用<code>survival</code>包中的<code>lung</code>数据集用于演示，这是一份关于肺癌患者的生存数据。<code>time</code>是生存时间，以天为单位，<code>status</code>是生存状态，1代表删失，2代表死亡。但是一般在生存分析中我们喜欢用1代表死亡，用0代表删失，所以我们更改一下（其实不改也可以，你记住就行）。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> lung</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df<span class="sc">$</span>status <span class="sc">==</span> <span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ status   : num  1 1 0 1 1 0 1 1 1 1 ...</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>首先把生存时间和生存状态用<code>Surv()</code>放到一起，可以看到有<code>+</code>的就是截尾数据。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Surv</span>(<span class="at">time =</span> lung<span class="sc">$</span>time, <span class="at">event =</span> lung<span class="sc">$</span>status)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   [1]  306   455  1010+  210   883  1022+  310   361   218   166   170   654 </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  [13]  728    71   567   144   613   707    61    88   301    81   624   371 </span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  [25]  394   520   574   118   390    12   473    26   533   107    53   122 </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  [37]  814   965+   93   731   460   153   433   145   583    95   303   519 </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  [49]  643   765   735   189    53   246   689    65     5   132   687   345 </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  [61]  444   223   175    60   163    65   208   821+  428   230   840+  305 </span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  [73]   11   132   226   426   705   363    11   176   791    95   196+  167 </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  [85]  806+  284   641   147   740+  163   655   239    88   245   588+   30 </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  [97]  179   310   477   166   559+  450   364   107   177   156   529+   11 </span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="do">## [109]  429   351    15   181   283   201   524    13   212   524   288   363 </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="do">## [121]  442   199   550    54   558   207    92    60   551+  543+  293   202 </span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="do">## [133]  353   511+  267   511+  371   387   457   337   201   404+  222    62 </span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="do">## [145]  458+  356+  353   163    31   340   229   444+  315+  182   156   329 </span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="do">## [157]  364+  291   179   376+  384+  268   292+  142   413+  266+  194   320 </span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="do">## [169]  181   285   301+  348   197   382+  303+  296+  180   186   145   269+</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="do">## [181]  300+  284+  350   272+  292+  332+  285   259+  110   286   270    81 </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="do">## [193]  131   225+  269   225+  243+  279+  276+  135    79    59   240+  202+</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="do">## [205]  235+  105   224+  239   237+  173+  252+  221+  185+   92+   13   222+</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="do">## [217]  192+  183   211+  175+  197+  203+  116   188+  191+  105+  174+  177+</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>如果只是想要描述一下这份生存数据，可以使用寿命表法或者K-M曲线，在R中可以通过<code>survfit()</code>实现。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 构建生存曲线</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> df)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 寿命表，surv_summary比默认的summary()更好</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">surv_summary</span>(fit)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     time n.risk n.event n.censor       surv     std.err     upper      lower</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1      5    228       1        0 0.99561404 0.004395615 1.0000000 0.98707342</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     11    227       3        0 0.98245614 0.008849904 0.9996460 0.96556190</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     12    224       1        0 0.97807018 0.009916654 0.9972662 0.95924368</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     13    223       2        0 0.96929825 0.011786516 0.9919508 0.94716300</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 5     15    221       1        0 0.96491228 0.012628921 0.9890941 0.94132171</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 6     26    220       1        0 0.96052632 0.013425540 0.9861367 0.93558107</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 7     30    219       1        0 0.95614035 0.014184183 0.9830945 0.92992527</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 8     31    218       1        0 0.95175439 0.014910735 0.9799794 0.92434234</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 9     53    217       2        0 0.94298246 0.016284897 0.9735659 0.91335978</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 10    54    215       1        0 0.93859649 0.016939076 0.9702809 0.90794671</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 11    59    214       1        0 0.93421053 0.017574720 0.9669508 0.90257880</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 12    60    213       2        0 0.92543860 0.018798180 0.9601711 0.89196244</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 13    61    211       1        0 0.92105263 0.019389168 0.9567281 0.88670745</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 14    62    210       1        0 0.91666667 0.019968077 0.9532533 0.88148430</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 15    65    209       2        0 0.90789474 0.021093908 0.9462168 0.87112471</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 16    71    207       1        0 0.90350877 0.021642644 0.9426590 0.86598451</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 17    79    206       1        0 0.89912281 0.022182963 0.9390770 0.86086855</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 18    81    205       2        0 0.89035088 0.023240987 0.9318456 0.85070391</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 19    88    203       2        0 0.88157895 0.024272607 0.9245323 0.84062118</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 20    92    201       1        1 0.87719298 0.024779731 0.9208475 0.83560803</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 21    93    199       1        0 0.87278498 0.025286647 0.9171308 0.83058337</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 22    95    198       2        0 0.86396897 0.026285933 0.9096467 0.82058489</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 23   105    196       1        1 0.85956096 0.026778995 0.9058807 0.81560966</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 24   107    194       2        0 0.85069951 0.027763443 0.8982733 0.80564534</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 25   110    192       1        0 0.84626878 0.028250266 0.8944478 0.80068492</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 26   116    191       1        0 0.84183806 0.028733836 0.8906085 0.79573831</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="do">## 27   118    190       1        0 0.83740733 0.029214392 0.8867559 0.79080503</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="do">## 28   122    189       1        0 0.83297660 0.029692160 0.8828904 0.78588462</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 29   131    188       1        0 0.82854588 0.030167350 0.8790125 0.78097668</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="do">## 30   132    187       2        0 0.81968442 0.031110783 0.8712208 0.77119665</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="do">## 31   135    185       1        0 0.81525370 0.031579392 0.8673077 0.76632386</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="do">## 32   142    184       1        0 0.81082297 0.032046159 0.8633836 0.76146212</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="do">## 33   144    183       1        0 0.80639224 0.032511243 0.8594487 0.75661112</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="do">## 34   145    182       2        0 0.79753079 0.033436970 0.8515479 0.74694024</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="do">## 35   147    180       1        0 0.79310006 0.033897900 0.8475824 0.74211984</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="do">## 36   153    179       1        0 0.78866934 0.034357720 0.8436072 0.73730913</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="do">## 37   156    178       2        0 0.77980788 0.035274546 0.8356287 0.72771592</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="do">## 38   163    176       3        0 0.76651570 0.036644539 0.8235936 0.71339353</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="do">## 39   166    173       2        0 0.75765425 0.037555674 0.8155273 0.70388809</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="do">## 40   167    171       1        0 0.75322352 0.038010898 0.8114818 0.69914771</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="do">## 41   170    170       1        0 0.74879280 0.038466026 0.8074284 0.69441536</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="do">## 42   173    169       0        1 0.74879280 0.038466026 0.8074284 0.69441536</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="do">## 43   174    168       0        1 0.74879280 0.038466026 0.8074284 0.69441536</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="do">## 44   175    167       1        1 0.74430901 0.038932090 0.8033269 0.68962694</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="do">## 45   176    165       1        0 0.73979804 0.039403839 0.7991969 0.68481391</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="do">## 46   177    164       1        1 0.73528708 0.039875693 0.7950587 0.68000904</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="do">## 47   179    162       2        0 0.72620946 0.040831745 0.7867159 0.67035655</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a><span class="do">## 48   180    160       1        0 0.72167065 0.041310284 0.7825326 0.66554231</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="do">## 49   181    159       2        0 0.71259304 0.042268879 0.7741425 0.65593716</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="do">## 50   182    157       1        0 0.70805423 0.042749126 0.7699360 0.65114603</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="do">## 51   183    156       1        0 0.70351542 0.043230132 0.7657221 0.64636237</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="do">## 52   185    155       0        1 0.70351542 0.043230132 0.7657221 0.64636237</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="do">## 53   186    154       1        0 0.69894713 0.043718251 0.7614780 0.64155115</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="do">## 54   188    153       0        1 0.69894713 0.043718251 0.7614780 0.64155115</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="do">## 55   189    152       1        0 0.69434880 0.044213739 0.7572033 0.63671178</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="do">## 56   191    151       0        1 0.69434880 0.044213739 0.7572033 0.63671178</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="do">## 57   192    150       0        1 0.69434880 0.044213739 0.7572033 0.63671178</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="do">## 58   194    149       1        0 0.68968874 0.044723618 0.7528734 0.63180684</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="do">## 59   196    148       0        1 0.68968874 0.044723618 0.7528734 0.63180684</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="do">## 60   197    147       1        1 0.68499698 0.045241530 0.7485112 0.62687218</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="do">## 61   199    145       1        0 0.68027286 0.045767770 0.7441162 0.62190715</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="do">## 62   201    144       2        0 0.67082463 0.046824116 0.7353020 0.61200115</span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="do">## 63   202    142       1        1 0.66610051 0.047354439 0.7308831 0.60705997</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="do">## 64   203    140       0        1 0.66610051 0.047354439 0.7308831 0.60705997</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="do">## 65   207    139       1        0 0.66130842 0.047901723 0.7264037 0.60204649</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="do">## 66   208    138       1        0 0.65651633 0.048450680 0.7219163 0.59704112</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="do">## 67   210    137       1        0 0.65172424 0.049001423 0.7174208 0.59204373</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="do">## 68   211    136       0        1 0.65172424 0.049001423 0.7174208 0.59204373</span></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="do">## 69   212    135       1        0 0.64689665 0.049562270 0.7128898 0.58701260</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="do">## 70   218    134       1        0 0.64206907 0.050125134 0.7083507 0.58198951</span></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="do">## 71   221    133       0        1 0.64206907 0.050125134 0.7083507 0.58198951</span></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="do">## 72   222    132       1        1 0.63720491 0.050698710 0.7037752 0.57693155</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="do">## 73   223    130       1        0 0.63230333 0.051283424 0.6991623 0.57183791</span></span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="do">## 74   224    129       0        1 0.63230333 0.051283424 0.6991623 0.57183791</span></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="do">## 75   225    128       0        2 0.63230333 0.051283424 0.6991623 0.57183791</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="do">## 76   226    126       1        0 0.62728505 0.051898763 0.6944504 0.56661573</span></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="do">## 77   229    125       1        0 0.62226677 0.052516642 0.6897296 0.56140253</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a><span class="do">## 78   230    124       1        0 0.61724849 0.053137208 0.6849999 0.55619818</span></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="do">## 79   235    123       0        1 0.61724849 0.053137208 0.6849999 0.55619818</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a><span class="do">## 80   237    122       0        1 0.61724849 0.053137208 0.6849999 0.55619818</span></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a><span class="do">## 81   239    121       2        0 0.60704604 0.054428498 0.6753847 0.54562217</span></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="do">## 82   240    119       0        1 0.60704604 0.054428498 0.6753847 0.54562217</span></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="do">## 83   243    118       0        1 0.60704604 0.054428498 0.6753847 0.54562217</span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a><span class="do">## 84   245    117       1        0 0.60185761 0.055101203 0.6704957 0.54024596</span></span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="do">## 85   246    116       1        0 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="do">## 86   252    115       0        1 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="do">## 87   259    114       0        1 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a><span class="do">## 88   266    113       0        1 0.59666918 0.055777281 0.6655969 0.53487943</span></span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="do">## 89   267    112       1        0 0.59134178 0.056493740 0.6605811 0.52935986</span></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a><span class="do">## 90   268    111       1        0 0.58601437 0.057214008 0.6555547 0.52385081</span></span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="do">## 91   269    110       1        1 0.58068697 0.057938291 0.6505179 0.51835217</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a><span class="do">## 92   270    108       1        0 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a><span class="do">## 93   272    107       0        1 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="do">## 94   276    106       0        1 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a><span class="do">## 95   279    105       0        1 0.57531024 0.058680326 0.6454326 0.51280626</span></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a><span class="do">## 96   283    104       1        0 0.56977841 0.059470446 0.6402172 0.50708954</span></span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a><span class="do">## 97   284    103       1        1 0.56424658 0.060265393 0.6349901 0.50138454</span></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a><span class="do">## 98   285    101       2        0 0.55307338 0.061902647 0.6244165 0.48988160</span></span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a><span class="do">## 99   286     99       1        0 0.54748678 0.062729652 0.6191120 0.48414791</span></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="do">## 100  288     98       1        0 0.54190018 0.063562614 0.6137958 0.47842592</span></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="do">## 101  291     97       1        0 0.53631358 0.064401818 0.6084680 0.47271553</span></span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="do">## 102  292     96       0        2 0.53631358 0.064401818 0.6084680 0.47271553</span></span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="do">## 103  293     94       1        0 0.53060812 0.065283876 0.6030365 0.46687880</span></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a><span class="do">## 104  296     93       0        1 0.53060812 0.065283876 0.6030365 0.46687880</span></span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a><span class="do">## 105  300     92       0        1 0.53060812 0.065283876 0.6030365 0.46687880</span></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a><span class="do">## 106  301     91       1        1 0.52477726 0.066212421 0.5974962 0.46090869</span></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a><span class="do">## 107  303     89       1        1 0.51888089 0.067169680 0.5918922 0.45487570</span></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a><span class="do">## 108  305     87       1        0 0.51291674 0.068157318 0.5862225 0.44877769</span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a><span class="do">## 109  306     86       1        0 0.50695259 0.069153590 0.5805384 0.44269407</span></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="do">## 110  310     85       2        0 0.49502429 0.071173772 0.5691277 0.43056952</span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="do">## 111  315     83       0        1 0.49502429 0.071173772 0.5691277 0.43056952</span></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="do">## 112  320     82       1        0 0.48898741 0.072223700 0.5633452 0.42444435</span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="do">## 113  329     81       1        0 0.48295053 0.073284268 0.5575481 0.41833381</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a><span class="do">## 114  332     80       0        1 0.48295053 0.073284268 0.5575481 0.41833381</span></span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="do">## 115  337     79       1        0 0.47683723 0.074383257 0.5516775 0.41214973</span></span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a><span class="do">## 116  340     78       1        0 0.47072393 0.075494166 0.5457918 0.40598083</span></span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="do">## 117  345     77       1        0 0.46461064 0.076617562 0.5398911 0.39982704</span></span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a><span class="do">## 118  348     76       1        0 0.45849734 0.077754031 0.5339753 0.39368826</span></span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="do">## 119  350     75       1        0 0.45238404 0.078904180 0.5280446 0.38756443</span></span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a><span class="do">## 120  351     74       1        0 0.44627074 0.080068634 0.5220991 0.38145549</span></span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a><span class="do">## 121  353     73       2        0 0.43404415 0.082443090 0.5101637 0.36928207</span></span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a><span class="do">## 122  356     71       0        1 0.43404415 0.082443090 0.5101637 0.36928207</span></span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a><span class="do">## 123  361     70       1        0 0.42784352 0.083689321 0.5041055 0.36311858</span></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a><span class="do">## 124  363     69       2        0 0.41544226 0.086235271 0.4919424 0.35083836</span></span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a><span class="do">## 125  364     67       1        1 0.40924162 0.087536643 0.4858376 0.34472158</span></span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a><span class="do">## 126  371     65       2        0 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a><span class="do">## 127  376     63       0        1 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a><span class="do">## 128  382     62       0        1 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="do">## 129  384     61       0        1 0.39664957 0.090283246 0.4734305 0.33232098</span></span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a><span class="do">## 130  387     60       1        0 0.39003875 0.091834363 0.4669574 0.32579034</span></span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="do">## 131  390     59       1        0 0.38342792 0.093411868 0.4604644 0.31927978</span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a><span class="do">## 132  394     58       1        0 0.37681710 0.095017143 0.4539514 0.31278928</span></span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a><span class="do">## 133  404     57       0        1 0.37681710 0.095017143 0.4539514 0.31278928</span></span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="do">## 134  413     56       0        1 0.37681710 0.095017143 0.4539514 0.31278928</span></span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="do">## 135  426     55       1        0 0.36996588 0.096772712 0.4472339 0.30604732</span></span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a><span class="do">## 136  428     54       1        0 0.36311466 0.098561472 0.4404935 0.29932852</span></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="do">## 137  429     53       1        0 0.35626344 0.100385300 0.4337299 0.29263289</span></span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a><span class="do">## 138  433     52       1        0 0.34941222 0.102246185 0.4269433 0.28596045</span></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a><span class="do">## 139  442     51       1        0 0.34256100 0.104146240 0.4201335 0.27931128</span></span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a><span class="do">## 140  444     50       1        1 0.33570978 0.106087711 0.4133006 0.27268545</span></span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a><span class="do">## 141  450     48       1        0 0.32871582 0.108156668 0.4063345 0.26592397</span></span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a><span class="do">## 142  455     47       1        0 0.32172187 0.110274202 0.3993431 0.25918807</span></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a><span class="do">## 143  457     46       1        0 0.31472792 0.112443281 0.3923261 0.25247790</span></span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a><span class="do">## 144  458     45       0        1 0.31472792 0.112443281 0.3923261 0.25247790</span></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a><span class="do">## 145  460     44       1        0 0.30757501 0.114769476 0.3851616 0.24561738</span></span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a><span class="do">## 146  473     43       1        0 0.30042210 0.117156914 0.3779689 0.23878538</span></span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a><span class="do">## 147  477     42       1        0 0.29326919 0.119609626 0.3707476 0.23198214</span></span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a><span class="do">## 148  511     41       0        2 0.29326919 0.119609626 0.3707476 0.23198214</span></span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a><span class="do">## 149  519     39       1        0 0.28574947 0.122397820 0.3632207 0.22480203</span></span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a><span class="do">## 150  520     38       1        0 0.27822975 0.125269565 0.3556585 0.21765764</span></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a><span class="do">## 151  524     37       2        0 0.26319030 0.131289244 0.3404266 0.20347744</span></span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a><span class="do">## 152  529     35       0        1 0.26319030 0.131289244 0.3404266 0.20347744</span></span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a><span class="do">## 153  533     34       1        0 0.25544941 0.134640748 0.3325916 0.19619977</span></span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a><span class="do">## 154  543     33       0        1 0.25544941 0.134640748 0.3325916 0.19619977</span></span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a><span class="do">## 155  550     32       1        0 0.24746662 0.138333639 0.3245387 0.18869779</span></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="do">## 156  551     31       0        1 0.24746662 0.138333639 0.3245387 0.18869779</span></span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="do">## 157  558     30       1        0 0.23921773 0.142427599 0.3162481 0.18095008</span></span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a><span class="do">## 158  559     29       0        1 0.23921773 0.142427599 0.3162481 0.18095008</span></span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a><span class="do">## 159  567     28       1        0 0.23067424 0.146997865 0.3076975 0.17293157</span></span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a><span class="do">## 160  574     27       1        0 0.22213075 0.151765851 0.2990832 0.16497774</span></span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a><span class="do">## 161  583     26       1        0 0.21358726 0.156752465 0.2904045 0.15708959</span></span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a><span class="do">## 162  588     25       0        1 0.21358726 0.156752465 0.2904045 0.15708959</span></span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a><span class="do">## 163  613     24       1        0 0.20468779 0.162428228 0.2814175 0.14887877</span></span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a><span class="do">## 164  624     23       1        0 0.19578832 0.168401942 0.2723521 0.14074818</span></span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a><span class="do">## 165  641     22       1        0 0.18688885 0.174710378 0.2632068 0.13269961</span></span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a><span class="do">## 166  643     21       1        0 0.17798938 0.181396440 0.2539797 0.12473524</span></span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a><span class="do">## 167  654     20       1        0 0.16908991 0.188510603 0.2446686 0.11685766</span></span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a><span class="do">## 168  655     19       1        0 0.16019044 0.196112784 0.2352708 0.10906995</span></span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a><span class="do">## 169  687     18       1        0 0.15129097 0.204274810 0.2257834 0.10137573</span></span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a><span class="do">## 170  689     17       1        0 0.14239151 0.213083712 0.2162028 0.09377928</span></span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a><span class="do">## 171  705     16       1        0 0.13349204 0.222646211 0.2065248 0.08628565</span></span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a><span class="do">## 172  707     15       1        0 0.12459257 0.233094916 0.1967446 0.07890080</span></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a><span class="do">## 173  728     14       1        0 0.11569310 0.244597108 0.1868568 0.07163182</span></span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a><span class="do">## 174  731     13       1        0 0.10679363 0.257367445 0.1768548 0.06448724</span></span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a><span class="do">## 175  735     12       1        0 0.09789416 0.271686878 0.1667313 0.05747732</span></span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a><span class="do">## 176  740     11       0        1 0.09789416 0.271686878 0.1667313 0.05747732</span></span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a><span class="do">## 177  765     10       1        0 0.08810474 0.291418720 0.1559751 0.04976720</span></span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="do">## 178  791      9       1        0 0.07831533 0.314346559 0.1450170 0.04229358</span></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a><span class="do">## 179  806      8       0        1 0.07831533 0.314346559 0.1450170 0.04229358</span></span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a><span class="do">## 180  814      7       1        0 0.06712742 0.350176075 0.1333431 0.03379322</span></span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a><span class="do">## 181  821      6       0        1 0.06712742 0.350176075 0.1333431 0.03379322</span></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a><span class="do">## 182  840      5       0        1 0.06712742 0.350176075 0.1333431 0.03379322</span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a><span class="do">## 183  883      4       1        0 0.05034557 0.453824434 0.1225342 0.02068546</span></span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a><span class="do">## 184  965      3       0        1 0.05034557 0.453824434 0.1225342 0.02068546</span></span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a><span class="do">## 185 1010      2       0        1 0.05034557 0.453824434 0.1225342 0.02068546</span></span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a><span class="do">## 186 1022      1       0        1 0.05034557 0.453824434 0.1225342 0.02068546</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>画出生存曲线，横坐标是生存时间，纵坐标是生存率。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsurvplot</span>(fit,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">conf.int =</span> <span class="cn">TRUE</span>, <span class="co"># 可信区间</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">palette=</span> <span class="st">'blue'</span>, <span class="co"># 更改配色</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">surv.median.line =</span> <span class="st">"hv"</span>, <span class="co"># 中位生存时间</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>() <span class="co"># 更改主题</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="生存过程的比较" class="level2" data-number="33.2">
+<h2 data-number="33.2" class="anchored" data-anchor-id="生存过程的比较"><span class="header-section-number">33.2</span> 生存过程的比较</h2>
+<p>如果通过某个变量把数据分为多组，然后检验不同组别之间的生存时间（生存曲线）有无差别，则可以通过logrank检验或者breslow检验。</p>
+<p>在R语言中通过<code>survdiff()</code>实现logrank检验。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">survdiff</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex, <span class="at">data =</span> df)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## survdiff(formula = Surv(time, status) ~ sex, data = df)</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="do">##         N Observed Expected (O-E)^2/E (O-E)^2/V</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">## sex=1 138      112     91.6      4.55      10.3</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="do">## sex=2  90       53     73.4      5.68      10.3</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  Chisq= 10.3  on 1 degrees of freedom, p= 0.001</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>可以用神包<code>broom</code>提取数据：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(fit)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 2 × 4</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   sex       N   obs   exp</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 1       138   112  91.6</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 2        90    53  73.4</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">glance</span>(fit)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 1 × 3</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="do">##   statistic    df p.value</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="do">##       &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 1      10.3     1 0.00131</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>对于不同组别之间生存曲线的检验，也可以通过K-M图示的方法：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit.logrank <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex, <span class="at">data =</span> df)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 这一步输出太多，我注释掉了，可以自己运行看看</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># surv_summary(fit.logrank) # 可以查看寿命表</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>通过<code>ggsurvplot()</code>进行可视化，非常多的细节可以修改，超级详细的教程可以参考我的另一篇推文：<a href="https://mp.weixin.qq.com/s/HUz644esLu4kRBOMZcdOOw">R语言生存曲线的可视化(超详细)</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsurvplot</span>(fit.logrank, </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> df,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">surv.median.line =</span> <span class="st">"hv"</span>, <span class="co"># Add medians survival</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Change legends: title &amp; labels</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend.title =</span> <span class="st">"Sex"</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">legend.labs =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Add p-value and tervals</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">pval =</span> <span class="cn">TRUE</span>, <span class="co"># 这里P值直接写数字也行</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">conf.int =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Add risk table</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">risk.table =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">tables.height =</span> <span class="fl">0.2</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">tables.theme =</span> <span class="fu">theme_cleantable</span>(),</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">ncensor.plot =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Color palettes. Use custom color: c("#E7B800", "#2E9FDF"),</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>           <span class="co"># or brewer color (e.g.: "Dark2"), or ggsci color (e.g.: "jco")</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>           <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>),</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(), <span class="co"># Change ggplot2 theme</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>           </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>           <span class="co"># Change font size, style and color</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">main =</span> <span class="st">"Survival curve"</span>,</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>           <span class="at">font.main =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="st">"bold"</span>, <span class="st">"darkblue"</span>),</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>           <span class="at">font.x =</span> <span class="fu">c</span>(<span class="dv">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"red"</span>),</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>           <span class="at">font.y =</span> <span class="fu">c</span>(<span class="dv">14</span>, <span class="st">"bold.italic"</span>, <span class="st">"darkred"</span>),</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>           <span class="at">font.tickslab =</span> <span class="fu">c</span>(<span class="dv">12</span>, <span class="st">"plain"</span>, <span class="st">"darkgreen"</span>)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="576"></p>
+</div>
+</div>
+<p>自带的<code>surv_cutpoint()</code>可用于寻找最佳切点，但是只能用于连续性数据。</p>
+<p>使用<code>myeloma</code>数据进行演示。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 0. Load some data</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(myeloma)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(myeloma)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="do">##          molecular_group chr1q21_status treatment event  time   CCND1 CRIM1</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50986      Cyclin D-1       3 copies       TT2     0 69.24  9908.4 420.9</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50988      Cyclin D-2       2 copies       TT2     0 66.43 16698.8  52.0</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50989           MMSET       2 copies       TT2     0 66.50   294.5 617.9</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50990           MMSET       3 copies       TT2     1 42.67   241.9  11.9</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50991             MAF           &lt;NA&gt;       TT2     0 65.00   472.6  38.8</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50992    Hyperdiploid       2 copies       TT2     0 65.20   664.1  16.9</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="do">##          DEPDC1    IRF4   TP53   WHSC1</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50986  523.5 16156.5   10.0   261.9</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50988   21.1 16946.2 1056.9   363.8</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50989  192.9  8903.9 1762.8 10042.9</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50990  184.7 11894.7  946.8  4931.0</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50991  212.0  7563.1  361.4   165.0</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50992  341.6 16023.4 2096.3   569.2</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>寻找最佳切点：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Determine the optimal cutpoint of variables</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>res.cut <span class="ot">&lt;-</span> <span class="fu">surv_cutpoint</span>(myeloma, <span class="at">time =</span> <span class="st">"time"</span>, <span class="at">event =</span> <span class="st">"event"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"DEPDC1"</span>, <span class="st">"WHSC1"</span>, <span class="st">"CRIM1"</span>) <span class="co"># 找这3个变量的最佳切点</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                         )</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res.cut)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="do">##        cutpoint statistic</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="do">## DEPDC1    279.8  4.275452</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="do">## WHSC1    3205.6  3.361330</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="do">## CRIM1      82.3  1.968317</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>查看根据最佳切点进行分组后的数据分布情况：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Plot cutpoint for DEPDC1</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(res.cut, <span class="st">"DEPDC1"</span>, <span class="at">palette =</span> <span class="st">"npg"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="do">## $DEPDC1</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>根据最佳切点重新划分数据，这样数据就根据最佳切点变成了高表达/低表达组。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Categorize variables</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>res.cat <span class="ot">&lt;-</span> <span class="fu">surv_categorize</span>(res.cut)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res.cat)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="do">##           time event DEPDC1 WHSC1 CRIM1</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50986 69.24     0   high   low  high</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50988 66.43     0    low   low   low</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50989 66.50     0    low  high  high</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50990 42.67     1    low  high   low</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50991 65.00     0    low   low   low</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="do">## GSM50992 65.20     0   high   low   low</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>根据最佳切点绘制生存曲线：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Fit survival curves and visualize</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"survival"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(time, event) <span class="sc">~</span>DEPDC1, <span class="at">data =</span> res.cat)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsurvplot</span>(fit, <span class="at">data =</span> res.cat, <span class="at">risk.table =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>确定最佳切点的R包还有非常多，其他的后续会再介绍。</p>
+<p>下次继续介绍Cox回归。</p>
+</section>
+<section id="cox回归" class="level2" data-number="33.3">
+<h2 data-number="33.3" class="anchored" data-anchor-id="cox回归"><span class="header-section-number">33.3</span> Cox回归</h2>
+<p>上次介绍了生存分析中的寿命表、K-M曲线、logrank检验、最佳切点的寻找等，本次主要介绍Cox回归。</p>
+<p>本推文不涉及理论，只有实操，想要了解生存分析的理论的请自行学习。</p>
+<p>使用<code>survival</code>包中的<code>lung</code>数据集用于演示，这是一份关于肺癌患者的生存数据。<code>time</code>是生存时间，以天为单位，<code>status</code>是生存状态，1代表删失，2代表死亡。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survminer)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(lung)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ status   : num  2 2 1 2 2 1 2 2 2 2 ...</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ sex      : num  1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ph.ecog  : num  1 0 0 1 0 1 2 2 1 2 ...</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>可以使用cox回归探索危险因素。分类变量需要变为因子型，这样在进行回归时会自动进行哑变量设置。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lung<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(lung<span class="sc">$</span>sex, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"female"</span>,<span class="st">"male"</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>lung<span class="sc">$</span>ph.ecog <span class="ot">&lt;-</span> <span class="fu">factor</span>(lung<span class="sc">$</span>ph.ecog, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"asymptomatic"</span>, <span class="st">"symptomatic"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                                                <span class="st">'in bed &lt;50%'</span>,<span class="st">'in bed &gt;50%'</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(lung)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 'data.frame':    228 obs. of  10 variables:</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ inst     : num  3 3 3 5 1 12 7 11 1 7 ...</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ time     : num  306 455 1010 210 883 ...</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ status   : num  2 2 1 2 2 1 2 2 2 2 ...</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age      : num  74 68 56 57 60 74 68 71 53 61 ...</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ sex      : Factor w/ 2 levels "female","male": 1 1 1 1 1 1 2 2 1 1 ...</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ph.ecog  : Factor w/ 4 levels "asymptomatic",..: 2 1 1 2 1 2 3 3 2 3 ...</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ ph.karno : num  90 90 90 90 100 50 70 60 70 70 ...</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ pat.karno: num  100 90 90 60 90 80 60 80 80 70 ...</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ meal.cal : num  1175 1225 NA 1150 NA ...</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ wt.loss  : num  NA 15 15 11 0 0 10 1 16 34 ...</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>拟合多因素Cox回归模型，这里我们只用<code>sex/age</code>两个变量做演示：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fit.cox <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> sex <span class="sc">+</span> age <span class="sc">+</span> ph.karno, <span class="at">data =</span> lung)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看结果</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit.cox)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="do">## coxph(formula = Surv(time, status) ~ sex + age + ph.karno, data = lung)</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   n= 227, number of events= 164 </span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="do">##    (1 observation deleted due to missingness)</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="do">##               coef exp(coef)  se(coef)      z Pr(&gt;|z|)   </span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="do">## sexmale  -0.497170  0.608249  0.167713 -2.964  0.00303 **</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="do">## age       0.012375  1.012452  0.009405  1.316  0.18821   </span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">## ph.karno -0.013322  0.986767  0.005880 -2.266  0.02348 * </span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="do">##          exp(coef) exp(-coef) lower .95 upper .95</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="do">## sexmale     0.6082     1.6441    0.4378    0.8450</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="do">## age         1.0125     0.9877    0.9940    1.0313</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="do">## ph.karno    0.9868     1.0134    0.9755    0.9982</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Concordance= 0.637  (se = 0.025 )</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Likelihood ratio test= 18.81  on 3 df,   p=3e-04</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Wald test            = 18.73  on 3 df,   p=3e-04</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Score (logrank) test = 19.05  on 3 df,   p=3e-04</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果解读和logistic回归的结果解读类似：<a href="https://mp.weixin.qq.com/s/3A8ZiegbsQRjOSw2T3jldg">R语言logistic回归的细节解读</a></p>
+<ul>
+<li><code>coef</code>是回归系数，</li>
+<li><code>exp(coef)</code>是HR值，</li>
+<li><code>se(coef)</code>是回归系数的标准误，</li>
+<li><code>z</code>是Wald检验的z值，</li>
+<li><code>Pr(&gt;|z|)</code>是回归系数的P值，</li>
+<li><code>lower .95/upper .95</code>是HR值的95%可信区间。</li>
+</ul>
+<p><code>Concordance= 0.645</code>是Cox回归的C-index，最后给出了<code>Likelihood ratio test</code>似然比检验的统计量、自由度、P值；<code>Wald test</code>的统计量、自由度、P值；<code>Score (logrank) test</code>的统计量、自由度、P值。</p>
+<p>想获得<em>整洁的结果</em>不需要自己提取，只要用神包<code>broom</code>即可：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>broom<span class="sc">::</span><span class="fu">tidy</span>(fit.cox, <span class="at">exponentiate =</span> T, <span class="at">conf.int =</span> T)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 3 × 7</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   term     estimate std.error statistic p.value conf.low conf.high</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 sexmale     0.608   0.168       -2.96 0.00303    0.438     0.845</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 age         1.01    0.00940      1.32 0.188      0.994     1.03 </span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 ph.karno    0.987   0.00588     -2.27 0.0235     0.975     0.998</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><code>estimate</code>：HR值（exp(coef)）</li>
+<li><code>std.error</code>：回归系数的标准误（se(coef)）</li>
+<li><code>statistic</code>：Wald检验的z值</li>
+<li><code>p.value</code>：回归系数的P值</li>
+<li><code>conf.low/conf.high</code>：HR的95%的可信区间</li>
+</ul>
+<p>构建好Cox回归后，也可以用函数单独提取想要的结果，以下图片展示了可用于提取模型信息的函数，和logistic回归差不多：</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_16-45-39.png" class="img-fluid" width="215"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_16-46-10.png" class="img-fluid" width="210"></p>
+</div>
+</div>
+<p>进行Cox回归必须要符合等比例风险假设，关于什么是等比例风险假设，可以参考郑老师的这篇文章：<a href="https://mp.weixin.qq.com/s/l1Sd_nB9XY11FZMuda7xBg">生存分析COX回归，小心你的数据不符合应用条件</a></p>
+<p>等比例风险的检验可以通过很多方法进行，比如K-M曲线，一般如果有交叉，那么可能不符合等比例风险假设，还可以通过各种残差分布来检验。</p>
+<p>下面是Cox回归的等比例风险假设检验，检验方法是基于Schoenfeld残差：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ftest <span class="ot">&lt;-</span> <span class="fu">cox.zph</span>(fit.cox)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>ftest</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="do">##           chisq df      p</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="do">## sex       3.085  1 0.0790</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="do">## age       0.478  1 0.4892</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="do">## ph.karno  8.017  1 0.0046</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="do">## GLOBAL   10.359  3 0.0157</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>可以看到<code>ph.karno</code>的P值是小于0.05的，其实是不满足等比例风险假设的，下一篇推文会说到不符合等比例风险假设时该怎么办。</p>
+<p>这种方法是基于Schoenfeld残差，检验结果可以通过图示画出来：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survminer)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggcoxzph</span>(ftest)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>可以看到<code>sex</code>和<code>age</code>的回归系数随着时间变化基本没啥变化，稳定在0水平线上，和上面的检验结果一样。</p>
+<p>还可以通过以下方式查看残差的变化：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggcoxdiagnostics</span>(fit.cox, <span class="at">type =</span> <span class="st">"schoenfeld"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: `gather_()` was deprecated in tidyr 1.2.0.</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ Please use `gather()` instead.</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ The deprecated feature was likely used in the survminer package.</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   Please report the issue at &lt;https://github.com/kassambara/survminer/issues&gt;.</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="do">## `geom_smooth()` using formula = 'y ~ x'</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>这张图反映的也是回归系数随时间的变化趋势，和上面的图意思一样，如果符合比例风险假设，那么结果应该是一条水平线，从图示来看，这3个变量都是有点问题的，但是真实数据往往不可能是完美的，很少有完全符合要求的数据。</p>
+<p>除了Schoenfeld残差外，<code>ggcoxdiagnostics()</code>还支持其他类型，比如：“martingale”, “deviance”, “score”,“dfbetas” and “scaledsch”在，只需要在<code>type</code>参数中提供合适的类型即可。</p>
+<p><code>cox</code>回归也是回归分析的一种，可以计算出回归系数和95%的可信区间，因此结果可以通过森林图展示：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 为了森林图好看点，多选几个变量</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>fit.cox <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> . , <span class="at">data =</span> lung)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggforest</span>(fit.cox, <span class="at">data =</span> lung,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">main =</span> <span class="st">"Hazard ratio"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">cpositions =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.15</span>, <span class="fl">0.35</span>), <span class="co"># 更改前三列的相对位置</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">fontsize =</span> <span class="fl">0.7</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">refLabel =</span> <span class="st">"reference"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">noDigits =</span> <span class="dv">2</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>这个结果如果你觉得不好看，或者你还有其他的森林图想做到统一的样式，可以考虑我公众号中介绍的画森林图的方法进行个性化定制:</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/nc1c4WpAcPPga_TPE8P0zw">画一个好看的森林图</a></li>
+<li><a href="https://mp.weixin.qq.com/s/TLXBPzDMB3-HjlqlRgclbA">用更简单的方式画森林图</a></li>
+<li><a href="https://mp.weixin.qq.com/s/9C2DbxdKT9Q5mgbHBjgQrQ">R语言画森林图系列3</a></li>
+<li><a href="https://mp.weixin.qq.com/s/6woCHlYQQDTVDPeTQrlleQ">R语言画森林图系列4</a></li>
+<li><a href="https://mp.weixin.qq.com/s/jxeQwxtdljWktRqYID-NWw">ggplot2绘制森林图(有亚组和没亚组)</a></li>
+</ul>
+<p>以上是Cox回归的主要内容，大家有问题可以加群或者评论区留言。</p>
+</section>
+<section id="时间依存协变量的cox回归和时间依存系数cox回归" class="level2" data-number="33.4">
+<h2 data-number="33.4" class="anchored" data-anchor-id="时间依存协变量的cox回归和时间依存系数cox回归"><span class="header-section-number">33.4</span> 时间依存协变量的Cox回归和时间依存系数Cox回归</h2>
+<p>之前分别介绍了生存分析中的寿命表法、K-M曲线、logrank检验，以及Cox回归的构建、可视化以及比例风险检验的内容。</p>
+<p>本次主要介绍如果数据不符合PH假设时采取的方法。</p>
+<p>关于时依协变量、时依系数的基础知识，大家可以参考这几篇文章：</p>
+<ul>
+<li>survival包的案例介绍：<a href="https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf">Using Time Dependent Covariates and Time Dependent Coefcients in the Cox Model</a></li>
+<li>医咖会：<a href="https://mp.weixin.qq.com/s/CSwO42ucfeKipHl32NoOCA">一文详解时依协变量</a></li>
+<li>7code：<a href="https://mp.weixin.qq.com/s/sBJ8Xg_e3uBfUnDOIPoxug">含时依协变量的Cox回归</a></li>
+</ul>
+<p>如果不能满足PH假设，可以考虑使用时依协变量或者时依系数Cox回归，时依协变量和时依系数是两个概念，简单来说就是如果一个协变量本身会随着时间而改变，这种叫时依协变量，如果是协变量的系数随着时间改变，这种叫时依系数。</p>
+<p>这里以survival包的veteran数据集为例，演示如何处理此类不符合PH检验的情况。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(veteran)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 'data.frame':    137 obs. of  8 variables:</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ trt     : num  1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ celltype: Factor w/ 4 levels "squamous","smallcell",..: 1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ time    : num  72 411 228 126 118 10 82 110 314 100 ...</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ status  : num  1 1 1 1 1 1 1 1 1 0 ...</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ karno   : num  60 70 60 60 70 20 40 80 50 70 ...</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ diagtime: num  7 5 3 9 11 5 10 29 18 6 ...</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ age     : num  69 64 38 63 65 49 69 68 43 70 ...</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  $ prior   : num  0 10 0 10 10 0 10 0 0 0 ...</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>这个数据集中的变量解释如下图：</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_16-49-39.png" class="img-fluid" width="171"></p>
+</div>
+</div>
+<p>首先构建普通的Cox回归，进行等比例风险假设，这里只选择了<code>trt/prior/karno</code>3个变量，而且<code>trt/prior</code>作为分类变量并没有转换为因子型，因为二分类变量数值型和因子型的结果是一样的，转不转换没啥影响！</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> prior <span class="sc">+</span> karno, <span class="at">data =</span> veteran)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行PH检验</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>zp <span class="ot">&lt;-</span> <span class="fu">cox.zph</span>(fit)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>zp</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="do">##         chisq df       p</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="do">## trt     0.288  1 0.59125</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="do">## prior   2.168  1 0.14087</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="do">## karno  12.138  1 0.00049</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="do">## GLOBAL 18.073  3 0.00042</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>可以看到变量<code>karno</code>的P值小于0.05，是不满足PH假设的。</p>
+<p>通过图形化方法查看PH检验的结果：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#op &lt;- par(mfrow=c(1,3))</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(zp)</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#par(op)</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co">#ggcoxdiagnostics(fit, type = "schoenfeld")</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(zp[<span class="dv">3</span>])</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>) <span class="co"># 0水平线</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span>fit<span class="sc">$</span>coef[<span class="dv">3</span>], <span class="at">col=</span><span class="st">"green"</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">lty=</span><span class="dv">2</span>) </span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>黑色实线以及两侧的虚线是<code>karno</code>的系数随着时间变化的曲线，绿色虚线是假设<code>karno</code>符合PH检验时的总体估计线，红色实线是参考线。</p>
+<p>这张图反映了<code>karno</code>变量的系数随着时间的改变，<code>karno</code>偏离的比较厉害（上面注释掉的代码可以都运行看看其他变量的情况），系数最开始接近-0.05，然后逐渐趋于0，最后又开始趋向-0.05，所以它的系数是一致在随着时间改变的，不符合比例风险假设。</p>
+<section id="对时间分层" class="level3" data-number="33.4.1">
+<h3 data-number="33.4.1" class="anchored" data-anchor-id="对时间分层"><span class="header-section-number">33.4.1</span> 对时间分层</h3>
+<p>这种情况下一个比较简单的解决方式是<strong>对时间使用分层函数</strong>。根据上面的图示我们知道<code>karno</code>的系数大概分为3层（3段），可以根据两个拐点进行分层，通过<code>survival</code>中的<code>survSplit()</code>实现。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>vet2 <span class="ot">&lt;-</span> <span class="fu">survSplit</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> ., <span class="at">data=</span> veteran, </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cut=</span><span class="fu">c</span>(<span class="dv">90</span>, <span class="dv">180</span>), <span class="co"># 两个拐点把时间分为3层（3段）</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">episode=</span> <span class="st">"tgroup"</span>, </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">id=</span><span class="st">"id"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>vet2[<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>, <span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"tstart"</span>, <span class="st">"time"</span>, <span class="st">"status"</span>, <span class="st">"tgroup"</span>, <span class="st">"age"</span>, <span class="st">"karno"</span>)]</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   id tstart time status tgroup age karno</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  1      0   72      1      1  69    60</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  2      0   90      0      1  64    70</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  2     90  180      0      2  64    70</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  2    180  411      1      3  64    70</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  3      0   90      0      1  38    60</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  3     90  180      0      2  38    60</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 7  3    180  228      1      3  38    60</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果多了两列：<code>tstart/tgroup</code>。</p>
+<p>受试者1（id编号为1）在第72天的时候死了，所以数据和之前一样。受试者2和3（id为2和3）虽然时间在变，但是直到第3层才死去，<code>karno</code>的值没有变化。</p>
+<p>重新拟合Cox模型，此时<code>tgroup</code>是分好的层，所以要用<code>strata()</code>，另外<code>karno</code>会随着时间变化，和时间有交互，所以用<code>karno:strata(tgroup)</code>。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 注意此时Surv()的用法！</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>fit2 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, time, status) <span class="sc">~</span> trt <span class="sc">+</span> prior <span class="sc">+</span> karno<span class="sc">:</span><span class="fu">strata</span>(tgroup), <span class="at">data =</span> vet2)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>fit2</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="do">## coxph(formula = Surv(tstart, time, status) ~ trt + prior + karno:strata(tgroup), </span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     data = vet2)</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="do">##                                   coef exp(coef)  se(coef)      z        p</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="do">## trt                          -0.011025  0.989035  0.189062 -0.058    0.953</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="do">## prior                        -0.006107  0.993912  0.020355 -0.300    0.764</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="do">## karno:strata(tgroup)tgroup=1 -0.048755  0.952414  0.006222 -7.836 4.64e-15</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="do">## karno:strata(tgroup)tgroup=2  0.008050  1.008083  0.012823  0.628    0.530</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="do">## karno:strata(tgroup)tgroup=3 -0.008349  0.991686  0.014620 -0.571    0.568</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Likelihood ratio test=63.04  on 5 df, p=2.857e-12</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="do">## n= 225, number of events= 128</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果表明<code>karno</code>这个变量只有在<code>tgroup=1</code>（第1层，前3个月）才有意义，后面两层是没有意义的。</p>
+<p>再次进行PH检验：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cox.zph</span>(fit2)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="do">##                      chisq df     p</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="do">## trt                   1.72  1 0.189</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="do">## prior                 3.81  1 0.051</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="do">## karno:strata(tgroup)  3.04  3 0.385</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="do">## GLOBAL                8.03  5 0.154</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>这时<code>karno:strata(tgroup)</code>就满足了等比例风险假设。</p>
+</section>
+<section id="连续性时依系数变换" class="level3" data-number="33.4.2">
+<h3 data-number="33.4.2" class="anchored" data-anchor-id="连续性时依系数变换"><span class="header-section-number">33.4.2</span> 连续性时依系数变换</h3>
+<p>除了对时间进行分层外，还有一种解决方法。</p>
+<p>上面的图中我们可以看出<code>karno</code>系数随时间变化的曲线明显不是线性的，我们可以通过数据变换把它变成类似线性的，比如取<code>log</code>，这种变换通过<code>tt(time transform)</code>函数实现。</p>
+<p>这种方法实际上是通过<code>tt()</code>函数构建了一个时依协变量，但是这样做是为了解决系数随着时间改变的问题（也就是为了解决时依系数的问题）。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>fit3 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> prior <span class="sc">+</span> karno <span class="sc">+</span> <span class="fu">tt</span>(karno), <span class="co"># 对karno进行变换</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> veteran, </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">tt =</span> <span class="cf">function</span>(x, t, ...) x <span class="sc">*</span> <span class="fu">log</span>(t<span class="sc">+</span><span class="dv">20</span>) <span class="co"># 具体变换方式</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>              )</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>fit3</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="do">## coxph(formula = Surv(time, status) ~ trt + prior + karno + tt(karno), </span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="do">##     data = veteran, tt = function(x, t, ...) x * log(t + 20))</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="do">##                coef exp(coef)  se(coef)      z        p</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="do">## trt        0.016478  1.016614  0.190707  0.086  0.93115</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="do">## prior     -0.009317  0.990726  0.020296 -0.459  0.64619</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="do">## karno     -0.124662  0.882795  0.028785 -4.331 1.49e-05</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="do">## tt(karno)  0.021310  1.021538  0.006607  3.225  0.00126</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Likelihood ratio test=53.84  on 4 df, p=5.698e-11</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a><span class="do">## n= 137, number of events= 128</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>此时<code>karno</code>的时依系数估计为：-0.124662 * log(t + 20)。</p>
+<p>在构建时依协变量时，可以选择<strong>x * t、x * log(t)、x * log(t + 20)、x * log(t + 200)等等</strong>，没有明确的规定，要结合结果和图示进行选择，可以参考冯国双老师的文章：<a href="https://mp.weixin.qq.com/s/CSwO42ucfeKipHl32NoOCA" title="医咖会时依协变量">一文详解时依协变量</a>。</p>
+<p>我们可以把现在的时依系数估计和经过变换后的的PH检验画在一起，看看变换后的效果：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 变换后的PH检验</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>zp <span class="ot">&lt;-</span> <span class="fu">cox.zph</span>(fit, <span class="at">transform =</span> <span class="cf">function</span>(time) <span class="fu">log</span>(time <span class="sc">+</span> <span class="dv">20</span>))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 画图</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(zp[<span class="dv">3</span>])</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="at">col=</span><span class="st">"red"</span>) <span class="co"># 0水平线</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span>fit<span class="sc">$</span>coef[<span class="dv">3</span>], <span class="at">col=</span><span class="st">"green"</span>, <span class="at">lwd=</span><span class="dv">2</span>, <span class="at">lty=</span><span class="dv">2</span>) <span class="co"># 整体估计</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit3)[<span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>],<span class="at">lwd=</span><span class="dv">2</span>,<span class="at">lty=</span><span class="dv">3</span>,<span class="at">col=</span><span class="st">"blue"</span>) <span class="co"># 现在的估计</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1032-survival_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>可以看到变换后结果好多了（蓝色虚线，和黑色曲线相比较），虽然还是有一点倾斜。</p>
+<p>以上是两种处理不满足PH假设的方法，实际还有很多种方法，比较常用的是对时间进行分层，其他方法有机会继续介绍。</p>
+</section>
+</section>
+<section id="参考资料" class="level2" data-number="33.5">
+<h2 data-number="33.5" class="anchored" data-anchor-id="参考资料"><span class="header-section-number">33.5</span> 参考资料</h2>
+<ol type="1">
+<li>http://www.sthda.com/english/wiki/survival-analysis-basics</li>
+<li>https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html</li>
+<li>survival包帮助文档</li>
+<li>https://mp.weixin.qq.com/s/2rwxeaF_M0UnqPi2F9JNxA</li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./多分类数据的ROC曲线.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">多分类数据的ROC曲线</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./1033-survivalvis.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">R语言生存曲线可视化</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">R语言实战医学统计 was written by 阿越.</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">本书由 <a href="https://quarto.org/">Quarto</a> 强力驱动.</div>
+  </div>
+</footer>
+
+
+
+</body></html>

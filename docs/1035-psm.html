@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.302">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>R语言实战医学统计 - 36&nbsp; R语言倾向性评分：匹配</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./1036-pssc.html" rel="next">
+<link href="./1034-finegray.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1034-finegray.html">文献常见统计分析</a></li><li class="breadcrumb-item"><a href="./1035-psm.html"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">R语言倾向性评分：匹配</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R语言实战医学统计</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ayueme/R_medical_stat" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">基础统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1001-ttest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">t检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1002-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">多样本均数比较的方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1003-dysanova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1004-repeatedanova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1005-ancova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1006-chisq.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1007-wilcoxon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">秩和检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1008-mauchly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1009-cochranarmitage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">R语言Cochran Armitage检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1010-anovaattention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">R语言方差分析注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1011-samplesize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1012-randomgroup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1013-rstatix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">R语言tidy风格医学统计学</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1014-batchttest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">R语言多个变量同时进行t检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1015-twocorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1016-partialcorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">偏相关和典型相关</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">高级统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1017-multireg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1018-logistic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1019-codescheme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">分类变量进行回归分析时的编码方案</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1020-discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">R语言判别分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1021-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">R语言聚类分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1022-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1023-factoranalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言因子分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-binominal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">二分类资料ROC曲线绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-survive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">生存资料ROC曲线绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-bestcut.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">ROC曲线的最佳截点</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-smooth.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">平滑ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-compare.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">ROC曲线的显著性检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">R语言计算AUC(ROC)注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-many.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">多指标联合诊断的ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./roc-bootstrap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">bootstrap ROC/AUC</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多分类数据的ROC曲线.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">多分类数据的ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1032-survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">R语言生存分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1033-survivalvis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">R语言生存曲线可视化</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">文献常见统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1034-finegray.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型列线图</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1035-psm.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">R语言倾向性评分：匹配</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1036-pssc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">R语言倾向性评分：回归和分层</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1037-psw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">R语言倾向性评分：加权</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1038-p4trend.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd R语言实现</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1039-nonlinear.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">R语言多项式拟合</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1040-rcs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">R语言样条回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1041-subgroupanalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">R语言亚组分析及森林图绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1042-subgroup1code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./亚组分析和多因素回归的森林图.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./comparegroups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">compareGroups绘制三线表</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tableone.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">tableone绘制三线表</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./table1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">47</span>&nbsp; <span class="chapter-title">table1绘制三线表</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">48</span>&nbsp; <span class="chapter-title">gt绘制表格</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gtExtra.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">49</span>&nbsp; <span class="chapter-title">gtExtras美化表格</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./gtsummary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">50</span>&nbsp; <span class="chapter-title">gtsummary绘制表格</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9999-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">其他合集</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#准备数据" id="toc-准备数据" class="nav-link active" data-scroll-target="#准备数据"><span class="header-section-number">36.1</span> 准备数据</a></li>
+  <li><a href="#matchit包进行psm" id="toc-matchit包进行psm" class="nav-link" data-scroll-target="#matchit包进行psm"><span class="header-section-number">36.2</span> matchIt包进行PSM</a>
+  <ul class="collapse">
+  <li><a href="#使用随机森林计算ps" id="toc-使用随机森林计算ps" class="nav-link" data-scroll-target="#使用随机森林计算ps"><span class="header-section-number">36.2.1</span> 使用随机森林计算PS</a></li>
+  </ul></li>
+  <li><a href="#主要匹配方法选择" id="toc-主要匹配方法选择" class="nav-link" data-scroll-target="#主要匹配方法选择"><span class="header-section-number">36.3</span> 主要匹配方法选择</a></li>
+  <li><a href="#匹配后数据的平衡性检验" id="toc-匹配后数据的平衡性检验" class="nav-link" data-scroll-target="#匹配后数据的平衡性检验"><span class="header-section-number">36.4</span> 匹配后数据的平衡性检验</a>
+  <ul class="collapse">
+  <li><a href="#cobalt包" id="toc-cobalt包" class="nav-link" data-scroll-target="#cobalt包"><span class="header-section-number">36.4.1</span> cobalt包</a></li>
+  <li><a href="#统计检验衡量均衡性" id="toc-统计检验衡量均衡性" class="nav-link" data-scroll-target="#统计检验衡量均衡性"><span class="header-section-number">36.4.2</span> 统计检验衡量均衡性</a></li>
+  </ul></li>
+  <li><a href="#结果可视化" id="toc-结果可视化" class="nav-link" data-scroll-target="#结果可视化"><span class="header-section-number">36.5</span> 结果可视化</a></li>
+  <li><a href="#不平衡怎么办" id="toc-不平衡怎么办" class="nav-link" data-scroll-target="#不平衡怎么办"><span class="header-section-number">36.6</span> 不平衡怎么办？</a></li>
+  <li><a href="#其他问题" id="toc-其他问题" class="nav-link" data-scroll-target="#其他问题"><span class="header-section-number">36.7</span> 其他问题</a></li>
+  <li><a href="#参考资料" id="toc-参考资料" class="nav-link" data-scroll-target="#参考资料"><span class="header-section-number">36.8</span> 参考资料</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/ayueme/R_medical_stat/edit/main/1035-psm.qmd" class="toc-action">编辑该页面</a></p><p><a href="https://github.com/ayueme/R_medical_stat/issues/new" class="toc-action">报告问题</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">R语言倾向性评分：匹配</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>倾向性评分（Propensity Score, PS）是一种控制混杂因素的统计学方法，通过倾向性评分的方法，可以把基线控制在可比的水平，这样就可以比较处理因素带来的差异了。</p>
+<p>比如，现在要比较A,B两种方法治疗肥胖的效果，随机分两组，分别使用A,B两种方法半年，看哪个方法效果好。一般收集到的病人性别、年龄、身高、体重、家族史、生活习惯、收入水平、生活地区等都是不一样的，这些混杂因素不控制，你很难说清楚到底是两种方法的效果还是混杂因素导致的。</p>
+<p>利用倾向性评分就可以控制这些混杂，但是控制混杂因素的方法非常多，不要拘泥于此。对于类似上面这种情况，你还可以用协方差分析、多因素分析（统计学中的3大回归！线性回归、逻辑回归、Cox回归）、分层分析等，也可以起到控制混杂因素的效果，这些在之前的推文中全都有涉及，大家可以自行查看。</p>
+<p>倾向性评分最大的优势是将多个混杂因素的影响用一个综合的值来表示，即<strong>倾向性评分值（Propensity Score, PS）</strong>，从而降低协变量的维度，因此该方法尤其适用于协变量较多的情况。</p>
+<p>倾向性评分的一般步骤为： 1. 估计 PS 值； 2. 利用 PS 值均衡协变量分布； 3. 均衡性检验及模型评价； 4. 处理效应估计。</p>
+<p>其中，PS 值的估计是<strong>以处理因素作为因变量，其他混杂因素作为自变量</strong>，通过建立一个模型（可以是传统的回归模型，也可以是机器学习方法）来估计每个研究对象接受处理因素的可能性。</p>
+<p>目前用于估计 PS 值的方法有 logistic 回归，Probit 回归、神经网络、支持向量机、分类与回归数、Boosting 算法、SuperLearner 等。其中 logistic 回归是目前最常用的方法。</p>
+<p>到底用什么方法，并没有标准，有些人喜欢复杂的机器学习方法，有的则喜欢传统的逻辑回归，并没有优劣之分，选择合适的就好。有的人觉得机器学习方法不好解释，比如神经网络，但是也有人认为计算PS只是一个小小的步骤，更多的精力应该放在计算出来的PS是否能完美的平衡数据上，PS的计算方法不好解释就不解释了，反正不是主要问题。</p>
+<p>倾向性评分只是一个分数（P值），自己并没有均衡协变量（混杂因素）的能力，利用 PS 值均衡组间协变量分布的方法有匹配（matching）、分层（stratification）、协变量调整（covariate adjustment）和加权（weighting）等。4种方法均有各自的特点和局限，参考下图：</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_16-57-54.png" class="img-fluid" width="398"></p>
+</div>
+</div>
+<p>其中协变量调整又可以称为倾向性评分回归、倾向性评分矫正等。</p>
+<p>用于倾向性评分的数据要进行一些预处理，比如<strong>缺失值处理</strong>，这在倾向性评分中是很重要的一部分内容！但是这里并没有过多演示这部分内容，因为缺失值处理是通用技能！处理缺失值的方法很多，也是没有统一的标准，选择合适的即可。比如直接删除，用常数值代替，用均值/中位数等代替，算法插补（KNN、随机森林等），没有统一的标准。缺失值处理的一些方法，也可以参考这篇推文：<a href="https://mp.weixin.qq.com/s/L7a1CTqkndYcpmszNReucg">我常用的缺失值插补方法</a></p>
+<section id="准备数据" class="level2" data-number="36.1">
+<h2 data-number="36.1" class="anchored" data-anchor-id="准备数据"><span class="header-section-number">36.1</span> 准备数据</h2>
+<p>下面的数据及演示的方法主要参考了这篇文章：10.21037/atm-20-3998。大家感兴趣的可以去阅读原文。</p>
+<p>我们虚构一个数据，用于演示研究吸烟对心血管疾病的影响，性别和年龄作为混杂因素。</p>
+<ul>
+<li>CVD：结果变量，1是有心血管疾病，0是没有</li>
+<li>x.Age：年龄</li>
+<li>x.Gender：0是女，1是男</li>
+<li>Smoke：1吸烟，0不吸烟，是我们的处理因素</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2020</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x.Gender <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="fu">c</span>(<span class="dv">400</span>,<span class="dv">600</span>)) <span class="co"># 400女 600男</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x.Age <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">abs</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="at">mean=</span><span class="dv">45</span>, <span class="at">sd=</span><span class="dv">15</span>)))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 对于这个数据来说，实际PS（tps）是可以计算出来的，如果这里不理解，也问题不大！</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> (x.Age <span class="sc">-</span> <span class="dv">45</span>) <span class="sc">/</span> <span class="dv">15</span> <span class="sc">-</span> (x.Age<span class="dv">-45</span>) <span class="sc">^</span> <span class="dv">2</span> <span class="sc">/</span> <span class="dv">100</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> x.Gender</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>tps <span class="ot">&lt;-</span> <span class="fu">exp</span>(z) <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(z)) </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Smoke <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">runif</span>(<span class="dv">1000</span>) <span class="sc">&lt;</span> tps)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>z.y <span class="ot">&lt;-</span> x.Gender <span class="sc">+</span> <span class="fl">0.3</span><span class="sc">*</span>x.Age <span class="sc">+</span> <span class="dv">5</span><span class="sc">*</span>Smoke <span class="sc">-</span> <span class="dv">20</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">exp</span>(z.y) <span class="sc">/</span> (<span class="dv">1</span><span class="sc">+</span><span class="fu">exp</span>(z.y))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>CVD <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">runif</span>(<span class="dv">1000</span>) <span class="sc">&lt;</span> y)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>x.Age.mask <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, <span class="fl">0.2</span>) <span class="co"># 随机产生几个缺失值</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>x.Age <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(x.Age.mask<span class="sc">==</span><span class="dv">1</span>, <span class="cn">NA</span>, x.Age)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 原始数据长这样：</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(x.Age, x.Gender, Smoke, CVD)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   x.Age x.Gender Smoke CVD</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 1    51        0     1   0</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 2    50        0     0   0</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 3    29        0     0   0</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 4    28        0     0   0</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 5     3        0     0   0</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 6    56        0     1   1</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>首先可以看一下原始数据的基线资料表，用的是<code>tableone</code>这个包，之前也做过介绍，做基线资料表的R包还有非常多，比如：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/V1K2ysKU5PtPW4H-xrYyZg">使用compareGroups包1行代码生成基线资料表</a></li>
+<li><a href="https://mp.weixin.qq.com/s/NUWH-I5a_eBepQyAaz0ZUw">使用R语言快速绘制三线表</a></li>
+<li><a href="https://mp.weixin.qq.com/s/GJydbFVZbB4zMp8rYnk5Hw">tableone？table1？傻傻分不清楚</a></li>
+<li><a href="https://mp.weixin.qq.com/s/N9MpBq9Rb6DlqQD0Eza7UQ">超强的gtSummary ≈ gt + comparegroups ??</a></li>
+</ul>
+<p>为什么用<code>tableone</code>呢？因为它能计算SMD（后面会介绍这个SMD的作用），而且其他教程都是用的它…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tableone)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>table2 <span class="ot">&lt;-</span> <span class="fu">CreateTableOne</span>(<span class="at">vars =</span> <span class="fu">c</span>(<span class="st">'x.Age'</span>, <span class="st">'x.Gender'</span>, <span class="st">'CVD'</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> data,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">factorVars =</span> <span class="fu">c</span>(<span class="st">'x.Gender'</span>, <span class="st">'CVD'</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strata =</span> <span class="st">'Smoke'</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">smd=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>table2 <span class="ot">&lt;-</span> <span class="fu">print</span>(table2,<span class="at">smd=</span><span class="cn">TRUE</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">showAllLevels =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">noSpaces =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">printToggle =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>table2</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Stratified by Smoke</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="do">##                     level 0               1              p        test SMD    </span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="do">##   n                 ""    "549"           "451"          ""       ""   ""     </span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="do">##   x.Age (mean (SD)) ""    "42.76 (19.69)" "47.04 (8.14)" "&lt;0.001" ""   "0.284"</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="do">##   x.Gender (%)      "0"   "299 (54.5)"    "101 (22.4)"   "&lt;0.001" ""   "0.698"</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                     "1"   "250 (45.5)"    "350 (77.6)"   ""       ""   ""     </span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   CVD (%)           "0"   "452 (82.3)"    "230 (51.0)"   "&lt;0.001" ""   "0.705"</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="do">##                     "1"   "97 (17.7)"     "221 (49.0)"   ""       ""   ""</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#write.csv(table2, file = "Table2_before_matching.csv")</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果中可以看出<code>x.Age</code>和<code>x.Gender</code>两个变量在两组间是有差异的，其中<code>SMD(standardized mean differences)</code>可以用来衡量协变量在不同组间的差异；除此之外，这两个变量的P值在不同性别间也是小于0.001的，说明不同性别间这两个变量是有明显差别的。</p>
+<p>如果此时直接探讨是否吸烟对<code>CVD</code>的影响，很有可能会得到错误的答案，经典的辛普森悖论就是由于混杂因素的存在才导致出现神奇的结果（比如有种药对男人有效，对女人也有效，但是对全人类就没效了！）。</p>
+<p>所以要想办法解决<code>x.Age</code>和<code>x.Gender</code>两个变量在两组间的差异，达到基线可比的目的。今天要介绍的方法就是倾向性评分匹配。</p>
+</section>
+<section id="matchit包进行psm" class="level2" data-number="36.2">
+<h2 data-number="36.2" class="anchored" data-anchor-id="matchit包进行psm"><span class="header-section-number">36.2</span> matchIt包进行PSM</h2>
+<p><code>matchIt</code>包支持非常多计算PS的方法，比如自带的logistic回归、广义可加模型、分类和回归树、神经网络，除了自带的方法，也支持其他方法计算的PS。这些方法通过<code>distance</code>参数指定：</p>
+<ul>
+<li><code>distance</code>:指定PS的计算方法，默认是logit，即logistic回归，GAMlogit（广义可加模型），rpart（决策树）,nnet(神经网络)，除此之外，也可以是使用其他包或方法计算的PS值！</li>
+<li><code>distance.options</code>:当你选择好了方法之后，不同的方法会有不同的额外选项。</li>
+</ul>
+<p>下面演示使用logistic回归的方法计算PS，这里我们的处理因素是二分类变量(是否吸烟)，可以通过逻辑回归计算这些协变量（也就是混杂因素）的P值，这个P值就是倾向性评分。<strong>倾向性评分就是P值！</strong>（有网友指出这样说不对，应该是参数pi表示事件的概率）</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 这里为了方便演示直接删掉了缺失值</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>data.complete <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(data)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 因变量是处理因素，自变量是需要平衡的协变量</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> data.complete,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">distance =</span> <span class="st">"logit"</span> <span class="co"># 选择logistic回归</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                 )</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>m.out</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="do">## A matchit object</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  - method: 1:1 nearest neighbor matching without replacement</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  - distance: Propensity score</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="do">##              - estimated with logistic regression</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="do">##  - number of obs.: 831 (original), 738 (matched)</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="do">##  - target estimand: ATT</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="do">##  - covariates: x.Age, x.Gender</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>上面是一个简单的结果，告诉你匹配方法是1:1无放回最近邻匹配，计算方法是logistic回归，匹配了738例等信息。</p>
+<p>可通过以下方法获得算法估计的PS值：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> m.out<span class="sc">$</span>distance</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(eps)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 831</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(eps)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">##         1         2         3         4         5         6 </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.2583040 0.2545807 0.1847661 0.1818430 0.1200378 0.2774451</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>一开始我们已经计算出了实际PS值（tps），所以我们可以画一个tps和估计ps的散点图，以tps为横坐标，以eps为纵坐标：</p>
+<div class="cell" data-fig.asp="1">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: package 'ggplot2' was built under R version 4.2.3</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 去掉缺失值</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>tps.comp <span class="ot">&lt;-</span> tps[<span class="fu">complete.cases</span>(data)]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>Smoke.comp <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(Smoke[<span class="fu">complete.cases</span>(data)])</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">True=</span>tps.comp, <span class="at">Estimated=</span>eps, <span class="at">Smoke=</span>Smoke.comp)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x=</span>True, <span class="at">y=</span>Estimated, <span class="at">colour=</span>Smoke)) <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>, <span class="at">colour=</span><span class="st">"#990000"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">expand_limits</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1035-psm_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>可以看到拟合结果非常烂！因为一开始计算tps时用了平方（二次项），但是使用logistic估计ps时并没有用平方。</p>
+<p>我们把公式也变成平方即可，此时再画一个拟合图就完美一致了！如下所示：</p>
+<div class="cell" data-fig.asp="1">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 对x.Age平方</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span><span class="fu">I</span>(x.Age<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span>x.Age <span class="sc">+</span>x.Gender,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>data.complete) </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> m.out<span class="sc">$</span>distance</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>tps.comp <span class="ot">&lt;-</span> tps[<span class="fu">complete.cases</span>(data)]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>Smoke.comp <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(Smoke[<span class="fu">complete.cases</span>(data)])</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">True=</span>tps.comp, <span class="at">Estimated=</span>eps, <span class="at">Smoke=</span>Smoke.comp)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x=</span>True, <span class="at">y=</span>Estimated, <span class="at">colour=</span>Smoke)) <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>, <span class="at">colour=</span><span class="st">"#990000"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">expand_limits</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1035-psm_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>此时的PS是通过logistic回归计算的，既然PS就是P值，当然你完全可以用<code>glm</code>自己计算，通过以下方法：</p>
+<div class="cell" data-fig.asp="1">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">glm</span>(Smoke<span class="sc">~</span><span class="fu">I</span>(x.Age<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span>x.Age <span class="sc">+</span>x.Gender, <span class="at">data=</span>data.complete,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">family =</span> <span class="fu">binomial</span>())</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>tmp.df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">estimated =</span> tmp<span class="sc">$</span>fitted.values,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">true =</span> tps.comp,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">Smoke=</span>Smoke.comp)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp.df, <span class="fu">aes</span>(true, estimated))<span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color=</span>Smoke))<span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">intercept=</span><span class="dv">0</span>,<span class="at">slope=</span><span class="dv">1</span>, <span class="at">colour=</span><span class="st">"#990000"</span>, <span class="at">linetype=</span><span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expand_limits</span>(<span class="at">x=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),<span class="at">y=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1035-psm_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>看这个结果和<code>matchit</code>得到的结果完全一样！</p>
+<p>改变<code>matchit()</code>的参数即可使用不同的算法估计PS，比如下面是分类和回归树及神经网络方法：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cart</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span>data.complete,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">distance=</span><span class="st">'rpart'</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># nnet</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="at">data=</span>data.complete,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="at">distance=</span><span class="st">'nnet'</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="at">distance.options=</span><span class="fu">list</span>(<span class="at">size=</span><span class="dv">16</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>默认的只有4种方法，但是完全可以自己通过其他方法计算PS，然后提供给<code>distance</code>参数即可！非常强大！</p>
+<section id="使用随机森林计算ps" class="level3" data-number="36.2.1">
+<h3 data-number="36.2.1" class="anchored" data-anchor-id="使用随机森林计算ps"><span class="header-section-number">36.2.1</span> 使用随机森林计算PS</h3>
+<p>默认没提供随机森林的算法，我们可以通过其他R包计算，反正PS就是P值，只要拿到P值就可以了！</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 使用随机森林构建模型</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="do">## randomForest 4.7-1.1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Type rfNews() to see new features/changes/bug fixes.</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: 'randomForest'</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from 'package:ggplot2':</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     margin</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>data.complete<span class="sc">$</span>Smoke <span class="ot">&lt;-</span> <span class="fu">factor</span>(data.complete<span class="sc">$</span>Smoke)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>rf.out <span class="ot">&lt;-</span> <span class="fu">randomForest</span>(Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender, <span class="at">data=</span>data.complete)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>rf.out</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="do">##  randomForest(formula = Smoke ~ x.Age + x.Gender, data = data.complete) </span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="do">##                Type of random forest: classification</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                      Number of trees: 500</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="do">## No. of variables tried at each split: 1</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="do">##         OOB estimate of  error rate: 22.5%</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Confusion matrix:</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="do">##     0   1 class.error</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 0 360 102   0.2207792</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  85 284   0.2303523</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>从随机森林结果中提取预测类别为1（有CVD）的概率：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> rf.out<span class="sc">$</span>votes[,<span class="dv">2</span>] <span class="co"># Estimated PS</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>接下来只要把这个eps提供给<code>distance</code>参数即可：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">matchit</span>(<span class="at">formula=</span>Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">data=</span>data.complete,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">distance=</span>eps, <span class="co"># 自己估计的eps</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">method=</span><span class="st">'nearest'</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">replace=</span><span class="cn">TRUE</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">discard=</span><span class="st">'both'</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">ratio=</span><span class="dv">2</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="do">## A matchit object</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  - method: 2:1 nearest neighbor matching with replacement</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  - distance: User-defined [common support]</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  - common support: units from both groups dropped</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  - number of obs.: 831 (original), 520 (matched)</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  - target estimand: ATT</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  - covariates: x.Age, x.Gender</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>其他方法也是同理，只需要提供P值即可，但并不是越复杂的方法效果越好哦！不信的话可以把几种方法得到的eps都画一个散点拟合图看看效果，这个数据是逻辑回归最好哈！</p>
+</section>
+</section>
+<section id="主要匹配方法选择" class="level2" data-number="36.3">
+<h2 data-number="36.3" class="anchored" data-anchor-id="主要匹配方法选择"><span class="header-section-number">36.3</span> 主要匹配方法选择</h2>
+<p>在确定了使用哪种算法计算PS后，匹配方法也是需要注意的一个问题，需要注意以下几个方面，首先是匹配方法的选择（method），然后是采样手段（有无放回），相似度的度量（卡钳值或其他），匹配比例（1:1或1：多）。</p>
+<ul>
+<li><code>method</code>:
+<ul>
+<li>默认的匹配方法是最近邻匹配nearest，其他方法还有</li>
+<li>“exact” (exact matching),</li>
+<li>“full” (optimal full matching),</li>
+<li>“optimal” (optimal pair matching),</li>
+<li>“cardinality”(cardinality and template matching),</li>
+<li>“subclass” (subclassification),</li>
+<li>“genetic” (genetic matching),</li>
+<li>“cem” (coarsened exact matching)</li>
+</ul></li>
+</ul>
+<p>每个匹配方法都提供了详细的解释，大家感兴趣的自己查看即可。</p>
+<ul>
+<li><p><code>caliper</code>:卡钳值，也就是配对标准，两组的概率值（PS）差距在这个标准内才会配对。这里的卡钳值是PS标准差的倍数，默认是不设置卡钳值。还有一个<code>std.caliper</code>参数，默认是TRUE，如果设置FALSE，你设置的卡钳值就直接是PS的倍数。</p></li>
+<li><p><code>replace</code>:能否重复匹配，默认是FALSE，意思是假如干预组的1号匹配到了对照组的A，那A就不能再和其他的干预组进行匹配了。</p></li>
+<li><p><code>ratio</code>:设置匹配比例，干预组:对照组到底是1比几，默认为1:1。ratio=2即是干预组：对照组是1:2。所以一般要求数据的对照组数量多于干预组才行。如果对照组比干预组多出很多，完全可以设置1:n进行匹配，这样还能损失更少的样本信息，但是一般也不会超过1:4。</p></li>
+<li><p><code>reestimate</code>:如果是TRUE，丢掉没匹配上的样本，PS会使用剩下的样本重新计算PS，如果是FALSE或者不写就不会重新计算PS。</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_17-00-16.png" class="img-fluid" width="406"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_17-00-55.png" class="img-fluid" width="388"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="figs/Snipaste_2023-04-05_17-01-28.png" class="img-fluid" width="412"></p>
+</div>
+</div>
+<p>比如下面是一个<strong>有放回的，1:2的，最近邻匹配</strong>：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>data.complete,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">distance=</span><span class="st">'logit'</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method=</span><span class="st">'nearest'</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replace=</span><span class="cn">TRUE</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ratio=</span><span class="dv">2</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>可以通过<code>m.out$match.matrix</code>获取配好的对子：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(m.out<span class="sc">$</span>match.matrix)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    [,1]  [,2] </span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  "204" "23" </span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  "283" "163"</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 "56"  "30" </span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 12 "41"  "28" </span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 20 "79"  "38" </span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 26 "84"  "70"</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>第一列是干预组的序号，第二列是和干预组配好对的，对照组的序号。</p>
+<p><code>m.out$discarded</code>查看某个样本是否被丢弃：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(m.out<span class="sc">$</span>discarded)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">## FALSE </span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   831</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="匹配后数据的平衡性检验" class="level2" data-number="36.4">
+<h2 data-number="36.4" class="anchored" data-anchor-id="匹配后数据的平衡性检验"><span class="header-section-number">36.4</span> 匹配后数据的平衡性检验</h2>
+<p>检查匹配后的数据，主要是看协变量在不同组间是否已经均衡了（是不是没有差异了）。</p>
+<p>关于这个倾向性评分匹配后数据的平衡性检验，文献中比较推荐使用<code>SMD</code>和<code>VR(variance ratio)</code>，SMD&lt;0.25说明均衡了，VR&gt;2.0或者VR&lt;0.5说明很不均衡（越接近1越均衡）！</p>
+<p>但其实也可以用假设检验，比如t检验、卡方检验等，也是没有统一的标准！</p>
+<p>做一个1:1无放回的最近邻匹配：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>data.complete,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">distance=</span><span class="st">'logit'</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method=</span><span class="st">'nearest'</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replace=</span><span class="cn">FALSE</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ratio =</span> <span class="dv">1</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>通过<code>summary()</code>查看匹配前后，不同组间协变量的各种统计量。通常建议选择<code>standardize = TRUE</code>查看标准后的各协变量的平衡性指标：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m.out,<span class="at">standardize =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="do">## matchit(formula = Smoke ~ x.Age + x.Gender, data = data.complete, </span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="do">##     method = "nearest", distance = "logit", replace = FALSE, </span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="do">##     ratio = 1)</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Summary of Balance for All Data:</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="do">## distance        0.5170        0.3858          0.9050     0.6205    0.2069</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age          47.0352       42.7619          0.5247     0.1711    0.1306</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender        0.7832        0.4502          0.8081          .    0.3330</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="do">##          eCDF Max</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="do">## distance   0.4833</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age      0.3629</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender   0.3330</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Summary of Balance for Matched Data:</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="do">##          Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="do">## distance        0.5170        0.4380          0.5448     0.7605    0.1298</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age          47.0352       47.3035         -0.0329     0.1908    0.1072</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender        0.7832        0.5610          0.5393          .    0.2222</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="do">##          eCDF Max Std. Pair Dist.</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="do">## distance   0.4255          0.7108</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age      0.2439          2.2436</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender   0.2222          0.5393</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Sample Sizes:</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="do">##           Control Treated</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="do">## All           462     369</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="do">## Matched       369     369</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="do">## Unmatched      93       0</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="do">## Discarded       0       0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果主要是3个部分：</p>
+<ul>
+<li><code>Summary of Balance for All Data</code>：原始数据中干预组和对照组的平均PS值和平均协变量，SMD,VR，每个协变量和PS的CDF（cumulative distribution functions）的均值和最大值</li>
+<li><code>Summary of Balance for Matched Data</code>：匹配后数据的指标</li>
+<li><code>Sample Sizes</code>：样本数量</li>
+</ul>
+<p>通过观察比较匹配前后的数据指标可知，<code>x.Age</code>均衡了（0.0329&lt;0.1），但是<code>x.Gender</code>并没有均衡(0.5393&gt;0.1)！</p>
+<p>这个默认的函数在计算SMD的时候会把分类变量按照连续性变量进行计算，所以计算结果是有一些问题的。在一开始计算匹配前数据的SMD时我们用的是<code>tableone</code>这个包，匹配后数据的SMD理论上也是可以用这个包的：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 首先提取匹配后的数据</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>mdata <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tableone)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>table5 <span class="ot">&lt;-</span> <span class="fu">CreateTableOne</span>(<span class="at">vars =</span> <span class="fu">c</span>(<span class="st">'x.Age'</span>, <span class="st">'x.Gender'</span>, <span class="st">'CVD'</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                         <span class="at">data =</span> mdata,</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                         <span class="at">factorVars =</span> <span class="fu">c</span>(<span class="st">'x.Gender'</span>, <span class="st">'CVD'</span>),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                         <span class="at">strata =</span> <span class="st">'Smoke'</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                         <span class="at">smd=</span><span class="cn">TRUE</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>table5 <span class="ot">&lt;-</span> <span class="fu">print</span>(table5, <span class="at">smd=</span><span class="cn">TRUE</span>, <span class="at">showAllLevels =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">noSpaces =</span> <span class="cn">TRUE</span>, <span class="at">printToggle =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>table5</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Stratified by Smoke</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="do">##                     level 0               1              p        test SMD    </span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="do">##   n                 ""    "369"           "369"          ""       ""   ""     </span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="do">##   x.Age (mean (SD)) ""    "47.30 (18.65)" "47.04 (8.14)" "0.800"  ""   "0.019"</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="do">##   x.Gender (%)      "0"   "162 (43.9)"    "80 (21.7)"    "&lt;0.001" ""   "0.487"</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="do">##                     "1"   "207 (56.1)"    "289 (78.3)"   ""       ""   ""     </span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   CVD (%)           "0"   "287 (77.8)"    "190 (51.5)"   "&lt;0.001" ""   "0.572"</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="do">##                     "1"   "82 (22.2)"     "179 (48.5)"   ""       ""   ""</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>这个<code>tableone</code>计算的<code>x.Gender</code>的SMD是0.487，也是表明这个变量并没有被均衡。</p>
+<p>但是<code>tableone</code>这个包计算的SMD也是有一些问题的，具体原因大家自己读文献吧：Zhang Z, Kim HJ, Lonjon G, et al.&nbsp;Balance diagnostics after propensity score matching. Ann Transl Med 2019;7:16.</p>
+<p>所以推荐大家使用<code>cobalt</code>包进行平衡性指标的计算。</p>
+<section id="cobalt包" class="level3" data-number="36.4.1">
+<h3 data-number="36.4.1" class="anchored" data-anchor-id="cobalt包"><span class="header-section-number">36.4.1</span> cobalt包</h3>
+<p>使用<code>cobalt</code>包进行平衡性指标的计算，这个包很专业，专门处理这类匹配问题的，大家可以去它的官网学习更多的细节！</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cobalt)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="do">##  cobalt (Version 4.4.1, Build Date: 2022-11-03)</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Attaching package: 'cobalt'</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="do">## The following object is masked from 'package:MatchIt':</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="do">##     lalonde</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># m.threshold表示SMD的阈值，小于这个阈值的协变量是平衡的</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.tab</span>(m.out, <span class="at">m.threshold =</span> <span class="fl">0.1</span>, <span class="at">un =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance Measures</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="do">##              Type Diff.Un Diff.Adj        M.Threshold</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="do">## distance Distance  0.9050   0.5448                   </span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age     Contin.  0.5247  -0.0329     Balanced, &lt;0.1</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender   Binary  0.3330   0.2222 Not Balanced, &gt;0.1</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for mean differences</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                    count</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;0.1         1</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;0.1     1</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest mean difference</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="do">##  Variable Diff.Adj        M.Threshold</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="do">##  x.Gender   0.2222 Not Balanced, &gt;0.1</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Sample sizes</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="do">##           Control Treated</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="do">## All           462     369</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a><span class="do">## Matched       369     369</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Unmatched      93       0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>x.Age</code>的SMD和默认是一样的，但是<code>x.Gender</code>是0.2222，比默认的小多了！</p>
+<p>这个结果比默认的结果更可靠，具体原因大家自己去读上面那篇文献。</p>
+<p>计算VR，结果中并没有计算<code>x.Gender</code>的VR，而且根据VR来看，<code>x.Age</code>也没有均衡。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.tab</span>(m.out, <span class="at">v.threshold =</span> <span class="dv">2</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance Measures</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="do">##              Type Diff.Adj V.Ratio.Adj      V.Threshold</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="do">## distance Distance   0.5448      0.7605     Balanced, &lt;2</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age     Contin.  -0.0329      0.1908 Not Balanced, &gt;2</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender   Binary   0.2222           .                 </span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for variance ratios</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                  count</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;2         1</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;2     1</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest variance ratio</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  Variable V.Ratio.Adj      V.Threshold</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="do">##     x.Age      0.1908 Not Balanced, &gt;2</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Sample sizes</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="do">##           Control Treated</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="do">## All           462     369</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Matched       369     369</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Unmatched      93       0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="统计检验衡量均衡性" class="level3" data-number="36.4.2">
+<h3 data-number="36.4.2" class="anchored" data-anchor-id="统计检验衡量均衡性"><span class="header-section-number">36.4.2</span> 统计检验衡量均衡性</h3>
+<p>除了SMD和VR之外，传统的统计检验也可以用于检查匹配后的数据有没有均衡！</p>
+<p>首先取出匹配好的数据：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mdata <span class="ot">&lt;-</span> <span class="fu">match.data</span>(m.out)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mdata)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="do">##    x.Age x.Gender Smoke CVD  distance weights subclass</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     51        0     1   0 0.2583040       1        1</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     50        0     0   0 0.2545807       1        2</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 6     56        0     1   1 0.2774451       1      229</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 9     71        0     0   1 0.3397803       1      142</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 10    47        0     1   1 0.2436248       1      345</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 12    59        0     1   1 0.2893402       1        2</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>其中<code>distance</code>是估计的PS，<code>weights</code>是权重，因为我们用的是1:1无放回匹配，所以全都是1。</p>
+<p>下面用t检验看看匹配后干预组和对照组的<code>x.Age</code>有没有差异：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(x.Age <span class="sc">~</span> Smoke, <span class="at">data =</span> mdata)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Welch Two Sample t-test</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  x.Age by Smoke</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="do">## t = 0.25327, df = 503.47, p-value = 0.8002</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true difference in means between group 0 and group 1 is not equal to 0</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 95 percent confidence interval:</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  -1.812969  2.349555</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="do">## sample estimates:</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="do">## mean in group 0 mean in group 1 </span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="do">##        47.30352        47.03523</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果也是显示<code>x.Age</code>已经没有差异了！</p>
+<p>然后用卡方检验看看<code>x.Gender</code>是否还有差异：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(mdata<span class="sc">$</span>x.Gender, mdata<span class="sc">$</span>Smoke,<span class="at">correct =</span> F)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Pearson's Chi-squared test</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  mdata$x.Gender and mdata$Smoke</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="do">## X-squared = 41.342, df = 1, p-value = 1.278e-10</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果显示<code>x.Gender</code>还是有差异的，这个结果也和SMD的判断结果相同。</p>
+</section>
+</section>
+<section id="结果可视化" class="level2" data-number="36.5">
+<h2 data-number="36.5" class="anchored" data-anchor-id="结果可视化"><span class="header-section-number">36.5</span> 结果可视化</h2>
+<p>默认提供3种图形，但是美观性太差，就不放图了，大家感兴趣的可以自己试试看。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out) <span class="co"># 默认QQ图</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">'jitter'</span>) <span class="co"># 散点图</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(m.out, <span class="at">type =</span> <span class="st">'hist'</span>) <span class="co"># 直方图</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>默认的不好看，还是用<code>cobalt</code>包进行结果的可视化。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bal.plot</span>(m.out, <span class="at">var.name =</span> <span class="st">'x.Age'</span>, <span class="at">which =</span> <span class="st">'both'</span>, <span class="at">grid=</span><span class="cn">TRUE</span>),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bal.plot</span>(m.out, <span class="at">var.name =</span> <span class="st">'x.Gender'</span>, <span class="at">which =</span> <span class="st">'both'</span>, <span class="at">grid=</span><span class="cn">TRUE</span>),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bal.plot</span>(m.out, <span class="at">var.name =</span> <span class="st">'x.Age'</span>, <span class="at">which =</span> <span class="st">'both'</span>, <span class="at">grid=</span><span class="cn">TRUE</span>, <span class="at">type=</span><span class="st">"ecdf"</span>),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 还有很多参数可调整</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">love.plot</span>(<span class="fu">bal.tab</span>(m.out, <span class="at">m.threshold=</span><span class="fl">0.1</span>),</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">stat =</span> <span class="st">"mean.diffs"</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">grid=</span><span class="cn">TRUE</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">stars=</span><span class="st">"raw"</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">abs =</span> F)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: The following aesthetics were dropped during statistical transformation: weight</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ This can happen when ggplot fails to infer the correct grouping structure in</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   the data.</span></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="do">## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="do">##   variable into a factor?</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="1035-psm_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="960"></p>
+</div>
+</div>
+<p>上面两幅图展示的是协变量在匹配前（unadjusted sample）和匹配后（adjusted sample）的数据中的分布情况，连续型变量默认是画密度图，分类变量默认是画柱状图。</p>
+<p>左下图是累计密度图。右下的<code>love plot</code>图可视化匹配前后协变量的SMD，两条竖线是0.1阈值线，匹配后<code>x.Age</code>在两条竖线之间，说明平衡，<code>x.Gender</code>不在两条竖线之间，说明还是没平衡。</p>
+</section>
+<section id="不平衡怎么办" class="level2" data-number="36.6">
+<h2 data-number="36.6" class="anchored" data-anchor-id="不平衡怎么办"><span class="header-section-number">36.6</span> 不平衡怎么办？</h2>
+<p>比如这里的<code>x.Gender</code>这个变量就是不平衡的。</p>
+<p>有非常多的方法可以尝试，这里提供5种方法，但是非常有可能你各种方法都试过了还是不平衡！</p>
+<p>首先可以换一种计算PS的方法，可以换算法，换公式（增加二次项、交互项等）。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 增加二次项，结果依然不平衡</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span><span class="fu">I</span>(x.Age<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>data.complete,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">distance=</span><span class="st">'logit'</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method=</span><span class="st">'nearest'</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replace=</span><span class="cn">FALSE</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ratio=</span><span class="dv">1</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>第二可以换匹配方法及对应的参数。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 还是不平衡</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span><span class="fu">I</span>(x.Age<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>data.complete,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">distance=</span><span class="st">'logit'</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method=</span><span class="st">'genetic'</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">pop.size=</span><span class="dv">100</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.tab</span>(m.out, <span class="at">m.threshold=</span><span class="fl">0.1</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>第三，可以使用精确匹配，性别不平衡，那就在匹配时要求按照性别精确匹配，可以使用参数<code>exact=c('x.Gender')</code>。</p>
+<p>但是这样做的代价是大部分样本都浪费了！只有一小部分才能匹配上！</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>m.out <span class="ot">&lt;-</span> <span class="fu">matchit</span>(Smoke<span class="sc">~</span><span class="fu">I</span>(x.Age<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span>x.Age<span class="sc">+</span>x.Gender,</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>data.complete,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">distance=</span><span class="st">'logit'</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method=</span><span class="st">'nearest'</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">exact =</span> <span class="fu">c</span>(<span class="st">'x.Gender'</span>,<span class="st">'x.Age'</span>), <span class="co"># 精准！</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">replace=</span><span class="cn">FALSE</span>,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ratio=</span><span class="dv">1</span>)</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning: Fewer control units than treated units in some 'exact' strata; not all</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="do">## treated units will get a match.</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">bal.tab</span>(m.out, <span class="at">m.threshold=</span><span class="fl">0.1</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance Measures</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="do">##                Type Diff.Adj    M.Threshold</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="do">## distance   Distance        0 Balanced, &lt;0.1</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="do">## I(x.Age^2)  Contin.        0 Balanced, &lt;0.1</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Age       Contin.        0 Balanced, &lt;0.1</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="do">## x.Gender     Binary        0 Balanced, &lt;0.1</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Balance tally for mean differences</span></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="do">##                    count</span></span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Balanced, &lt;0.1         4</span></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Not Balanced, &gt;0.1     0</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Variable with the greatest mean difference</span></span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a><span class="do">##    Variable Diff.Adj    M.Threshold</span></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a><span class="do">##  I(x.Age^2)        0 Balanced, &lt;0.1</span></span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Sample sizes</span></span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a><span class="do">##           Control Treated</span></span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a><span class="do">## All           462     369</span></span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Matched       147     147</span></span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a><span class="do">## Unmatched     315     222</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>第四，增加样本量（一切误差问题都可以通过增加样本量解决）。</p>
+<p>第五，匹配后结合其他方法，比如回归、分层等。</p>
+</section>
+<section id="其他问题" class="level2" data-number="36.7">
+<h2 data-number="36.7" class="anchored" data-anchor-id="其他问题"><span class="header-section-number">36.7</span> 其他问题</h2>
+<p>这篇推文关于倾向性评分匹配说的还算详细，尤其是<code>matchIt</code>包的使用，但大部分都是基于开头说的那篇文献。</p>
+<p>除此之外，关于倾向性评分，还有一些很重要的问题并没有涉及到。比如：</p>
+<ul>
+<li>样本权重不同，匹配后数据如何检查平衡性？</li>
+<li>倾向性评分只能平衡记录到的协变量，对于潜在的、未被记录的误差不能平衡，怎么办？</li>
+<li>处理因素多分组或者是连续型变量时如何处理？</li>
+<li>倾向性评分的加权、回归、分层如何做？</li>
+</ul>
+<p>这些问题待以后有时间慢慢解决！</p>
+</section>
+<section id="参考资料" class="level2" data-number="36.8">
+<h2 data-number="36.8" class="anchored" data-anchor-id="参考资料"><span class="header-section-number">36.8</span> 参考资料</h2>
+<ol type="1">
+<li>https://zhuanlan.zhihu.com/p/386501046</li>
+<li>https://mp.weixin.qq.com/s/ITWBruRe5LhuPq8TXjxPZQ</li>
+<li>https://zhuanlan.zhihu.com/p/559469895</li>
+<li>Propensity score matching with R: conventional methods and new features</li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./1034-finegray.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型列线图</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./1036-pssc.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">R语言倾向性评分：回归和分层</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">R语言实战医学统计 was written by 阿越.</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">本书由 <a href="https://quarto.org/">Quarto</a> 强力驱动.</div>
+  </div>
+</footer>
+
+
+
+</body></html>

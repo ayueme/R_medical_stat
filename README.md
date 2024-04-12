@@ -1,5 +1,7 @@
 # R语言实战医学统计
 
+> 本书在线观看地址：https://ayueme.github.io/R_medical_stat/
+
 ## 本书缘起 
 
 R语言是一门编程语言，但同时也是一个统计软件！

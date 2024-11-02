@@ -426,7 +426,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#配对样本比较的wilcoxon符号秩检验" id="toc-配对样本比较的wilcoxon符号秩检验" class="nav-link active" data-scroll-target="#配对样本比较的wilcoxon符号秩检验"><span class="header-section-number">5.1</span> 配对样本比较的Wilcoxon符号秩检验</a></li>
-  <li><a href="#两独立样本比较的wilcoxon符号秩检验" id="toc-两独立样本比较的wilcoxon符号秩检验" class="nav-link" data-scroll-target="#两独立样本比较的wilcoxon符号秩检验"><span class="header-section-number">5.2</span> 两独立样本比较的Wilcoxon符号秩检验</a></li>
+  <li><a href="#两独立样本比较的wilcoxon秩和检验" id="toc-两独立样本比较的wilcoxon秩和检验" class="nav-link" data-scroll-target="#两独立样本比较的wilcoxon秩和检验"><span class="header-section-number">5.2</span> 两独立样本比较的Wilcoxon秩和检验</a></li>
   <li><a href="#完全随机设计多个样本比较的-kruskal-wallis-h-检验" id="toc-完全随机设计多个样本比较的-kruskal-wallis-h-检验" class="nav-link" data-scroll-target="#完全随机设计多个样本比较的-kruskal-wallis-h-检验"><span class="header-section-number">5.3</span> 完全随机设计多个样本比较的 Kruskal-Wallis H 检验</a>
   <ul class="collapse">
   <li><a href="#多样本比较的kruskal-wallis-h检验" id="toc-多样本比较的kruskal-wallis-h检验" class="nav-link" data-scroll-target="#多样本比较的kruskal-wallis-h检验"><span class="header-section-number">5.3.1</span> 多样本比较的kruskal-wallis H检验</a></li>
@@ -464,6 +464,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="配对样本比较的wilcoxon符号秩检验" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="配对样本比较的wilcoxon符号秩检验"><span class="header-section-number">5.1</span> 配对样本比较的Wilcoxon符号秩检验</h2>
+<p>英文名字：wilcoxon signed-rank test，即符号秩检验。</p>
 <p>使用课本<strong>例8-1</strong>的数据，自己手动摘录：</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>test1<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">60</span>,<span class="dv">142</span>,<span class="dv">195</span>,<span class="dv">80</span>,<span class="dv">242</span>,<span class="dv">220</span>,<span class="dv">190</span>,<span class="dv">25</span>,<span class="dv">198</span>,<span class="dv">38</span>,<span class="dv">236</span>,<span class="dv">95</span>)</span>
@@ -483,19 +484,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>进行秩和检验：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(test1,test2,<span class="at">paired =</span> T,<span class="at">alternative =</span> <span class="st">"two.sided"</span>,</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">exact =</span> F, <span class="at">correct =</span> F)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">##  Wilcoxon signed rank test</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  test1 and test2</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## V = 11.5, p-value = 0.05581</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true location shift is not equal to 0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(test1,test2,<span class="at">paired =</span> T,<span class="at">alternative =</span> <span class="st">"two.sided"</span>,<span class="at">exact =</span> F)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Wilcoxon signed rank test with continuity correction</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  test1 and test2</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## V = 11.5, p-value = 0.06175</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true location shift is not equal to 0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>结果和课本一致！</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="注意">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+注意
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>wilcox.test</code>在R4.4.0及以后不再支持在公式形式中使用<code>paired</code>参数，所以如果你的R版本在4.4.0及以后的，在公式形式中使用<code>paired</code>参数会得到以下报错：<code>cannot use 'paired' in formula method</code>。逆天更新！！</p>
+</div>
+</div>
 </section>
-<section id="两独立样本比较的wilcoxon符号秩检验" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="两独立样本比较的wilcoxon符号秩检验"><span class="header-section-number">5.2</span> 两独立样本比较的Wilcoxon符号秩检验</h2>
+<section id="两独立样本比较的wilcoxon秩和检验" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="两独立样本比较的wilcoxon秩和检验"><span class="header-section-number">5.2</span> 两独立样本比较的Wilcoxon秩和检验</h2>
+<p>英文名字：wilcoxon rank sum test，即秩和检验。</p>
+<blockquote class="blockquote">
+<p>根据课本上的说法，wilcoxon rank sum test 和 mann-whitney U test 并不完全是一个东西。</p>
+</blockquote>
 <p>和两样本t检验的数据格式完全一样！</p>
 <p>使用课本<strong>例8-3</strong>的数据，自己手动摘录。</p>
 <div class="cell">
@@ -504,15 +521,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>进行两独立样本比较的Wilcoxon符号秩检验：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(RD1,RD2,<span class="at">paired =</span> F, <span class="at">correct =</span> F)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning in wilcox.test.default(RD1, RD2, paired = F, correct = F): cannot</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="do">## compute exact p-value with ties</span></span>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(RD1,RD2,<span class="at">paired =</span> F, <span class="at">correct =</span> F, <span class="at">exact =</span> F)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  Wilcoxon rank sum test</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="do">##  Wilcoxon rank sum test</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  RD1 and RD2</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="do">## W = 86.5, p-value = 0.08049</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true location shift is not equal to 0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="do">## data:  RD1 and RD2</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="do">## W = 86.5, p-value = 0.08049</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="do">## alternative hypothesis: true location shift is not equal to 0</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>结果取单侧检验，还是和课本一致！</p>
 </section>

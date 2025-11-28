@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>23&nbsp; R语言主成分分析 – R语言实战医学统计</title>
+<title>29&nbsp; 主成分分析 – R语言实战医学统计</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -64,7 +64,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./1023-factoranalysis.html" rel="next">
+<link href="./pca可视化.html" rel="next">
 <link href="./1021-cluster.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -103,6 +103,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -115,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1022-pca.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1022-pca.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">主成分分析</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -172,50 +201,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./几种离散型变量的分布及其应用.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">几种离散型变量的分布及其应用</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./1006-chisq.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1009-cochranarmitage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cochran-Armitage检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Cochran-Armitage检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1007-wilcoxon.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">秩转换的非参数检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">秩转换的非参数检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1015-twocorrelation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./统计图表.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">三线表和统计绘图</span></span></a>
+  <a href="./三线表绘制.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">三线表绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./统计绘图.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">统计绘图</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1011-samplesize.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1012-randomgroup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ROC曲线.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">ROC曲线</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1014-batchttest.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">R语言“tidy”流统计分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">“tidy”流统计分析</span></span></a>
   </div>
 </li>
       </ul>
@@ -232,97 +279,139 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1003-dysanova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1008-mauchly.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1004-repeatedanova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1005-ancova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1010-anovaattention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">R语言方差分析注意事项</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">方差分析注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多变量数据hotelling_t2检验.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">多变量数据的统计描述和统计推断</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1017-multireg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1018-logistic.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./对数线性模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">多维列联表的对数线性模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./泊松回归和负二项回归.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">泊松回归和负二项回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1019-codescheme.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">分类变量进行回归分析时的编码方案</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">分类变量重编码</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1032-survival.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">R语言生存分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">生存分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1033-survivalvis.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">R语言生存曲线可视化</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">生存曲线可视化</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1020-discriminant.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">R语言判别分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">判别分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1021-cluster.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">R语言聚类分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">聚类分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1022-pca.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">主成分分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca可视化.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">主成分分析可视化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./主成分回归.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">主成分回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1023-factoranalysis.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">R语言因子分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">探索性因子分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1016-partialcorrelation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ROC曲线.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">ROC曲线</span></span></a>
+  <a href="./结构方程模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">结构方程模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多水平模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">多水平模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./广义估计方程.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">广义估计方程</span></span></a>
   </div>
 </li>
       </ul>
@@ -339,61 +428,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1034-finegray.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型列线图</span></span></a>
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1035-psm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">R语言倾向性评分：匹配</span></span></a>
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">倾向性评分：匹配</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1036-pssc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">R语言倾向性评分：回归和分层</span></span></a>
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">倾向性评分：回归和分层</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1037-psw.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">R语言倾向性评分：加权</span></span></a>
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">倾向性评分：加权</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1038-p4trend.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd R语言实现</span></span></a>
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1039-nonlinear.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">R语言多项式拟合</span></span></a>
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">多项式拟合</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1040-rcs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">R语言样条回归</span></span></a>
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">样条回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1041-subgroupanalysis.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">R语言亚组分析及森林图绘制</span></span></a>
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">亚组分析及森林图绘制</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1042-subgroup1code.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./亚组分析和多因素回归的森林图.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图比较</span></span></a>
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图比较</span></span></a>
   </div>
 </li>
       </ul>
@@ -425,36 +514,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目录</h2>
    
   <ul>
-  <li><a href="#加载数据" id="toc-加载数据" class="nav-link active" data-scroll-target="#加载数据"><span class="header-section-number">23.1</span> 加载数据</a></li>
-  <li><a href="#相关性检验" id="toc-相关性检验" class="nav-link" data-scroll-target="#相关性检验"><span class="header-section-number">23.2</span> 相关性检验</a></li>
-  <li><a href="#kmo和bartlett球形检验" id="toc-kmo和bartlett球形检验" class="nav-link" data-scroll-target="#kmo和bartlett球形检验"><span class="header-section-number">23.3</span> KMO和Bartlett球形检验</a></li>
-  <li><a href="#r自带的pca" id="toc-r自带的pca" class="nav-link" data-scroll-target="#r自带的pca"><span class="header-section-number">23.4</span> R自带的PCA</a></li>
-  <li><a href="#结果可视化" id="toc-结果可视化" class="nav-link" data-scroll-target="#结果可视化"><span class="header-section-number">23.5</span> 结果可视化</a></li>
-  <li><a href="#主成分分析可视化超详细" id="toc-主成分分析可视化超详细" class="nav-link" data-scroll-target="#主成分分析可视化超详细"><span class="header-section-number">23.6</span> 主成分分析可视化(超详细)</a>
-  <ul class="collapse">
-  <li><a href="#进行pca分析" id="toc-进行pca分析" class="nav-link" data-scroll-target="#进行pca分析"><span class="header-section-number">23.6.1</span> 进行PCA分析</a></li>
-  <li><a href="#特征值可视化" id="toc-特征值可视化" class="nav-link" data-scroll-target="#特征值可视化"><span class="header-section-number">23.6.2</span> 特征值可视化</a></li>
-  <li><a href="#提取变量结果" id="toc-提取变量结果" class="nav-link" data-scroll-target="#提取变量结果"><span class="header-section-number">23.6.3</span> 提取变量结果</a></li>
-  <li><a href="#变量结果可视化" id="toc-变量结果可视化" class="nav-link" data-scroll-target="#变量结果可视化"><span class="header-section-number">23.6.4</span> 变量结果可视化</a></li>
-  <li><a href="#dimension-description" id="toc-dimension-description" class="nav-link" data-scroll-target="#dimension-description"><span class="header-section-number">23.6.5</span> Dimension description</a></li>
-  <li><a href="#提取样本结果" id="toc-提取样本结果" class="nav-link" data-scroll-target="#提取样本结果"><span class="header-section-number">23.6.6</span> 提取样本结果</a></li>
-  <li><a href="#样本结果可视化" id="toc-样本结果可视化" class="nav-link" data-scroll-target="#样本结果可视化"><span class="header-section-number">23.6.7</span> 样本结果可视化</a></li>
-  <li><a href="#biplot" id="toc-biplot" class="nav-link" data-scroll-target="#biplot"><span class="header-section-number">23.6.8</span> biplot</a></li>
-  </ul></li>
-  <li><a href="#主成分分析可视化3d版" id="toc-主成分分析可视化3d版" class="nav-link" data-scroll-target="#主成分分析可视化3d版"><span class="header-section-number">23.7</span> 主成分分析可视化3d版</a>
-  <ul class="collapse">
-  <li><a href="#提取数据" id="toc-提取数据" class="nav-link" data-scroll-target="#提取数据"><span class="header-section-number">23.7.1</span> 提取数据</a></li>
-  <li><a href="#d版" id="toc-d版" class="nav-link" data-scroll-target="#d版"><span class="header-section-number">23.7.2</span> 3d版</a></li>
-  </ul></li>
+  <li><a href="#加载数据" id="toc-加载数据" class="nav-link active" data-scroll-target="#加载数据"><span class="header-section-number">29.1</span> 加载数据</a></li>
+  <li><a href="#相关性检验" id="toc-相关性检验" class="nav-link" data-scroll-target="#相关性检验"><span class="header-section-number">29.2</span> 相关性检验</a></li>
+  <li><a href="#kmo和bartlett球形检验" id="toc-kmo和bartlett球形检验" class="nav-link" data-scroll-target="#kmo和bartlett球形检验"><span class="header-section-number">29.3</span> KMO和Bartlett球形检验</a></li>
+  <li><a href="#pca和结果解读" id="toc-pca和结果解读" class="nav-link" data-scroll-target="#pca和结果解读"><span class="header-section-number">29.4</span> PCA和结果解读</a></li>
+  <li><a href="#默认的结果可视化" id="toc-默认的结果可视化" class="nav-link" data-scroll-target="#默认的结果可视化"><span class="header-section-number">29.5</span> 默认的结果可视化</a></li>
+  <li><a href="#确定最佳主成分个数" id="toc-确定最佳主成分个数" class="nav-link" data-scroll-target="#确定最佳主成分个数"><span class="header-section-number">29.6</span> 确定最佳主成分个数</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/ayueme/R_medical_stat/edit/main/1022-pca.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/ayueme/R_medical_stat/issues/new" class="toc-action"><i class="bi empty"></i>报告问题</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1022-pca.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1022-pca.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">主成分分析</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="ejtlj" class="quarto-section-identifier"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></span></h1>
+<h1 class="title"><span id="ejtlj" class="quarto-section-identifier"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">主成分分析</span></span></h1>
 </div>
 
 
@@ -471,13 +545,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>在医学研究中，为了客观、全面地分析问题，常要记录多个观察指标并考虑众多的影响因素，这样的 者，数据虽然可以提供丰富的信息，但同时也使得数据的分析工作更趋复杂化。</p>
+<p>在医学研究中，为了客观、全面地分析问题，常要记录多个观察指标并考虑众多的影响因素，这样的数据虽然可以提供丰富的信息，但同时也使得数据的分析工作更趋复杂化。</p>
 <p>例如，在儿童生长发育的评价中，收集到的数据包括每一儿童的身高、体重、胸围、头围、坐高、肺活量等十多个指标。怎样利用这类多指标的数据对每一儿童的生长发育水平作出正确的评价？如果仅用其中任一指标来作评价，其结论显然是片面的，而且不能充分利用已有的数据信息。如果分别利用每一指标进行评价，然后再综合各指标评价的结论，这样做一是可能会出现各指标评价的结论不一致，甚至相互冲突，从而给最后的综合评价带来困难；二是工作量明显增大，不利于进一步的统计分析。</p>
-<p>事实上，在实际工作中，所涉及的众多指标之间经常是有相互联系和影响的，从这一点出发，希望通过对原始指标相互关系的研究，找出少数几个综合指标，这些综合指标是原始指标的线性组合，它既保留了原始指标的主要信息，且又互不相关。这样一种从众多原始指标之间相互关系入手，寻找少数综合指标以概括原始指标信息的多元统计方法称为主成分分析。</p>
-<p>关于特征值、特征向量、方差贡献率、累积方差贡献率等概念，大家可以阅读网络教程或者课本等。</p>
-<p>今天只是小试牛刀，后面会为大家带来更加详细的主成分分析可视化。</p>
-<section id="加载数据" class="level2" data-number="23.1">
-<h2 data-number="23.1" class="anchored" data-anchor-id="加载数据"><span class="header-section-number">23.1</span> 加载数据</h2>
+<p>事实上，在实际工作中，所涉及的众多指标之间经常是有相互联系和影响的，从这一点出发，希望通过对原始指标相互关系的研究，找出少数几个综合指标，这些<strong>综合指标是原始指标的线性组合，它既保留了原始指标的主要信息，且又互不相关</strong>。这样一种从众多原始指标之间相互关系入手，寻找少数综合指标以概括原始指标信息的<strong>多元统计方法</strong>称为主成分分析（principal components analysis,PCA），又叫主分量分析。</p>
+<p>主成分分析在医学统计领域是一种常见的多元统计方法，<strong>在机器学习领域是一种常见的数据降维方法</strong>，但是在机器学习中它更多的是作为一种预处理步骤。</p>
+<section id="加载数据" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="加载数据"><span class="header-section-number">29.1</span> 加载数据</h2>
 <p>使用R语言自带的<code>iris</code>鸢尾花数据进行演示。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(iris)</span>
@@ -499,11 +572,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 149          6.2         3.4          5.4         2.3 virginica</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 150          5.9           3          5.1         1.8 virginica</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>首先给大家介绍下R自带的主成分分析函数。</p>
 </section>
-<section id="相关性检验" class="level2" data-number="23.2">
-<h2 data-number="23.2" class="anchored" data-anchor-id="相关性检验"><span class="header-section-number">23.2</span> 相关性检验</h2>
-<p>在进行PCA之前可以先进行相关性分析，看看相关系数：</p>
+<section id="相关性检验" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="相关性检验"><span class="header-section-number">29.2</span> 相关性检验</h2>
+<p>在进行PCA之前可以先进行相关性分析，看看相关系数，这样有助于我们查看各个变量之间的相关性，如果各个变量之间的相关性很小，那么这个数据可能不适合做PCA。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(iris[,<span class="sc">-</span><span class="dv">5</span>])</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="do">##              Sepal.Length Sepal.Width Petal.Length Petal.Width</span></span>
@@ -513,9 +585,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width     0.8179411  -0.3661259    0.9628654   1.0000000</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="kmo和bartlett球形检验" class="level2" data-number="23.3">
-<h2 data-number="23.3" class="anchored" data-anchor-id="kmo和bartlett球形检验"><span class="header-section-number">23.3</span> KMO和Bartlett球形检验</h2>
-<p>使用<code>psych</code>实现，关于这两个检验的解读大家自行学习~</p>
+<section id="kmo和bartlett球形检验" class="level2" data-number="29.3">
+<h2 data-number="29.3" class="anchored" data-anchor-id="kmo和bartlett球形检验"><span class="header-section-number">29.3</span> KMO和Bartlett球形检验</h2>
+<p>KMO（Kaiser-Meyer-Olkin）检验用于衡量变量之间的偏相关性。其取值范围在0到1之间，若KMO值越接近1，表明变量间的偏相关性越强，意味着原始变量之间存在较多的共同信息，适合进行主成分分析等降维操作；若KMO值接近0，则说明变量间的偏相关性较弱，各变量可能相对独立，不太适合做主成分分析。一般来说，KMO值大于0.6时，进行主成分分析的效果较为理想。</p>
+<p>KMO检验可以使用<code>psych</code>实现：</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">KMO</span>(iris[,<span class="sc">-</span><span class="dv">5</span>])</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Kaiser-Meyer-Olkin factor adequacy</span></span>
@@ -525,7 +598,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  Sepal.Width Petal.Length  Petal.Width </span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="do">##         0.58         0.27         0.53         0.63</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>这个检验主要反应样本量够不够，<code>Overall MSA</code>是总体的检验统计量，然后是每个变量的检验统计量。 <code>MSA</code>越大越好。一般要求大于0.5才可以（没有绝对标准，根据实际情况来）。</p>
+<p><code>Overall MSA</code>（Measures of Sampling Adequacy）是总体的检验统计量，然后是每个变量的检验统计量。<code>MSA</code>取值范围在0到1之间，越接近1越好。</p>
+<p>Bartlett球形检验与KMO检验类似，也是帮助我们确定变量之间是否具有足够的相关性。Bartlett球形检验也可以使用<code>psych</code>实现：</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">cortest.bartlett</span>(iris[,<span class="sc">-</span><span class="dv">5</span>])</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">## $chisq</span></span>
@@ -537,145 +611,110 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="do">## $df</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 6</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>p.value小于0.05，表明数据可以进行主成分分析。</p>
+<ul>
+<li><code>chisq</code>：卡方统计量，其值越大，表明变量间的相关性越强。</li>
+<li><code>p.value</code>：p 值，若p值小于设定的显著性水平（通常为0.05），则拒绝原假设，认为变量之间存在显著的相关性，适合进行主成分分析或因子分析等依赖变量相关性的分析方法。</li>
+</ul>
+<p>以上两个检验也可以直接用<code>performance</code>包实现：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_factorstructure</span>(iris[,<span class="sc">-</span><span class="dv">5</span>])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## # Is the data suitable for Factor Analysis?</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   - Sphericity: Bartlett's test of sphericity suggests that there is sufficient significant correlation in the data for factor analysis (Chisq(6) = 706.96, p &lt; .001).</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   - KMO: The Kaiser, Meyer, Olkin (KMO) overall measure of sampling adequacy suggests that data seems appropriate for factor analysis (KMO = 0.54). The individual KMO scores are: Sepal.Length (0.58), Sepal.Width (0.27*), Petal.Length (0.53), Petal.Width (0.63).</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
-<section id="r自带的pca" class="level2" data-number="23.4">
-<h2 data-number="23.4" class="anchored" data-anchor-id="r自带的pca"><span class="header-section-number">23.4</span> R自带的PCA</h2>
-<p>主成分的实现可以通过分步计算，主要就是标准化-求相关矩阵-计算特征值和特征向量。</p>
-<p>R中自带了<code>prcomp()</code>进行主成分分析，这就是工具的魅力，一次完成多步需求。</p>
+<section id="pca和结果解读" class="level2" data-number="29.4">
+<h2 data-number="29.4" class="anchored" data-anchor-id="pca和结果解读"><span class="header-section-number">29.4</span> PCA和结果解读</h2>
+<p>主成分分析可以通过分步计算，主要就是标准化-求相关矩阵-计算特征值和特征向量。R中自带了<code>prcomp()</code>进行主成分分析，这就是工具的魅力，一次完成多步需求。</p>
 <p>使用<code>prcomp()</code>进行主成分分析：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R自带函数</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pca.res <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(iris[,<span class="sc">-</span><span class="dv">5</span>], <span class="at">scale. =</span> T, <span class="co"># 标准化</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">center =</span> T <span class="co"># 中心化</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                  )</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看标准差、特征向量（回归系数）</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>pca.res</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Standard deviations (1, .., p=4):</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1.7083611 0.9560494 0.3830886 0.1439265</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Rotation (n x k) = (4 x 4):</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="do">##                     PC1         PC2        PC3        PC4</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.5210659 -0.37741762  0.7195664  0.2612863</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  -0.2693474 -0.92329566 -0.2443818 -0.1235096</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length  0.5804131 -0.02449161 -0.1421264 -0.8014492</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width   0.5648565 -0.06694199 -0.6342727  0.5235971</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># R自带函数</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>pca.res <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(iris[,<span class="sc">-</span><span class="dv">5</span>], <span class="at">scale. =</span> T, <span class="co"># 标准化</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">center =</span> T <span class="co"># 中心化</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                  )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>主成分就是根据这几个系数(这几个系数也叫主成分载荷)算出来的：</p>
-<p>PC1 = 0.5210659<em>Sepal.Length - 0.2693474</em>Sepal.Width + 0.5804131<em>Petal.Length + 0.5648565</em>Petal.Width</p>
-<p>后面的主成分计算方法以此类推。</p>
+<p>我们可以通过以下代码单独查看主成分的<strong>载荷矩阵</strong>，载荷矩阵的每一列对应一个主成分，每一行对应一个原始变量。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 样本得分score</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pca.res<span class="sc">$</span>x)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">##            PC1        PC2         PC3          PC4</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,] -2.257141 -0.4784238  0.12727962  0.024087508</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] -2.074013  0.6718827  0.23382552  0.102662845</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,] -2.356335  0.3407664 -0.04405390  0.028282305</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,] -2.291707  0.5953999 -0.09098530 -0.065735340</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [5,] -2.381863 -0.6446757 -0.01568565 -0.035802870</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [6,] -2.068701 -1.4842053 -0.02687825  0.006586116</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 单独查看主成分的载荷矩阵</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pca.res<span class="sc">$</span>rotation</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                     PC1         PC2        PC3        PC4</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.5210659 -0.37741762  0.7195664  0.2612863</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  -0.2693474 -0.92329566 -0.2443818 -0.1235096</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length  0.5804131 -0.02449161 -0.1421264 -0.8014492</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width   0.5648565 -0.06694199 -0.6342727  0.5235971</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>载荷的绝对值越大，说明该原始变量对相应主成分的贡献越大（主成分载荷通常可以理解为原始变量与主成分之间的相关系数；或者理解为线性回归中的变量系数）。比如对于我们的<code>PC1</code>，它的计算公式如下：</p>
+<p><span class="math display">\[
+PC1=0.521*Sepal.Length-0.269*Sepal.Width+0.580*Petal.Length+0.565*Petal.Width
+\]</span></p>
+<p>通过观察主成分载荷矩阵，可以了解每个原始变量对各个主成分的贡献程度。例如，如果某个主成分在多个变量上的载荷绝对值都较大，说明该主成分综合反映了这些变量的信息；如果某个主成分只在一个或少数几个变量上有较大载荷，说明该主成分主要代表了这些变量的信息。</p>
+<p>每一列代表一个主成分对应的<strong>特征向量</strong>，例如，矩阵中第一列表示第一个主成分在各个原始变量上的权重，这些权重构成了第一个主成分的特征向量。</p>
+<p>查看特征值：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看标准差、方差贡献率、累积方差贡献率</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca.res)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Importance of components:</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="do">##                           PC1    PC2     PC3     PC4</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Standard deviation     1.7084 0.9560 0.38309 0.14393</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion of Variance 0.7296 0.2285 0.03669 0.00518</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion  0.7296 0.9581 0.99482 1.00000</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看特征值</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>pca.res<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.91849782 0.91403047 0.14675688 0.02071484</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>特征值</strong>反映了每个主成分所包含的信息量，特征值越大，说明对应的主成分能解释原始数据的方差越多，也就越重要。在选择主成分时，通常会根据特征值的大小，选取特征值大于1或者累积方差贡献率达到一定阈值（如80%或90%）的主成分，以实现数据降维的目的。</p>
+<p>查看主成分得分，主成分的得分是将原始数据投影到主成分上得到的值。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 样本得分score</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pca.res<span class="sc">$</span>x)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="do">##            PC1        PC2         PC3          PC4</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1,] -2.257141 -0.4784238  0.12727962  0.024087508</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [2,] -2.074013  0.6718827  0.23382552  0.102662845</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [3,] -2.356335  0.3407664 -0.04405390  0.028282305</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [4,] -2.291707  0.5953999 -0.09098530 -0.065735340</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [5,] -2.381863 -0.6446757 -0.01568565 -0.035802870</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [6,] -2.068701 -1.4842053 -0.02687825  0.006586116</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>主成分得分可以用于样本的排序和聚类分析。将样本的主成分得分绘制在二维或三维空间中，可以直观地观察样本之间的关系。例如，在主成分得分图中，距离较近的样本可能具有相似的特征。</p>
+<p>查看主成分的标准差、<strong>方差贡献率、累积方差贡献率</strong>：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 查看标准差、方差贡献率、累积方差贡献率</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pca.res)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Importance of components:</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="do">##                           PC1    PC2     PC3     PC4</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Standard deviation     1.7084 0.9560 0.38309 0.14393</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion of Variance 0.7296 0.2285 0.03669 0.00518</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion  0.7296 0.9581 0.99482 1.00000</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li><code>Standard deviation</code>:标准差</li>
 <li><code>Proportion of Variance</code>:方差贡献率</li>
 <li><code>Cumulative Proportion</code>:累积方差贡献率</li>
 </ul>
-<p>关于主成分分析中的各种术语解读，我推荐知乎上的一篇文章：<a href="https://zhuanlan.zhihu.com/p/414190170">主成分分析各类术语的白话解读</a></p>
+<p>方差贡献率反映了每个主成分所包含的信息量。通常我们会选择方差贡献率较大的前几个主成分，这些主成分能够保留原始数据的大部分信息。通过累积方差贡献率，可以确定需要保留的主成分个数。例如，如果前两个主成分的累积方差贡献率达到了85%（该例中前两个主成分的累积方差贡献率为95.81%），那么可以选择保留这两个主成分，将四维数据<strong>降维</strong>到二维数据进行分析。</p>
 </section>
-<section id="结果可视化" class="level2" data-number="23.5">
-<h2 data-number="23.5" class="anchored" data-anchor-id="结果可视化"><span class="header-section-number">23.5</span> 结果可视化</h2>
+<section id="默认的结果可视化" class="level2" data-number="29.5">
+<h2 data-number="29.5" class="anchored" data-anchor-id="默认的结果可视化"><span class="header-section-number">29.5</span> 默认的结果可视化</h2>
 <p>默认的主成分分析结果可视化：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">biplot</span>(pca.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 双标图 </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">biplot</span>(pca.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="1022-pca_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>双标图通常展示前两个主成分（第一主成分和第二主成分），横轴一般是第一主成分，纵轴是第二主成分。主成分是原始变量的线性组合，第一主成分通常解释了数据中最大的方差，第二主成分解释了剩余方差中的最大值，且与第一主成分正交（不相关）。</p>
+<p>图中的点代表样本。<strong>点在图中的位置反映了样本在主成分空间中的得分</strong>。距离较近的点表示这些样本在主成分所代表的特征上具有相似性。例如，在iris数据集的双标图中，如果某些鸢尾花样本点聚集在一起，说明这些鸢尾花在主成分所概括的特征方面比较相似。</p>
+<p>样本点在坐标轴上的投影可以近似看作该样本在相应主成分上的得分。沿着第一主成分轴（通常是横轴）方向的位置变化反映了样本在第一主成分上得分的高低，同理，沿着第二主成分轴（通常是纵轴）方向的位置变化反映了样本在第二主成分上得分的高低。</p>
+<p>图中的箭头代表原始变量。箭头的方向表示该变量与主成分之间的相关性方向。如果箭头与某个主成分轴的夹角较小，说明该变量与这个主成分的相关性较强。例如，若一个变量的箭头几乎与第一主成分轴平行，那么这个变量在第一主成分上的载荷较大，对第一主成分的贡献也较大。</p>
+<p>箭头的长度表示该变量对主成分的重要性。箭头越长，说明该变量对主成分的影响越大。</p>
+<p>通过箭头之间的夹角可以判断变量之间的相关性。夹角较小的箭头表示对应的变量之间正相关；夹角接近180度的箭头表示对应的变量之间负相关；夹角接近90度的箭头表示对应的变量之间相关性较弱。</p>
+</section>
+<section id="确定最佳主成分个数" class="level2" data-number="29.6">
+<h2 data-number="29.6" class="anchored" data-anchor-id="确定最佳主成分个数"><span class="header-section-number">29.6</span> 确定最佳主成分个数</h2>
 <p>碎石图可以帮助确认最佳的主成分个数，可以使用默认的<code>screeplot()</code>实现：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 默认是条形图，我们改为折线图，其实就是方差贡献度的可视化</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">screeplot</span>(pca.res, <span class="at">type =</span> <span class="st">"lines"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>可以看到用2-3个主成分就挺好了。</p>
-<blockquote class="blockquote">
-<p>一般来说，主成分的保留个数可以按照以下原则确定： 1. 以累积贡献率确定，当前K个主成分的累积贡献率达到某一特定值（一般选70%或者80%都行）时，则保留前K个主成分； 2. 以特征值大小来确定：如果主成分的特征值大于1，就保留这个主成分。</p>
-</blockquote>
-<p>但是保留几个主成分并没有绝对的标准，大家根据自己的实际情况来！</p>
-<p>今天只是小试牛刀，后面会为大家带来更加详细的主成分分析可视化。</p>
-</section>
-<section id="主成分分析可视化超详细" class="level2" data-number="23.6">
-<h2 data-number="23.6" class="anchored" data-anchor-id="主成分分析可视化超详细"><span class="header-section-number">23.6</span> 主成分分析可视化(超详细)</h2>
-<p>网络上很多R语言教程都是基于R语言实战进行修改，今天为大家介绍更好用的R包，在之前聚类分析中也经常用到：<code>factoextra</code>和<code>factoMineR</code>，关于主成分分析的可视化，大家比较常见的可能是<code>ggbiplot</code>，这几个R包都挺不错，大家可以比较下。</p>
-<p>这两个R包的函数可以直接使用<code>prcomp()</code>函数的结果，也可以使用<code>FactoMineR</code>的<code>PCA()</code>函数进行，结果更加详细。</p>
-<section id="进行pca分析" class="level3" data-number="23.6.1">
-<h3 data-number="23.6.1" class="anchored" data-anchor-id="进行pca分析"><span class="header-section-number">23.6.1</span> 进行PCA分析</h3>
-<p>使用R语言自带的<code>iris</code>鸢尾花数据进行演示。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(FactoMineR)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>pca.res <span class="ot">&lt;-</span> <span class="fu">PCA</span>(iris[,<span class="sc">-</span><span class="dv">5</span>], <span class="at">graph =</span> F, <span class="at">scale.unit =</span> T) <span class="co"># 简简单单1行代码实现主成分分析</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>pca.res</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="do">## **Results for the Principal Component Analysis (PCA)**</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="do">## The analysis was performed on 150 individuals, described by 4 variables</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="do">## *The results are available in the following objects:</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="do">##    name               description                          </span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 1  "$eig"             "eigenvalues"                        </span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 2  "$var"             "results for the variables"          </span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 3  "$var$coord"       "coord. for the variables"           </span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 4  "$var$cor"         "correlations variables - dimensions"</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 5  "$var$cos2"        "cos2 for the variables"             </span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 6  "$var$contrib"     "contributions of the variables"     </span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 7  "$ind"             "results for the individuals"        </span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 8  "$ind$coord"       "coord. for the individuals"         </span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 9  "$ind$cos2"        "cos2 for the individuals"           </span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 10 "$ind$contrib"     "contributions of the individuals"   </span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 11 "$call"            "summary statistics"                 </span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 12 "$call$centre"     "mean of the variables"              </span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 13 "$call$ecart.type" "standard error of the variables"    </span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 14 "$call$row.w"      "weights for the individuals"        </span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 15 "$call$col.w"      "weights for the variables"</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>结果信息丰富，可以通过不断的$获取，也可以通过特定函数提取，下面介绍。</p>
-</section>
-<section id="特征值可视化" class="level3" data-number="23.6.2">
-<h3 data-number="23.6.2" class="anchored" data-anchor-id="特征值可视化"><span class="header-section-number">23.6.2</span> 特征值可视化</h3>
-<p>获取特征值、方差贡献率和累积方差贡献率，可以看到和上一篇的结果是一样的：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_eigenvalue</span>(pca.res)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="do">##       eigenvalue variance.percent cumulative.variance.percent</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Dim.1 2.91849782       72.9624454                    72.96245</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Dim.2 0.91403047       22.8507618                    95.81321</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Dim.3 0.14675688        3.6689219                    99.48213</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Dim.4 0.02071484        0.5178709                   100.00000</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>结果中的这几个概念在上一篇已经解释过了：<a href="https://mp.weixin.qq.com/s/B_RD4pAemEE7pHkr2VfDwA">R语言主成分分析</a></p>
-<p>通过这几个值，可以确定主成分个数，当然也可以通过碎石图（就是方差解释度的可视化）直观的观察：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_eig</span>(pca.res,<span class="at">addlabels =</span> T,<span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">100</span>))</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 默认是条形图，我们改为折线图，其实就是方差贡献度的可视化</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">screeplot</span>(pca.res, <span class="at">type =</span> <span class="st">"lines"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -684,77 +723,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-</section>
-<section id="提取变量结果" class="level3" data-number="23.6.3">
-<h3 data-number="23.6.3" class="anchored" data-anchor-id="提取变量结果"><span class="header-section-number">23.6.3</span> 提取变量结果</h3>
-<p>通过get_pca_var()`函数实现：</p>
+<blockquote class="blockquote">
+<p>一般来说，主成分的保留个数可以按照以下原则确定： 1. 以累积贡献率确定，当前K个主成分的累积贡献率达到某一特定值（一般选70%或者80%、90%都行）时，则保留前K个主成分； 2. 以特征值大小来确定：如果主成分的特征值大于1，就保留这个主成分。</p>
+</blockquote>
+<p>从上图可以看到用2-3个主成分就挺好了。但是保留几个主成分并没有绝对的标准，大家根据自己的实际情况来！</p>
+<p>这里再给大家介绍一个非常实用的函数，使用<code>parameters</code>包实现，可以给出好多种方法的选择：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>res.var <span class="ot">&lt;-</span> <span class="fu">get_pca_var</span>(pca.res)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>res.var<span class="sc">$</span>cor</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                   Dim.1      Dim.2       Dim.3       Dim.4</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.8901688 0.36082989 -0.27565767 -0.03760602</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  -0.4601427 0.88271627  0.09361987  0.01777631</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length  0.9915552 0.02341519  0.05444699  0.11534978</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width   0.9649790 0.06399985  0.24298265 -0.07535950</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>res.var<span class="sc">$</span>coord          </span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                   Dim.1      Dim.2       Dim.3       Dim.4</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.8901688 0.36082989 -0.27565767 -0.03760602</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  -0.4601427 0.88271627  0.09361987  0.01777631</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length  0.9915552 0.02341519  0.05444699  0.11534978</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width   0.9649790 0.06399985  0.24298265 -0.07535950</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>res.var<span class="sc">$</span>contrib       </span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="do">##                  Dim.1       Dim.2     Dim.3     Dim.4</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length 27.150969 14.24440565 51.777574  6.827052</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width   7.254804 85.24748749  5.972245  1.525463</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length 33.687936  0.05998389  2.019990 64.232089</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width  31.906291  0.44812296 40.230191 27.415396</span></span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>res.var<span class="sc">$</span>cos2        </span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="do">##                  Dim.1       Dim.2       Dim.3        Dim.4</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length 0.7924004 0.130198208 0.075987149 0.0014142127</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  0.2117313 0.779188012 0.008764681 0.0003159971</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length 0.9831817 0.000548271 0.002964475 0.0133055723</span></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width  0.9311844 0.004095980 0.059040571 0.0056790544</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> parameters<span class="sc">::</span><span class="fu">n_components</span>(iris[,<span class="sc">-</span><span class="dv">5</span>])</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>n</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="do">## # Method Agreement Procedure:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="do">## The choice of 1 dimensions is supported by 6 (46.15%) methods out of 13 (Bentler, Optimal coordinates, Acceleration factor, Parallel analysis, Kaiser criterion, Velicer's MAP).</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<ul>
-<li><code>res.var$cor</code>:变量和主成分的相关系数</li>
-<li><code>res.var$coord</code>: 变量在主成分投影上的坐标，下面会结合图说明，因为进行了标准化，所以和相关系数结果一样，其数值代表了主成分和变量之间的相关性</li>
-<li><code>res.var$cos2</code>: 是coord的平方，也是表示主成分和变量间的相关性，同一个变量所有cos2的总和是1</li>
-<li><code>res.var$contrib</code>: 变量对主成分的贡献</li>
-</ul>
-<p>这几个结果都可以进行可视化。</p>
-</section>
-<section id="变量结果可视化" class="level3" data-number="23.6.4">
-<h3 data-number="23.6.4" class="anchored" data-anchor-id="变量结果可视化"><span class="header-section-number">23.6.4</span> 变量结果可视化</h3>
-<p>使用<code>fviz_pca_var()</code>对变量结果进行可视化：</p>
+<p>6个方法都支持选择1个主成分，如果要想查看所有的方法及每个方法选择的主成分个数,可以直接变为数据框查看:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(pca.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(n) <span class="co"># 一共有12个方法!（选0个因子的不算）</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    n_Factors              Method       Family</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1          0          Scree (R2)     Scree_SE</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2          1             Bentler      Bentler</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3          1 Optimal coordinates        Scree</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4          1 Acceleration factor        Scree</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 5          1   Parallel analysis        Scree</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 6          1    Kaiser criterion        Scree</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 7          1       Velicer's MAP Velicers_MAP</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 8          2          Scree (SE)     Scree_SE</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 9          2    VSS complexity 1          VSS</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 10         2    VSS complexity 2          VSS</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 11         3            Bartlett      Barlett</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 12         3            Anderson      Barlett</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 13         3              Lawley      Barlett</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-</div>
-<p><code>res.var$coord</code>是变量在主成分投影上的坐标，<code>Sepal.Width</code>在<code>Dim.1</code>的坐标是-0.4601427，在<code>Dim.2</code>的坐标是0.88271627，根据这两个坐标就画出来<code>Sepal.Width</code>那根线了，以此类推~</p>
-<section id="变量和主成分的cos2可视化" class="level4" data-number="23.6.4.1">
-<h4 data-number="23.6.4.1" class="anchored" data-anchor-id="变量和主成分的cos2可视化"><span class="header-section-number">23.6.4.1</span> 变量和主成分的cos2可视化</h4>
-<p><code>cos2</code>是coord的平方，也是表示主成分和变量间的相关性，所以首先可以画相关图：</p>
+<p>或者也可以查看这十几种结果的汇总表:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"corrplot"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(res.var<span class="sc">$</span>cos2, <span class="at">is.corr =</span> F)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(n)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   n_Factors n_Methods Variance_Cumulative</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1         1         6           0.7213402</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2         2         3           0.8667486</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3         3         3           0.8912973</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</div>
-</div>
-<p>可以看到<code>Petal.Length</code>、<code>Petal.Width</code>和<code>Dim1</code>的相关性比较强，<code>Sepal.Width</code>和<code>Dim2</code>的相关性比较强。</p>
-<p>通过<code>fviz_cos2()</code>查看变量在不同主成分的总和，以下是不同变量在第1和第2主成分的加和，如果把<code>axes = 1:2</code>改成<code>axes = 1:4</code>，就会变成都是1（这个数据最多4个主成分，同一变量的cos2在所有主成分的总和是1）。</p>
+<p>当然也可以把结果画出来的,借助<code>see</code>这个包即可:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cos2</span>(pca.res, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(see)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(n)<span class="sc">+</span><span class="fu">theme_modern</span>()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -763,432 +773,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>可以通过<code>col.var = "cos2"</code>参数给不同变量按照cos2的数值大小上色：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(pca.res, <span class="at">col.var =</span> <span class="st">"cos2"</span>,</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>), </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span> </span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 黑白版本</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(pca.res, <span class="at">alpha.var =</span> <span class="st">"cos2"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="变量对主成分的贡献可视化" class="level4" data-number="23.6.4.2">
-<h4 data-number="23.6.4.2" class="anchored" data-anchor-id="变量对主成分的贡献可视化"><span class="header-section-number">23.6.4.2</span> 变量对主成分的贡献可视化</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>res.var<span class="sc">$</span>contrib</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="do">##                  Dim.1       Dim.2     Dim.3     Dim.4</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length 27.150969 14.24440565 51.777574  6.827052</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width   7.254804 85.24748749  5.972245  1.525463</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length 33.687936  0.05998389  2.019990 64.232089</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width  31.906291  0.44812296 40.230191 27.415396</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>首先也是可以通过画相关性图进行可视化：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(<span class="st">"corrplot"</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(res.var<span class="sc">$</span>contrib, <span class="at">is.corr=</span><span class="cn">FALSE</span>) </span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>通过<code>fviz_contrib()</code>可视化变量对不同主成分的贡献：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 对第1主成分的贡献</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(pca.res, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 对第1和第2主成分的贡献</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(pca.res, <span class="at">choice =</span> <span class="st">"var"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>通过<code>col.var = "contrib"</code>参数给不同变量按照contrib的数值大小上色：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_var</span>(pca.res, <span class="at">col.var =</span> <span class="st">"contrib"</span>,</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="dimension-description" class="level3" data-number="23.6.5">
-<h3 data-number="23.6.5" class="anchored" data-anchor-id="dimension-description"><span class="header-section-number">23.6.5</span> Dimension description</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>res.desc <span class="ot">&lt;-</span> <span class="fu">dimdesc</span>(pca.res, <span class="at">axes =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">proba =</span> <span class="fl">0.05</span>)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Description of dimension 1</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>res.desc<span class="sc">$</span>Dim<span class="fl">.1</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Link between the variable and the continuous variables (R-square)</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="do">## =================================================================================</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="do">##              correlation       p.value</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length   0.9915552 3.369916e-133</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width    0.9649790  6.609632e-88</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length   0.8901688  2.190813e-52</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width   -0.4601427  3.139724e-09</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="提取样本结果" class="level3" data-number="23.6.6">
-<h3 data-number="23.6.6" class="anchored" data-anchor-id="提取样本结果"><span class="header-section-number">23.6.6</span> 提取样本结果</h3>
-<p>使用<code>get_pca_ind()</code>提取样本结果，和变量结果类似：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>res.ind <span class="ot">&lt;-</span> <span class="fu">get_pca_ind</span>(pca.res)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res.ind<span class="sc">$</span>coord)          </span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="do">##       Dim.1      Dim.2       Dim.3       Dim.4</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -2.264703  0.4800266 -0.12770602 -0.02416820</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 -2.080961 -0.6741336 -0.23460885 -0.10300677</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -2.364229 -0.3419080  0.04420148 -0.02837705</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 -2.299384 -0.5973945  0.09129011  0.06595556</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 -2.389842  0.6468354  0.01573820  0.03592281</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 -2.075631  1.4891775  0.02696829 -0.00660818</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res.ind<span class="sc">$</span>contrib)      </span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="do">##       Dim.1      Dim.2       Dim.3       Dim.4</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 1.1715796 0.16806554 0.074085470 0.018798188</span></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 0.9891845 0.33146674 0.250034006 0.341474919</span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 1.2768164 0.08526419 0.008875320 0.025915633</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 1.2077372 0.26029781 0.037858004 0.140000650</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 1.3046313 0.30516562 0.001125175 0.041530572</span></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 0.9841236 1.61748779 0.003303827 0.001405371</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(res.ind<span class="sc">$</span>cos2)          </span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="do">##       Dim.1      Dim.2        Dim.3        Dim.4</span></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 0.9539975 0.04286032 0.0030335249 1.086460e-04</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 0.8927725 0.09369248 0.0113475382 2.187482e-03</span></span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 0.9790410 0.02047578 0.0003422122 1.410446e-04</span></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 0.9346682 0.06308947 0.0014732682 7.690193e-04</span></span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 0.9315095 0.06823959 0.0000403979 2.104697e-04</span></span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 0.6600989 0.33978301 0.0001114335 6.690714e-06</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>3个概念和变量的解释也是类似的，只不过上面是变量（列）和主成分的关系，现在是样本（观测，行）和主成分的关系。</p>
-</section>
-<section id="样本结果可视化" class="level3" data-number="23.6.7">
-<h3 data-number="23.6.7" class="anchored" data-anchor-id="样本结果可视化"><span class="header-section-number">23.6.7</span> 样本结果可视化</h3>
-<p>样本的结果可视化可能是更常见的PCA图形，通过<code>fviz_pca_ind()</code>实现：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>这个图是通过<code>res.ind$coord</code>里面的坐标实现的，其实就是不同样本在不同主成分的上面的得分score。</p>
-<p>默认的可视化比较简陋，但是可以通过超多参数实现各种精细化的控制，比如把不同的属性映射给点的大小和颜色，实现各种花里胡哨的效果。</p>
-<p>比如通过组别上色，就是大家最常见的PCA可视化图形：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 经典图形，是不是很熟悉？</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.res,</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">geom.ind =</span> <span class="st">"point"</span>, <span class="co"># 只显示点，不要文字</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> iris<span class="sc">$</span>Species, <span class="co"># 按照组别上色</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>), <span class="co"># 自己提供颜色，或者使用主题</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">addEllipses =</span> <span class="cn">TRUE</span>, <span class="co"># 添加置信椭圆</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">legend.title =</span> <span class="st">"Groups"</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<section id="样本的cos2可视化" class="level4" data-number="23.6.7.1">
-<h4 data-number="23.6.7.1" class="anchored" data-anchor-id="样本的cos2可视化"><span class="header-section-number">23.6.7.1</span> 样本的cos2可视化</h4>
-<p>使用方法和变量的cos2可视化基本一样，通过更改参数值即可实现：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.res,</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> <span class="st">"cos2"</span>, <span class="co"># 按照cos2上色</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span>    </span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>可以更改点的大小、颜色等，只要设置合适的参数即可：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.res, </span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">pointsize =</span> <span class="st">"cos2"</span>, <span class="co"># 把cos2的大小映射给点的大小</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">pointshape =</span> <span class="dv">21</span>, </span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"#E7B800"</span>,</span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span> </span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>同时更改点的大小和颜色当然也是支持的：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_ind</span>(pca.res, </span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.ind =</span> <span class="st">"cos2"</span>, <span class="co"># 控制颜色</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">pointsize =</span> <span class="st">"contrib"</span>, <span class="co"># 控制大小</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">gradient.cols =</span> <span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">repel =</span> <span class="cn">TRUE</span> </span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>使用参数<code>choice = "ind"</code>可视化样本对不同主成分的cos2：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># axes选择主成分</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_cos2</span>(pca.res, <span class="at">choice =</span> <span class="st">"ind"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="样本对主成分的贡献可视化" class="level4" data-number="23.6.7.2">
-<h4 data-number="23.6.7.2" class="anchored" data-anchor-id="样本对主成分的贡献可视化"><span class="header-section-number">23.6.7.2</span> 样本对主成分的贡献可视化</h4>
-<p>和变量对主成分的贡献可视化非常类似，简单演示下：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_contrib</span>(pca.res, <span class="at">choice =</span> <span class="st">"ind"</span>, <span class="at">axes =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="biplot" class="level3" data-number="23.6.8">
-<h3 data-number="23.6.8" class="anchored" data-anchor-id="biplot"><span class="header-section-number">23.6.8</span> biplot</h3>
-<p>双标图…</p>
-<p>同时展示变量和样本和主成分的关系，超级多的自定义可视化细节。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 同时有箭头和椭圆</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca.res, </span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind =</span> iris<span class="sc">$</span>Species, </span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">palette =</span> <span class="st">"jco"</span>, </span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">addEllipses =</span> <span class="cn">TRUE</span>, </span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> <span class="st">"var"</span>,</span>
-<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.var =</span> <span class="st">"black"</span>, </span>
-<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">repel =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">legend.title =</span> <span class="st">"Species"</span></span>
-<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                ) </span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca.res, </span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 组别映射给点的填充色</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">geom.ind =</span> <span class="st">"point"</span>,</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">pointshape =</span> <span class="dv">21</span>,</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">pointsize =</span> <span class="fl">2.5</span>,</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">fill.ind =</span> iris<span class="sc">$</span>Species,</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind =</span> <span class="st">"black"</span>,</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 通过自定义分组给变量上色</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.var =</span> <span class="fu">factor</span>(<span class="fu">c</span>(<span class="st">"sepal"</span>, <span class="st">"sepal"</span>, <span class="st">"petal"</span>, <span class="st">"petal"</span>)),</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 自定义图例标题</span></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">legend.title =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="st">"Species"</span>, <span class="at">color =</span> <span class="st">"Clusters"</span>),</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">repel =</span> <span class="cn">TRUE</span>        </span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>             )<span class="sc">+</span></span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  ggpubr<span class="sc">::</span><span class="fu">fill_palette</span>(<span class="st">"jco"</span>)<span class="sc">+</span> <span class="co"># 选择点的填充色的配色</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  ggpubr<span class="sc">::</span><span class="fu">color_palette</span>(<span class="st">"npg"</span>) <span class="co"># 选择变量颜色的配色</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fviz_pca_biplot</span>(pca.res, </span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 自定义样本部分</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">geom.ind =</span> <span class="st">"point"</span>,</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">fill.ind =</span> iris<span class="sc">$</span>Species, <span class="co"># 填充色</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">col.ind =</span> <span class="st">"black"</span>, <span class="co"># 边框色</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">pointshape =</span> <span class="dv">21</span>, <span class="co"># 点的形状</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">pointsize =</span> <span class="dv">2</span>, </span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">palette =</span> <span class="st">"jco"</span>,</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">addEllipses =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 自定义变量部分</span></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha.var =</span><span class="st">"contrib"</span>, <span class="at">col.var =</span> <span class="st">"contrib"</span>,</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">gradient.cols =</span> <span class="st">"RdYlBu"</span>,</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>                </span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>                <span class="co"># 自定义图例标题</span></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">legend.title =</span> <span class="fu">list</span>(<span class="at">fill =</span> <span class="st">"Species"</span>, <span class="at">color =</span> <span class="st">"Contrib"</span>,</span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">alpha =</span> <span class="st">"Contrib"</span>)</span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>                )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p><code>fviz_xxx</code>系列可视化函数底层是<code>ggscatter</code>的封装，这个函数来自<code>ggpubr</code>包，所有<code>ggpubr</code>支持的特性都可以给<code>fviz_xxx</code>函数使用，这也是这几个函数功能强大的原因，毕竟底层都是<code>ggplot2</code>!</p>
-<p>下载会继续给大家介绍如何提取PCA的数据，并使用<code>ggplot2</code>可视化，以及三维PCA图的实现。</p>
-<p><code>factoextra</code>和<code>factoMineR</code>在聚类分析、主成分分析、因子分析等方面都可以使用。</p>
-<p>参考资料：http://www.sthda.com/</p>
-</section>
-</section>
-<section id="主成分分析可视化3d版" class="level2" data-number="23.7">
-<h2 data-number="23.7" class="anchored" data-anchor-id="主成分分析可视化3d版"><span class="header-section-number">23.7</span> 主成分分析可视化3d版</h2>
-<p>之前详细介绍了R语言中的主成分分析，以及超级详细的主成分分析可视化方法，主要是基于<code>factoextra</code>和<code>factoMineR</code>两个神包。</p>
-<p>今天说一下如何提取数据用<code>ggplot2</code>画PCA图，以及三维PCA图。</p>
-<section id="提取数据" class="level3" data-number="23.7.1">
-<h3 data-number="23.7.1" class="anchored" data-anchor-id="提取数据"><span class="header-section-number">23.7.1</span> 提取数据</h3>
-<p>还是使用鸢尾花数据集。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>pca.res <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(iris[,<span class="sc">-</span><span class="dv">5</span>], <span class="at">scale. =</span> T, <span class="at">center =</span> T)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>pca.res</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Standard deviations (1, .., p=4):</span></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 1.7083611 0.9560494 0.3830886 0.1439265</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="do">## Rotation (n x k) = (4 x 4):</span></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="do">##                     PC1         PC2        PC3        PC4</span></span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Length  0.5210659 -0.37741762  0.7195664  0.2612863</span></span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Sepal.Width  -0.2693474 -0.92329566 -0.2443818 -0.1235096</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Length  0.5804131 -0.02449161 -0.1421264 -0.8014492</span></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Petal.Width   0.5648565 -0.06694199 -0.6342727  0.5235971</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>在上一篇中提到过，经典的PCA图的横纵坐标其实就是不同样本在不同主成分中的得分，只要提取出来就可以用<code>gplot2</code>画了。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 提取得分</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(pca.res<span class="sc">$</span>x)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tmp)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="do">##         PC1        PC2         PC3          PC4</span></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -2.257141 -0.4784238  0.12727962  0.024087508</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 -2.074013  0.6718827  0.23382552  0.102662845</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -2.356335  0.3407664 -0.04405390  0.028282305</span></span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 -2.291707  0.5953999 -0.09098530 -0.065735340</span></span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 -2.381863 -0.6446757 -0.01568565 -0.035802870</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 -2.068701 -1.4842053 -0.02687825  0.006586116</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>和原数据拼到一起就可以画图了：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>tmp<span class="sc">$</span>species <span class="ot">&lt;-</span> iris<span class="sc">$</span>Species</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tmp)</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="do">##         PC1        PC2         PC3          PC4 species</span></span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 -2.257141 -0.4784238  0.12727962  0.024087508  setosa</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 -2.074013  0.6718827  0.23382552  0.102662845  setosa</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 -2.356335  0.3407664 -0.04405390  0.028282305  setosa</span></span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 -2.291707  0.5953999 -0.09098530 -0.065735340  setosa</span></span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 -2.381863 -0.6446757 -0.01568565 -0.035802870  setosa</span></span>
-<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6 -2.068701 -1.4842053 -0.02687825  0.006586116  setosa</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsci)</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(tmp, <span class="fu">aes</span>(PC1, PC2))<span class="sc">+</span></span>
-<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> species))<span class="sc">+</span></span>
-<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ellipse</span>(<span class="fu">aes</span>(<span class="at">fill=</span>species), <span class="at">alpha =</span> <span class="fl">0.2</span>,</span>
-<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">geom =</span><span class="st">"polygon"</span>,<span class="at">type =</span> <span class="st">"norm"</span>)<span class="sc">+</span></span>
-<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_aaas</span>()<span class="sc">+</span></span>
-<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_aaas</span>()<span class="sc">+</span></span>
-<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-39-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="d版" class="level3" data-number="23.7.2">
-<h3 data-number="23.7.2" class="anchored" data-anchor-id="d版"><span class="header-section-number">23.7.2</span> 3d版</h3>
-<p>其实就是使用3个主成分，之前介绍过一种：<a href="https://mp.weixin.qq.com/s/LTQIWYW86QCOEu7fctF8xQ">使用R语言美化PCA图</a>，使用方法非常简单，也是在文献中学习到的。</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="figs/Snipaste_2023-06-12_15-40-00.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:70.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>今天再介绍下<code>scatterplot3d</code>包。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scatterplot3d)</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">scatterplot3d</span>(tmp[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="co"># 第1-3主成分</span></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>              <span class="co"># 颜色长度要和样本长度一样，且对应！</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">color =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),<span class="at">each=</span><span class="dv">50</span>),</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">pch =</span> <span class="dv">15</span>,</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">lty.hide =</span> <span class="dv">2</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>              )</span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,<span class="fu">c</span>(<span class="st">'Setosa'</span>,<span class="st">'Versicolor'</span>,<span class="st">'Virginica'</span>),</span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="at">fill=</span><span class="fu">c</span>(<span class="st">"#00AFBB"</span>, <span class="st">"#E7B800"</span>, <span class="st">"#FC4E07"</span>),<span class="at">box.col=</span><span class="cn">NA</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="1022-pca_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>横坐标是选择的主成分数量,左侧纵坐标是方法的数量（百分比）,右侧纵坐标是解释的方差百分比。先看条形图，选择1个主成分的方法最多，占了12个方法的约50%以上；再看折线图，选择主成分越多，解释的方差百分比越多，不过超过2之后就变化不大了。（这个例子变量太少了）</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1614,13 +1201,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./1021-cluster.html" class="pagination-link" aria-label="R语言聚类分析">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">R语言聚类分析</span></span>
+      <a href="./1021-cluster.html" class="pagination-link" aria-label="聚类分析">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">聚类分析</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./1023-factoranalysis.html" class="pagination-link" aria-label="R语言因子分析">
-        <span class="nav-page-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">R语言因子分析</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./pca可视化.html" class="pagination-link" aria-label="主成分分析可视化">
+        <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">主成分分析可视化</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

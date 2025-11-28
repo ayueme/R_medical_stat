@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.15">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>34&nbsp; 结构方程模型 – R语言实战医学统计</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./多水平模型.html" rel="next">
+<link href="./1016-partialcorrelation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-018089954d508eae8a473f0b7f0491f0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-22b4451ef2a64dd3346f18820cc52094.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "没有结果",
+    "search-matching-documents-text": "匹配的文档",
+    "search-copy-link-title": "复制搜索链接",
+    "search-hide-matches-text": "隐藏其它匹配结果",
+    "search-more-match-text": "更多匹配结果",
+    "search-more-matches-text": "更多匹配结果",
+    "search-clear-button-title": "清除",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "取消",
+    "search-submit-button-title": "提交",
+    "search-label": "搜索"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./结构方程模型.html"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">结构方程模型</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R语言实战医学统计</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/ayueme/R_medical_stat" title="源代码" class="quarto-navigation-tool px-1" aria-label="源代码"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="搜索"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">前言</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">基础统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1001-ttest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">t检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1002-anova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">多样本均数比较的方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./几种离散型变量的分布及其应用.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">几种离散型变量的分布及其应用</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1006-chisq.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1009-cochranarmitage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Cochran-Armitage检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1007-wilcoxon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">秩转换的非参数检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1015-twocorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./三线表绘制.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">三线表绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./统计绘图.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">统计绘图</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1011-samplesize.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1012-randomgroup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ROC曲线.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">ROC曲线</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1014-batchttest.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">“tidy”流统计分析</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">高级统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1003-dysanova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1008-mauchly.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1004-repeatedanova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1005-ancova.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1010-anovaattention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">方差分析注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多变量数据hotelling_t2检验.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">多变量数据的统计描述和统计推断</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1017-multireg.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1018-logistic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./对数线性模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">多维列联表的对数线性模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./泊松回归和负二项回归.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">泊松回归和负二项回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1019-codescheme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">分类变量重编码</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1032-survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">生存分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1033-survivalvis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">生存曲线可视化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1020-discriminant.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">判别分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1021-cluster.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">聚类分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1022-pca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">主成分分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca可视化.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">主成分分析可视化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./主成分回归.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">主成分回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1023-factoranalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">探索性因子分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1016-partialcorrelation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./结构方程模型.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">结构方程模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多水平模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">多水平模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./广义估计方程.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">广义估计方程</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">文献常见统计分析</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1034-finegray.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1035-psm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">倾向性评分：匹配</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1036-pssc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">倾向性评分：回归和分层</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1037-psw.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">倾向性评分：加权</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1038-p4trend.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1039-nonlinear.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">多项式拟合</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1040-rcs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">样条回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1041-subgroupanalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">亚组分析及森林图绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./1042-subgroup1code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./亚组分析和多因素回归的森林图.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图比较</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">附录</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="切換部分">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./9999-appendix.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">其他合集</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目录</h2>
+   
+  <ul>
+  <li><a href="#理论知识" id="toc-理论知识" class="nav-link active" data-scroll-target="#理论知识"><span class="header-section-number">34.1</span> 理论知识</a>
+  <ul class="collapse">
+  <li><a href="#潜变量和显变量" id="toc-潜变量和显变量" class="nav-link" data-scroll-target="#潜变量和显变量"><span class="header-section-number">34.1.1</span> 潜变量和显变量</a></li>
+  <li><a href="#外生变量和内生变量" id="toc-外生变量和内生变量" class="nav-link" data-scroll-target="#外生变量和内生变量"><span class="header-section-number">34.1.2</span> 外生变量和内生变量</a></li>
+  <li><a href="#测量模型和结构模型" id="toc-测量模型和结构模型" class="nav-link" data-scroll-target="#测量模型和结构模型"><span class="header-section-number">34.1.3</span> 测量模型和结构模型</a></li>
+  <li><a href="#路径图" id="toc-路径图" class="nav-link" data-scroll-target="#路径图"><span class="header-section-number">34.1.4</span> 路径图</a></li>
+  <li><a href="#sem和cfa" id="toc-sem和cfa" class="nav-link" data-scroll-target="#sem和cfa"><span class="header-section-number">34.1.5</span> SEM和CFA</a></li>
+  </ul></li>
+  <li><a href="#分析步骤" id="toc-分析步骤" class="nav-link" data-scroll-target="#分析步骤"><span class="header-section-number">34.2</span> 分析步骤</a>
+  <ul class="collapse">
+  <li><a href="#模型设定" id="toc-模型设定" class="nav-link" data-scroll-target="#模型设定"><span class="header-section-number">34.2.1</span> 模型设定</a></li>
+  <li><a href="#模型识别" id="toc-模型识别" class="nav-link" data-scroll-target="#模型识别"><span class="header-section-number">34.2.2</span> 模型识别</a></li>
+  <li><a href="#模型估计" id="toc-模型估计" class="nav-link" data-scroll-target="#模型估计"><span class="header-section-number">34.2.3</span> 模型估计</a></li>
+  <li><a href="#模型评价" id="toc-模型评价" class="nav-link" data-scroll-target="#模型评价"><span class="header-section-number">34.2.4</span> 模型评价</a></li>
+  <li><a href="#模型修正" id="toc-模型修正" class="nav-link" data-scroll-target="#模型修正"><span class="header-section-number">34.2.5</span> 模型修正</a></li>
+  </ul></li>
+  <li><a href="#r语言实战" id="toc-r语言实战" class="nav-link" data-scroll-target="#r语言实战"><span class="header-section-number">34.3</span> R语言实战</a>
+  <ul class="collapse">
+  <li><a href="#lavaan简介" id="toc-lavaan简介" class="nav-link" data-scroll-target="#lavaan简介"><span class="header-section-number">34.3.1</span> lavaan简介</a></li>
+  <li><a href="#数据简介" id="toc-数据简介" class="nav-link" data-scroll-target="#数据简介"><span class="header-section-number">34.3.2</span> 数据简介</a></li>
+  <li><a href="#验证性因子分析" id="toc-验证性因子分析" class="nav-link" data-scroll-target="#验证性因子分析"><span class="header-section-number">34.3.3</span> 验证性因子分析</a></li>
+  <li><a href="#结构方程模型" id="toc-结构方程模型" class="nav-link" data-scroll-target="#结构方程模型"><span class="header-section-number">34.3.4</span> 结构方程模型</a></li>
+  </ul></li>
+  <li><a href="#参考资料" id="toc-参考资料" class="nav-link" data-scroll-target="#参考资料"><span class="header-section-number">34.4</span> 参考资料</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ayueme/R_medical_stat/edit/main/结构方程模型.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/ayueme/R_medical_stat/issues/new" class="toc-action"><i class="bi empty"></i>报告问题</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./结构方程模型.html"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">结构方程模型</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">结构方程模型</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p>本文涉及大量理论知识，不喜欢的可以直接跳到R语言实战部分，但是模型的构建和结果的解读强烈依赖于理论知识。（本来我也不想介绍理论知识，但是发现不懂理论知识根本进行不下去…）</p>
+</blockquote>
+<section id="理论知识" class="level2" data-number="34.1">
+<h2 data-number="34.1" class="anchored" data-anchor-id="理论知识"><span class="header-section-number">34.1</span> 理论知识</h2>
+<p>结构方程模型和中学时学过的<strong>方程组</strong>的概念非常类似！其实就是一个<strong>解方程</strong>的过程。</p>
+<p>有时我们的数据可能有非常多的变量，比如我们有x1<sub>x10，y1</sub>y10，z1~z10，一共30个变量，不同的x之间可能都有关系，不同的y之间可能都有关系，不同的z之间可能都有关系，x,y,z之间可能也有关系，这时候你只写一个方程（或者叫模型、公式都可以）是不可能说清楚这么多关系的，比如你只写<code>y1~x1+x2+x3+x5</code>，那么剩下的那么多变量的关系你怎么解释？</p>
+<p>这时候你就可以用结构方程模型了，因为结构方程模型可以包括多个模型，每一个变量之间的关系你都可以写一个方程出来，你把这些方程全都放在一起解决（是不是和方程组的概念很像？），就是结构方程模型了，它可以帮你算清楚这么多复杂的关系。</p>
+<p>以下是正式的概念：</p>
+<p>结构方程模型（Structural Equation Modeling，SEM）是一种<strong>多元统计分析</strong>方法，属于潜变量分析的一种。结构方程模型是一种基于变量之间的协方差的矩阵来分析多变量之间结构关系的多元统计方法，也被称为<strong>协方差结构模型</strong>。SEM的主要作用是研究可观测变量和不能直接测量的变量之间的结构关系，同时还能考虑到测量误差。</p>
+<blockquote class="blockquote">
+<p>潜变量分析是用于处理不能直接观测到的变量的统计方法，常见的潜变量分析方法有探索性因子分析(EFA)、验证性因子分析(CFA)、结构方程模型(SEM)、潜在类别分析(LCA)、路径分析、增长曲线分析等。</p>
+</blockquote>
+<section id="潜变量和显变量" class="level3" data-number="34.1.1">
+<h3 data-number="34.1.1" class="anchored" data-anchor-id="潜变量和显变量"><span class="header-section-number">34.1.1</span> 潜变量和显变量</h3>
+<p>在结构方程模型中，变量分为观测变量（observed variable）和潜变量（latent variable）。</p>
+<ul>
+<li><strong>观测变量</strong>是可以直接测量的变量，比如考试成绩、身高、体重等，又被称为<strong>显变量</strong>（manifest variable）、显在变量、指示变量（indicator）、度量变量（measurement variable）。</li>
+<li><strong>潜变量</strong>是无法直接测量，需要通过观测变量来间接反映的变量，像学习能力、幸福感、工作满意度等，又被称为潜在变量、隐变量、潜在因子（latent factor）、潜在特质（latent trait）。</li>
+</ul>
+</section>
+<section id="外生变量和内生变量" class="level3" data-number="34.1.2">
+<h3 data-number="34.1.2" class="anchored" data-anchor-id="外生变量和内生变量"><span class="header-section-number">34.1.2</span> 外生变量和内生变量</h3>
+<p>无论是潜变量还是显变量，均可分为内生变量（endogenous variable）与外生变量（exogenous variable)。</p>
+<ul>
+<li><strong>内生变量</strong>指模型需要解释的变量，在模型中被看作<strong>因变量</strong>或效应变量，包括内生显变量（一般用<code>Y</code>表示）与内生潜变量（一般用<code>η</code>表示）；</li>
+<li><strong>外生变量</strong>指能够对内生变量产生影响的变量，在模型中被看作<strong>自变量</strong>或解释变量，包括外生显变量（一般用<code>X</code>表示）与外生潜变量（一般用<code>ξ</code>表示）。</li>
+</ul>
+</section>
+<section id="测量模型和结构模型" class="level3" data-number="34.1.3">
+<h3 data-number="34.1.3" class="anchored" data-anchor-id="测量模型和结构模型"><span class="header-section-number">34.1.3</span> 测量模型和结构模型</h3>
+<p>SEM中的模型主要包括两种（SEM类似于多个方程组成的方程组，按照使用目的，这些方程大致可以分为两类）：</p>
+<ol type="1">
+<li><strong>测量模型</strong>(measurement model)：用来描述<strong>观测变量和潜变量</strong>之间的关系。比如，我们想研究学生的“学习能力”这个潜变量、可能会通过“语文成绩”、“数学成绩”、“英语成绩”等观测变量来衡量。测量模型就是要确定这些观测变量在多大程度上能够准确地反映“学习能力”这个潜变量。</li>
+<li><strong>结构模型</strong>(structural model)：用于描述<strong>潜变量之间</strong>的关系。比如，我们认为“学习能力”会影响“学习成绩”，“学习态度”也会影响“学习成绩”，同时“学习态度”还可能会影响“学习能力”，这些潜变量之间的相互影响关系就构成了结构模型。</li>
+</ol>
+<p>所以，SEM其实就是多个模型的结合体，因为你只用一个模型是无法说清楚这么多变量之间的关系的，所以要建立多个方程（模型）。</p>
+<p>当SEM只有测量模型，没有结构模型时，被称为<strong>验证性因子分析</strong>（confirmatory factor analysis，CFA）。当SEM只有结构模型，没有测量模型时，被称为<strong>路径分析</strong>（path analysis）。</p>
+</section>
+<section id="路径图" class="level3" data-number="34.1.4">
+<h3 data-number="34.1.4" class="anchored" data-anchor-id="路径图"><span class="header-section-number">34.1.4</span> 路径图</h3>
+<p>路径图是用于描述变量之间关系的示意图，是SEM和验证性因子分析中必须了解的图形。其实就是<strong>用图形化的方式展示潜变量和显变量、潜变量和潜变量之间的关系</strong>，以及关系的大小（载荷）和方向等。由于SEM和CFA中通常涉及多个变量之间的复杂关系，只看数字或者文字描述很难直接理清他们的关系，但是图形可以直接反映，毕竟<strong>一图胜千言！</strong></p>
+<p>其他常用的做SEM的软件，比如AMOS，是以图形界面为核心的，所以在使用这种软件进行SEM第一步就是要建立路径图，使用路径图假设各个变量之间的关系。但是R语言是以代码为核心的，直接使用代码表示多个变量之间的关系即可（即直接建立多个模型（在R中就是建立多个公式）），路径图更多是作为结果呈现的内容，而不是必须第一步就要做的。</p>
+<p>在之前的<a href="https://mp.weixin.qq.com/s/dwpIvzeEghnfA2gEWPcTRA">探索性因子分析</a>中出现过一个简单的路径图：</p>
+<p><img src="figs/PixPin_2025-02-26_20-14-04.png" class="img-fluid"></p>
+<p>这个图就是一个简单的路径图，展示了4个潜变量和各自的显变量之间的关系，并且标注了因子载荷以及正负，看起来很直观。</p>
+<p>在CFA和SEM中，变量之间的关系比这个要复杂的多，为了规范，<strong>路径图中的圆圈、方框、箭头等都有明确的含义</strong>，以下是简单说明：</p>
+<p><img src="figs/sem_path_symbol.jpg" class="img-fluid"></p>
+</section>
+<section id="sem和cfa" class="level3" data-number="34.1.5">
+<h3 data-number="34.1.5" class="anchored" data-anchor-id="sem和cfa"><span class="header-section-number">34.1.5</span> SEM和CFA</h3>
+<p>SEM与验证性因子分析（CFA）关系密切。根据分析目的，因子分析可分为<strong>探索性因子分析</strong>（exploratory factor analysis，EFA）和<strong>验证性因子分析</strong>（confirmatory factor analysis，CFA）。</p>
+<ul>
+<li>探索性因子分析：研究者事先并不清楚或不确定潜在因子与可测变量之间的关联，也不清楚可测变量会隐含多少个潜在因子。</li>
+<li>如果研究者根据以往的研究经验或根据探索性因子分析的结果，对所要研究的可测变量与潜在因子之间的内在结构已然清楚，即已知哪些可测变量可能被哪些潜在因子影响，只需进一步确定可测变量在潜在因子上的载荷大小，并验证这种结构与数据的吻合程度，即为验证性因子分析。</li>
+</ul>
+<p>与探索性因子分析要求因子之间独立不同的是，验证性因子分析允许潜在因子之间相关。</p>
+<p>验证性因子分析在社会、心理、教育、管理及医学等研究领域，常用于评价某个测验或量表的<strong>构念效度</strong>（constructure validity，又称<strong>结构效度</strong>）。验证性因子分析与结构方程模型有着密切的联系，其实质是<strong>SEM的测量模型</strong>部分。验证性因子分析的数学模型与探索性因子分析的数学模型类似，也是联系潜在因子与可测变量的系列方程组。验证性因子分析从理论模型的设定、参数估计、模型的评价以及模型的修正与解释等一系列的过程皆与结构方程原理类似。</p>
+<blockquote class="blockquote">
+<p>构念效度指的是测量工具能够准确测量理论上的构念或特质的程度。简单来说，就是看我们所使用的测量工具（如问卷、测试等）是不是真的在测量我们想要测量的那个抽象概念。比如，我们想测量一个人的“创造力”，那么所设计的测量工具是否真的能准确地把这个人的创造力水平反映出来，而不是测到了其他无关的东西，这就是构念效度要解决的问题。</p>
+</blockquote>
+<p>回归系数在结构模型中表示潜变量之间的路径系数，而测量模型中的因子载荷也是回归的一种形式。方差和协方差则涉及到潜变量的残差以及观测变量之间的关系。这些参数是模型估计的核心部分，用来评估模型是否合适，以及各个变量之间的关系强度。</p>
+</section>
+</section>
+<section id="分析步骤" class="level2" data-number="34.2">
+<h2 data-number="34.2" class="anchored" data-anchor-id="分析步骤"><span class="header-section-number">34.2</span> 分析步骤</h2>
+<blockquote class="blockquote">
+<p>简单看下这部分，有个印象即可。</p>
+</blockquote>
+<p>在应用结构方程模型分析变量之间的复杂关系的时候，一般可以分为5个步骤进行：</p>
+<ol type="1">
+<li>模型设定（modelspecification）；</li>
+<li>模型识别（model identification）；</li>
+<li>模型估计（model estimation）；</li>
+<li>模型评价（model evaluation）；</li>
+<li>模型修正（model modification）。</li>
+</ol>
+<section id="模型设定" class="level3" data-number="34.2.1">
+<h3 data-number="34.2.1" class="anchored" data-anchor-id="模型设定"><span class="header-section-number">34.2.1</span> 模型设定</h3>
+<p>根据研究目的和专业知识建立起观测变量与潜变量以及潜变量之间的关系，即为模型的设定。一般有3种方式设立欲拟合的结构方程模型。</p>
+<ol type="1">
+<li>直接确定模型：对研究者提出的单一的假设模型进行验证。这种纯粹的验证理论模型的分析较少。</li>
+<li>选择最优模型：研究者提出若干个理论模型，从中选出一个拟合优度最佳的。</li>
+<li>导出模型：研究者先提出一个或几个理论模型，结合专业知识不断进行修正，直至模型能够很好地拟合数据为止。这种分析方法比较多见。</li>
+</ol>
+</section>
+<section id="模型识别" class="level3" data-number="34.2.2">
+<h3 data-number="34.2.2" class="anchored" data-anchor-id="模型识别"><span class="header-section-number">34.2.2</span> 模型识别</h3>
+<p>模型识别的主要任务就是在初始模型建立之后，考虑模型中的每一个<strong>未知参数能否由观测数据得到唯一解</strong>。根据结构方程组的个数和未知参数的个数之间的关系，模型可以分为恰好识别模型、识别不足模型、过度识别模型。</p>
+<ul>
+<li>对于<strong>识别不足的模型</strong>，待估计参数的个数多于样本中所能得到的方程的个数，此时进行参数估计能得到无穷多个解，比如对于方程<code>a*b=16</code>，求a和b的值，这个结果有无数个，因为有2个未知数却只有1个方程，好理解吧？</li>
+<li>对于<strong>恰好识别模型</strong>，虽然可以得到唯一的参数估计值，但是无法检验其对数据的拟合优度，因为此时的自由度和卡方值都是0。意思就是只有唯一解，没法比较优劣了，那还有啥用！</li>
+<li>对于<strong>过度识别模型</strong>，可以对参数进行假设检验，因此过度识别模型是结构方程模型本身所追求的。意思就是可以有多个解，但是是有限的，这样还能比较优劣，这是咱们希望的情况！</li>
+</ul>
+</section>
+<section id="模型估计" class="level3" data-number="34.2.3">
+<h3 data-number="34.2.3" class="anchored" data-anchor-id="模型估计"><span class="header-section-number">34.2.3</span> 模型估计</h3>
+<p>也就是结构方程模型估计参数的过程。主要有以下几种方法（简单看下名字就好了…）：</p>
+<ol type="1">
+<li><p>最大似然估计 最大似然估计（maximum likelihood estimation，MLE）最常用。对于一个给定的资料，ML法是使得参数的似然函数最大化。最大似然估计有许多优良特性。它是无偏的渐近有效的一致性估计，而且不受测量单位的影响。但是，ML估计需要假设观测变量为连续性变量，且具有多元正态分布（multi-variate normal distribution）。观测变量的非正态性（non-normality），尤其是在高峰度情况下，虽然参数的估计值仍有效，但往往会得到不正确的标准误。对这个问题可以采取：①考虑对偏态分布的变量进行转换，使其近似于多元正态分布；②将可能导致偏态的离群值（outlier）删除；③应用自助重抽样（bootstrap-resampling）来估计参数估计的方差以进行显著性检验。</p></li>
+<li><p>未加权最小二乘法 未加权最小二乘法（unweighted least squares，ULS）是将残差阵中的每一元素求平方和并使之最小，然后利用偏导数方法求出参数估计值。这种估计方法对观测变量的分布无特殊要求，只要参数可以识别，就能获得一致性估计值。</p></li>
+<li><p>广义最小二乘法 广义最小二乘法（generalized least squares，GLS）估计对（S-∑(θ)）的所有元素取相同的权重，即假定所有元素具有相同的方差协方差。当违反这些假定时，最小二乘估计是有偏差的，对此可采用加权处理。GLS估计是一致有效的估计。</p></li>
+<li><p>加权最小二乘法 加权最小二乘法（weighted least squares，WLS）是Browne于1984年提出的一种渐近式分布无干扰（asymptotically distribution free，ADF）的估计方法。这种方法不要求观测变量具有多元正态性。</p></li>
+<li><p>对角加权最小二乘法 当变量数很大时，要计算待估参数的渐近协方差阵相当费时间，并且占用大量的计算机内存。可以用对角加权最小二乘法（diagonal weighted least squares，DWLS）估计参数。DWLS得不到参数的渐近有效估计，但它能给出介于ML和WLS之间的折中估计。</p></li>
+</ol>
+</section>
+<section id="模型评价" class="level3" data-number="34.2.4">
+<h3 data-number="34.2.4" class="anchored" data-anchor-id="模型评价"><span class="header-section-number">34.2.4</span> 模型评价</h3>
+<p>在获得了参数的估计值后需要对模型的拟合效果进行评价。一般而言需提供几个方面的信息：①参数估计的合理性及显著性检验；②测量模型的评价；③整体模型的评价。</p>
+<p>1.参数估计与假设检验</p>
+<p>在模型设定正确的前提下，参数的估计值应该具有合理的取值范围及正确的符号；反之，如果出现与此背离的情形，如方差为负值，相关系数的绝对值大于1，协方差或相关矩阵为非正定阵等，则表明模型设定有误或输入的矩阵缺少足够的信息。此外，还应该对每一个自由参数做是否为零的检验。在多元正态分布的前提下，ML和GLS估计能够获得正确的标准误，WLS估计在应用了正确的加权矩阵时所得到的标准误也是正确的，对于ULS和DWLS估计仅能得到渐近标准误，而IV和TSLS则不能提供标准误。并且，即使在观测变量有所偏离正态的情况下，ML和GLS也能得到稳健的标准误。单个参数的检验期望拒绝零假设，因为这表明将其设为自由参数是合理的：反之，当结论为不拒绝零假设时提示将其设为自由参数可能是不恰当的。此时，应结合实际理论将其固定为0。</p>
+<p>2.模型评价</p>
+<p>得到参数的估计值，就意味着得到一个特定的理论模型。接下来的问题是，如何知道这个特定的模型拟合实际数据的程度，涉及模型评价问题，至少需要进行两方面的评价：①检验模型中的参数是否具有统计学意义；②模型整体拟合程度的评价。</p>
+<p>即便是理论模型整体拟合效果很好，也不能保证所有的待估参数均具有统计学意义，所以应该对每个参数是否具有统计学意义进行假设检验。当某个参数的检验结果不具有统计学意义时，意味着将该参数设为自由参数是不恰当的，应将其固定为0，并对模型重新拟合与评价。用于验证性因子分析的许多软件（如LISREL）会在输出结果中给出参数的标准误、统计量值等。此外，当潜在因子的协方差矩阵以及度量误差的协方差矩阵的对角元素出现负值时，表明模型的设定有不恰当之处，因为这些元素实质均为方差，方差应该是非负值。</p>
+<p>对模型整体拟合效果的评价指标主要是<strong>拟合指数</strong>，拟合指数有很多，每个指数的计算及意义不尽相同。绝大多数的拟合指数是基于拟合函数计算出来的，卡方值是反映模型与数据拟合程度最直接的指标，卡方值越大，模型与数据拟合效果越不好。因为卡方值容易受到样本含量N影响，即在N较大时，卡方值也很大：N较小时，卡方值则很小，也就是说，卡方值往往不能很好地反映模型与数据的实际拟合程度。为了弥补卡方值的缺陷，许多学者先后提出了儿十个拟合指数。这些拟合指数大致可以分为：绝对拟合指数（absolute fit index）、相对拟合指数（comparative fit index）、信息标准指数（information criteria fit index）、节俭拟合指数（parsimony fit index）。</p>
+<p>一个比较理想的拟合指数应该具有这样的特点：①不受样本含量的影响；②惩罚复杂模型（自由参数较多的模型）；③对误设模型敏感。</p>
+<p>验证性因子分析与结构方程模型的拟合指标基本相同，下表列出了部分常用的拟合指标。</p>
+<p><img src="figs/PixPin_2025-02-24_13-38-02.png" class="img-fluid"></p>
+<p>上表中没有的几个指标补充：</p>
+<ul>
+<li>Tucker-Lewis Index (TLI)：Tucker Lewis指数一般会在结构方程模型中报告，也被称为非范拟合指数（Non-Normed Fit Index，NNFI），是在因子分析以及结构方程模型等领域用于评估模型拟合优度的一个重要指标，通常希望大于0.9，值越大说明拟合效果越好。</li>
+<li>SRMR：Standardized Root Mean Square Residual，标准化残差均方根，SRMR的值越接近0，表示观测数据与模型预测数据之间的差异越小，即模型对数据的拟合效果越好。一般来说，当SRMR小于0.08时，认为模型拟合良好；当SRMR小于0.05时，表明模型拟合非常好。</li>
+</ul>
+</section>
+<section id="模型修正" class="level3" data-number="34.2.5">
+<h3 data-number="34.2.5" class="anchored" data-anchor-id="模型修正"><span class="header-section-number">34.2.5</span> 模型修正</h3>
+<p>对初始理论模型可进行调整，以得到拟合效果较佳的模型，可通过<strong>修正指数</strong>（modification index，MI），适当地改变模型中某些变量之间的关系，或设定某些误差项，或限制某些结构参数。MacCallum给出一些建议：</p>
+<ul>
+<li>首先，在描述结构模型的问题前，需先解决测量模型的设定误差；</li>
+<li>其次，一次只能做一个修正，以免影响其他参数的估计。</li>
+<li>最后，修正过程应该先增加有意义的参数，如果需要，再减少无意义的参数。而非先减少无意义的参数，再增加有意义的参数。</li>
+<li>另外，在进行模型修正时，应该有实际的理论做指导，而不能仅凭样本数据提供的信息做出判断。</li>
+</ul>
+</section>
+</section>
+<section id="r语言实战" class="level2" data-number="34.3">
+<h2 data-number="34.3" class="anchored" data-anchor-id="r语言实战"><span class="header-section-number">34.3</span> R语言实战</h2>
+<p>以上是理论知识（太复杂了！），下面是R语言实战。</p>
+<section id="lavaan简介" class="level3" data-number="34.3.1">
+<h3 data-number="34.3.1" class="anchored" data-anchor-id="lavaan简介"><span class="header-section-number">34.3.1</span> lavaan简介</h3>
+<p><code>lavaan</code>是专门用于潜变量分析的R包，它是<code>latent variable analysis</code>（潜变量分析）的缩写。</p>
+<p>在常规的R公式语法中，波浪号<code>~</code>左边的变量是因变量，右边的变量是自变量，多个自变量以<code>+</code>连接，比如：</p>
+<pre><code>y ~ x1 + x2 + x3 + x4</code></pre>
+<p>在<code>lavaan</code>中，这种形式也被保留下来，表示常规的回归的模型。稍有不同的地方是，SEM和CFA中可能会同时出现多个回归模型（叫公式、方程都可以），用来表示多个变量之间的关系，比如：</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 同时出现3个公式</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>y <span class="sc">~</span> f1 <span class="sc">+</span> f2 <span class="sc">+</span> x1 <span class="sc">+</span> x2 </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>f1 <span class="sc">~</span> f2 <span class="sc">+</span> f3 </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>f2 <span class="sc">~</span> f3 <span class="sc">+</span> x1 <span class="sc">+</span> x2</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>SEM中的变量分为潜变量和显变量，如果<code>~</code>两侧是不同类型的变量（比如：<code>~</code>左侧是潜变量，右侧是显变量），那么就会和常规的回归模型混淆，并且也难以区分谁是潜变量、谁是显变量，所以<code>lavaan</code>引入了<code>=~</code>，如果潜变量<code>x</code>由<code>z1,z2,z3</code>这3个显变量测量，可以写成如下格式：</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span><span class="er">~</span> z1<span class="sc">+</span>z2<span class="sc">+</span>z3</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>在SEM的求解过程中，变量之间的协方差和方差结构是必须的，<code>lavaan</code>中通过<code>~~</code>定义变量之间的协方差和方差结构。如果<code>~~</code>的两边是同一个变量，则是表示方差，如果是不同的变量，则是表示协方差。比如：</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>y1 <span class="sc">~</span><span class="er">~</span> x2 <span class="co"># 估计y1和x2之间的协方差</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>z1 <span class="sc">~</span><span class="er">~</span> x3 <span class="co"># 估计z1和x3之间的协方差</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>一个完整的<code>lavaan</code>模型公式是由以上4个部分组成的，并且必须使用单引号<code>'</code>引起来，例如：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 一个完整的lavaan语法</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>myModel <span class="ot">&lt;-</span> <span class="st">' # 回归模型</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">             y1 + y2 ~ f1 + f2 + x1 + x2</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">             f1 ~ f2 + f3</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">             f2 ~ f3 + x1 + x2</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">             # 潜变量 </span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="st">             f1 =~ y1 + y2 + y3 </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="st">             f2 =~ y4 + y5 + y6 </span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="st">             f3 =~ y7 + y8 + y9 + y10</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="st">             # 方差和协方差 </span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="st">             y1 ~~ y1 </span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">             y1 ~~ y2 </span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="st">             f1 ~~ f2</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="st">             # 截距项</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="st">             y1 ~ 1 </span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="st">             f1 ~ 1</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="st">           '</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>但是在实际使用时，只有<code>潜变量</code>部分的公式才是必须的，其余部分的公式有时可以省略（会默认计算其余部分，也有例外，要根据实际情况来）。</p>
+</section>
+<section id="数据简介" class="level3" data-number="34.3.2">
+<h3 data-number="34.3.2" class="anchored" data-anchor-id="数据简介"><span class="header-section-number">34.3.2</span> 数据简介</h3>
+<p>结合一个具体的例子说明（孙振球医学统计学第5版例23-1）。</p>
+<p>某课题组采用脑卒中患者报告临床结局量表（下文简述Stroke-PRO量表）调查了295例脑卒中患者，用于评估其治疗结局。Stroke-PRO量表中，生理领域包含4个维度、20个条目；心理领域包含3个维度、14个条目；社会领域包含2个维度、7个条目；治疗领域包含1个维度、5个条目。量表结构如下：</p>
+<p><img src="figs/PixPin_2025-02-25_21-46-42.png" class="img-fluid"></p>
+<p>上表中每个条目是一个观测变量，每个维度是一个潜变量。</p>
+<p>以生理领域中躯体症状（SOS）这一维度为例，患者的躯体症状无法直接测量，需通过一些相关条目获取，如采用Likert5级计分，维度与条目信息如下：</p>
+<p><img src="figs/PixPin_2025-02-25_21-47-45.png" class="img-fluid"></p>
+<p>假如我们需要探讨脑卒中患者生理领域的躯体症状、认知能力和心理领域的焦虑、抑郁、回避之间的相互作用关系，将上述维度作为潜变量，各条目作为观测变量，可以从以下两方面着手分析：</p>
+<ol type="1">
+<li>采用验证性因子分析评价量表的结构效度；</li>
+<li>采用结构方程模型分析不同维度间的关联关系。</li>
+</ol>
+</section>
+<section id="验证性因子分析" class="level3" data-number="34.3.3">
+<h3 data-number="34.3.3" class="anchored" data-anchor-id="验证性因子分析"><span class="header-section-number">34.3.3</span> 验证性因子分析</h3>
+<p>验证性因子分析本质上是结构方程模型中的测量模型，常用于评价某个测验或者量表的结构效度（construct validity），又称为构念效度。</p>
+<blockquote class="blockquote">
+<p><strong>构念</strong>是指在科学研究中，研究者为了描述、解释和预测现象而构建的抽象概念，如智力、焦虑、工作满意度等。构念本身无法直接观察和测量，需要通过一些可观测的指标（如题目、行为表现等）来间接测量。<strong>构念效度</strong>指的是测量工具能够准确测量理论上的构念或特质的程度。简单来说，就是看我们所使用的测量工具（如问卷、测试等）是不是真的在测量我们想要测量的那个抽象概念。比如，我们想测量一个人的 “创造力”，那么所设计的测量工具是否真的能准确地把这个人的创造力水平反映出来，而不是测到了其他无关的东西，这就是构念效度要解决的问题。</p>
+</blockquote>
+<p>用验证性因子分析评价Stroke-PRO量表生理领域即其躯体症状（SOS）、认知能力（COG）、言语交流（VEC）及自理能力（SHS）的结构效度。</p>
+<p>先读取数据和加载R包：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan) <span class="co"># 做SEM</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)  <span class="co"># 读取spss格式的数据</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df23_2 <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_sav</span>(<span class="st">"datasets/例23-02.sav"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df23_2)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 295  20</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#df23_2 &lt;- haven::zap_formats(df23_2)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df23_2[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="co"># 展示前4行和前4列</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="do">## # A tibble: 4 × 4</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">##    PHD1  PHD2  PHD3  PHD4</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="do">##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 1     5     5     5     5</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 2     4     4     4     5</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 3     5     5     5     5</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 4     5     4     5     5</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>数据结构如上，每一行是一个患者，每一列是一个条目，其中的数字是评分。</p>
+<p>首先是构建模型，把潜变量和显变量之间的关系用公式的形式写出来。在这个示例中潜变量就是躯体症状（SOS）、认知能力（COG）、言语交流（VEC）及自理能力（SHS），显变量就是各自对应的条目，所以公式有4个：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 验证性因子分析只有测量模型，没有结构模型</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cfa_models <span class="ot">&lt;-</span> <span class="st">' sos =~ PHD1+PHD2+PHD3+PHD4+PHD5+PHD6+PHD7 </span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="st">                cog =~ PHD8+PHD9+PHD10+PHD11</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="st">                vec =~ PHD12+PHD13+PHD14+PHD15 </span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="st">                shs =~ PHD16+PHD17+PHD18+PHD19+PHD20 '</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>使用<code>cfa</code>函数拟合验证性因子分析模型即可：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">cfa</span>(cfa_models, <span class="at">data =</span> df23_2)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>查看拟合结果(结果和书中基本是一样的)：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit, <span class="at">standardized=</span>T, <span class="at">rsquare =</span> T)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="do">## lavaan 0.6-19 ended normally after 46 iterations</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   Estimator                                         ML</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   Optimization method                           NLMINB</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   Number of model parameters                        46</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   Number of observations                           295</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Model Test User Model:</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                       </span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="do">##   Test statistic                               630.894</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   Degrees of freedom                               164</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   P-value (Chi-square)                           0.000</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Parameter Estimates:</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="do">##   Standard errors                             Standard</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   Information                                 Expected</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   Information saturated (h1) model          Structured</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Latent Variables:</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="do">##   sos =~                                                                </span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD1              1.000                               0.675    0.458</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD2              0.975    0.156    6.259    0.000    0.658    0.508</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD3              1.088    0.184    5.925    0.000    0.734    0.464</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD4              1.415    0.185    7.647    0.000    0.955    0.779</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD5              1.433    0.183    7.811    0.000    0.966    0.831</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD6              1.363    0.175    7.785    0.000    0.920    0.822</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD7              1.121    0.167    6.721    0.000    0.756    0.579</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a><span class="do">##   cog =~                                                                </span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD8              1.000                               0.931    0.734</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD9              1.107    0.087   12.723    0.000    1.031    0.800</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD10             1.088    0.086   12.635    0.000    1.013    0.794</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD11             0.804    0.084    9.554    0.000    0.749    0.595</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a><span class="do">##   vec =~                                                                </span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD12             1.000                               1.000    0.724</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD13             0.965    0.081   11.942    0.000    0.965    0.737</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD14             0.659    0.065   10.068    0.000    0.659    0.621</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD15             0.779    0.071   11.018    0.000    0.779    0.680</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="do">##   shs =~                                                                </span></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD16             1.000                               1.031    0.737</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD17             1.233    0.080   15.470    0.000    1.271    0.873</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD18             1.394    0.090   15.562    0.000    1.437    0.878</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD19             1.390    0.088   15.706    0.000    1.432    0.885</span></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD20             1.407    0.085   16.493    0.000    1.450    0.926</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="do">## Covariances:</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a><span class="do">##   sos ~~                                                                </span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a><span class="do">##     cog               0.372    0.068    5.477    0.000    0.592    0.592</span></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a><span class="do">##     vec               0.474    0.082    5.792    0.000    0.702    0.702</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="do">##     shs               0.210    0.053    3.921    0.000    0.302    0.302</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a><span class="do">##   cog ~~                                                                </span></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a><span class="do">##     vec               0.737    0.096    7.682    0.000    0.792    0.792</span></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a><span class="do">##     shs               0.263    0.068    3.893    0.000    0.274    0.274</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a><span class="do">##   vec ~~                                                                </span></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a><span class="do">##     shs               0.653    0.093    7.057    0.000    0.634    0.634</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a><span class="do">## Variances:</span></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD1              1.712    0.146   11.739    0.000    1.712    0.790</span></span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD2              1.240    0.107   11.612    0.000    1.240    0.742</span></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD3              1.964    0.167   11.726    0.000    1.964    0.785</span></span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD4              0.590    0.061    9.725    0.000    0.590    0.393</span></span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD5              0.418    0.048    8.631    0.000    0.418    0.309</span></span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD6              0.406    0.046    8.863    0.000    0.406    0.324</span></span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD7              1.132    0.100   11.370    0.000    1.132    0.664</span></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD8              0.742    0.075    9.853    0.000    0.742    0.461</span></span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD9              0.597    0.069    8.622    0.000    0.597    0.360</span></span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD10             0.603    0.069    8.778    0.000    0.603    0.370</span></span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD11             1.022    0.092   11.087    0.000    1.022    0.646</span></span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD12             0.907    0.088   10.255    0.000    0.907    0.476</span></span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD13             0.783    0.078   10.088    0.000    0.783    0.457</span></span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD14             0.692    0.062   11.111    0.000    0.692    0.614</span></span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD15             0.708    0.066   10.704    0.000    0.708    0.538</span></span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD16             0.892    0.079   11.328    0.000    0.892    0.457</span></span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD17             0.504    0.051    9.894    0.000    0.504    0.238</span></span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD18             0.614    0.063    9.784    0.000    0.614    0.229</span></span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD19             0.567    0.059    9.594    0.000    0.567    0.216</span></span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD20             0.349    0.044    7.899    0.000    0.349    0.142</span></span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a><span class="do">##     sos               0.455    0.116    3.935    0.000    1.000    1.000</span></span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a><span class="do">##     cog               0.867    0.126    6.909    0.000    1.000    1.000</span></span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a><span class="do">##     vec               1.000    0.146    6.847    0.000    1.000    1.000</span></span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a><span class="do">##     shs               1.062    0.146    7.277    0.000    1.000    1.000</span></span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a><span class="do">## R-Square:</span></span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate</span></span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD1              0.210</span></span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD2              0.258</span></span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD3              0.215</span></span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD4              0.607</span></span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD5              0.691</span></span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD6              0.676</span></span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD7              0.336</span></span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD8              0.539</span></span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD9              0.640</span></span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD10             0.630</span></span>
+<span id="cb9-100"><a href="#cb9-100" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD11             0.354</span></span>
+<span id="cb9-101"><a href="#cb9-101" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD12             0.524</span></span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD13             0.543</span></span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD14             0.386</span></span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD15             0.462</span></span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD16             0.543</span></span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD17             0.762</span></span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD18             0.771</span></span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD19             0.784</span></span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD20             0.858</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>输出结果包括3个部分，第一部分是前9行，主要包含以下信息：</p>
+<ul>
+<li><code>lavaan</code>的版本号</li>
+<li>优化是否正常结束，以及需要多少次迭代</li>
+<li>使用的估计方法，ML即最大似然法</li>
+<li>使用的优化器，这里是NLMINB</li>
+<li>模型参数数量，这里是46</li>
+<li>分析中实际使用的观测数量，这里是295</li>
+<li>模型的检验统计量（卡方值）、自由度、P值</li>
+</ul>
+<p>第二部分是模型的参数估计。</p>
+<p>首先是潜变量和观测变量之间的<strong>因子载荷系数</strong>，P值小于0.05且载荷系数越大，说明因子（也就是潜变量）和观测变量之间的相关性越强。各列的含义如下：</p>
+<ul>
+<li><code>Estimate</code>：非标准化的载荷系数（<strong>和回归分析中的变量系数类似</strong>）</li>
+<li><code>Std.Err</code>：标准误</li>
+<li><code>z-value</code>：Z值</li>
+<li><code>P(&gt;|z|)</code>：P值</li>
+<li><code>Std.lv</code>：标准化的载荷系数，只有潜变量被标准化</li>
+<li><code>Std.all</code>：标准化的载荷系数，潜变量和观测变量都被标准化，又被称为“完全标准化解”</li>
+</ul>
+<p>然后是3个因子（即潜变量）之间<strong>协方差的结果</strong>，展示因子与因子之间的相关性。P值小于0.05且<code>Estimate</code>（非标准化的系数）越大说明两个因子相关性越大。</p>
+<p>最后是<strong>误差的方差</strong>（Variances）。其中<code>Estimate</code>是每个观测变量的非标准化误差方差估计值，误差方差代表了观测变量中不能被潜在因子解释的部分，也就是观测变量的变异中无法由模型所设定的潜在因子结构来解释的那部分。较小的误差方差意味着观测变量能较好地被潜在因子解释。剩余3列分别是标准误、Z值和P值。</p>
+<p>注意，在<code>Variances</code>部分，观测变量名称之前有一个点。这是因为它们是因变量（或内生变量）（由潜在变量预测），因此，输出中打印的方差值是残差方差（即未被预测变量解释的剩余方差）的估计值。潜变量名称之前没有点，因为在这个模型中它们是外生变量（没有单箭头指向它们），这里的方差值是潜变量的估计总方差。</p>
+<p>最后一部分是每个观测变量的R<sup>2</sup>，这部分结果与书中也是完全一致的。</p>
+<p>通过以下代码可查看<strong>拟合指数</strong>（个别值与书中有差别）：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit.measures = "all"可查看所有拟合指数</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fitMeasures</span>(fit, <span class="at">fit.measures =</span> <span class="fu">c</span>(<span class="st">"chisq"</span>,<span class="st">"df"</span>,<span class="st">"aic"</span>,<span class="st">"gfi"</span>,<span class="st">"rmsea"</span>,<span class="st">"cfi"</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="do">##     chisq        df       aic       gfi     rmsea       cfi </span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   630.894   164.000 17132.886     0.812     0.098     0.867</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>summary(fit)</code>给出的因子载荷系数是非标准化的，可通过以下方式输出标准化的结果：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>std_res <span class="ot">&lt;-</span> <span class="fu">standardizedSolution</span>(fit)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>std_res <span class="co"># est.std就是标准化的载荷</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="do">##      lhs op   rhs est.std    se      z pvalue ci.lower ci.upper</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 1    sos =~  PHD1   0.458 0.050  9.218      0    0.361    0.556</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 2    sos =~  PHD2   0.508 0.047 10.833      0    0.416    0.600</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 3    sos =~  PHD3   0.464 0.049  9.393      0    0.367    0.561</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 4    sos =~  PHD4   0.779 0.028 28.190      0    0.725    0.833</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 5    sos =~  PHD5   0.831 0.024 35.304      0    0.785    0.877</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 6    sos =~  PHD6   0.822 0.024 33.908      0    0.775    0.870</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 7    sos =~  PHD7   0.579 0.043 13.620      0    0.496    0.663</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 8    cog =~  PHD8   0.734 0.033 22.471      0    0.670    0.798</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 9    cog =~  PHD9   0.800 0.028 28.742      0    0.746    0.855</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 10   cog =~ PHD10   0.794 0.028 28.033      0    0.738    0.849</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 11   cog =~ PHD11   0.595 0.043 13.984      0    0.512    0.679</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 12   vec =~ PHD12   0.724 0.033 22.224      0    0.660    0.788</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 13   vec =~ PHD13   0.737 0.032 23.324      0    0.675    0.799</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 14   vec =~ PHD14   0.621 0.040 15.513      0    0.543    0.699</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 15   vec =~ PHD15   0.680 0.036 18.944      0    0.609    0.750</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 16   shs =~ PHD16   0.737 0.028 26.007      0    0.682    0.793</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 17   shs =~ PHD17   0.873 0.016 54.662      0    0.842    0.904</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 18   shs =~ PHD18   0.878 0.016 56.550      0    0.847    0.908</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 19   shs =~ PHD19   0.885 0.015 59.683      0    0.856    0.914</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 20   shs =~ PHD20   0.926 0.011 83.441      0    0.904    0.948</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 21  PHD1 ~~  PHD1   0.790 0.046 17.348      0    0.701    0.879</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 22  PHD2 ~~  PHD2   0.742 0.048 15.539      0    0.648    0.835</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 23  PHD3 ~~  PHD3   0.785 0.046 17.120      0    0.695    0.875</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 24  PHD4 ~~  PHD4   0.393 0.043  9.119      0    0.308    0.477</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="do">## 25  PHD5 ~~  PHD5   0.309 0.039  7.903      0    0.233    0.386</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="do">## 26  PHD6 ~~  PHD6   0.324 0.040  8.135      0    0.246    0.402</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="do">## 27  PHD7 ~~  PHD7   0.664 0.049 13.474      0    0.568    0.761</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="do">## 28  PHD8 ~~  PHD8   0.461 0.048  9.610      0    0.367    0.555</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="do">## 29  PHD9 ~~  PHD9   0.360 0.045  8.070      0    0.272    0.447</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="do">## 30 PHD10 ~~ PHD10   0.370 0.045  8.237      0    0.282    0.458</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="do">## 31 PHD11 ~~ PHD11   0.646 0.051 12.742      0    0.546    0.745</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 32 PHD12 ~~ PHD12   0.476 0.047 10.082      0    0.383    0.568</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a><span class="do">## 33 PHD13 ~~ PHD13   0.457 0.047  9.798      0    0.365    0.548</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="do">## 34 PHD14 ~~ PHD14   0.614 0.050 12.357      0    0.517    0.712</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="do">## 35 PHD15 ~~ PHD15   0.538 0.049 11.036      0    0.443    0.634</span></span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="do">## 36 PHD16 ~~ PHD16   0.457 0.042 10.922      0    0.375    0.538</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="do">## 37 PHD17 ~~ PHD17   0.238 0.028  8.521      0    0.183    0.292</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="do">## 38 PHD18 ~~ PHD18   0.229 0.027  8.417      0    0.176    0.283</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="do">## 39 PHD19 ~~ PHD19   0.216 0.026  8.246      0    0.165    0.268</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a><span class="do">## 40 PHD20 ~~ PHD20   0.142 0.021  6.921      0    0.102    0.183</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="do">## 41   sos ~~   sos   1.000 0.000     NA     NA    1.000    1.000</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a><span class="do">## 42   cog ~~   cog   1.000 0.000     NA     NA    1.000    1.000</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a><span class="do">## 43   vec ~~   vec   1.000 0.000     NA     NA    1.000    1.000</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a><span class="do">## 44   shs ~~   shs   1.000 0.000     NA     NA    1.000    1.000</span></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a><span class="do">## 45   sos ~~   cog   0.592 0.048 12.352      0    0.498    0.686</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="do">## 46   sos ~~   vec   0.702 0.042 16.625      0    0.620    0.785</span></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a><span class="do">## 47   sos ~~   shs   0.302 0.059  5.146      0    0.187    0.416</span></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a><span class="do">## 48   cog ~~   vec   0.792 0.037 21.314      0    0.719    0.865</span></span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a><span class="do">## 49   cog ~~   shs   0.274 0.061  4.488      0    0.154    0.394</span></span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a><span class="do">## 50   vec ~~   shs   0.634 0.045 14.210      0    0.546    0.721</span></span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="co"># 或者使用：</span></span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(fit,standardized = T)</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<blockquote class="blockquote">
+<p><code>summary(fit)</code>中支持的参数非常多，比如也可以直接输出系数的可信区间、拟合指数等，大家可以参考该函数的帮助文档。</p>
+</blockquote>
+<p>绘制路径图(结果与书中一致)，这个<code>semPlot</code>功能很强大，以后再详细介绍：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(semPlot)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">semPaths</span>(fit</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">what =</span> <span class="st">'col'</span> <span class="co"># 线条用不同的颜色表示</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">groups =</span> <span class="st">"latents"</span> <span class="co"># 根据潜变量上色</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">pastel =</span> <span class="cn">TRUE</span> <span class="co"># 选颜色</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">whatLabels =</span> <span class="st">'std'</span> <span class="co"># 显示标准化的载荷</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">style =</span> <span class="st">"lisrel"</span> <span class="co"># 使用lisrel软件的风格</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">rotation =</span> <span class="dv">2</span> <span class="co"># 旋转方向</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">edge.label.cex =</span> <span class="dv">1</span> <span class="co"># 载荷字体大小</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>         ,<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">1</span>, <span class="dv">6</span>) <span class="co"># 控制图形边距</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>         )</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="结构方程模型_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>如果只看文字和数字很难看出结果，但是一个图形就能展示所有结果，而且非常直观，不仅展示了潜变量、显变量之间的关系，还标注了因子载荷、相关系数等各种信息(注意上图中展示的载荷系数都是标准化的)。</p>
+<p>结论：潜变量于各条目之间的关系可通过因子载荷反应，所有维度与条目间的因子载荷均有统计学意义。拟合指数结果提示拟合效果尚可接受。所有因子载荷均大于0.4，介于0.46到0.93之间。由潜变量之间的相关系数可知，认知（COG）和语言交（VEC）流具有较强相关，认知（COG）和自理能力（SHS）相关性较弱。</p>
+</section>
+<section id="结构方程模型" class="level3" data-number="34.3.4">
+<h3 data-number="34.3.4" class="anchored" data-anchor-id="结构方程模型"><span class="header-section-number">34.3.4</span> 结构方程模型</h3>
+<p>这部分将通过两个具体的示例进行介绍，先介绍一个简单的，再介绍一个复杂的。</p>
+<p>首先是孙振球医学统计学第5版例23-3。</p>
+<p>为了研究Stroke-PRO量表生理领域与心理领域中不同维度之间的内在联系以及各维度之间的因果关联，采用该量表收集295例脑卒中患者生理领域及心理领域的数据。以生理领域的躯体症状(SOS)和心理领域的焦虑（ANX)构建一个最简单的结构方程模型，模型只包含一个外生潜变量和内生潜变量。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan) <span class="co"># 做SEM</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)  <span class="co"># 读取spss格式的数据</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>df23_3 <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_sav</span>(<span class="st">"datasets/例23-03.sav"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df23_3)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 295  12</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>注意根据模型的假设（也就是变量之间的关系）写公式，不要乱写（和使用<code>aov</code>做各种各样的方差分析非常类似），这里的假设有3个：</p>
+<ol type="1">
+<li>躯体症状（SOS）和所属的各条目之间的关系</li>
+<li>焦虑（ANX）和所属的各条目之间的关系</li>
+<li>躯体症状会导致焦虑（这条其实题干中没有明确说明，是根据书中的结果反推的）</li>
+</ol>
+<p>所以模型也有3个，前两个是测量模型，第3个是结构模型：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 前两个公式是测量模型，第3个公式是结构模型</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>sem_models <span class="ot">&lt;-</span> <span class="st">' sos =~ PHD1+PHD2+PHD3+PHD4+PHD5+PHD6+PHD7</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="st">                anx =~ PSD1+PSD2+PSD3+PSD4+PSD5</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="st">                anx ~ sos'</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>使用<code>sem</code>函数拟合结构方程模型：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">sem</span>(sem_models, <span class="at">data =</span> df23_3)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>查看结果，这里输出的结果中包含了标准化的结果：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit,<span class="at">standardized=</span>T,<span class="at">rsquare =</span> T)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="do">## lavaan 0.6-19 ended normally after 33 iterations</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="do">##   Estimator                                         ML</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   Optimization method                           NLMINB</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   Number of model parameters                        25</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="do">##   Number of observations                           295</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Model Test User Model:</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                       </span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="do">##   Test statistic                               161.889</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   Degrees of freedom                                53</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   P-value (Chi-square)                           0.000</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Parameter Estimates:</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="do">##   Standard errors                             Standard</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   Information                                 Expected</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   Information saturated (h1) model          Structured</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Latent Variables:</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="do">##   sos =~                                                                </span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD1              1.000                               0.695    0.472</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD2              0.946    0.148    6.378    0.000    0.658    0.508</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD3              1.060    0.176    6.041    0.000    0.737    0.466</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD4              1.382    0.175    7.894    0.000    0.961    0.785</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD5              1.377    0.172    8.029    0.000    0.958    0.824</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD6              1.322    0.165    8.023    0.000    0.919    0.822</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD7              1.078    0.158    6.839    0.000    0.750    0.575</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="do">##   anx =~                                                                </span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD1              1.000                               0.931    0.721</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD2              0.923    0.079   11.747    0.000    0.860    0.720</span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD3              0.996    0.074   13.379    0.000    0.927    0.824</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD4              0.988    0.084   11.718    0.000    0.920    0.719</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD5              1.113    0.080   13.882    0.000    1.036    0.859</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Regressions:</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="do">##   anx ~                                                                 </span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="do">##     sos               0.790    0.126    6.287    0.000    0.590    0.590</span></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Variances:</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD1              1.684    0.144   11.686    0.000    1.684    0.777</span></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD2              1.240    0.107   11.587    0.000    1.240    0.741</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD3              1.959    0.167   11.702    0.000    1.959    0.783</span></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD4              0.576    0.061    9.513    0.000    0.576    0.384</span></span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD5              0.435    0.050    8.665    0.000    0.435    0.321</span></span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD6              0.406    0.047    8.714    0.000    0.406    0.325</span></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD7              1.142    0.101   11.355    0.000    1.142    0.670</span></span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD1              0.800    0.076   10.579    0.000    0.800    0.480</span></span>
+<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD2              0.685    0.065   10.585    0.000    0.685    0.481</span></span>
+<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD3              0.408    0.045    9.033    0.000    0.408    0.322</span></span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD4              0.792    0.075   10.601    0.000    0.792    0.484</span></span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD5              0.381    0.048    8.012    0.000    0.381    0.262</span></span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a><span class="do">##     sos               0.484    0.119    4.064    0.000    1.000    1.000</span></span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a><span class="do">##    .anx               0.565    0.086    6.536    0.000    0.652    0.652</span></span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a><span class="do">## R-Square:</span></span>
+<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate</span></span>
+<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD1              0.223</span></span>
+<span id="cb16-64"><a href="#cb16-64" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD2              0.259</span></span>
+<span id="cb16-65"><a href="#cb16-65" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD3              0.217</span></span>
+<span id="cb16-66"><a href="#cb16-66" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD4              0.616</span></span>
+<span id="cb16-67"><a href="#cb16-67" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD5              0.679</span></span>
+<span id="cb16-68"><a href="#cb16-68" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD6              0.675</span></span>
+<span id="cb16-69"><a href="#cb16-69" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD7              0.330</span></span>
+<span id="cb16-70"><a href="#cb16-70" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD1              0.520</span></span>
+<span id="cb16-71"><a href="#cb16-71" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD2              0.519</span></span>
+<span id="cb16-72"><a href="#cb16-72" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD3              0.678</span></span>
+<span id="cb16-73"><a href="#cb16-73" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD4              0.516</span></span>
+<span id="cb16-74"><a href="#cb16-74" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD5              0.738</span></span>
+<span id="cb16-75"><a href="#cb16-75" aria-hidden="true" tabindex="-1"></a><span class="do">##     anx               0.348</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>结果和验证性因子分析的结果解读一致。只有一个地方需要注意，那就是结果中多了一个<code>Regressions</code>部分，这个结果就是结构模型的结果，展示的是因子之间的关系。</p>
+<p>输出结果包括3个部分，第一部分是前9行，主要包含以下信息：</p>
+<ul>
+<li><code>lavaan</code>的版本号</li>
+<li>优化是否正常结束，以及需要多少次迭代</li>
+<li>使用的估计方法，ML即最大似然法</li>
+<li>使用的优化器，这里是NLMINB</li>
+<li>模型参数数量，这里是25</li>
+<li>分析中实际使用的观测数量，这里是295</li>
+<li>模型的检验统计量（卡方值）、自由度、P值</li>
+</ul>
+<p>第二部分是模型的参数估计。</p>
+<p>首先是潜变量和观测变量之间的<strong>因子载荷系数</strong>，P值小于0.05且载荷系数越大，说明因子（也就是潜变量）和观测变量之间的相关性越强。各列的含义如下：</p>
+<ul>
+<li><code>Estimate</code>：非标准化的载荷系数（<strong>和回归分析中的变量系数类似</strong>）</li>
+<li><code>Std.Err</code>：标准误</li>
+<li><code>z-value</code>：Z值</li>
+<li><code>P(&gt;|z|)</code>：P值</li>
+<li><code>Std.lv</code>：标准化的载荷系数，只有潜变量被标准化</li>
+<li><code>Std.all</code>：标准化的载荷系数，潜变量和观测变量都被标准化，又被称为“完全标准化解”</li>
+</ul>
+<p>然后是3个因子（即潜变量）之间<strong>协方差的结果</strong>，展示因子与因子之间的相关性。P值小于0.05且<code>Estimate</code>（非标准化的系数）越大说明两个因子相关性越大。</p>
+<p>最后是<strong>误差的方差</strong>（Variances）。其中<code>Estimate</code>是每个观测变量的非标准化误差方差估计值，误差方差代表了观测变量中不能被潜在因子解释的部分，也就是观测变量的变异中无法由模型所设定的潜在因子结构来解释的那部分。较小的误差方差意味着观测变量能较好地被潜在因子解释。剩余3列分别是标准误、Z值和P值。</p>
+<p>注意，在<code>Variances</code>部分，观测变量名称之前有一个点。这是因为它们是因变量（或内生变量）（由潜在变量预测），因此，输出中打印的方差值是残差方差（即未被预测变量解释的剩余方差）的估计值。潜变量名称之前没有点，因为在这个模型中它们是外生变量（没有单箭头指向它们），这里的方差值是潜变量的估计总方差。</p>
+<p>最后一部分是每个观测变量的R<sup>2</sup>，这部分结果与书中也是完全一致的。</p>
+<p>查看<strong>拟合指数</strong>：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fitMeasures</span>(fit, <span class="at">fit.measures =</span> <span class="fu">c</span>(<span class="st">"chisq"</span>,<span class="st">"df"</span>,<span class="st">"aic"</span>,<span class="st">"gfi"</span>,<span class="st">"rmsea"</span>,<span class="st">"cfi"</span>))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="do">##     chisq        df       aic       gfi     rmsea       cfi </span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   161.889    53.000 10261.913     0.908     0.083     0.932</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>绘制路径图（注意箭头指向，说明了因果关系）：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(semPlot)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 换个样式</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">semPaths</span>(fit,<span class="at">what =</span> <span class="st">'est'</span> ,<span class="at">whatLabels =</span> <span class="st">'std'</span> ,<span class="at">style =</span> <span class="st">"lisrel"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="结构方程模型_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>下面再介绍孙振球医学统计学第5版例23-4。</p>
+<p>某一理论模型假设脑卒中患者躯体不适可以引起焦虑（ANX），并间接引起抑郁（DEP）和回避（AVO）。试采用结构方程模型验证此理论假设。以脑卒中患者生理领域的躯体症状（SOS）、认知功能（COG）两个维度和心理领域的焦虑（ANX）、抑郁（DEP）、回避（AVO）三个维度采用最大似然估计法构建结构方程模型。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan) <span class="co"># 做SEM</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)  <span class="co"># 读取spss格式的数据</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>df23_4 <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_sav</span>(<span class="st">"datasets/例23-04.sav"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(df23_4)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 295  25</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>首先还是要搞清楚该研究的假设是什么，然后根据假设写出公式即可。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 写好公式，谁测量谁...</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 部分公式也是根据书中结果反推的，</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 因为只根据题干没办法得到这么多信息...</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>sem_models <span class="ot">&lt;-</span> <span class="st">' sos =~ PHD1+PHD2+PHD3+PHD4+PHD5+PHD6+PHD7 </span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="st">                cog =~ PHD8+PHD9+PHD10+PHD11</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="st">                anx =~ PSD1+PSD2+PSD3+PSD4+PSD5</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="st">                dep =~ PSD6+PSD7+PSD8+PSD9+PSD10</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="st">                avo =~ PSD11+PSD12+PSD13+PSD14</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="st">                anx ~ sos</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="st">                dep ~ anx + avo + cog</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="st">                avo ~ anx +cog '</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>后续的结果解读就是和之前一样的了，不再赘述。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">sem</span>(sem_models,<span class="at">data =</span> df23_4)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit,<span class="at">standardized=</span>T,<span class="at">rsquare =</span> T)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="do">## lavaan 0.6-19 ended normally after 41 iterations</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="do">##   Estimator                                         ML</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="do">##   Optimization method                           NLMINB</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="do">##   Number of model parameters                        57</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="do">##   Number of observations                           295</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Model Test User Model:</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                       </span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   Test statistic                               747.369</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="do">##   Degrees of freedom                               268</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="do">##   P-value (Chi-square)                           0.000</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Parameter Estimates:</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="do">##   Standard errors                             Standard</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   Information                                 Expected</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a><span class="do">##   Information saturated (h1) model          Structured</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Latent Variables:</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="do">##   sos =~                                                                </span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD1              1.000                               0.691    0.469</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD2              0.970    0.151    6.438    0.000    0.670    0.518</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD3              1.084    0.178    6.092    0.000    0.749    0.473</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD4              1.386    0.177    7.851    0.000    0.957    0.781</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD5              1.376    0.173    7.977    0.000    0.950    0.817</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD6              1.313    0.165    7.954    0.000    0.907    0.811</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD7              1.112    0.161    6.908    0.000    0.768    0.588</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a><span class="do">##   cog =~                                                                </span></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD8              1.000                               0.933    0.736</span></span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD9              1.129    0.088   12.858    0.000    1.053    0.818</span></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD10             1.067    0.086   12.388    0.000    0.996    0.780</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD11             0.781    0.084    9.267    0.000    0.728    0.579</span></span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a><span class="do">##   anx =~                                                                </span></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD1              1.000                               0.918    0.711</span></span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD2              0.928    0.080   11.593    0.000    0.852    0.714</span></span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD3              1.017    0.076   13.383    0.000    0.933    0.829</span></span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD4              1.012    0.086   11.769    0.000    0.928    0.725</span></span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD5              1.123    0.082   13.749    0.000    1.031    0.854</span></span>
+<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a><span class="do">##   dep =~                                                                </span></span>
+<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD6              1.000                               0.851    0.767</span></span>
+<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD7              1.098    0.070   15.686    0.000    0.934    0.855</span></span>
+<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD8              1.085    0.079   13.668    0.000    0.923    0.762</span></span>
+<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD9              0.991    0.080   12.388    0.000    0.843    0.700</span></span>
+<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD10             1.040    0.067   15.508    0.000    0.885    0.847</span></span>
+<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a><span class="do">##   avo =~                                                                </span></span>
+<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD11             1.000                               1.003    0.883</span></span>
+<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD12             0.963    0.052   18.547    0.000    0.966    0.846</span></span>
+<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD13             0.871    0.059   14.693    0.000    0.873    0.729</span></span>
+<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD14             0.799    0.063   12.740    0.000    0.801    0.660</span></span>
+<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a><span class="do">## Regressions:</span></span>
+<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a><span class="do">##   anx ~                                                                 </span></span>
+<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a><span class="do">##     sos               0.832    0.129    6.440    0.000    0.626    0.626</span></span>
+<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a><span class="do">##   dep ~                                                                 </span></span>
+<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a><span class="do">##     anx               0.342    0.058    5.910    0.000    0.369    0.369</span></span>
+<span id="cb21-62"><a href="#cb21-62" aria-hidden="true" tabindex="-1"></a><span class="do">##     avo               0.371    0.058    6.420    0.000    0.437    0.437</span></span>
+<span id="cb21-63"><a href="#cb21-63" aria-hidden="true" tabindex="-1"></a><span class="do">##     cog               0.224    0.047    4.797    0.000    0.246    0.246</span></span>
+<span id="cb21-64"><a href="#cb21-64" aria-hidden="true" tabindex="-1"></a><span class="do">##   avo ~                                                                 </span></span>
+<span id="cb21-65"><a href="#cb21-65" aria-hidden="true" tabindex="-1"></a><span class="do">##     anx               0.609    0.071    8.634    0.000    0.557    0.557</span></span>
+<span id="cb21-66"><a href="#cb21-66" aria-hidden="true" tabindex="-1"></a><span class="do">##     cog               0.356    0.063    5.626    0.000    0.331    0.331</span></span>
+<span id="cb21-67"><a href="#cb21-67" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-68"><a href="#cb21-68" aria-hidden="true" tabindex="-1"></a><span class="do">## Covariances:</span></span>
+<span id="cb21-69"><a href="#cb21-69" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb21-70"><a href="#cb21-70" aria-hidden="true" tabindex="-1"></a><span class="do">##   sos ~~                                                                </span></span>
+<span id="cb21-71"><a href="#cb21-71" aria-hidden="true" tabindex="-1"></a><span class="do">##     cog               0.401    0.071    5.666    0.000    0.622    0.622</span></span>
+<span id="cb21-72"><a href="#cb21-72" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-73"><a href="#cb21-73" aria-hidden="true" tabindex="-1"></a><span class="do">## Variances:</span></span>
+<span id="cb21-74"><a href="#cb21-74" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all</span></span>
+<span id="cb21-75"><a href="#cb21-75" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD1              1.690    0.144   11.716    0.000    1.690    0.780</span></span>
+<span id="cb21-76"><a href="#cb21-76" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD2              1.223    0.106   11.586    0.000    1.223    0.731</span></span>
+<span id="cb21-77"><a href="#cb21-77" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD3              1.942    0.166   11.706    0.000    1.942    0.776</span></span>
+<span id="cb21-78"><a href="#cb21-78" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD4              0.585    0.060    9.711    0.000    0.585    0.389</span></span>
+<span id="cb21-79"><a href="#cb21-79" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD5              0.449    0.050    9.014    0.000    0.449    0.332</span></span>
+<span id="cb21-80"><a href="#cb21-80" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD6              0.429    0.047    9.164    0.000    0.429    0.343</span></span>
+<span id="cb21-81"><a href="#cb21-81" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD7              1.115    0.098   11.337    0.000    1.115    0.654</span></span>
+<span id="cb21-82"><a href="#cb21-82" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD8              0.739    0.076    9.738    0.000    0.739    0.459</span></span>
+<span id="cb21-83"><a href="#cb21-83" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD9              0.550    0.069    8.007    0.000    0.550    0.332</span></span>
+<span id="cb21-84"><a href="#cb21-84" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD10             0.638    0.071    8.940    0.000    0.638    0.391</span></span>
+<span id="cb21-85"><a href="#cb21-85" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PHD11             1.052    0.094   11.138    0.000    1.052    0.665</span></span>
+<span id="cb21-86"><a href="#cb21-86" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD1              0.825    0.076   10.841    0.000    0.825    0.495</span></span>
+<span id="cb21-87"><a href="#cb21-87" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD2              0.698    0.065   10.816    0.000    0.698    0.490</span></span>
+<span id="cb21-88"><a href="#cb21-88" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD3              0.396    0.043    9.294    0.000    0.396    0.312</span></span>
+<span id="cb21-89"><a href="#cb21-89" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD4              0.777    0.072   10.726    0.000    0.777    0.474</span></span>
+<span id="cb21-90"><a href="#cb21-90" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD5              0.393    0.045    8.649    0.000    0.393    0.270</span></span>
+<span id="cb21-91"><a href="#cb21-91" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD6              0.507    0.047   10.682    0.000    0.507    0.412</span></span>
+<span id="cb21-92"><a href="#cb21-92" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD7              0.320    0.034    9.321    0.000    0.320    0.269</span></span>
+<span id="cb21-93"><a href="#cb21-93" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD8              0.617    0.057   10.731    0.000    0.617    0.420</span></span>
+<span id="cb21-94"><a href="#cb21-94" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD9              0.740    0.066   11.168    0.000    0.740    0.510</span></span>
+<span id="cb21-95"><a href="#cb21-95" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD10             0.308    0.032    9.514    0.000    0.308    0.283</span></span>
+<span id="cb21-96"><a href="#cb21-96" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD11             0.283    0.038    7.522    0.000    0.283    0.220</span></span>
+<span id="cb21-97"><a href="#cb21-97" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD12             0.370    0.042    8.831    0.000    0.370    0.284</span></span>
+<span id="cb21-98"><a href="#cb21-98" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD13             0.672    0.063   10.703    0.000    0.672    0.468</span></span>
+<span id="cb21-99"><a href="#cb21-99" aria-hidden="true" tabindex="-1"></a><span class="do">##    .PSD14             0.831    0.074   11.172    0.000    0.831    0.564</span></span>
+<span id="cb21-100"><a href="#cb21-100" aria-hidden="true" tabindex="-1"></a><span class="do">##     sos               0.477    0.118    4.043    0.000    1.000    1.000</span></span>
+<span id="cb21-101"><a href="#cb21-101" aria-hidden="true" tabindex="-1"></a><span class="do">##     cog               0.871    0.126    6.902    0.000    1.000    1.000</span></span>
+<span id="cb21-102"><a href="#cb21-102" aria-hidden="true" tabindex="-1"></a><span class="do">##    .anx               0.512    0.080    6.408    0.000    0.608    0.608</span></span>
+<span id="cb21-103"><a href="#cb21-103" aria-hidden="true" tabindex="-1"></a><span class="do">##    .dep               0.146    0.026    5.658    0.000    0.202    0.202</span></span>
+<span id="cb21-104"><a href="#cb21-104" aria-hidden="true" tabindex="-1"></a><span class="do">##    .avo               0.438    0.057    7.705    0.000    0.436    0.436</span></span>
+<span id="cb21-105"><a href="#cb21-105" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb21-106"><a href="#cb21-106" aria-hidden="true" tabindex="-1"></a><span class="do">## R-Square:</span></span>
+<span id="cb21-107"><a href="#cb21-107" aria-hidden="true" tabindex="-1"></a><span class="do">##                    Estimate</span></span>
+<span id="cb21-108"><a href="#cb21-108" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD1              0.220</span></span>
+<span id="cb21-109"><a href="#cb21-109" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD2              0.269</span></span>
+<span id="cb21-110"><a href="#cb21-110" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD3              0.224</span></span>
+<span id="cb21-111"><a href="#cb21-111" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD4              0.611</span></span>
+<span id="cb21-112"><a href="#cb21-112" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD5              0.668</span></span>
+<span id="cb21-113"><a href="#cb21-113" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD6              0.657</span></span>
+<span id="cb21-114"><a href="#cb21-114" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD7              0.346</span></span>
+<span id="cb21-115"><a href="#cb21-115" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD8              0.541</span></span>
+<span id="cb21-116"><a href="#cb21-116" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD9              0.668</span></span>
+<span id="cb21-117"><a href="#cb21-117" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD10             0.609</span></span>
+<span id="cb21-118"><a href="#cb21-118" aria-hidden="true" tabindex="-1"></a><span class="do">##     PHD11             0.335</span></span>
+<span id="cb21-119"><a href="#cb21-119" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD1              0.505</span></span>
+<span id="cb21-120"><a href="#cb21-120" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD2              0.510</span></span>
+<span id="cb21-121"><a href="#cb21-121" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD3              0.688</span></span>
+<span id="cb21-122"><a href="#cb21-122" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD4              0.526</span></span>
+<span id="cb21-123"><a href="#cb21-123" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD5              0.730</span></span>
+<span id="cb21-124"><a href="#cb21-124" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD6              0.588</span></span>
+<span id="cb21-125"><a href="#cb21-125" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD7              0.731</span></span>
+<span id="cb21-126"><a href="#cb21-126" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD8              0.580</span></span>
+<span id="cb21-127"><a href="#cb21-127" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD9              0.490</span></span>
+<span id="cb21-128"><a href="#cb21-128" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD10             0.717</span></span>
+<span id="cb21-129"><a href="#cb21-129" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD11             0.780</span></span>
+<span id="cb21-130"><a href="#cb21-130" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD12             0.716</span></span>
+<span id="cb21-131"><a href="#cb21-131" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD13             0.532</span></span>
+<span id="cb21-132"><a href="#cb21-132" aria-hidden="true" tabindex="-1"></a><span class="do">##     PSD14             0.436</span></span>
+<span id="cb21-133"><a href="#cb21-133" aria-hidden="true" tabindex="-1"></a><span class="do">##     anx               0.392</span></span>
+<span id="cb21-134"><a href="#cb21-134" aria-hidden="true" tabindex="-1"></a><span class="do">##     dep               0.798</span></span>
+<span id="cb21-135"><a href="#cb21-135" aria-hidden="true" tabindex="-1"></a><span class="do">##     avo               0.564</span></span>
+<span id="cb21-136"><a href="#cb21-136" aria-hidden="true" tabindex="-1"></a><span class="co"># fitMeasures(fit, fit.measures = c("chisq","df","aic","gfi","rmsea","cfi"))</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>画图：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(semPlot)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">semPaths</span>(fit, <span class="st">'std'</span>,<span class="st">'std'</span>,<span class="at">style =</span> <span class="st">"lisrel"</span>,<span class="at">exoCov =</span> F)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="结构方程模型_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="参考资料" class="level2" data-number="34.4">
+<h2 data-number="34.4" class="anchored" data-anchor-id="参考资料"><span class="header-section-number">34.4</span> 参考资料</h2>
+<ol type="1">
+<li>孙振球《医学统计学》第4版和第5版</li>
+<li><a href="https://mp.weixin.qq.com/s/9sDpcfRcNaTK_7BPmSAKjg">结构方程模型是什么？一文轻松读懂！</a></li>
+<li><a href="https://bookdown.org/bean_jerry/using_r_for_social_work_research/">Using R for Social Work Research</a></li>
+<li>R语言医学多元统计分析，赵军、戴静毅</li>
+<li><a href="https://lavaan.ugent.be/tutorial/">lavaan包官方tutorial</a></li>
+<li>http://sachaepskamp.com/files/semPlot.pdf</li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "已复制");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "已复制");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ayueme\.github\.io\/R_medical_stat\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./1016-partialcorrelation.html" class="pagination-link" aria-label="偏相关和典型相关分析">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./多水平模型.html" class="pagination-link" aria-label="多水平模型">
+        <span class="nav-page-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">多水平模型</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>R语言实战医学统计 by 阿越.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ayueme/R_medical_stat/edit/main/结构方程模型.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/ayueme/R_medical_stat/issues/new" class="toc-action"><i class="bi empty"></i>报告问题</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>本书由 <a href="https://quarto.org/">Quarto</a> 强力驱动.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

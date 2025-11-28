@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>24&nbsp; R语言因子分析 – R语言实战医学统计</title>
+<title>32&nbsp; 探索性因子分析 – R语言实战医学统计</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,7 +65,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./1016-partialcorrelation.html" rel="next">
-<link href="./1022-pca.html" rel="prev">
+<link href="./主成分回归.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -103,6 +103,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -115,7 +144,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1023-factoranalysis.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">R语言因子分析</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1023-factoranalysis.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">探索性因子分析</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="切换侧边栏导航" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="搜索" onclick="window.quartoOpenSearch();">
@@ -172,50 +201,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./几种离散型变量的分布及其应用.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">几种离散型变量的分布及其应用</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./1006-chisq.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">卡方检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1009-cochranarmitage.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Cochran-Armitage检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Cochran-Armitage检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1007-wilcoxon.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">秩转换的非参数检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">秩转换的非参数检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1015-twocorrelation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">双变量回归与相关</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./统计图表.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">三线表和统计绘图</span></span></a>
+  <a href="./三线表绘制.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">三线表绘制</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./统计绘图.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">统计绘图</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1011-samplesize.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">样本量计算</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1012-randomgroup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">随机分组</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ROC曲线.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">ROC曲线</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1014-batchttest.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">R语言“tidy”流统计分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">“tidy”流统计分析</span></span></a>
   </div>
 </li>
       </ul>
@@ -232,97 +279,139 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1003-dysanova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">多因素方差分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1008-mauchly.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">球对称检验</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1004-repeatedanova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">重复测量方差分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1005-ancova.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">协方差分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1010-anovaattention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">R语言方差分析注意事项</span></span></a>
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">方差分析注意事项</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多变量数据hotelling_t2检验.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">多变量数据的统计描述和统计推断</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1017-multireg.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">多元线性回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1018-logistic.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Logistic回归</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./对数线性模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">多维列联表的对数线性模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./泊松回归和负二项回归.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">泊松回归和负二项回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1019-codescheme.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">分类变量进行回归分析时的编码方案</span></span></a>
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">分类变量重编码</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1032-survival.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">R语言生存分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">生存分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1033-survivalvis.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">R语言生存曲线可视化</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">生存曲线可视化</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1020-discriminant.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">R语言判别分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">判别分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1021-cluster.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">R语言聚类分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">聚类分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1022-pca.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">主成分分析</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./pca可视化.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">主成分分析可视化</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./主成分回归.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">主成分回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1023-factoranalysis.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">R语言因子分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">探索性因子分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1016-partialcorrelation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span></a>
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ROC曲线.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">ROC曲线</span></span></a>
+  <a href="./结构方程模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">结构方程模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./多水平模型.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">多水平模型</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./广义估计方程.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">广义估计方程</span></span></a>
   </div>
 </li>
       </ul>
@@ -339,61 +428,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1034-finegray.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型列线图</span></span></a>
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Fine-Gray检验和竞争风险模型</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1035-psm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">R语言倾向性评分：匹配</span></span></a>
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">倾向性评分：匹配</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1036-pssc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">R语言倾向性评分：回归和分层</span></span></a>
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">倾向性评分：回归和分层</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1037-psw.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">R语言倾向性评分：加权</span></span></a>
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">倾向性评分：加权</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1038-p4trend.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd R语言实现</span></span></a>
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">p-for-trend/ p-for-interaction/ per-1-sd</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1039-nonlinear.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">R语言多项式拟合</span></span></a>
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">多项式拟合</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1040-rcs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">R语言样条回归</span></span></a>
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">样条回归</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1041-subgroupanalysis.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">R语言亚组分析及森林图绘制</span></span></a>
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">亚组分析及森林图绘制</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./1042-subgroup1code.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">亚组分析1行代码实现</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./亚组分析和多因素回归的森林图.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图比较</span></span></a>
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">亚组分析和多因素回归的森林图比较</span></span></a>
   </div>
 </li>
       </ul>
@@ -425,19 +514,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">目录</h2>
    
   <ul>
-  <li><a href="#演示数据" id="toc-演示数据" class="nav-link active" data-scroll-target="#演示数据"><span class="header-section-number">24.1</span> 演示数据</a></li>
-  <li><a href="#判断需要提取的因子个数" id="toc-判断需要提取的因子个数" class="nav-link" data-scroll-target="#判断需要提取的因子个数"><span class="header-section-number">24.2</span> 判断需要提取的因子个数</a></li>
-  <li><a href="#进行因子分析" id="toc-进行因子分析" class="nav-link" data-scroll-target="#进行因子分析"><span class="header-section-number">24.3</span> 进行因子分析</a></li>
-  <li><a href="#因子旋转" id="toc-因子旋转" class="nav-link" data-scroll-target="#因子旋转"><span class="header-section-number">24.4</span> 因子旋转</a></li>
+  <li><a href="#演示数据" id="toc-演示数据" class="nav-link active" data-scroll-target="#演示数据"><span class="header-section-number">32.1</span> 演示数据</a></li>
+  <li><a href="#确定最佳因子个数" id="toc-确定最佳因子个数" class="nav-link" data-scroll-target="#确定最佳因子个数"><span class="header-section-number">32.2</span> 确定最佳因子个数</a></li>
+  <li><a href="#因子分析初体验" id="toc-因子分析初体验" class="nav-link" data-scroll-target="#因子分析初体验"><span class="header-section-number">32.3</span> 因子分析初体验</a></li>
+  <li><a href="#进行因子分析" id="toc-进行因子分析" class="nav-link" data-scroll-target="#进行因子分析"><span class="header-section-number">32.4</span> 进行因子分析</a></li>
+  <li><a href="#因子旋转" id="toc-因子旋转" class="nav-link" data-scroll-target="#因子旋转"><span class="header-section-number">32.5</span> 因子旋转</a></li>
+  <li><a href="#结果可视化" id="toc-结果可视化" class="nav-link" data-scroll-target="#结果可视化"><span class="header-section-number">32.6</span> 结果可视化</a></li>
+  <li><a href="#参考资料" id="toc-参考资料" class="nav-link" data-scroll-target="#参考资料"><span class="header-section-number">32.7</span> 参考资料</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/ayueme/R_medical_stat/edit/main/1023-factoranalysis.qmd" class="toc-action"><i class="bi bi-github"></i>编辑该页面</a></li><li><a href="https://github.com/ayueme/R_medical_stat/issues/new" class="toc-action"><i class="bi empty"></i>报告问题</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1023-factoranalysis.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">R语言因子分析</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1003-dysanova.html">高级统计分析</a></li><li class="breadcrumb-item"><a href="./1023-factoranalysis.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">探索性因子分析</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">R语言因子分析</span></h1>
+<h1 class="title"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">探索性因子分析</span></h1>
 </div>
 
 
@@ -454,13 +546,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p>在医学研究中有一些现象是难以直接观测的，通常称为<strong>不可测现象</strong>，它们只能通过其他多个<strong>可观测的指标</strong>来间接地反映。例如，脑部疾病患者的意识清醒状态是一个不可测现象，但可以通过患者的语言能力、辨识能力、记忆能力、理解能力、思维的逻辑能力等一系列可观测的指标来反映。这里，由于各个可观测指标都程度不同地反映了意识清醒状态这一不可测现象，因此这些可观测指标之间呈现出一定的相关性。很自然地，人们可以认为这些可观测指标之间的相关性主要是由它们所共同反映的不可测现象支配的。</p>
+<p>对于多指标数据中呈现出的相关性，是否存在对这种相关性起支配作用的潜在因素？如果存在，如何找出这些潜在因素？这些潜在因素是怎样对原始指标起支配作用的？这些问题，都可以通过因子分析来解决。事实上，因子分析就是一种从分析多个原始指标的相关关系入手，找到支配这种相关关系的有限个不可观测的<strong>潜在变量</strong>（即：因子），并用这些潜在变量来解释原始指标之间的相关性或协方差关系的<strong>多元统计分析</strong>方法。</p>
+<p>根据分析目的，因子分析可分为<strong>探索性因子分析</strong>（exploratory factor analysis，EFA）和<strong>验证性因子分析</strong>（confirmatory factor analysis，CFA）。</p>
+<ul>
+<li>探索性因子分析：研究者事先并不清楚或不确定潜在因子与可测变量之间的关联，也不清楚可测变量会隐含多少个潜在因子。</li>
+<li>如果研究者根据以往的研究经验或根据探索性因子分析的结果，对所要研究的可测变量与潜在因子之间的内在结构已然清楚，即已知哪些可测变量可能被哪些潜在因子影响，只需进一步确定可测变量在潜在因子上的载荷大小，并验证这种结构与数据的吻合程度，即为验证性因子分析。</li>
+</ul>
+<p>本章主要介绍探索性因子分析。</p>
+<p>先来看一个例子。观察5个生理指标：X<sub>1</sub>：收缩压，X<sub>2</sub>：舒张压，X<sub>3</sub>：心跳间隔，X<sub>4</sub>：呼吸间隔，X<sub>5</sub>：舌下温度。从生理知识知道，这5个指标是受自主神经的交感神经和副交感神经支配的，而交感神经和副交感神经状态又不能直接测定。若用F<sub>1</sub>、F<sub>2</sub>分别表示交感神经和副交感神经这2个因子，则可以设想，可测指标X<sub>i</sub>是不可测因子F<sub>j</sub>的线性函数，即F<sub>j</sub>对各X<sub>i</sub>的影响是线性的，再加上其他对这些X<sub>i</sub>有影响的因子e<sub>i</sub>，则各X<sub>i</sub>与F<sub>1</sub>、F<sub>2</sub>的关系可表示为：</p>
+<p><span class="math display">\[
+\begin{aligned} &amp; X_{1}=a_{11}F_{1}+a_{12}F_{2}+e_{1} \\ &amp; X_{2}=a_{21}F_{1}+a_{22}F_{2}+e_{2} \\ &amp; X_{3}=a_{31}F_{1}+a_{32}F_{2}+e_{3} \\ &amp; X_{4}=a_{41}F_{1}+a_{42}F_{2}+e_{4} \\ &amp; X_{5}=a_{51}F_{1}+a_{52}F_{2}+e_{5}\end{aligned}
+\]</span></p>
+<p>由于F<sub>1</sub>、F<sub>2</sub>与每一个X<sub>i</sub>都有关，故称F<sub>1</sub>、F<sub>2</sub>为各X<sub>i</sub>的<strong>公因子或共性因子</strong>（commonfactor），而各e<sub>i</sub>只与相应的一个X<sub>i</sub>有关，故e<sub>i</sub>称为X<sub>i</sub>的<strong>特殊因子或个性因子</strong>（specificfactor）。在这里，感兴趣的是如何从这一组观测数据出发，找出起支配作用的较少个数的公因子（这个过程类似于PCA中的找主成分）。</p>
+<p>公因子能够帮助我们找出不同变量之间的内在联系和共同规律。通过提取公因子，我们可以用少数几个公因子来概括众多变量的信息，在一定程度上就能解释数据间的差异情况，从而简化对数据的分析和理解。</p>
 <p>因子分析可以看做是主成分分析的进一步扩展，主成分分析重点在综合原始变量的信息，而因子分析重在解释原始变量之间的关系。</p>
-<p>主成分并没有实际的意义，只是原始变量的线性组合，但是因子有明确的意义，是可以解释的。</p>
-<p>因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，<strong>KMO检验和Bartlett球形检验</strong>等，这里不再介绍。</p>
+<p>因子分析的步骤和主成分也是差不多的，关于因子分析前的一些准备工作可以参考之前主成分分析的步骤，比如相关矩阵的计算，<strong>KMO检验和Bartlett球形检验</strong>等，可以直接用<code>performance::check_factorstructure</code>实现。</p>
 <p>只有数据之间的相关性好，才有可能提炼出公共因子，建议大家相关性分析和两个检验不要忘记。</p>
-<section id="演示数据" class="level2" data-number="24.1">
-<h2 data-number="24.1" class="anchored" data-anchor-id="演示数据"><span class="header-section-number">24.1</span> 演示数据</h2>
-<p>数据来自于孙振球医学统计学第4版例22-2.</p>
+<section id="演示数据" class="level2" data-number="32.1">
+<h2 data-number="32.1" class="anchored" data-anchor-id="演示数据"><span class="header-section-number">32.1</span> 演示数据</h2>
+<p>数据来自于孙振球医学统计学第4版例22-2。</p>
 <p>某医院为了评价医疗工作质量，收集了三年的门诊人次、出院人数、病床利用率、病床周转次数、平均住院天数、治愈好转率、病死率、诊断符合率、抢救成功率9个指标，采用因子分析方法，探讨其综合评价体系。</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> foreign<span class="sc">::</span><span class="fu">read.spss</span>(<span class="st">"datasets/例22-02.sav"</span>,<span class="at">to.data.frame =</span> T,</span>
@@ -506,17 +611,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="do">## 36     3.4      98.98       89.8</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="判断需要提取的因子个数" class="level2" data-number="24.2">
-<h2 data-number="24.2" class="anchored" data-anchor-id="判断需要提取的因子个数"><span class="header-section-number">24.2</span> 判断需要提取的因子个数</h2>
-<p>R中自带了<code>factanal()</code>进行因子分析，不过不如<code>psych</code>包好用，我们这里使用<code>psych</code>包演示。</p>
+<section id="确定最佳因子个数" class="level2" data-number="32.2">
+<h2 data-number="32.2" class="anchored" data-anchor-id="确定最佳因子个数"><span class="header-section-number">32.2</span> 确定最佳因子个数</h2>
+<p>这一步类似于PCA中的确定主成分的个数，使用的规则也是类似的。</p>
+<blockquote class="blockquote">
+<p>Cattell的“碎石”检验是解决因子数量问题最简单的检验方法之一。Horn的“平行”分析是同样引人注目的方法。其他确定最优因子数量的方法包括寻找“极简单结构”（Very Simple Structure，VSS）准则（VSS）以Velicer的MAP程序（包含在VSS中）。VSS和MAP准则都包含在<code>nfactors</code>函数中，该函数还会报告每个多重解的平均项目复杂度和贝叶斯信息准则（BIC）。–<code>fa.parallel</code>函数的帮助文档</p>
+</blockquote>
+<p><code>psych</code>包中的<code>fa.parallel</code>函数可以同时输出碎石检验和平行分析的结果，通过设置参数<code>fa="both"</code>同时给出PCA和因子分析的平行检验结果以及碎石图，<code>fa="pc"</code>只给出主成分分析的结果，<code>fa="fa"</code>只给出因子分析的结果：</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 只用后面9列数据</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df.use <span class="ot">&lt;-</span> df[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 碎石图</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.parallel</span>(df.use, <span class="at">fa =</span> <span class="st">"both"</span>,<span class="at">fm=</span><span class="st">"ml"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 碎石图和平行检验</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.parallel</span>(df.use, <span class="at">fa =</span> <span class="st">"fa"</span>,<span class="at">fm=</span><span class="st">"ml"</span>)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -524,185 +634,101 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<pre><code>## Parallel analysis suggests that the number of factors =  3  and the number of components =  3</code></pre>
+<pre><code>## Parallel analysis suggests that the number of factors =  3  and the number of components =  NA</code></pre>
 </div>
-<p>通过参数<code>fa = "both"</code>同时给出了PCA和因子分析的碎石图，根据因子分析碎石图的结果，建议我们提取3个因子。</p>
-<p>但是提取几个因子并没有绝对的标准，我们可以结合多种方法或专业知识，和提取主成分的方法类似，可以参考之前的介绍的方法：<a href="https://mp.weixin.qq.com/s/B_RD4pAemEE7pHkr2VfDwA">R语言主成分分析</a></p>
-<p>除此之外，还可以结合特征值大小、累计贡献率来确定使用几个因子。</p>
-<p>下面我们首先用9个因子进行因子分析，看看结果再说。</p>
-<p><code>rotate</code>参数确定旋转方法，有多种不同的选择，比如不旋转、正交旋转法（比如最大方差法）、斜交旋转法等，</p>
-<p><code>fm</code>参数选择因子计算方法，比如最大似然法ml、主轴迭代法pa、加权最小二乘wls、广义加权最小二乘gls、最小残差minres，等。</p>
+<p>平行分析建议我们提取3个因子。</p>
+<p>碎石图的横坐标是因子个数，纵坐标是特征值，带三角形（图例有误）的蓝色线是真实数据的结果，红色线是模拟数据的结果和重抽样数据的结果，一般取在红色线以上的因子作为合适的个数或者取明显的转折点处的因子个数，从图中看，也是取3个比较合适。</p>
+<p>但是提取几个因子并没有绝对的标准，我们可以结合多种方法或专业知识，特征值的大小和累积方差贡献率等，这个和提取主成分的方法类似。</p>
+<p>下面给大家简单展示一下<code>nfactors</code>函数的用法：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行因子分析，首先9个因子用一下看看结果再说，最大似然法，不旋转</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">9</span>, <span class="at">rotate =</span> <span class="st">"none"</span>, <span class="at">fm=</span><span class="st">"ml"</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 9, rotate = "none", fm = "ml")</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML1   ML2   ML3   ML4   ML5   ML6 ML7 ML8 ML9   h2   u2 com</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次      0.14  0.68  0.09  0.37 -0.06 -0.03   0   0   0 0.63 0.37 1.7</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.68 -0.30  0.19  0.32  0.06  0.03   0   0   0 0.69 0.31 2.1</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率    0.58  0.52 -0.09 -0.31  0.04  0.05   0   0   0 0.71 0.29 2.6</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.90  0.20 -0.01 -0.01  0.01 -0.01   0   0   0 0.85 0.15 1.1</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.53  0.43  0.38  0.05  0.02  0.09   0   0   0 0.62 0.38 2.9</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率   -0.03 -0.07  0.69 -0.18  0.13 -0.02   0   0   0 0.53 0.47 1.2</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.33  0.08 -0.46  0.18  0.24  0.09   0   0   0 0.42 0.58 2.9</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.31  0.54  0.02  0.02 -0.15  0.07   0   0   0 0.41 0.59 1.8</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.41 -0.64  0.07 -0.03 -0.12  0.10   0   0   0 0.60 0.40 1.9</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML1  ML2  ML3  ML4  ML5  ML6  ML7  ML8  ML9</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.27 1.75 0.89 0.40 0.12 0.04 0.00 0.00 0.00</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.25 0.19 0.10 0.04 0.01 0.00 0.00 0.00 0.00</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.25 0.45 0.55 0.59 0.60 0.61 0.61 0.61 0.61</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.41 0.32 0.16 0.07 0.02 0.01 0.00 0.00 0.00</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.41 0.74 0.90 0.97 0.99 1.00 1.00 1.00 1.00</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  2</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 9 factors are sufficient.</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are -9  and the objective function was  0.46 </span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  NA </span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  3.42  with prob &lt;  NA </span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  11.69  with prob &lt;  NA </span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  2.377</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML1  ML2  ML3   ML4   ML5</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   0.94 0.90 0.79  0.70  0.42</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.88 0.80 0.63  0.50  0.18</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.77 0.61 0.26 -0.01 -0.65</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                     ML6 ML7 ML8 ML9</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors    0.26   0   0   0</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors           0.07   0   0   0</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     -0.86  -1  -1  -1</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>h2是公因子方差，表示因子对每个变量的解释度，u2=1-h2，表示不能被因子解释的比例。</p>
-<p>看结果中的<code>Cumulative Var</code>，累积方差解释，可以看到在使用3个因子时，累计贡献度是0.55,4个因子是0.59，结合碎石图，我们选择用4个因子。</p>
-</section>
-<section id="进行因子分析" class="level2" data-number="24.3">
-<h2 data-number="24.3" class="anchored" data-anchor-id="进行因子分析"><span class="header-section-number">24.3</span> 进行因子分析</h2>
-<p>选择4个因子</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，不旋转，最大似然法</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">"none"</span>, <span class="at">fm=</span><span class="st">"ml"</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = "none", fm = "ml")</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次      0.61  0.78  0.11 -0.01 1.00 0.005 1.9</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数     -0.40  0.31  0.34 -0.59 0.72 0.276 3.1</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率   -0.30  0.56  0.25  0.49 0.71 0.289 2.9</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数 -0.55  0.75  0.35  0.01 1.00 0.005 2.3</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数  0.67 -0.13  0.16  0.26 0.57 0.435 1.5</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率    0.15 -0.39  0.91  0.00 1.00 0.005 1.4</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率        0.14 -0.07 -0.47  0.10 0.26 0.743 1.3</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率    0.45  0.11 -0.10  0.36 0.36 0.642 2.2</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率   -0.56 -0.12  0.05 -0.46 0.55 0.455 2.1</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML3  ML1  ML2  ML4</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           1.94 1.79 1.40 1.02</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.22 0.20 0.16 0.11</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.22 0.41 0.57 0.68</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.32 0.29 0.23 0.17</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.32 0.61 0.83 1.00</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  2.1</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are 6  and the objective function was  0.24 </span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.09 </span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -14.67</span></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML3  ML1  ML2  ML4</span></span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   1.00 1.00 1.00 0.87</span></span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.99 1.00 0.99 0.75</span></span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.99 0.99 0.99 0.50</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>选择4个因子，最终的累积方差解释是0.68，再看因子载荷矩阵，因子1（ML1）在病床周转、门诊人次、病床利用率等具有较高的载荷，因子2在治愈好转率方面具有很大的载荷，因子3在门诊人次，平均住院天数、抢救成功率具有较高的载荷，因子4在出院人数具有较高的载荷。</p>
-<p>从专业角度来看，并没有发现什么规律，好像不能很好的解释专业意义。</p>
-<p>所以我们需要进行因子旋转！</p>
-</section>
-<section id="因子旋转" class="level2" data-number="24.4">
-<h2 data-number="24.4" class="anchored" data-anchor-id="因子旋转"><span class="header-section-number">24.4</span> 因子旋转</h2>
-<p>通过因子旋转我们可以更容易找到内在规律，使得结果更加容易结合专业背景进行解释。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，最大方差旋转，最大似然法</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">"varimax"</span>, <span class="at">fm=</span><span class="st">"ml"</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = "varimax", fm = "ml")</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次     -0.31  0.23 -0.03  0.92 1.00 0.005 1.4</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.75  0.16  0.24  0.27 0.72 0.276 1.6</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率   -0.10  0.83  0.03  0.07 0.71 0.289 1.0</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.46  0.84  0.09  0.26 1.00 0.005 1.8</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.64 -0.23  0.24  0.21 0.57 0.435 1.8</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率   -0.09 -0.09  0.98 -0.10 1.00 0.005 1.1</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.20 -0.18 -0.42 -0.06 0.26 0.743 1.9</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.56  0.02 -0.10  0.18 0.36 0.642 1.3</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.70 -0.04  0.04 -0.21 0.55 0.455 1.2</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML3  ML1  ML2  ML4</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.15 1.58 1.29 1.12</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.24 0.18 0.14 0.12</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.24 0.41 0.56 0.68</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.35 0.26 0.21 0.18</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.35 0.61 0.82 1.00</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  1.4</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are 6  and the objective function was  0.24 </span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.09 </span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -14.67</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML3  ML1  ML2  ML4</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   0.93 0.96 1.00 0.98</span></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.86 0.92 0.99 0.96</span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.72 0.85 0.99 0.91</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>此时我们再看因子载荷阵，因子3在门诊人次、出院人数、病床周转、平均住院天数、诊断符合率、抢救成功率等多个指标上具有较大的载荷，因子2在治愈好转率、病死率上载荷最大，因子1在病床利用率、病床周转率这两个指标上载荷最高，因子4在门诊人次、出院人数这两个指标的载荷最大。</p>
-<p>因此可以认为因子3反映了反映了医疗工作质量各个方面的情况，称为综合因子；因子1反应病床利用情况，可以成为病床利用因子；因子2反映了医疗水平，称为水平因子；因子4反应了就诊患者数量，称为数量因子。</p>
-<p>可以把结果可视化：</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.diagram</span>(fa.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 多种方法确定最佳因子或主成分个数</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nfactors</span>(df.use)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
+<pre><code>## 
+## Number of factors
+## Call: vss(x = x, n = n, rotate = rotate, diagonal = diagonal, fm = fm, 
+##     n.obs = n.obs, plot = FALSE, title = title, use = use, cor = cor)
+## VSS complexity 1 achieves a maximimum of 0.68  with  5  factors
+## VSS complexity 2 achieves a maximimum of 0.85  with  6  factors
+## The Velicer MAP achieves a minimum of 0.07  with  2  factors 
+## Empirical BIC achieves a minimum of  -41.74  with  2  factors
+## Sample Size adjusted BIC achieves a minimum of  3.18  with  5  factors
+## 
+## Statistics by number of factors 
+##   vss1 vss2   map dof   chisq    prob sqresid  fit RMSEA     BIC SABIC complex
+## 1 0.48 0.00 0.090  27 7.8e+01 7.8e-07    8.09 0.48 0.227 -18.848  65.5     1.0
+## 2 0.54 0.73 0.073  19 3.2e+01 3.0e-02    4.27 0.73 0.136 -35.955  23.4     1.4
+## 3 0.62 0.81 0.097  12 2.0e+01 7.0e-02    2.34 0.85 0.132 -23.156  14.3     1.4
+## 4 0.66 0.82 0.144   6 7.7e+00 2.6e-01    1.63 0.90 0.084 -13.795   4.9     1.4
+## 5 0.68 0.84 0.205   1 3.6e+00 5.6e-02    0.97 0.94 0.269   0.056   3.2     1.4
+## 6 0.59 0.85 0.290  -3 9.5e-01      NA    0.63 0.96    NA      NA    NA     1.7
+## 7 0.55 0.73 0.486  -6 2.7e-09      NA    0.45 0.97    NA      NA    NA     1.8
+## 8 0.55 0.71 1.000  -8 0.0e+00      NA    0.45 0.97    NA      NA    NA     2.0
+## 9 0.55 0.71    NA  -9 0.0e+00      NA    0.45 0.97    NA      NA    NA     2.0
+##    eChisq    SRMR eCRMS  eBIC
+## 1 9.4e+01 1.9e-01 0.220  -2.7
+## 2 2.6e+01 1.0e-01 0.139 -41.7
+## 3 7.0e+00 5.2e-02 0.090 -36.0
+## 4 2.3e+00 3.0e-02 0.073 -19.2
+## 5 8.6e-01 1.8e-02 0.109  -2.7
+## 6 1.2e-01 6.9e-03    NA    NA
+## 7 1.9e-10 2.7e-07    NA    NA
+## 8 2.3e-16 3.0e-10    NA    NA
+## 9 2.3e-16 3.0e-10    NA    NA</code></pre>
 </div>
+<p>但是这个函数的输出结果有些凌乱了，现在我更推荐大家使用<code>parameters</code>，其实就是对<code>nfactors</code>函数的重新包装：</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">factor.plot</span>(fa.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> parameters<span class="sc">::</span><span class="fu">n_factors</span>(df.use)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>n</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="do">## # Method Agreement Procedure:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## The choice of 3 dimensions is supported by 6 (31.58%) methods out of 19 (CNG, Optimal coordinates, Acceleration factor, Parallel analysis, Kaiser criterion, Scree (SE)).</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>6个方法都支持选择3个因子,如果要想查看所有的方法及每个方法选择的因子个数,可以直接变为数据框查看:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(n) <span class="co"># 一共有18个方法!（选0个因子的不算）</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="do">##    n_Factors              Method              Family</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1          0          Scree (R2)            Scree_SE</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2          2             Bentler             Bentler</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3          2                   t Multiple_regression</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4          2                   p Multiple_regression</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 5          2       Velicer's MAP        Velicers_MAP</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 6          2                 BIC                 BIC</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 7          3                 CNG                 CNG</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 8          3 Optimal coordinates               Scree</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 9          3 Acceleration factor               Scree</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 10         3   Parallel analysis               Scree</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 11         3    Kaiser criterion               Scree</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 12         3          Scree (SE)            Scree_SE</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 13         4                beta Multiple_regression</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 14         5    VSS complexity 1                 VSS</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 15         5      BIC (adjusted)                 BIC</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 16         6    VSS complexity 2                 VSS</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 17         7            Bartlett             Barlett</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 18         7            Anderson             Barlett</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 19         7              Lawley             Barlett</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>或者也可以查看这十几种结果的汇总表:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(n)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   n_Factors n_Methods Variance_Cumulative</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1         2         5           0.4936863</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 2         3         6           0.6385558</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="do">## 3         4         1           0.7072393</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="do">## 4         5         2           0.7574222</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 5         6         1           0.7928020</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 6         7         3           0.8133083</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>当然也可以把结果画出来的,借助<code>see</code>这个包即可:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(see)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(n)<span class="sc">+</span><span class="fu">theme_modern</span>()</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -711,7 +737,326 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>关于因子分析，我并没有找到好用的可视化R包，如果大家知道，欢迎评论区留言。</p>
+<p>横坐标是选择的因子数量,左侧纵坐标是方法的数量（百分比）,右侧纵坐标是解释的方差百分比。先看条形图，选择3个因子的方法最多，占了18个方法的30%以上；再看折线图，选择因子越多，解释的方差百分比越多，不过超过3之后就变化不大了。</p>
+</section>
+<section id="因子分析初体验" class="level2" data-number="32.3">
+<h2 data-number="32.3" class="anchored" data-anchor-id="因子分析初体验"><span class="header-section-number">32.3</span> 因子分析初体验</h2>
+<p>下面我们首先用9个因子进行因子分析，看看结果再说。</p>
+<p><code>rotate</code>参数确定旋转方法，有多种不同的选择，比如不旋转、正交旋转法（比如最大方差法）、斜交旋转法等，</p>
+<p><code>fm</code>参数选择提取公共因子的计算方法，比如最大似然法ml、主轴迭代法pa、加权最小二乘wls、广义加权最小二乘gls、最小残差minres（默认），等。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 进行因子分析，首先9个因子用一下看看结果再说，最大似然法，不旋转</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">9</span>, <span class="at">rotate =</span> <span class="st">"none"</span>, <span class="at">fm=</span><span class="st">"ml"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 9, rotate = "none", fm = "ml")</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML1   ML2   ML3   ML4   ML5   ML6 ML7 ML8 ML9   h2   u2 com</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次      0.14  0.68  0.09  0.37 -0.06 -0.03   0   0   0 0.63 0.37 1.7</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.68 -0.30  0.19  0.32  0.06  0.03   0   0   0 0.69 0.31 2.1</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率    0.58  0.52 -0.09 -0.31  0.04  0.05   0   0   0 0.71 0.29 2.6</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.90  0.20 -0.01 -0.01  0.01 -0.01   0   0   0 0.85 0.15 1.1</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.53  0.43  0.38  0.05  0.02  0.09   0   0   0 0.62 0.38 2.9</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率   -0.03 -0.07  0.69 -0.18  0.13 -0.02   0   0   0 0.53 0.47 1.2</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.33  0.08 -0.46  0.18  0.24  0.09   0   0   0 0.42 0.58 2.9</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.31  0.54  0.02  0.02 -0.15  0.07   0   0   0 0.41 0.59 1.8</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.41 -0.64  0.07 -0.03 -0.12  0.10   0   0   0 0.60 0.40 1.9</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML1  ML2  ML3  ML4  ML5  ML6  ML7  ML8  ML9</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.27 1.75 0.89 0.40 0.12 0.04 0.00 0.00 0.00</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.25 0.19 0.10 0.04 0.01 0.00 0.00 0.00 0.00</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.25 0.45 0.55 0.59 0.60 0.61 0.61 0.61 0.61</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.41 0.32 0.16 0.07 0.02 0.01 0.00 0.00 0.00</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.41 0.74 0.90 0.97 0.99 1.00 1.00 1.00 1.00</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  2</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 9 factors are sufficient.</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are -9  and the objective function was  0.46 </span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  NA </span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  3.42  with prob &lt;  NA </span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  11.69  with prob &lt;  NA </span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  2.377</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML1  ML2  ML3   ML4   ML5</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   0.94 0.90 0.79  0.70  0.42</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.88 0.80 0.63  0.50  0.18</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.77 0.61 0.26 -0.01 -0.65</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                     ML6 ML7 ML8 ML9</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors    0.26   0   0   0</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors           0.07   0   0   0</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     -0.86  -1  -1  -1</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>首先看因子载荷矩阵，即结果中的<code>Standardized loadings</code>：</p>
+<p>在因子载荷矩阵中，每一行是一个原始变量，每一列是一个公共因子，这里我们由于使用了9个因子，所以结果中也显示为9个因子（ML1-ML9）。例如：门诊人次在ML1上的载荷为0.142，在ML2上的载荷为0.679。载荷的绝对值越大，说明该变量与对应因子的相关性越强。正载荷表示正相关，负载荷表示负相关。</p>
+<p>h2是<strong>公因子方差</strong>，或者叫公共度或者共性方差，英文<strong>communality</strong>，表示每个原始变量的方差中能够被公共因子所解释的比例，u2是<strong>独特性</strong>（uniqueness），u2=1-h2，表示不能被公共因子解释的比例。公因子方差越接近1，说明该变量与公共因子的相关性越强，在因子分析中越能被有效解释。</p>
+<p>com表示每个变量的复杂性（complexity）。变量的复杂性是指该变量在多个公共因子上的载荷分散程度。简单来说，它反映了一个变量与多个公共因子的关联情况。在因子分析中，我们提取公共因子来解释原始变量之间的相关性，如果一个变量只与一个公共因子有较强的相关性，那么它的复杂性就低；如果一个变量与多个公共因子都有一定程度的相关性，那么它的复杂性就高。</p>
+<ul>
+<li><code>SS loadings</code>：每个因子的载荷平方和，也称为特征值（eigenvalues）。它表示每个公共因子所解释的总方差。例如：ML1的SS loadings是2.27，说明ML1解释了约2.27个单位的方差。</li>
+<li><code>Proportion Var</code>：每个因子解释的方差占总方差的比例。例如：ML1解释了总方差的0.25（25%）。</li>
+<li><code>Cumulative Var</code>：多个因子累积解释的方差占总方差的比例。例如：ML1解释了总方差的0.25（25%），ML2和ML1解释了总方差的0.45（0.25+0.19），以此类推。</li>
+<li><code>Proportion Explained</code>：方差解释的相对比例，即Proportion Var/sum(Proportion Var)</li>
+<li><code>Cumulative Proportion</code>：Proportion Explained的加和。</li>
+</ul>
+<p>根据结果中的<code>Cumulative Var</code>，累积方差解释，可以看到在使用3个因子时，累计贡献度是0.55，4个因子是0.59，结合碎石图，我们选择用4个因子（前面的方法都是建议选3个，选4个是为了和书中保持一致，你可以选择3个试试看，毕竟这个没有金标准）。</p>
+<ul>
+<li><code>Mean item complexity = 2</code>：表示平均复杂性是2。</li>
+</ul>
+<p>然后是模型拟合的假设检验结果：</p>
+<pre><code>df null model =  36  with the objective function =  3.82 with Chi Square =  119.03
+df of  the model are -9  and the objective function was  0.46 
+The root mean square of the residuals (RMSR) is  0.04 
+The df corrected root mean square of the residuals is  NA </code></pre>
+<p>零模型（即假设所有变量相互独立）的自由度为36，目标函数值为3.82，卡方值为119.03。提取9个公共因子的模型的自由度为-9，目标函数值为0.46。目标函数值越小，说明模型拟合得越好。</p>
+<p>残差均方根（RMSR）衡量了模型预测值与实际值之间的差异程度。RMSR值越小，说明模型拟合效果越好。经过自由度校正后的残差均方根是NA。</p>
+<p>再往下是观测数量：</p>
+<pre><code>The harmonic n.obs is  36 with the empirical chi square  3.42  with prob &lt;  NA 
+The total n.obs was  36  with Likelihood Chi Square =  11.69  with prob &lt;  NA </code></pre>
+<p>所有观测对数的调和平均数（the harmonic mean of all the pairwise counts of observations）是36，经验卡方是3.42。总的观测数量是36，似然比卡方是11.69。</p>
+<p>再往下是拟合指数：</p>
+<pre><code>Tucker Lewis Index of factoring reliability =  2.377
+Fit based upon off diagonal values = 0.99</code></pre>
+<p>Tucker Lewis指数一般会在结构方程模型中报告，也被称为非范拟合指数（Non - Normed Fit Index，NNFI），是在因子分析以及结构方程模型等领域用于评估模型拟合优度的一个重要指标，通常希望大于0.9，值越大说明拟合效果越好。这里是2.377。</p>
+<p>Fit based upon off diagonal values：可以将其视为1-resid<sup>2/cor</sup>2，或者是一将应用于相关矩阵而不是原始数据的R<sup>2</sup>。</p>
+<p>最后是因子得分充分性度量：</p>
+<pre><code>Measures of factor score adequacy             
+                                                   ML1  ML2  ML3   ML4   ML5   ML6 ML7 ML8 ML9
+Correlation of (regression) scores with factors   0.94 0.90 0.79  0.70  0.42  0.26   0   0   0
+Multiple R square of scores with factors          0.88 0.80 0.63  0.50  0.18  0.07   0   0   0
+Minimum correlation of possible factor scores     0.77 0.61 0.26 -0.01 -0.65 -0.86  -1  -1  -1</code></pre>
+<p>这些结果告诉我们因子得分估计对潜在结构的代表性，可以被称为不确定性指数。</p>
+<ul>
+<li>Correlation of (regression) scores with factors：Multiple R square的平方根，可认为是因子得分估计的决定系数的上限，本质上是因子与观测数据之间的（多重）相关系数。</li>
+<li>Multiple R square of scores with factors：和回归分析中的R<sup>2</sup>的意思类似，越大越好。</li>
+<li>Minimum correlation of possible factor scores：2*R<sup>2</sup>-1</li>
+</ul>
+<p>以上结果中的每个部分都可以单独提取，例如：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>loadings <span class="co"># 查看因子载荷矩阵</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>communality <span class="co"># 公因子方差</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>uniquenesses <span class="co"># 独特性</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>complexity <span class="co"># 复杂性</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>Vaccounted <span class="co"># 查看载荷平方和、方差解释比等</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>STATISTIC <span class="co"># 似然比卡方</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>dof <span class="co"># 公因子模型的自由度</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>fa.res<span class="sc">$</span>PVAL <span class="co"># P值</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="进行因子分析" class="level2" data-number="32.4">
+<h2 data-number="32.4" class="anchored" data-anchor-id="进行因子分析"><span class="header-section-number">32.4</span> 进行因子分析</h2>
+<p>下面我们选择4个因子，重新进行因子分析，先不旋转：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，不旋转，主因子解：最小残差法</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">"none"</span>, <span class="at">fm=</span><span class="st">"minres"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="do">## The estimated weights for the factor scores are probably incorrect.  Try a</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="do">## different factor score estimation method.</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="do">## ultra-Heywood case was detected.  Examine the results carefully</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  minres</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = "none", fm = "minres")</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="do">##                MR1   MR2   MR3   MR4   h2       u2 com</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次     -0.20  0.86  0.05  0.47 1.00  0.00093 1.7</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.72  0.02  0.12  0.34 0.65  0.35197 1.5</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率    0.31  0.65  0.00 -0.46 0.73  0.27437 2.3</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.80  0.58  0.01 -0.10 1.00  0.00227 1.9</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.65  0.18  0.33  0.05 0.56  0.43758 1.7</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率    0.02 -0.13  0.99 -0.08 1.00 -0.00329 1.1</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.32 -0.05 -0.37  0.00 0.24  0.75666 2.0</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.49  0.35  0.02 -0.08 0.37  0.63478 1.9</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.63 -0.39  0.01  0.11 0.56  0.44236 1.7</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="do">##                        MR1  MR2  MR3  MR4</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.45 1.82 1.25 0.58</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.27 0.20 0.14 0.06</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.27 0.48 0.61 0.68</span></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.40 0.30 0.20 0.09</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.40 0.70 0.91 1.00</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  1.7</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are 6  and the objective function was  0.27 </span></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.03 </span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.07 </span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  2.32  with prob &lt;  0.89 </span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  7.71  with prob &lt;  0.26 </span></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.859</span></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.084  and the 90 % confidence intervals are  0 0.25</span></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -13.8</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>选择4个因子，最终的累积方差解释是0.68，再看因子载荷矩阵，因子1（MR1）在出院人数、门诊人次、病床周转率、平均住院天数等具有较高的载荷，因子2在门诊人次、病床利用率、病床周转率等具有很大的载荷，因子3在治愈好转率具有较高的载荷，因子4的载荷都较低。</p>
+<p>从专业角度来看，主因子解没有发现什么规律，好像不能很好的解释专业意义。</p>
+<p>下面再试试主成分解的因子分析：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，不旋转，主成分解</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">"none"</span>, <span class="at">fm=</span><span class="st">"pa"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="do">## The estimated weights for the factor scores are probably incorrect.  Try a</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="do">## different factor score estimation method.</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="do">## ultra-Heywood case was detected.  Examine the results carefully</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  pa</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = "none", fm = "pa")</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="do">##                PA1   PA2   PA3   PA4   h2     u2 com</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次     -0.20  0.88  0.07  0.47 1.03 -0.034 1.7</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.72  0.02  0.11  0.34 0.64  0.357 1.5</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率    0.31  0.63  0.02 -0.45 0.69  0.305 2.3</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.81  0.59  0.02 -0.13 1.02 -0.023 1.9</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.64  0.17  0.32  0.05 0.55  0.453 1.7</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率    0.02 -0.16  1.04 -0.07 1.12 -0.123 1.1</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.32 -0.04 -0.36 -0.01 0.23  0.770 2.0</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.49  0.35  0.03 -0.09 0.37  0.635 1.9</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.63 -0.39 -0.01  0.13 0.56  0.440 1.8</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="do">##                        PA1  PA2  PA3  PA4</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.46 1.84 1.34 0.58</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.27 0.20 0.15 0.06</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.27 0.48 0.63 0.69</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.40 0.30 0.22 0.09</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.40 0.69 0.91 1.00</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  1.7</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are 6  and the objective function was  0.26 </span></span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.03 </span></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.07 </span></span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  2.25  with prob &lt;  0.9 </span></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  7.46  with prob &lt;  0.28 </span></span>
+<span id="cb17-41"><a href="#cb17-41" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb17-42"><a href="#cb17-42" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.88</span></span>
+<span id="cb17-43"><a href="#cb17-43" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.077  and the 90 % confidence intervals are  0 0.246</span></span>
+<span id="cb17-44"><a href="#cb17-44" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -14.04</span></span>
+<span id="cb17-45"><a href="#cb17-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>最终的累积方差解释是0.69，再看因子载荷矩阵，因子1（PA1）在出院人数、病床周转、平均住院天数等具有较高的载荷，因子2在门诊人次、病床利用率等具有很大的载荷，因子3在治愈好转率具有较高的载荷，因子4在门诊人次、病床利用率、具有较高的载荷。</p>
+<p>从专业角度来看，因子1可以反应病房的情况，但是其他因子貌似没什么专业意义。</p>
+</section>
+<section id="因子旋转" class="level2" data-number="32.5">
+<h2 data-number="32.5" class="anchored" data-anchor-id="因子旋转"><span class="header-section-number">32.5</span> 因子旋转</h2>
+<p>建立因子分析模型的目的不仅是找出公因子，更重要的是弄清各公因子的专业意义，以便对实际问题进行分析。然而在很多情况下，因子分析的主成分解、主因子解的各公因子的典型代表变量并不是很突出，容易使各公因子的专业意义难以解释，从而达不到因子分析的主要目的。</p>
+<p>通过因子旋转我们可以更容易找到内在规律，使得结果更加容易结合专业背景进行解释。</p>
+<p>常见的因子旋转方法有正交旋转和斜交旋转两大类。正交旋转能保持各个指标的共性方差不变，每个因子的意义相对独立和清晰，解释起来较为简单直观，在一些探索性研究或初步分析中，有助于简化分析过程和理解因子结构。斜交旋转在解释因子结构时相对复杂一些，需要同时考虑因子载荷和因子之间的相关系数。但在一些复杂的研究问题中，能够提供更全面和深入的信息。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 选择4个因子，最大方差旋转，最大似然法</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fa.res <span class="ot">&lt;-</span> <span class="fu">fa</span>(df.use, <span class="at">nfactors =</span> <span class="dv">4</span>, <span class="at">rotate =</span> <span class="st">"varimax"</span>, <span class="at">fm=</span><span class="st">"ml"</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fa.res</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Factor Analysis using method =  ml</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Call: fa(r = df.use, nfactors = 4, rotate = "varimax", fm = "ml")</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="do">## Standardized loadings (pattern matrix) based upon correlation matrix</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="do">##                ML3   ML1   ML2   ML4   h2    u2 com</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="do">## 门诊人次     -0.31  0.23 -0.03  0.92 1.00 0.005 1.4</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="do">## 出院人数      0.75  0.16  0.24  0.27 0.72 0.276 1.6</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床利用率   -0.10  0.83  0.03  0.07 0.71 0.289 1.0</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="do">## 病床周转次数  0.46  0.84  0.09  0.26 1.00 0.005 1.8</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="do">## 平均住院天数 -0.64 -0.23  0.24  0.21 0.57 0.435 1.8</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="do">## 治愈好转率   -0.09 -0.09  0.98 -0.10 1.00 0.005 1.1</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 病死率       -0.20 -0.18 -0.42 -0.06 0.26 0.743 1.9</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 诊断符合率   -0.56  0.02 -0.10  0.18 0.36 0.642 1.3</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 抢救成功率    0.70 -0.04  0.04 -0.21 0.55 0.455 1.2</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="do">##                        ML3  ML1  ML2  ML4</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="do">## SS loadings           2.15 1.58 1.29 1.12</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Var        0.24 0.18 0.14 0.12</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Var        0.24 0.41 0.56 0.68</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Proportion Explained  0.35 0.26 0.21 0.18</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="do">## Cumulative Proportion 0.35 0.61 0.82 1.00</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a><span class="do">## Mean item complexity =  1.4</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="do">## Test of the hypothesis that 4 factors are sufficient.</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="do">## df null model =  36  with the objective function =  3.82 with Chi Square =  119.03</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a><span class="do">## df of  the model are 6  and the objective function was  0.24 </span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a><span class="do">## The root mean square of the residuals (RMSR) is  0.04 </span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="do">## The df corrected root mean square of the residuals is  0.09 </span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="do">## The harmonic n.obs is  36 with the empirical chi square  3.43  with prob &lt;  0.75 </span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="do">## The total n.obs was  36  with Likelihood Chi Square =  6.84  with prob &lt;  0.34 </span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Tucker Lewis Index of factoring reliability =  0.931</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="do">## RMSEA index =  0.055  and the 90 % confidence intervals are  0 0.235</span></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="do">## BIC =  -14.67</span></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit based upon off diagonal values = 0.99</span></span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Measures of factor score adequacy             </span></span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a><span class="do">##                                                    ML3  ML1  ML2  ML4</span></span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a><span class="do">## Correlation of (regression) scores with factors   0.93 0.96 1.00 0.98</span></span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a><span class="do">## Multiple R square of scores with factors          0.86 0.92 0.99 0.96</span></span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a><span class="do">## Minimum correlation of possible factor scores     0.72 0.85 0.99 0.91</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>此时我们再看因子载荷阵，因子3在出院人数、平均住院天数、诊断符合率、抢救成功率等多个指标上具有较大的载荷，因子2在治愈好转率、病死率上载荷最大，因子1在病床利用率、病床周转次数这两个指标上载荷最高，因子4在门诊人次的载荷最大。</p>
+<p>因此可以认为因子3反映了反映了医疗工作质量各个方面的情况，称为综合因子；因子1反应病床利用情况，可以称为病床利用因子；因子2反映了医疗水平，称为水平因子；因子4反应了就诊患者数量，称为数量因子。</p>
+<p>由于因子分析的结果并不是唯一的，大家可以多尝试其他方法，可根据具体情况选择不同方法来获得符合客观实际的解。</p>
+</section>
+<section id="结果可视化" class="level2" data-number="32.6">
+<h2 data-number="32.6" class="anchored" data-anchor-id="结果可视化"><span class="header-section-number">32.6</span> 结果可视化</h2>
+<p>展示每个因子在各个变量中的载荷大小。这个图也叫<strong>路径图</strong>，在结构方程模型和验证性因子分析中非常常见。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fa.diagram</span>(fa.res)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>下面这张图是另一种展示方法，只看右上三角或者左下三角即可，是一样的。以右上三角为例：以第一行为例，第一行是ML3这个因子，看第一行第二列的这个子图形，它的横坐标是ML1这个因子，纵坐标是ML3这个因子，图中的点（被文字覆盖住了）是不同的变量，每个点的坐标就是该变量在不同因子上的载荷值。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 这个图实在是有些太花里胡哨了</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">factor.plot</span>(fa.res,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">labels =</span> <span class="fu">colnames</span>(df.use[,<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="sc">-</span><span class="dv">2</span>)]),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">show.points =</span> T)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 或者plot(fa.res)</span></span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>由于上图太过于花里胡哨，不便解读，所以我们也可以直接自己提取数据，使用其他可视化R包自己绘制图形，我这里演示下如何使用<code>pheatmap</code>通过热图的形式展示因子载荷：</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1行代码就行了</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>pheatmap<span class="sc">::</span><span class="fu">pheatmap</span>(<span class="fu">t</span>(fa.res<span class="sc">$</span>loadings),<span class="at">cluster_rows =</span> F,<span class="at">cluster_cols =</span> F)</span></code><button title="复制到剪贴板" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="1023-factoranalysis_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>这个热图就很好解读了，横坐标是不同的变量，纵坐标是不同的因子，颜色深浅表示载荷的绝对值大小，红色表示正相关，蓝色表示负相关。是不是很直观呢？</p>
+</section>
+<section id="参考资料" class="level2" data-number="32.7">
+<h2 data-number="32.7" class="anchored" data-anchor-id="参考资料"><span class="header-section-number">32.7</span> 参考资料</h2>
+<ol type="1">
+<li>https://m-clark.github.io/posts/2020-04-10-psych-explained/</li>
+<li>孙振球医学统计学第4版和第5版</li>
+<li>https://stats.oarc.ucla.edu/spss/seminars/introduction-to-factor-analysis/a-practical-introduction-to-factor-analysis/</li>
+<li>R语言医学多元统计分析，赵军、戴静毅</li>
+</ol>
 
 
 </section>
@@ -1139,13 +1484,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./1022-pca.html" class="pagination-link" aria-label="R语言主成分分析">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">R语言主成分分析</span></span>
+      <a href="./主成分回归.html" class="pagination-link" aria-label="主成分回归">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">主成分回归</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./1016-partialcorrelation.html" class="pagination-link" aria-label="偏相关和典型相关分析">
-        <span class="nav-page-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">偏相关和典型相关分析</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

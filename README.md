@@ -1,8 +1,34 @@
 # R语言实战医学统计
 
-> 本书在线观看地址：https://ayueme.github.io/R_medical_stat/
+📘 一本面向医学科研人员的开源教材，讲解如何使用R语言进行统计分析与科研绘图。  
+
+🔗 GitHub地址：[https://ayueme.github.io/R_medical_stat](https://ayueme.github.io/R_medical_stat) 
+
+🕮 本书在线观看地址：[https://ayueme.github.io/R_medical_stat](https://ayueme.github.io/R_medical_stat)
+
+📺 配套视频教程观看地址：[阿越就是我个人主页-哔哩哔哩视频](https://space.bilibili.com/42460432)
+
+## 许可证（License） 
+
+本书所有内容（文字、代码、图表、示例、教学材料）采用[知识共享 署名-相同方式共享 4.0 国际许可协议](https://creativecommons.org/licenses/by-sa/4.0/deed.zh)（CC BY-SA 4.0）授权。 
+
+### 使用要求： 
+
+- ✅ **允许**：分享、改编、商用、教学使用； 
+- 📝 **必须**：  
+  - 署名原作者 **阿越就是我**；  
+  - 提供原始链接（本仓库）；  
+  - 衍生作品**必须同样使用CC BY-SA 4.0**发布。 
+
+### 正确署名示例： 
+
+> 本内容改编自 阿越就是我 的《R语言实战医学统计》（https://github.com/ayueme/R_medical_stat），   
 >
-> 配套视频教程观看地址：[阿越就是我个人主页-哔哩哔哩视频](https://space.bilibili.com/42460432)
+> 采用 CC BY-SA 4.0 许可证发布（https://creativecommons.org/licenses/by-sa/4.0/deed.zh）。 
+
+---
+
+> 💡 本书为开源教育项目，欢迎提 Issue、PR 或用于教学推广！
 
 ## 本书缘起
 

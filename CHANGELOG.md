@@ -4,7 +4,7 @@
 
 ## 第8次更新（2025-12-24）
 
-- 🛠️ **优化**：将更新日志存放于单独的CHANGELOG.md文件中
+- 🛠️ **优化**：修改开源协议为：[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.zh) ；将更新日志存放于单独的CHANGELOG.md文件中
 
 ## 第7次更新（2025-11-28）
 

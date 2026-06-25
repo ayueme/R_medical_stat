@@ -1,6 +1,6 @@
 # R语言实战医学统计
 
-📘 一本面向医学科研人员的开源教程，讲解如何使用R语言进行统计分析与科研绘图。  
+📘 一本面向医学相关人员的开源教程，讲解如何使用R语言进行统计分析与科研绘图。  
 
 🔗 GitHub地址：[https://ayueme.github.io/R_medical_stat](https://ayueme.github.io/R_medical_stat) 
 
@@ -9,10 +9,8 @@
 📺 配套视频教程观看地址：[阿越就是我个人主页-哔哩哔哩视频](https://space.bilibili.com/42460432)
 
 >📢 **本书持续更新中！**  
->
->**✨ 最新更新日期 (2025-12-24，第8次更新)**      
->
->[👉 点击这里查看详细的更新日志](CHANGELOG.md)
+>🔖 **最近更新日期：2026-06-22（第9次更新）**
+>👉 更新日志请查看[更新日志](https://github.com/ayueme/R_medical_stat/blob/main/CHANGELOG.md)
 
 ## 许可证（License） 
 
@@ -23,7 +21,7 @@
 - ✅ **允许**：分享、改编、商用、教学使用； 
 - 📝 **必须**：  
   - 署名原作者 **阿越就是我**；  
-  - 提供原始链接（本仓库）；  
+  - 提供原始链接（https://github.com/ayueme/R_medical_stat）；  
   - 衍生作品**必须同样使用CC BY-SA 4.0**发布。 
 
 ### 正确署名示例： 
@@ -56,7 +54,7 @@ R语言是一门编程语言，但同时也是一个统计软件，R语言是由
 
 本系列还有配套的视频教程，也在B站，免费观看，点击直达：[R语言实战医学统计](https://space.bilibili.com/42460432/channel/collectiondetail?sid=3977492)
 
-> 本书实际上是我公众号部分历史推文的整理和汇总（部分内容有改动），**书中涉及的所有数据都可以在相关历史推文中免费获取**！推文合集链接：[医学统计学](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzUzOTQzNzU0NA==&action=getalbum&album_id=2231476971388059661&scene=126#wechat_redirect)
+> 本书实际上是我公众号部分历史推文的整理和汇总（内容有改动），**书中涉及的所有数据都可以在相关历史推文中免费获取**！推文合集链接：[医学统计学](https://mp.weixin.qq.com/mp/appmsgalbum?__biz=MzUzOTQzNzU0NA==&action=getalbum&album_id=2231476971388059661&scene=126#wechat_redirect)
 
 > 我也准备了一个PDF版合集(附赠Word版)，内容和网页版一致，只是打包了所有的数据，付费获取（10元，1次付费，长期更新，无需重复付费），介意勿扰！**PDF版合集获取链接**：[R语言实战医学统计](https://mp.weixin.qq.com/s/uzL8Y2nZ3W4efA4q8xJ5UA)
 
